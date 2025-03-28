@@ -5,6 +5,7 @@ import { CnExternalLabUserService } from './cn-external-lab-user.service';
 import { CnExternalLabManagerApiService } from './cn-external-lab-manager-api.service';
 import { HttpModule } from '@nestjs/axios';
 import { CnExternalLabFolderService } from './cn-external-lab-folder.service';
+import { CnExternalLabShareService } from './cn-external-lab-share.service';
 
 /**
  * Module for outgoing api call to the labs
@@ -16,12 +17,14 @@ import { CnExternalLabFolderService } from './cn-external-lab-folder.service';
     CnExternalLabUserService,
     CnExternalLabFolderService,
     CnExternalLabManagerApiService,
+    CnExternalLabShareService,
   ],
   exports: [
     CnExternalLabApiService,
     CnExternalLabUserService,
     CnExternalLabFolderService,
     CnExternalLabManagerApiService,
+    CnExternalLabShareService,
   ],
 })
 export class CnExternalLabApiModule {}

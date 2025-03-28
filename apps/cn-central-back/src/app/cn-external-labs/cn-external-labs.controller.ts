@@ -198,7 +198,7 @@ export class CnExternalLabsController {
   @CnLabRobotAuthentication()
   @Get('user/:id')
   getUser(@Param('id', new ParseUUIDPipe()) userId: string): Promise<CnExternalLabUser> {
-    return this.labAggregator.getUserInfoFromLab(userId);
+    return this.labAggregator.getUserInfoForCurrentLab(userId);
   }
 
   //////////////////////////// FOLDER //////////////////////////

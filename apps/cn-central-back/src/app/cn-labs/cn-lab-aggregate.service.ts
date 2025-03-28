@@ -991,13 +991,14 @@ export class CnLabAggregateService {
    * Useful for data hub where user may trigger an action without being in the lab user list)
    * @param userId
    */
-  public async getUserInfoFromLab(userId: string): Promise<CnExternalLabUser> {
+  public async getUserInfoForCurrentLab(userId: string): Promise<CnExternalLabUser> {
+    return this.getUserInfoForLab(userId, CnCurrentUserHelper.getAndCheckCurrentLab().id);
+  }
+
+  public async getUserInfoForLab(userId: string, labId: string): Promise<CnExternalLabUser> {
     const user = await this.usersService.findByIdAndCheck(userId);
 
-    const labUser = await this.labUserService.findByLabIdAndUserId(
-      CnCurrentUserHelper.getAndCheckCurrentLab().id,
-      userId
-    );
+    const labUser = await this.labUserService.findByLabIdAndUserId(labId, userId);
     return {
       id: user.id,
       first_name: user.firstname,

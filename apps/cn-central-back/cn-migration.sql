@@ -178,3 +178,15 @@ alter table folder
 update folder
 set mainStorageId = null
 where id = (Select id from hierarchy_object where id = folder.id and rootParentId is not null);
+
+
+################### 2.4.1 ###################
+-- Rename the column shareLink to token
+ALTER TABLE resource RENAME COLUMN shareLink TO token;
+
+-- Update the token column by extracting the token from the old shareLink URL
+UPDATE resource
+SET token = SUBSTRING_INDEX(token, '/', -1);
+
+ALTER TABLE resource
+  DROP COLUMN validUntil;

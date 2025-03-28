@@ -1,4 +1,5 @@
-import { ClSupportedLanguage, ClTheme } from '@monorepo/core-lib';
+import { ClLuxonDateTransform, ClSupportedLanguage, ClTheme } from '@monorepo/core-lib';
+import { DateTime } from 'luxon';
 
 /**
  * Response when logged in a user to the lab
@@ -31,4 +32,10 @@ export interface CnLabGlobalActivity {
     created_at: string;
   };
   dev_env_running: boolean;
+}
+
+export class CnExternalLabShareGenerateTokenResponse {
+  @ClLuxonDateTransform()
+  valid_until: DateTime;
+  access_url: string;
 }

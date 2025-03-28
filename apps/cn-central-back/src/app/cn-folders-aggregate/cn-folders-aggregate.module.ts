@@ -20,7 +20,6 @@ import { CnHierarchyObjectModule } from './cn_hierarchy_objects/cn-hierarchy-obj
 import { CnFolderCopierService } from './cn-folder-copier.service';
 import { CnSpacesModule } from '../cn-spaces/cn-spaces.module';
 import { CnResourcesModule } from './cn-resources/cn-resources.module';
-import { CnResourcesController } from './cn-resources/cn-resources.controller';
 import { CnExternalLabApiModule } from '../cn-external-lab-api/cn-external-lab-api.module';
 import { CnHierarchyObjectTagModule } from './cn-hierarchy-object-tags/cn-hierarchy-object-tag.module';
 import { CnHierarchyObjectController } from './cn_hierarchy_objects/cn-hierarchy-object.controller';
@@ -49,13 +48,7 @@ import { CnHierarchyObjectListener } from './cn-hierarchy-object.listener';
 
     EventEmitterModule,
   ],
-  controllers: [
-    CnFoldersController,
-    CnScenariosController,
-    CnNotesController,
-    CnResourcesController,
-    CnHierarchyObjectController,
-  ],
+  controllers: [CnFoldersController, CnScenariosController, CnNotesController, CnHierarchyObjectController],
   providers: [
     CnFoldersSecurityService,
     CnFolderAggregateService,

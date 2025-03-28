@@ -11,6 +11,7 @@ import { CnLabFolderEntity } from './cn-lab-folder.entity';
 import { CnLabFolderController } from './cn-lab-folder.controller';
 import { CnHierarchyObjectModule } from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.module';
 import { CnFoldersModule } from '../cn-folders-aggregate/cn-folders/cn-folders.module';
+import { CnResourcesController } from '../cn-folders-aggregate/cn-resources/cn-resources.controller';
 
 @Module({
   imports: [
@@ -26,6 +27,6 @@ import { CnFoldersModule } from '../cn-folders-aggregate/cn-folders/cn-folders.m
   ],
   providers: [CnLabFolderAggregateService, CnLabFolderListener, CnLabFolderService],
   exports: [CnLabFolderAggregateService],
-  controllers: [CnLabFolderController],
+  controllers: [CnLabFolderController, CnResourcesController],
 })
 export class CnLabFolderAggregateModule {}

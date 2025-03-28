@@ -198,7 +198,7 @@ export class BlExternalApiService {
         Logger.error(`[BLApiService] Error during call to route '${route}'`);
       }
     }
-    return throwError(apiError as any);
+    return throwError(() => apiError);
   }
 
   /**

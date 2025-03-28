@@ -66,8 +66,7 @@ import {
 } from '@monorepo/te-text-editor';
 import { CnShareResourceRequestDTO } from './cn-resources/cn-resource.dto';
 import { CnResourcesService } from './cn-resources/cn-resources.service';
-import { CnResource, CnResourceEntity } from './cn-resources/cn-resource.entity';
-import { CnExternalLabApiService } from '../cn-external-lab-api/cn-external-lab-api.service';
+import { CnResource, CnResourceEntity, CnResourceWithLab } from './cn-resources/cn-resource.entity';
 import { CnHierarchyRepresentation } from './cn_hierarchy_objects/cn-hierarchy-representation';
 import { CnScenarioProtocol } from './cn-scenarios/cn-scenario-protocol.class';
 import { CnAvailableTags, CnTag } from './cn-hierarchy-object-tags/cn-hierarchy-object-tag.dto';
@@ -94,7 +93,6 @@ export class CnFolderAggregateService {
     private eventEmitter: EventEmitter2,
     private activityService: CnActivityService,
     private resourceService: CnResourcesService,
-    private externalLabApiService: CnExternalLabApiService,
     private tagService: CnHierarchyObjectTagAggregateService,
     private spaceAggregateService: CnSpaceAggregateService
   ) {}
@@ -747,19 +745,9 @@ export class CnFolderAggregateService {
     });
   }
 
-  public async findResource(resourceId: string): Promise<CnResource> {
+  public async findResource(resourceId: string): Promise<CnResourceWithLab> {
     await this.getAndCheckAuthorizationForFindOneByHierarchyObject(resourceId);
-    const resource = await this.resourceService.findWithLabByIdAndCheck(resourceId);
-
-    const check = await this.externalLabApiService.healthCheck(resource.lab.getGlabSpaceApiInfo());
-
-    if (!check) {
-      throw new BlBadRequestException(
-        `The lab '${resource.lab.name}' is not running, please start it or transfer the ` +
-          `resource to a permanent lab.`
-      );
-    }
-    return resource;
+    return await this.resourceService.findWithLabByIdAndCheck(resourceId);
   }
 
   public async renameResource(resourceId: string, name: string): Promise<CnResource> {

@@ -31,8 +31,7 @@ export class CnResourcesService extends BlAbstractService<CnResourceEntity> {
     resourceEntity.name = shareResourceDTO.name;
     resourceEntity.typingName = shareResourceDTO.typing_name;
     resourceEntity.style = shareResourceDTO.style;
-    resourceEntity.shareLink = shareResourceDTO.share_link;
-    resourceEntity.validUntil = shareResourceDTO.valid_until;
+    resourceEntity.token = shareResourceDTO.token;
     resourceEntity.lastModifiedAt = ClDateHelper.getDate();
     resourceEntity.lastModifiedBy = CnCurrentUserHelper.getAndCheckCurrentUser();
 

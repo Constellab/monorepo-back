@@ -1,7 +1,6 @@
 import { Column, Entity, ManyToOne } from 'typeorm';
 import { CnHierarchyRepresentation } from '../cn_hierarchy_objects/cn-hierarchy-representation';
-import { DateTime } from 'luxon';
-import { BlLuxonDateTimeColumn, BlNotUpdatable } from '@monorepo/back-core-lib';
+import { BlNotUpdatable } from '@monorepo/back-core-lib';
 import { CnHierarchyObjectInfo } from '../cn_hierarchy_objects/cn-hierarchy-object.dto';
 import { CnHierarchyObjectType } from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
 import { Type } from 'class-transformer';
@@ -23,10 +22,7 @@ export class CnResourceEntity extends CnHierarchyRepresentation {
   style: CnTypeStyle;
 
   @Column({ nullable: false, length: 255 })
-  shareLink: string;
-
-  @BlLuxonDateTimeColumn({ nullable: true })
-  validUntil: DateTime;
+  token: string;
 
   @BlNotUpdatable()
   @Type(() => CnLabEntity)

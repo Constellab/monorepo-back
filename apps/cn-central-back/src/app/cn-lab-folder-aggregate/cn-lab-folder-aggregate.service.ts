@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { CnFolderAggregateService } from '../cn-folders-aggregate/cn-folder-aggregate.service';
 import { CnLabAggregateService } from '../cn-labs/cn-lab-aggregate.service';
 import { CnLabFolder, CnLabFolderWithLab, CnLabFolderWithRootFolder } from './cn-lab-folder.entity';
@@ -14,16 +14,21 @@ import {
   CnHierarchyObject,
   CnHierarchyObjectWithChildren,
 } from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.entity';
+import { CnExternalLabShareService } from '../cn-external-lab-api/cn-external-lab-share.service';
+import { CnResourceAccessDTO } from '../cn-folders-aggregate/cn-resources/cn-resource.dto';
 
 @Injectable()
 export class CnLabFolderAggregateService {
+  private logger = new Logger(CnLabFolderAggregateService.name);
+
   constructor(
     private folderAggregateService: CnFolderAggregateService,
     private labAggregateService: CnLabAggregateService,
     private labFolderService: CnLabFolderService,
     private dataSource: DataSource,
     private externalLabFolderService: CnExternalLabFolderService,
-    private externalLabApiService: CnExternalLabApiService
+    private externalLabApiService: CnExternalLabApiService,
+    private externalLabShareService: CnExternalLabShareService
   ) {}
 
   public async addFolderToLab(labId: string, rootFolderId: string): Promise<CnLabFolder> {
@@ -179,5 +184,39 @@ export class CnLabFolderAggregateService {
 
   public async getAndCheckAuthorizationToFindLabById(id: string): Promise<CnLab> {
     return this.labAggregateService.getAndCheckAuthorizationToFindById(id);
+  }
+
+  /////////////////////////////////////// RESOURCE //////////////////////////////////
+
+  /**
+   * Method that calls the lab to generate a user access token for a resource
+   * @param resourceId
+   */
+  public async getResourceAccess(resourceId: string): Promise<CnResourceAccessDTO> {
+    const resource = await this.folderAggregateService.findResource(resourceId);
+    const lab = resource.lab;
+
+    // Check that the lab is running
+    const check = await this.externalLabApiService.healthCheck(lab.getGlabSpaceApiInfo());
+
+    if (!check) {
+      throw new BlBadRequestException(
+        `The lab '${lab.name}' is not running, please start it or transfer the ` +
+          `resource to a permanent lab.`
+      );
+    }
+
+    // Call the lab to generate the user access token
+    const labUser = await this.labAggregateService.getUserInfoForLab(
+      CnCurrentUserHelper.getAndCheckCurrentUser().id,
+      lab.id
+    );
+
+    const userAccess = await this.externalLabShareService.generateUserAccessToken(
+      lab.getGlabSpaceApiInfo(),
+      resource.token,
+      labUser
+    );
+    return new CnResourceAccessDTO(resource, userAccess.access_url, userAccess.valid_until);
   }
 }
