@@ -56,6 +56,35 @@ export class HnCommunityAppController extends HnAbstractFileController<HnCommuni
     BlResponseHelper.setFileResponseAndCache(res, file);
   }
 
+  /**
+   * Get user community apps
+   * @param userId
+   * @param page
+   * @param size
+   * @returns apps
+   */
+  @BlPublic()
+  @Get('user/:userId')
+  async getUserCommunityApps(
+    @Param('userId', new ParseUUIDPipe()) userId: string,
+    @Query('page', new ParseIntPipe()) page: number,
+    @Query('size', new ParseIntPipe()) size: number
+  ): Promise<ClPage<HnCommunityAppDto>> {
+    const result: ClPage<HnCommunityApp> = await this.communityAppAggregateService.findUserCommunityApps(
+      userId,
+      page,
+      size
+    );
+    return result.map((communityApp) => new HnCommunityAppDto(communityApp));
+  }
+
+  /**
+   * Get all community apps with filters
+   * @param spacesFilter
+   * @param titleFilter
+   * @param page
+   * @param size
+   */
   @BlPublic()
   @Post('filters')
   async getAll(

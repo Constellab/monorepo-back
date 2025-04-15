@@ -12,6 +12,7 @@ import {
   BlBadRequestException,
   BlFile,
   BlFileResponse,
+  BlNotFoundException,
   BlObjectStorageService,
   BlUnauthorizedException,
 } from '@monorepo/back-core-lib';
@@ -27,6 +28,7 @@ import { HnCommunityAppUserService } from './community-app-user/hn-community-app
 import { HnCommunityAppUser } from './community-app-user/hn-community-app-user.entity';
 import { HnSiteMapEnumChangefreq, HnSitemapItemBase } from '../core/model/config/hn-site-map.class';
 import { HnFrontService } from '../core/service/hn-front.service';
+import { HnUserService } from '../users/hn-user.service';
 
 @Injectable()
 export class HnCommunityAppAggregateService {
@@ -38,6 +40,7 @@ export class HnCommunityAppAggregateService {
     private readonly objectStorageService: BlObjectStorageService,
     private readonly communityAppUserService: HnCommunityAppUserService,
     private readonly frontService: HnFrontService,
+    private readonly userService: HnUserService,
     private dataSource: DataSource
   ) {}
 
@@ -74,6 +77,48 @@ export class HnCommunityAppAggregateService {
         return null;
     }
     return communityApp;
+  }
+
+  async findUserCommunityApps(userId: string, page: number, size: number): Promise<ClPage<HnCommunityApp>> {
+    const user = await this.userService.findOne(userId);
+    if (!user) throw new BlNotFoundException('User not found');
+    const currentUser = HnCurrentUserHelper.getCurrentUser();
+    let commonSpacesIds: string[] = [];
+    if (currentUser) {
+      commonSpacesIds = (await this.spaceAggregateService.getUserCommonSpace(userId)).map(
+        (space) => space.id
+      );
+    }
+    return this.findUserCommunityAppsWithCommonSpaces(user, commonSpacesIds, page, size);
+  }
+
+  async findUserCommunityAppsWithCommonSpaces(
+    user: HnUser,
+    commonSpacesIds: string[],
+    page: number,
+    size: number
+  ): Promise<ClPage<HnCommunityApp>> {
+    const whereConditions: FindOptionsWhere<HnCommunityApp>[] | FindOptionsWhere<HnCommunityApp> = [];
+
+    if (commonSpacesIds?.length > 0) {
+      whereConditions.push({
+        createdBy: {
+          id: user.id,
+        },
+        space: {
+          id: In(commonSpacesIds),
+        },
+      });
+    }
+
+    whereConditions.push({
+      createdBy: {
+        id: user.id,
+      },
+      space: IsNull(),
+    });
+
+    return this.communityAppService.findAllPaginated(whereConditions, page, size);
   }
 
   async findAll(
