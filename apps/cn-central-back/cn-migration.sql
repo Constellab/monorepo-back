@@ -190,3 +190,8 @@ SET token = SUBSTRING_INDEX(token, '/', -1);
 
 ALTER TABLE resource
   DROP COLUMN validUntil;
+
+
+############ 2.5.0 ############
+ALTER TABLE hierarchy_object
+  ADD COLUMN isArchived tinyint default 0 not null;

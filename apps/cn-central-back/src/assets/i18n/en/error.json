@@ -64,5 +64,6 @@
   "lab_free_expired": "Your free credits for this month have expired. The lab cannot be started, please contact the support to get more credits.",
   "remove_folder_use_as_storage_from_lab_error": "The folder uses this lab as storage, you can't remove it from the lab.",
   "remove_folder_sync_scenario_error": "The folder and its sub folders have {count} synced scenarios from this lab, you can't remove it from the lab.",
-  "remove_folder_sync_note_error": "The folder and its sub folders have {count} synced notes from this lab, you can't remove it from the lab."
+  "remove_folder_sync_note_error": "The folder and its sub folders have {count} synced notes from this lab, you can't remove it from the lab.",
+  "cant_add_object_to_archived_folder": "You can't add an object to an archived folder"
 }

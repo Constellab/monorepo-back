@@ -87,6 +87,7 @@ export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjec
         users: { userId: userId },
         spaceId: spaceId,
         parentId: IsNull(),
+        isArchived: false,
       },
       order: {
         lastModifiedAt: 'DESC' as any,
@@ -277,5 +278,13 @@ export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjec
     hierarchyObject.setLastTags(tags);
     await this.repository.update(hierarchyObject.id, { lastTagsStr: hierarchyObject.lastTagsStr });
     return hierarchyObject;
+  }
+
+  public archiveHierarchyObject(hierarchyObjectId: string): Promise<CnHierarchyObject> {
+    return this.updatePartial(hierarchyObjectId, { isArchived: true });
+  }
+
+  public unarchiveHierarchyObject(hierarchyObjectId: string): Promise<CnHierarchyObject> {
+    return this.updatePartial(hierarchyObjectId, { isArchived: false });
   }
 }

@@ -67,4 +67,5 @@ export enum CnErrorText {
   REMOVE_FOLDER_USE_LAB_AS_STORAGE_ERROR = 'error.remove_folder_use_as_storage_from_lab_error',
   REMOVE_FOLDER_SYNC_SCENARIO_ERROR = 'error.remove_folder_sync_scenario_error',
   REMOVE_FOLDER_SYNC_NOTE_ERROR = 'error.remove_folder_sync_note_error',
+  CANT_ADD_OBJECT_TO_ARCHIVED_FOLDER = 'error.cant_add_object_to_archived_folder',
 }

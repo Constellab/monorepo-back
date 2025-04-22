@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
-import { CnFolder, CnFolderEntity, CnFolderWithHierarchy, CnFolderWithStorage } from './cn-folder.entity';
+import { CnFolder, CnFolderEntity, CnFolderWithHierarchy } from './cn-folder.entity';
 import { BlAbstractService, BlSearchParams } from '@monorepo/back-core-lib';
 import { CnUser } from '../../cn-users/cn-user.entity';
 import { ClPage } from '@monorepo/core-lib';
@@ -16,10 +16,6 @@ export class CnFoldersService extends BlAbstractService<CnFolderEntity> {
 
   public async findByIdAndCheckWithFolder(id: string): Promise<CnFolderWithHierarchy> {
     return super.findByIdAndCheck(id, { hierarchyRepresentation: true });
-  }
-
-  public async findByIfAndCheckWithStorage(rootFolderId: string): Promise<CnFolderWithStorage> {
-    return super.findByIdAndCheck(rootFolderId, { mainStorage: true, backupStorage: true });
   }
 
   private async findByIdAndCheckWithDescription(id: string): Promise<CnFolderEntity> {

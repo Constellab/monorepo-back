@@ -106,6 +106,9 @@ export class CnHierarchyObjectEntity extends BlEntityWithId {
   @Column({ nullable: false, default: false })
   isValidated: boolean;
 
+  @Column({ nullable: false, default: false })
+  isArchived: boolean;
+
   @Column({ nullable: true, type: 'bigint' })
   documentSize: number;
 

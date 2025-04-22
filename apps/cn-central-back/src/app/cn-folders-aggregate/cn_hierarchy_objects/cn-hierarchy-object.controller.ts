@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, Put, Query } from '@nestjs/common';
 import { CnFolderAggregateService } from '../cn-folder-aggregate.service';
 import { CnAvailableTags, CnTag } from '../cn-hierarchy-object-tags/cn-hierarchy-object-tag.dto';
 import { CnHierarchyObjectTag } from '../cn-hierarchy-object-tags/cn-hierarchy-object-tag.entity';
@@ -75,5 +75,19 @@ export class CnHierarchyObjectController {
     @Param('hierarchyObjectId', new ParseUUIDPipe()) hierarchyObjectId: string
   ): Promise<CnAvailableTags> {
     return this.folderAggregateService.getAvailableTags(hierarchyObjectId);
+  }
+
+  @Put(':hierarchyObjectId/archive')
+  async archiveHierarchyObject(
+    @Param('hierarchyObjectId', new ParseUUIDPipe()) hierarchyObjectId: string
+  ): Promise<CnHierarchyObject> {
+    return this.folderAggregateService.archiveHierarchyObject(hierarchyObjectId);
+  }
+
+  @Put(':hierarchyObjectId/unarchive')
+  async unarchiveHierarchyObject(
+    @Param('hierarchyObjectId', new ParseUUIDPipe()) hierarchyObjectId: string
+  ): Promise<CnHierarchyObject> {
+    return this.folderAggregateService.unarchiveHierarchyObject(hierarchyObjectId);
   }
 }

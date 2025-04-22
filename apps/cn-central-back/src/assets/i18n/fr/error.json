@@ -64,5 +64,6 @@
   "lab_free_expired": "Vos crédits gratuit pour le lab sont expirés. Le lab ne peut pas être démarré, veuillez contacter le support pour obtenir plus de crédits.",
   "remove_folder_use_as_storage_from_lab_error": "Le dossier utilise ce lab comme stockage, vous ne pouvez pas le supprimer du lab.",
   "remove_folder_sync_scenario_error": "Le dossier et ses sous dossiers ont {count} expériences synchronisées de ce lab, vous ne pouvez pas le supprimer du lab.",
-  "remove_folder_sync_note_error": "Le dossier et ses sous dossiers ont {count} notes synchronisées provenant de ce lab, vous ne pouvez pas le supprimer du lab."
+  "remove_folder_sync_note_error": "Le dossier et ses sous dossiers ont {count} notes synchronisées provenant de ce lab, vous ne pouvez pas le supprimer du lab.",
+  "cant_add_object_to_archived_folder": "Vous ne pouvez pas ajouter un objet à un dossier archivé"
 }

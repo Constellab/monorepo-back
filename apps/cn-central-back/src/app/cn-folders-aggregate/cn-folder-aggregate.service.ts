@@ -167,16 +167,20 @@ export class CnFolderAggregateService {
     folderDTO: CnSaveFolderDTO,
     parentFolder: CnHierarchyObject
   ): Promise<CnFolderWithHierarchy> {
+    if (parentFolder.isArchived) {
+      throw new BlBadRequestException(CnErrorText.CANT_ADD_OBJECT_TO_ARCHIVED_FOLDER);
+    }
+
     const entity = this.createFolderFromDTO(folderDTO);
     entity.leader = CnCurrentUserHelper.getAndCheckCurrentUser();
     entity.style = CnFolderEntity.CHILD_FOLDER_STYLE;
 
-    const parentWithStorage = await this.foldersService.findByIfAndCheckWithStorage(parentFolder.id);
+    const parentFolderObject = await this.foldersService.findByIdAndCheck(parentFolder.id);
 
     if (
       entity.endingDate &&
-      parentWithStorage.endingDate &&
-      entity.endingDate > parentWithStorage.endingDate
+      parentFolderObject.endingDate &&
+      entity.endingDate > parentFolderObject.endingDate
     ) {
       throw new BlBadRequestException(CnErrorText.CHILD_FOLDER_END_DATA_AFTER_PARENT);
     }
@@ -569,6 +573,10 @@ export class CnFolderAggregateService {
     // check that the user can get the folder
     const parentFolder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(parentFolderId);
 
+    if (parentFolder.isArchived) {
+      throw new BlBadRequestException(CnErrorText.CANT_ADD_OBJECT_TO_ARCHIVED_FOLDER);
+    }
+
     const result = await this.scenarioService.saveLabScenario(parentFolder, createLabScenarioDto);
 
     if (result.mode === 'create') {
@@ -641,6 +649,10 @@ export class CnFolderAggregateService {
     files: BlFile[]
   ): Promise<void> {
     const parentFolder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(parentFolderId);
+
+    if (parentFolder.isArchived) {
+      throw new BlBadRequestException(CnErrorText.CANT_ADD_OBJECT_TO_ARCHIVED_FOLDER);
+    }
 
     // get and check all scenario
     const scenarios: CnScenario[] = [];
@@ -731,6 +743,10 @@ export class CnFolderAggregateService {
     requestDTO: CnShareResourceRequestDTO
   ): Promise<void> {
     const parentFolder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(parentFolderId);
+
+    if (parentFolder.isArchived) {
+      throw new BlBadRequestException(CnErrorText.CANT_ADD_OBJECT_TO_ARCHIVED_FOLDER);
+    }
 
     await this.resourceService.saveResource(parentFolder, requestDTO);
   }
@@ -869,6 +885,9 @@ export class CnFolderAggregateService {
   public async createChatMessage(newMessageDTO: CnNewMessageDTO, folderId: string): Promise<CnChatMessage> {
     const folder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(folderId);
 
+    if (folder.isArchived) {
+      throw new BlBadRequestException(CnErrorText.CANT_ADD_OBJECT_TO_ARCHIVED_FOLDER);
+    }
     if (!folder.chatEnabled) {
       throw new BlBadRequestException('The chat is not enabled for this folder');
     }
@@ -942,6 +961,10 @@ export class CnFolderAggregateService {
 
   public async uploadDocument(parentFolderId: string, file: BlFile): Promise<CnHierarchyObject> {
     const folder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(parentFolderId);
+
+    if (folder.isArchived) {
+      throw new BlBadRequestException(CnErrorText.CANT_ADD_OBJECT_TO_ARCHIVED_FOLDER);
+    }
 
     const doc = await this.documentService.uploadDocument(
       file,
@@ -1198,6 +1221,10 @@ export class CnFolderAggregateService {
   ): Promise<CnConstellabDocumentDTO> {
     const parentFolder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(parentFolderId);
 
+    if (parentFolder.isArchived) {
+      throw new BlBadRequestException(CnErrorText.CANT_ADD_OBJECT_TO_ARCHIVED_FOLDER);
+    }
+
     const doc = await this.documentService.createConstellabDocument(parentFolder, filename);
     this.emitFolderEvent('CREATE_CONSTELLAB_DOCUMENT', parentFolder, doc.document);
     return doc;
@@ -1274,6 +1301,10 @@ export class CnFolderAggregateService {
   ): Promise<TeBlockFigureUploadedResponse> {
     const folder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(documentId);
 
+    if (folder.isArchived) {
+      throw new BlBadRequestException(CnErrorText.CANT_ADD_OBJECT_TO_ARCHIVED_FOLDER);
+    }
+
     const document = await this.documentService.findByIdAndCheck(documentId);
     const parentFolder = await this.hierarchyObjectService.findByIdAndCheck(folder.parentId);
 
@@ -1285,6 +1316,10 @@ export class CnFolderAggregateService {
     file: BlFile
   ): Promise<TeBlockFileUploadResponse> {
     const folder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(documentId);
+
+    if (folder.isArchived) {
+      throw new BlBadRequestException(CnErrorText.CANT_ADD_OBJECT_TO_ARCHIVED_FOLDER);
+    }
 
     const document = await this.documentService.findByIdAndCheck(documentId);
     const parentFolder = await this.hierarchyObjectService.findByIdAndCheck(folder.parentId);
@@ -1548,6 +1583,18 @@ export class CnFolderAggregateService {
       CnCurrentUserHelper.getAndCheckCurrentSpace().id,
       CnCurrentUserHelper.getAndCheckCurrentUser().id
     );
+  }
+
+  ////////////////////////////////////// ARCHIVE //////////////////////////////////
+
+  public async archiveHierarchyObject(hierarchyObjectId: string): Promise<CnHierarchyObject> {
+    await this.getAndCheckAuthorizationForUpdate(hierarchyObjectId);
+    return this.hierarchyObjectService.archiveHierarchyObject(hierarchyObjectId);
+  }
+
+  public async unarchiveHierarchyObject(hierarchyObjectId: string): Promise<CnHierarchyObject> {
+    await this.getAndCheckAuthorizationForUpdate(hierarchyObjectId);
+    return this.hierarchyObjectService.unarchiveHierarchyObject(hierarchyObjectId);
   }
 
   /////////////////////////////////////// SECURITY //////////////////////////////////
