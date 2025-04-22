@@ -8,6 +8,7 @@ import { CnLabSshService } from './cn-lab-ssh.service';
 import { CnLab } from '../cn-lab.entity';
 import { CnCloudProviderOutscaleService } from './outscale/cn-cloud-provider-outscale.service';
 import { CnLabsService } from '../cn-labs.service';
+import { CnCloudProviderGcpService } from './gcp/cn-cloud-provider-gcp.service';
 
 @Injectable()
 export class CnCloudProviderFactory {
@@ -17,6 +18,7 @@ export class CnCloudProviderFactory {
     private ovhCloudProviderService: CnCloudProviderOvhService,
     private azureCloudProviderService: CnCloudProviderAzureService,
     private outscaleCloudProviderService: CnCloudProviderOutscaleService,
+    private gcpCloudProviderService: CnCloudProviderGcpService,
     private labsService: CnLabsService
   ) {}
 
@@ -43,6 +45,9 @@ export class CnCloudProviderFactory {
       case 'OUTSCALE':
         this.logger.debug('Using OUTSCALE cloud provider service');
         return this.outscaleCloudProviderService;
+      case 'GCP':
+        this.logger.debug('Using GCP cloud provider service');
+        return this.gcpCloudProviderService;
       default:
         throw new BlBadRequestException(`Cloud provider ${cloudProvider} not supported`);
     }

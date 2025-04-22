@@ -1,7 +1,7 @@
 import { Column, Entity, Unique } from 'typeorm';
 import { CnBaseEntity } from '../cn-core/model/entities/cn-base.entity';
 
-export type CnCloudProviderName = 'OVH' | 'AZURE' | 'OUTSCALE';
+export type CnCloudProviderName = 'OVH' | 'AZURE' | 'OUTSCALE' | 'GCP';
 
 /**
  * List the different cloud providers like AWS, OVH, GCP...

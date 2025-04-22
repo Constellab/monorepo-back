@@ -48,6 +48,7 @@
     "@azure/arm-storage": "^18.3.0",
     "@azure/identity": "^4.4.1",
     "@azure/storage-blob": "^12.24.0",
+    "@google-cloud/compute": "^5.1.0",
     "@nestjs/axios": "^3.0.2",
     "@nestjs/bullmq": "^10.2.2",
     "@nestjs/common": "10.0.2",

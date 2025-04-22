@@ -183,6 +183,8 @@ where id = (Select id from hierarchy_object where id = folder.id and rootParentI
 ################### 2.4.1 ###################
 -- Rename the column shareLink to token
 ALTER TABLE resource RENAME COLUMN shareLink TO token;
+ALTER TABLE resource
+  CHANGE shareLink token varchar(255) not null;
 
 -- Update the token column by extracting the token from the old shareLink URL
 UPDATE resource

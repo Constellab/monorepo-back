@@ -54,6 +54,8 @@ import { CnLabVolumeService } from './volume/cn-lab-volume.service';
 import { CnStoragePriceModule } from '../cn-servers-info/storage-price/cn-storage-price.module';
 import { CnLabStatusHistoryService } from './status/cn-lab-status-history.service';
 import { CnLabStatsAggregateService } from './stats/cn-lab-stats-aggregate.service';
+import { CnGcpService } from './server/gcp/cn-gcp.service';
+import { CnCloudProviderGcpService } from './server/gcp/cn-cloud-provider-gcp.service';
 
 @Module({
   imports: [
@@ -106,6 +108,8 @@ import { CnLabStatsAggregateService } from './stats/cn-lab-stats-aggregate.servi
     CnLabDesktopService,
     CnAzureService,
     CnCloudProviderAzureService,
+    CnGcpService,
+    CnCloudProviderGcpService,
     CnCloudProviderFactory,
     CnLabCron,
     CnLabGreenOptionService,
