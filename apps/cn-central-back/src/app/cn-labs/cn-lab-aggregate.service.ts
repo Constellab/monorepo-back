@@ -254,6 +254,7 @@ export class CnLabAggregateService {
     lab.space = updateLab.space;
     lab.serverInstanceId = updateLab.serverInstanceId;
     lab.serverVolumeId = updateLab.serverVolumeId;
+    lab.serverIpAddressId = updateLab.serverIpAddressId;
     lab.desktopPlatform = updateLab.desktopPlatform;
     return lab;
   }

@@ -192,3 +192,14 @@ SET token = SUBSTRING_INDEX(token, '/', -1);
 
 ALTER TABLE resource
   DROP COLUMN validUntil;
+
+################### 2.5.0 ###################
+-- Adding GCP support
+-- Rename AZURE_SSH_KEY to AZURE_SSH_KEY_NAME
+-- Add keys : GCP_PROJECT_ID, GCP_SSH_KEY_NAME, GOOGLE_APPLICATION_CREDENTIALS
+-- Delete keys : DOCKER_REGISTRY_URL DOCKER_REGISTRY_USERNAME DOCKER_REGISTRY_PASSWORD
+-- Delete keys:  LAB_DESKTOP_WINDOWS_EXE_URL  LAB_DESKTOP_MAC_EXE_URL
+-- Delete keys:  SALES_MAIL
+
+alter table lab
+  add column serverIpAddressId varchar(255) null;

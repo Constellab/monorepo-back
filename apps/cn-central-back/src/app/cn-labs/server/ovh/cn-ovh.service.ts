@@ -24,7 +24,8 @@ interface CnOvh {
 
 @Injectable()
 export class CnOvhService {
-  // to test ovh api, generate a token here : https://eu.api.ovh.com/createToken/, set all request type with '/*'
+  // to test ovh api, generate a token here : https://eu.api.ovh.com/createToken/,
+  // set all request type with '/*'
   // then update dev env
 
   private ovh: CnOvh;
@@ -112,9 +113,10 @@ export class CnOvhService {
     try {
       return await this.requestPromised('POST', route, request);
     } catch (e) {
-      // when attaching failed, retry in 30s because OVH tells volume is ready but it's not
+      // when attaching failed, retry in 30s because OVH tells volume is ready, but it's not
       this.logger.error(
-        `Error while attaching volume ${volumeId} to instance ${instanceId}, retrying in 45s. Error: ${e.toString()}`
+        `Error while attaching volume ${volumeId} to instance ${instanceId}, ` +
+          `retrying in 45s. Error: ${e.toString()}`
       );
       await new Promise((r) => setTimeout(r, 45000));
       return await this.requestPromised('POST', route, request);

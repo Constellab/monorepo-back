@@ -61,10 +61,6 @@ export class CnCoreConfigService {
     return this.configService.get('CUSTOMER_SUCCESS_MAIL');
   }
 
-  public getSalesMail(): string {
-    return this.configService.get('SALES_MAIL');
-  }
-
   public getSupportMail(): string {
     return this.configService.get('SUPPORT_MAIL');
   }
@@ -219,7 +215,7 @@ export class CnCoreConfigService {
   }
 
   public getAzureSshKey(): string {
-    return this.configService.get('AZURE_SSH_KEY');
+    return this.configService.get('AZURE_SSH_KEY_NAME');
   }
 
   public getAzureNetwork(): string {
@@ -248,19 +244,16 @@ export class CnCoreConfigService {
     return this.configService.get('OUTSCALE_SECURITY_GROUP');
   }
 
+  ////////////////////////////////// GCP //////////////////////////////////
+  public getGcpProjectId(): string {
+    return this.configService.get('GCP_PROJECT_ID');
+  }
+
+  public getGcpFirewallTag(): string {
+    return this.configService.get('GCP_FIREWALL_TAG');
+  }
+
   /////////////////////////////// LAB CONFIG ///////////////////////////////
-
-  public getDockerRegistryUrl(): string {
-    return this.configService.get('DOCKER_REGISTRY_URL');
-  }
-
-  public getDockerRegistryUsername(): string {
-    return this.configService.get('DOCKER_REGISTRY_USERNAME');
-  }
-
-  public getDockerRegistryPassword(): string {
-    return this.configService.get('DOCKER_REGISTRY_PASSWORD');
-  }
 
   public getLabConfigurerRepoUrl(): string {
     return this.configService.get('LAB_CONFIGURER_REPO_URL');
@@ -281,14 +274,6 @@ export class CnCoreConfigService {
   // return the lab manager version related to the current version of central
   public getLabManagerRecommendedVersion(): string {
     return this.configService.get('LAB_MANAGER_VERSION');
-  }
-
-  public getLabDesktopWindowsExeUrl(): string {
-    return this.configService.get('LAB_DESKTOP_WINDOWS_EXE_URL');
-  }
-
-  public getLabDesktopMacExeUrl(): string {
-    return this.configService.get('LAB_DESKTOP_MAC_EXE_URL');
   }
 
   public getCaptchaSecretKey(): string {

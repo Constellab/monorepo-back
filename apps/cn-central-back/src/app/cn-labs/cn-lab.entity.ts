@@ -164,6 +164,14 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
   @Column({ nullable: true, length: 255 })
   serverVolumeId: string;
 
+  /**
+   * Only provided for cloud provider that handle ip address
+   * independently of the instance (GCP)
+   */
+  @Exclude()
+  @Column({ nullable: true, length: 255 })
+  serverIpAddressId: string;
+
   @Exclude()
   @Column({ nullable: false, default: false })
   dnsConfigured: boolean;

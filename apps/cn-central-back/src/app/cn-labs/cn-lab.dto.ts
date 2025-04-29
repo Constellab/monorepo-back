@@ -1,6 +1,6 @@
 import { CnLabStatusHistory } from './status/cn-lab-status-history.entity';
 import { CnServerCloud } from '../cn-servers-info/server-cloud/cn-server-cloud.entity';
-import { BlBaseEntityDto, BlVersion } from '@monorepo/back-core-lib';
+import { BlBaseEntityDto, BlTrim, BlVersion } from '@monorepo/back-core-lib';
 import { CnBrickVersionDTO } from '../cn-bricks/cn-brick.dto';
 import { CnLabConfigDto } from '../cn-lab-configs/cn-lab-config.dto';
 import { CnSpace, CnSpaceEntity } from '../cn-spaces/cn-space.entity';
@@ -66,6 +66,7 @@ export class CnLabAdminDto extends CnLabWithSpaceDto {
   labManagerApiKey: string;
   serverInstanceId: string;
   serverVolumeId: string;
+  serverIpAddressId: string;
   gwsCoreProdDbPassword: string;
   gwsCoreDevDbPassword: string;
   codelabToken: string;
@@ -78,6 +79,7 @@ export class CnLabAdminDto extends CnLabWithSpaceDto {
     this.labManagerApiKey = entity.labManagerApiKey;
     this.serverInstanceId = entity.serverInstanceId;
     this.serverVolumeId = entity.serverVolumeId;
+    this.serverIpAddressId = entity.serverIpAddressId;
     this.gwsCoreProdDbPassword = entity.gwsCoreProdDbPassword;
     this.gwsCoreDevDbPassword = entity.gwsCoreDevDbPassword;
     this.codelabToken = entity.codelabToken;
@@ -111,17 +113,23 @@ export interface CnLabStartDTO {
 
 export class CnLabUpdateAdminDTO {
   id: string;
+  @BlTrim()
   name: string;
   type: CnLabType;
+  @BlTrim()
   virtualHost: string;
   billingMode: CnLabBillingMode;
 
   @Type(() => CnServerCloud)
   serverCloud: CnServerCloud;
 
+  @BlTrim()
   glabProdApiKey: string;
+  @BlTrim()
   glabDevApiKey: string;
+  @BlTrim()
   labManagerApiKey: string;
+  @BlTrim()
   codelabToken: string;
 
   @Type(() => CnCloudProviderRegion)
@@ -130,8 +138,12 @@ export class CnLabUpdateAdminDTO {
   @Type(() => CnSpaceEntity)
   space: CnSpace;
 
+  @BlTrim()
   serverInstanceId: string;
+  @BlTrim()
   serverVolumeId: string;
+  @BlTrim()
+  serverIpAddressId: string;
   desktopPlatform?: CnLabDesktopPlatform;
 }
 

@@ -1,231 +1,306 @@
-import { Injectable } from '@nestjs/common';
-import { DisksClient, InstancesClient, protos, ZoneOperationsClient } from '@google-cloud/compute';
-import { cnServerUbuntuUser } from '../cn-cloud-provider.class';
+import { Injectable, Logger } from '@nestjs/common';
+import {
+  AddressesClient,
+  DisksClient,
+  InstancesClient,
+  ProjectsClient,
+  protos,
+  RegionOperationsClient,
+  ZoneOperationsClient,
+} from '@google-cloud/compute';
 import { CnCoreConfigService } from '../../../cn-core/modules/cn-core-config/cn-core-config.service';
-import * as fs from 'fs';
+import { CnGcpHelper, CnGcpInstance, CnGcpVolume } from './cn-gcp.class';
+
+export interface CnGcpCreateInstanceRequest {
+  name: string;
+  zone: string;
+  machineType: string;
+  imageFamily: string;
+  imageProject: string;
+  staticIp: string;
+  subnetName: string;
+  volumeSizeGb: number;
+  volumeArchitecture: string;
+  tags?: string[];
+}
 
 @Injectable()
 export class CnGcpService {
-  private instancesClient: InstancesClient;
-  private disksClient: DisksClient;
-  private zoneOperationsClient: ZoneOperationsClient;
+  private readonly logger = new Logger(CnGcpService.name);
 
-  constructor(private configService: CnCoreConfigService) {
-    this.instancesClient = new InstancesClient();
-    this.disksClient = new DisksClient();
-    this.zoneOperationsClient = new ZoneOperationsClient();
-  }
+  constructor(private configService: CnCoreConfigService) {}
 
   ///////////////////////////// INSTANCE /////////////////////////////
 
-  async createInstance(
-    name: string,
-    zone: string,
-    machineType: string,
-    imageFamily: string,
-    imageProject: string,
-    sshPublicKeyPath: string,
-    networkName: string,
-    subnetName: string
-  ): Promise<protos.google.cloud.compute.v1.IInstance> {
+  /**
+   * Creates a GCP instance and a volume.
+   * For now, we don't need to provide an ssh public key because it is configured at project
+   * level and new instances automatically inherit the project-level metadata.
+   * @param createInstance
+   */
+  async createInstanceAndVolume(createInstance: CnGcpCreateInstanceRequest): Promise<CnGcpInstance> {
     const projectId = this.getProjectId();
-    const zonePath = `projects/${projectId}/zones/${zone}`;
-    const publicKey = fs.readFileSync(sshPublicKeyPath, 'utf8');
+    const zonePath = `projects/${projectId}/zones/${createInstance.zone}`;
+    const region = CnGcpHelper.getRegionNameFromZoneName(createInstance.zone);
+
+    const accessConfig = {
+      name: 'External NAT',
+      type: 'PREMIUM',
+      natIP: createInstance.staticIp,
+    };
 
     const instanceConfig: protos.google.cloud.compute.v1.IInstance = {
-      name,
-      machineType: `${zonePath}/machineTypes/${machineType}`,
+      name: createInstance.name,
+      machineType: `${zonePath}/machineTypes/${createInstance.machineType}`,
       disks: [
         {
           boot: true,
-          autoDelete: true,
+          autoDelete: false,
           initializeParams: {
-            sourceImage: `projects/${imageProject}/global/images/family/${imageFamily}`,
+            sourceImage:
+              `projects/${createInstance.imageProject}/global/images/` +
+              `family/${createInstance.imageFamily}`,
           },
+          type: `projects/${projectId}/zones/${createInstance.zone}/diskTypes/pd-balanced`,
+          diskSizeGb: createInstance.volumeSizeGb,
+          architecture: createInstance.volumeArchitecture,
         },
       ],
       networkInterfaces: [
         {
-          network: `projects/${projectId}/global/networks/${networkName}`,
-          subnetwork: subnetName
-            ? `projects/${projectId}/regions/${this.getRegionFromZone(zone)}/subnetworks/${subnetName}`
-            : undefined,
-          accessConfigs: [
-            {
-              name: 'External NAT',
-              type: 'ONE_TO_ONE_NAT',
-            },
-          ],
+          subnetwork: `projects/${projectId}/regions/${region}` + `/subnetworks/${createInstance.subnetName}`,
+          accessConfigs: [accessConfig],
+          stackType: 'IPV4_ONLY',
         },
       ],
-      metadata: {
-        items: [
-          {
-            key: 'ssh-keys',
-            value: `${cnServerUbuntuUser}:${publicKey}`,
-          },
-        ],
+      tags: {
+        items: createInstance.tags,
       },
     };
 
-    const [operation] = await this.instancesClient.insert({
+    const instancesClient = this.getInstanceClient();
+    await instancesClient.insert({
       project: projectId,
-      zone,
+      zone: createInstance.zone,
       instanceResource: instanceConfig,
     });
 
-    await this.waitForOperation(projectId, zone, operation.name);
-    return instanceConfig;
+    return this.getInstance(createInstance.name, createInstance.zone);
   }
 
-  async getInstance(name: string, zone: string): Promise<protos.google.cloud.compute.v1.IInstance> {
+  async getInstance(name: string, zone: string): Promise<CnGcpInstance> {
     const projectId = this.getProjectId();
-    const [instance] = await this.instancesClient.get({
+    const instancesClient = this.getInstanceClient();
+    const [instance] = await instancesClient.get({
       project: projectId,
       zone,
       instance: name,
     });
-    return instance;
+    return new CnGcpInstance(instance);
   }
 
-  async getIpAddress(name: string, zone: string): Promise<string> {
-    const instance = await this.getInstance(name, zone);
+  async deleteInstance(name: string, zone: string): Promise<void> {
+    const projectId = this.getProjectId();
+    const instancesClient = this.getInstanceClient();
+    const [operation] = await instancesClient.delete({
+      project: projectId,
+      zone,
+      instance: name,
+    });
+
+    await this.waitForZoneOperation(projectId, zone, operation.name);
+  }
+
+  async startInstance(name: string, zone: string): Promise<void> {
+    const projectId = this.getProjectId();
+    const instancesClient = this.getInstanceClient();
+    await instancesClient.start({
+      project: projectId,
+      zone,
+      instance: name,
+    });
+  }
+
+  async stopInstance(name: string, zone: string): Promise<void> {
+    const projectId = this.getProjectId();
+    const instancesClient = this.getInstanceClient();
+    await instancesClient.stop({
+      project: projectId,
+      zone,
+      instance: name,
+    });
+  }
+
+  //////////////////////////// VOLUME ////////////////////////////
+
+  async getVolume(name: string, zone: string): Promise<CnGcpVolume> {
+    const disksClient = this.getDisksClient();
+
+    const projectId = this.getProjectId();
+    const [disk] = await disksClient.get({
+      project: projectId,
+      zone,
+      disk: name,
+    });
+    return new CnGcpVolume(disk);
+  }
+
+  async deleteVolume(name: string, zone: string): Promise<void> {
+    const projectId = this.getProjectId();
+    const disksClient = this.getDisksClient();
+    const [operation] = await disksClient.delete({
+      project: projectId,
+      zone,
+      disk: name,
+    });
+
+    await this.waitForZoneOperation(projectId, zone, operation.name);
+  }
+
+  //////////////////////////// STATIC IP ADDRESS ////////////////////////////
+
+  async getIpAddressFromInstance(instanceName: string, zone: string): Promise<string> {
+    const instance = await this.getInstance(instanceName, zone);
     const networkInterfaces = instance.networkInterfaces;
 
     if (!networkInterfaces || networkInterfaces.length === 0) {
-      throw new Error(`No network interfaces found for instance ${name}`);
+      throw new Error(`No network interfaces found for instance ${instanceName}`);
     }
 
     const accessConfigs = networkInterfaces[0].accessConfigs;
     if (!accessConfigs || accessConfigs.length === 0) {
-      throw new Error(`No external IP address found for instance ${name}`);
+      throw new Error(`No external IP address found for instance ${instanceName}`);
     }
 
     return accessConfigs[0].natIP;
   }
 
-  async deleteInstance(name: string, zone: string): Promise<void> {
-    const projectId = this.getProjectId();
-    const [operation] = await this.instancesClient.delete({
-      project: projectId,
-      zone,
-      instance: name,
-    });
-
-    await this.waitForOperation(projectId, zone, operation.name);
-  }
-
-  async startInstance(name: string, zone: string): Promise<void> {
-    const projectId = this.getProjectId();
-    const [operation] = await this.instancesClient.start({
-      project: projectId,
-      zone,
-      instance: name,
-    });
-
-    await this.waitForOperation(projectId, zone, operation.name);
-  }
-
-  async stopInstance(name: string, zone: string): Promise<void> {
-    const projectId = this.getProjectId();
-    const [operation] = await this.instancesClient.stop({
-      project: projectId,
-      zone,
-      instance: name,
-    });
-
-    await this.waitForOperation(projectId, zone, operation.name);
-  }
-
-  //////////////////////////// VOLUME ////////////////////////////
-
-  async createVolume(
+  async createStaticIpAddress(
     name: string,
-    zone: string,
-    sizeGb: number
-  ): Promise<protos.google.cloud.compute.v1.IDisk> {
+    region: string
+  ): Promise<protos.google.cloud.compute.v1.IAddress> {
     const projectId = this.getProjectId();
+    const addressesClient = this.getAddressesClient();
 
-    const diskResource: protos.google.cloud.compute.v1.IDisk = {
+    const addressResource: protos.google.cloud.compute.v1.IAddress = {
       name,
-      sizeGb: String(sizeGb),
-      type: `projects/${projectId}/zones/${zone}/diskTypes/pd-ssd`, // Using SSD for better performance
-      description: 'Created by CnLab',
+      description: 'Static IP created by CnLab',
+      addressType: 'EXTERNAL',
+      networkTier: 'PREMIUM',
     };
 
-    const [operation] = await this.disksClient.insert({
+    const [operation] = await addressesClient.insert({
       project: projectId,
-      zone,
-      diskResource,
+      region,
+      addressResource,
     });
 
-    await this.waitForDiskOperation(projectId, zone, operation.name);
+    await this.waitForRegionOperation(projectId, region, operation.name);
 
-    const [disk] = await this.disksClient.get({
+    // Get the IP address
+    const [addressInfo] = await addressesClient.get({
       project: projectId,
-      zone,
-      disk: name,
+      region,
+      address: name,
     });
 
-    return disk;
+    return addressInfo;
   }
 
-  async getVolume(name: string, zone: string): Promise<protos.google.cloud.compute.v1.IDisk> {
+  async getStaticIpAddress(name: string, region: string): Promise<protos.google.cloud.compute.v1.IAddress> {
     const projectId = this.getProjectId();
-    const [disk] = await this.disksClient.get({
+    const addressesClient = this.getAddressesClient();
+
+    const [addressInfo] = await addressesClient.get({
       project: projectId,
-      zone,
-      disk: name,
+      region,
+      address: name,
     });
-    return disk;
+
+    return addressInfo;
   }
 
-  async attachVolume(instanceName: string, volumeName: string, zone: string): Promise<void> {
+  async deleteStaticIpAddress(name: string, region: string): Promise<void> {
     const projectId = this.getProjectId();
+    const addressesClient = this.getAddressesClient();
 
-    // Get the disk to attach
-    const disk = await this.getVolume(volumeName, zone);
-    if (!disk) {
-      throw new Error(`Disk ${volumeName} not found in zone ${zone}`);
+    const [operation] = await addressesClient.delete({
+      project: projectId,
+      region,
+      address: name,
+    });
+
+    await this.waitForRegionOperation(projectId, region, operation.name);
+  }
+
+  //////////////////////////// PROJECT ////////////////////////////
+  /**
+   * Retrieves SSH public keys stored in the project-level metadata.
+   * @returns A promise that resolves to the string containing SSH keys, or null if not found.
+   */
+  async getProjectSshKeys(keyName: string): Promise<string | null> {
+    const projectsClient = new ProjectsClient();
+    const projectId = this.getProjectId(); // Assuming you have a method to get the project ID
+
+    const [project] = await projectsClient.get({
+      project: projectId,
+    });
+
+    const metadata = project.commonInstanceMetadata?.items;
+    if (!metadata) {
+      console.log('No common instance metadata found for the project.');
+      return null;
     }
 
-    // Prepare the attachment request
-    const attachRequest = {
-      project: projectId,
-      zone,
-      instance: instanceName,
-      attachedDiskResource: {
-        source: disk.selfLink,
-        deviceName: volumeName,
-        autoDelete: false,
-      },
-    };
+    // we use the part of the public key after the username@ at the end to
+    // distinguish the keys (prod, preprod, dev)
+    const sshKeysItem = metadata.find(
+      (item) => item.key === 'ssh-keys' && item.value && item.value.endsWith(keyName)
+    );
 
-    // Attach the disk to the instance
-    const [operation] = await this.instancesClient.attachDisk(attachRequest);
-    await this.waitForOperation(projectId, zone, operation.name);
-  }
+    if (!sshKeysItem) {
+      this.logger.error(`[GCP] No ssh-keys found for ${keyName}`);
+      throw new Error('Failed to retrieve project information, please retry later.');
+    }
 
-  async deleteVolume(name: string, zone: string): Promise<void> {
-    const projectId = this.getProjectId();
-    const [operation] = await this.disksClient.delete({
-      project: projectId,
-      zone,
-      disk: name,
-    });
-
-    await this.waitForDiskOperation(projectId, zone, operation.name);
+    return sshKeysItem.value;
   }
 
   //////////////////////////// HELPER METHODS ////////////////////////////
 
-  private async waitForOperation(projectId: string, zone: string, operationName: string): Promise<void> {
-    while (true) {
-      const [operation] = await this.zoneOperationsClient.get({
+  private async waitForZoneOperation(projectId: string, zone: string, operationName: string): Promise<void> {
+    const zoneOperationsClient = new ZoneOperationsClient();
+    await this.waitForAnyOperation(() =>
+      zoneOperationsClient.get({
         project: projectId,
         zone,
         operation: operationName,
-      });
+      })
+    );
+  }
+
+  private async waitForRegionOperation(
+    projectId: string,
+    region: string,
+    operationName: string
+  ): Promise<void> {
+    const regionOperationsClient = new RegionOperationsClient();
+    await this.waitForAnyOperation(() =>
+      regionOperationsClient.get({
+        project: projectId,
+        region,
+        operation: operationName,
+      })
+    );
+  }
+
+  private async waitForAnyOperation(
+    getOperation: () => Promise<[protos.google.cloud.compute.v1.IOperation, any, any]>
+  ): Promise<void> {
+    let i = 0;
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      const [operation] = await getOperation();
 
       if (operation.status === 'DONE') {
         if (operation.error) {
@@ -235,25 +310,10 @@ export class CnGcpService {
       }
 
       await new Promise((resolve) => setTimeout(resolve, 1000));
-    }
-  }
-
-  private async waitForDiskOperation(projectId: string, zone: string, operationName: string): Promise<void> {
-    while (true) {
-      const [operation] = await this.zoneOperationsClient.get({
-        project: projectId,
-        zone,
-        operation: operationName,
-      });
-
-      if (operation.status === 'DONE') {
-        if (operation.error) {
-          throw new Error(`Disk operation failed: ${JSON.stringify(operation.error)}`);
-        }
-        break;
+      i += 1;
+      if (i > 60) {
+        throw new Error('Operation timed out');
       }
-
-      await new Promise((resolve) => setTimeout(resolve, 1000));
     }
   }
 
@@ -261,8 +321,15 @@ export class CnGcpService {
     return this.configService.getGcpProjectId();
   }
 
-  getRegionFromZone(zone: string): string {
-    const parts = zone.split('-');
-    return parts.slice(0, -1).join('-');
+  private getInstanceClient(): InstancesClient {
+    return new InstancesClient();
+  }
+
+  private getDisksClient(): DisksClient {
+    return new DisksClient();
+  }
+
+  private getAddressesClient(): AddressesClient {
+    return new AddressesClient();
   }
 }

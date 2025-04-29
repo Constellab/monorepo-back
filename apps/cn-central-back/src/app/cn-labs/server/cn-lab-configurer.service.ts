@@ -108,7 +108,8 @@ export class CnLabConfigurerService {
     );
     // Git clone
     await labSshService.execSshCommand([
-      `git clone -b ${this.coreConfigService.getLabConfigurerRepoBranch()} ${this.coreConfigService.getLabConfigurerRepoUrl()}`,
+      `git clone -b ${this.coreConfigService.getLabConfigurerRepoBranch()} ` +
+        `${this.coreConfigService.getLabConfigurerRepoUrl()}`,
     ]);
   }
 

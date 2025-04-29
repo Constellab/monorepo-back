@@ -6,6 +6,8 @@ import {
   CnCpCreateVolumeRequest,
   CnCpInstance,
   CnCpInstanceStatus,
+  CnCpInstanceWithVolume,
+  CnCpStaticIpAddress,
   CnCpVolume,
   CnCpVolumeStatus,
 } from '../cn-cloud-provider.class';
@@ -86,6 +88,11 @@ export class CnCloudProviderOutscaleService extends CnCloudProviderService {
     return this.convertInstance(vm);
   }
 
+  createInstanceWithVolume(): Promise<CnCpInstanceWithVolume> {
+    // the volume is created separately so this is not called
+    throw new Error('Not implemented');
+  }
+
   async deleteInstance(id: string): Promise<void> {
     const ip = await this.outscaleService.getPublicIpByInstance(id);
     if (ip) {
@@ -100,11 +107,6 @@ export class CnCloudProviderOutscaleService extends CnCloudProviderService {
   async getInstance(id: string): Promise<CnCpInstance> {
     const vm = await this.outscaleService.getVm(id);
     return this.convertInstance(vm);
-  }
-
-  async getIpAddress(id: string): Promise<string> {
-    const vm = await this.outscaleService.getVm(id);
-    return vm.publicIp;
   }
 
   async startInstance(id: string): Promise<void> {
@@ -150,6 +152,9 @@ export class CnCloudProviderOutscaleService extends CnCloudProviderService {
   }
 
   /////////////////////// VOLUME ///////////////////////
+  volumeIsCreatedSeparately(): boolean {
+    return true;
+  }
 
   async attachVolumeToInstance(instanceId: string, volumeId: string): Promise<CnCpVolume> {
     await this.outscaleService.attachVolumeToInstance(instanceId, volumeId);
@@ -224,5 +229,27 @@ export class CnCloudProviderOutscaleService extends CnCloudProviderService {
       throw new Error(`No subregion found for region ${region}`);
     }
     return subRegion;
+  }
+
+  //////////////////////////////// IP ADDRESS ///////////////////////////////
+  async getIpAddressFromInstanceId(id: string): Promise<string> {
+    const vm = await this.outscaleService.getVm(id);
+    return vm.publicIp;
+  }
+
+  needStaticIpAddressBeforeInstance(): boolean {
+    return false;
+  }
+
+  async createStaticIpAddress(): Promise<CnCpStaticIpAddress | null> {
+    return null;
+  }
+
+  async deleteIpAddress(): Promise<void> {
+    return null;
+  }
+
+  async getIpAddressFromId(): Promise<CnCpStaticIpAddress | null> {
+    return null;
   }
 }

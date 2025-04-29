@@ -74,7 +74,8 @@ export class CnLabCron {
     const labs = await this.labService.getLabsWithTempStatus();
 
     for (const lab of labs) {
-      // for status SERVER_RUNNING and SERVER_CONFIGURED, that are considered as half temp, we stop checking after 30 minutes
+      // for status SERVER_RUNNING and SERVER_CONFIGURED,
+      // that are considered as half temp, we stop checking after 30 minutes
       if ([CnLabStatus.SERVER_RUNNING, CnLabStatus.SERVER_CONFIGURED].includes(lab.currentStatus.status)) {
         if (lab.currentStatus.createdAt.diffNow('minutes').minutes > 30) {
           continue;

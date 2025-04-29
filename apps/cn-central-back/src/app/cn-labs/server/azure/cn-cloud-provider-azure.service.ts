@@ -5,6 +5,8 @@ import {
   CnCpCreateInstanceRequest,
   CnCpCreateVolumeRequest,
   CnCpInstance,
+  CnCpInstanceWithVolume,
+  CnCpStaticIpAddress,
   CnCpVolume,
   CnCpVolumeStatus,
   cnServerSshAuthorizedKeyPath,
@@ -75,6 +77,11 @@ export class CnCloudProviderAzureService extends CnCloudProviderService {
     return this.getInstance(instance.id);
   }
 
+  createInstanceWithVolume(): Promise<CnCpInstanceWithVolume> {
+    // the volume is created separately so this is not called
+    throw new Error('Not implemented');
+  }
+
   async deleteInstance(id: string): Promise<void> {
     const instance = await this.getAzureInstance(id);
     await this.azureService.deleteInstance(id);
@@ -105,13 +112,11 @@ export class CnCloudProviderAzureService extends CnCloudProviderService {
     return this.azureService.stopInstance(id);
   }
 
-  async getIpAddress(id: string): Promise<string> {
-    const instance = await this.getAzureInstance(id);
-
-    return (await this.azureService.getIpAddresses(instance.getNetworkId())).ipAddress;
-  }
-
   /////////////////////// VOLUME ///////////////////////
+
+  volumeIsCreatedSeparately(): boolean {
+    return true;
+  }
 
   async attachVolumeToInstance(instanceId: string, volumeId: string): Promise<CnCpVolume> {
     await this.azureService.attachVolume(instanceId, volumeId);
@@ -179,5 +184,28 @@ export class CnCloudProviderAzureService extends CnCloudProviderService {
       default:
         throw new Error(`Unknown status ${status} for azure disk ${name}`);
     }
+  }
+
+  /////////////////////////////////////// IP ADDRESS ///////////////////////////////////////
+  needStaticIpAddressBeforeInstance(): boolean {
+    return false;
+  }
+
+  async createStaticIpAddress(): Promise<CnCpStaticIpAddress | null> {
+    return null;
+  }
+
+  async deleteIpAddress(): Promise<void> {
+    return null;
+  }
+
+  async getIpAddressFromId(): Promise<CnCpStaticIpAddress | null> {
+    return null;
+  }
+
+  async getIpAddressFromInstanceId(id: string): Promise<string> {
+    const instance = await this.getAzureInstance(id);
+
+    return (await this.azureService.getIpAddresses(instance.getNetworkId())).ipAddress;
   }
 }

@@ -5,27 +5,32 @@ import {
   CnCpCreateInstanceRequest,
   CnCpCreateVolumeRequest,
   CnCpInstance,
+  CnCpInstanceWithVolume,
+  CnCpStaticIpAddress,
   CnCpVolume,
-  CnCpVolumeStatus,
+  cnServerUbuntuUser,
 } from '../cn-cloud-provider.class';
 import { CnGcpService } from './cn-gcp.service';
-import { CnLab } from '../../cn-lab.entity';
-import { CnGcpInstance, CnGcpVolumeStatus } from './cn-gcp.class';
+import { CnGcpHelper } from './cn-gcp.class';
 import { CnCoreConfigService } from '../../../cn-core/modules/cn-core-config/cn-core-config.service';
 import { CnCommandService } from '../../../cn-core/services/cn-command.service';
-import { CnLabVolumeType } from '../../volume/cn-lab-volume-entity';
-import * as path from 'path';
-import { google } from '@google-cloud/compute/build/protos/protos';
-import IDisk = google.cloud.compute.v1.IDisk;
+import { protos } from '@google-cloud/compute';
 
+/**
+ * GCP Cloud Provider
+ * The Constellab region corresponds to the GCP zone (e.g. europe-west1-b)
+ * The GCP region is the parent of the zone (e.g. europe-west1)
+ */
 @Injectable()
 export class CnCloudProviderGcpService extends CnCloudProviderService {
-  private static MOUNT_FILE = 'mount_gcp.sh';
   private static SSH_KEY_FILE_NAME = 'id_rsa';
 
   // Ubuntu 22.04 LTS on GCP
   private static IMAGE_FAMILY = 'ubuntu-2204-lts';
   private static IMAGE_PROJECT = 'ubuntu-os-cloud';
+
+  private static DISK_ARCHITECTURE = 'X86_64';
+  private static SUB_NETWORK_NAME = 'default';
 
   constructor(
     private gcpService: CnGcpService,
@@ -44,152 +49,146 @@ export class CnCloudProviderGcpService extends CnCloudProviderService {
   }
 
   getSshUserName(): string {
-    return 'ubuntu';
+    return cnServerUbuntuUser;
   }
 
   /////////////////////// INSTANCE ///////////////////////
-  async createInstance(request: CnCpCreateInstanceRequest): Promise<CnCpInstance> {
-    const sshPublicKeyPath = path.join(
-      this.configService.getGcpKeysFolder(),
-      `${CnCloudProviderGcpService.SSH_KEY_FILE_NAME}.pub`
-    );
-
-    const vm = await this.gcpService.createInstance(
-      request.name,
-      request.region,
-      request.serverName,
-      CnCloudProviderGcpService.IMAGE_FAMILY,
-      CnCloudProviderGcpService.IMAGE_PROJECT,
-      sshPublicKeyPath,
-      this.configService.getGcpNetwork(),
-      this.configService.getGcpSubnetwork()
-    );
-
-    const instance = new CnGcpInstance(vm);
-    return instance.toStandardInstance();
+  async createInstance(): Promise<CnCpInstance> {
+    // this is not called as the volume is created the same time as the instance
+    // with this we only create 1 volume in GCP
+    throw new Error('Not implemented');
   }
 
-  async deleteInstance(id: string): Promise<void> {
-    const instance = await this.getGcpInstance(id);
-    // Extract zone from the instance metadata
-    const zoneName = instance.instance.zone;
+  async createInstanceWithVolume(
+    instanceRequest: CnCpCreateInstanceRequest,
+    volumeRequest: CnCpCreateVolumeRequest
+  ): Promise<CnCpInstanceWithVolume> {
+    const instanceName = this.getGCPInstanceName(instanceRequest.name);
 
+    const instance = await this.gcpService.createInstanceAndVolume({
+      name: instanceName,
+      zone: instanceRequest.region,
+      machineType: instanceRequest.serverName,
+      imageFamily: CnCloudProviderGcpService.IMAGE_FAMILY,
+      imageProject: CnCloudProviderGcpService.IMAGE_PROJECT,
+      staticIp: instanceRequest.ipAddress.ipAddress,
+      subnetName: CnCloudProviderGcpService.SUB_NETWORK_NAME,
+      volumeSizeGb: volumeRequest.size,
+      volumeArchitecture: CnCloudProviderGcpService.DISK_ARCHITECTURE,
+      // provide the firewall config for the ports
+      tags: [this.configService.getGcpFirewallTag()],
+    });
+
+    const volume = await this.getVolume(instance.mainVolumeName, instanceRequest.region);
+
+    return {
+      instance: instance.toStandardInstance(),
+      volume: volume,
+    };
+  }
+
+  async deleteInstance(id: string, region: string): Promise<void> {
     // Delete the instance
-    await this.gcpService.deleteInstance(id, zoneName);
+    await this.gcpService.deleteInstance(id, region);
   }
 
-  async getInstance(id: string): Promise<CnCpInstance> {
-    const instance = await this.getGcpInstance(id);
+  async getInstance(id: string, region: string): Promise<CnCpInstance> {
+    const instance = await this.gcpService.getInstance(id, region);
     return instance.toStandardInstance();
   }
 
-  private async getGcpInstance(id: string): Promise<CnGcpInstance> {
-    // Since GCP requires zone information to get an instance,
-    // we either need to know the zone or search across all zones
-    // For simplicity, assuming zone is stored in configuration or derived from region
-    const zone = this.configService.getGcpDefaultZone();
-    const vm = await this.gcpService.getInstance(id, zone);
-    return new CnGcpInstance(vm);
+  async startInstance(id: string, region: string): Promise<void> {
+    await this.gcpService.startInstance(id, region);
   }
 
-  async startInstance(id: string): Promise<void> {
-    const instance = await this.getGcpInstance(id);
-    const zoneName = instance.instance.zone;
-
-    await this.gcpService.startInstance(id, zoneName);
-  }
-
-  async stopInstance(id: string): Promise<void> {
-    const instance = await this.getGcpInstance(id);
-    const zoneName = instance.instance.zone;
-
-    await this.gcpService.stopInstance(id, zoneName);
-  }
-
-  async getIpAddress(id: string): Promise<string> {
-    const instance = await this.getGcpInstance(id);
-    const zoneName = instance.instance.zone;
-
-    return this.gcpService.getIpAddress(id, zoneName);
+  async stopInstance(id: string, region: string): Promise<void> {
+    await this.gcpService.stopInstance(id, region);
   }
 
   /////////////////////// VOLUME ///////////////////////
 
-  async attachVolumeToInstance(instanceId: string, volumeId: string): Promise<CnCpVolume> {
-    const instance = await this.getGcpInstance(instanceId);
-    const zoneName = instance.instance.zone;
-
-    await this.gcpService.attachVolume(instanceId, volumeId, zoneName);
-    return this.getVolume(volumeId);
+  volumeIsCreatedSeparately(): boolean {
+    return false;
   }
 
-  async createVolume(volume: CnCpCreateVolumeRequest): Promise<CnCpVolume> {
-    // Assuming zone is derived from region or stored in configuration
-    const zone = this.configService.getGcpDefaultZone();
-    const disk = await this.gcpService.createVolume(volume.name, zone, volume.size);
-
-    return this.convertGcpVolume(disk, zone);
+  async attachVolumeToInstance(): Promise<CnCpVolume> {
+    // as the volume is created with the instance, we don't need to create it separately
+    throw Error('Not implemented');
   }
 
-  async deleteVolume(volumeId: string): Promise<void> {
-    // Need to know the zone where the volume is located
-    const zone = this.configService.getGcpDefaultZone();
-    await this.gcpService.deleteVolume(volumeId, zone);
+  async createVolume(): Promise<CnCpVolume> {
+    // as the volume is created with the instance, we don't need to create it separately
+    throw Error('Not implemented');
   }
 
-  async getVolume(volumeId: string): Promise<CnCpVolume> {
-    const zone = this.configService.getGcpDefaultZone();
-    const disk = await this.gcpService.getVolume(volumeId, zone);
-    return this.convertGcpVolume(disk, zone);
+  async deleteVolume(volumeId: string, region: string): Promise<void> {
+    await this.gcpService.deleteVolume(volumeId, region);
   }
 
-  async volumeIsAttachedToInstance(instanceId: string, volumeId: string): Promise<boolean> {
-    const instance = await this.getGcpInstance(instanceId);
-    const attachedDisks = await instance.getAttachedDisks();
-    return attachedDisks.includes(volumeId);
+  async getVolume(volumeId: string, region: string): Promise<CnCpVolume> {
+    const volume = await this.gcpService.getVolume(volumeId, region);
+    return volume.toStandardVolume();
   }
 
-  async mountVolume(lab: CnLab): Promise<void> {
-    const gcpInstance = await this.getGcpInstance(lab.serverInstanceId);
-    const attachedDisks = await gcpInstance.getAttachedDisks();
-
-    if (attachedDisks.length === 0) {
-      throw new Error(`No volume attached to instance ${lab.serverInstanceId}`);
-    }
-
-    const labSshService = this.instantiateLabSshService(lab);
-    const mountScript = labSshService.getMountFolder() + '/' + CnCloudProviderGcpService.MOUNT_FILE;
-
-    // In GCP, the device name is typically like /dev/sdb, /dev/sdc, etc.
-    // The script should handle identifying and mounting the correct device
-    await labSshService.execSshCommand([`bash ${mountScript}`]);
+  async volumeIsAttachedToInstance(instanceId: string, volumeId: string, region: string): Promise<boolean> {
+    const instance = await this.gcpService.getInstance(instanceId, region);
+    const volume = await this.gcpService.getVolume(volumeId, region);
+    return instance.isAttachedToVolume(volume.selfLink);
   }
 
-  private convertGcpVolume(disk: IDisk, zone: string): CnCpVolume {
+  async mountVolume(): Promise<void> {
+    // no need to mount the volume as the volume is already mounted
+    // because the volume is created with the instance
+    return null;
+  }
+
+  ///////////////////////////////////// IP ADDRESS ///////////////////////////////////////
+
+  needStaticIpAddressBeforeInstance(): boolean {
+    return true;
+  }
+
+  async getIpAddressFromInstanceId(id: string, region: string): Promise<string> {
+    return await this.gcpService.getIpAddressFromInstance(id, region);
+  }
+
+  async getIpAddressFromId(ipAddressId: string, region: string): Promise<CnCpStaticIpAddress> {
+    const gcpRegion = CnGcpHelper.getRegionNameFromZoneName(region);
+    const address = await this.gcpService.getStaticIpAddress(ipAddressId, gcpRegion);
+    return this.ipAddressToCnIpAddress(address);
+  }
+
+  async createStaticIpAddress(name: string, region: string): Promise<CnCpStaticIpAddress> {
+    // reserve the IP address
+    const gcpRegion = CnGcpHelper.getRegionNameFromZoneName(region);
+    const ipName = this.getGCPInstanceName(name);
+
+    const address = await this.gcpService.createStaticIpAddress(ipName, gcpRegion);
+    return this.ipAddressToCnIpAddress(address);
+  }
+
+  deleteIpAddress(ipAddressId: string, region: string): Promise<void> {
+    const gcpRegion = CnGcpHelper.getRegionNameFromZoneName(region);
+    return this.gcpService.deleteStaticIpAddress(ipAddressId, gcpRegion);
+  }
+
+  private ipAddressToCnIpAddress(ipAddress: protos.google.cloud.compute.v1.IAddress): CnCpStaticIpAddress {
     return {
-      region: zone,
-      status: this.gcpVolumeStatusToCpStatus(disk.status as CnGcpVolumeStatus),
-      type: CnLabVolumeType.HIGH_SPEED,
-      // TODO a voir
-      size: parseInt(disk.sizeGb.toString(), 10),
-      id: disk.name,
-      originalObject: disk,
+      id: ipAddress.name,
+      ipAddress: ipAddress.address,
+      region: ipAddress.region,
+      originalObject: ipAddress,
     };
   }
 
-  private gcpVolumeStatusToCpStatus(status: CnGcpVolumeStatus): CnCpVolumeStatus {
-    switch (status) {
-      case 'READY':
-        return 'AVAILABLE';
-      case 'CREATING':
-        return 'CREATING';
-      case 'RESTORING':
-      case 'DELETING':
-        // TODO a voir
-        return 'ATTACHING';
-      case 'FAILED':
-      default:
-        throw new Error(`Unknown status ${status} for GCP disk`);
-    }
+  /////////////////////////////////////// OTHER ////////////////////////////////////////
+  /**
+   * Get the GCP instance name from the Constellab instance name
+   * we set instance name to vm-<name> because GCP must start with a letter
+   * @param instanceName
+   * @private
+   */
+  private getGCPInstanceName(instanceName: string): string {
+    return `vm-${instanceName}`;
   }
 }

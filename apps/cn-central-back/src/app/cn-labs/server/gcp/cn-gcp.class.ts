@@ -1,9 +1,30 @@
-import { ClHelpService } from '@monorepo/core-lib';
-import { CnCpInstance, CnCpInstanceStatus, CnCpInstanceStatusObject } from '../cn-cloud-provider.class';
+import {
+  CnCpInstance,
+  CnCpInstanceStatus,
+  CnCpInstanceStatusObject,
+  CnCpVolume,
+  CnCpVolumeStatus,
+} from '../cn-cloud-provider.class';
 import { Logger } from '@nestjs/common';
 import { CnLabBillingMode } from '../../cn-lab.entity';
 import { google } from '@google-cloud/compute/build/protos/protos';
-import IInstance = google.cloud.compute.v1.IInstance;
+import { CnLabVolumeType } from '../../volume/cn-lab-volume-entity';
+import { protos } from '@google-cloud/compute';
+
+export class CnGcpHelper {
+  /**
+   * Extracts the region name from a GCP zone name.
+   * For example, if the zone name is "us-central1-a", the region name will be "us-central1".
+   * @param zoneName
+   */
+  public static getRegionNameFromZoneName(zoneName: string): string {
+    const parts = zoneName.split('-');
+    if (parts.length < 3) {
+      throw new Error(`Invalid GCP zone name: ${zoneName}`);
+    }
+    return parts.slice(0, 2).join('-');
+  }
+}
 
 export type CnGcpInstanceStatus =
   | 'PROVISIONING'
@@ -19,7 +40,7 @@ export type CnGcpInstanceStatus =
 export class CnGcpInstance {
   private readonly logger = new Logger(CnGcpInstance.name);
 
-  constructor(public instance: IInstance) {}
+  constructor(public instance: protos.google.cloud.compute.v1.IInstance) {}
 
   get name(): string {
     return this.instance.name;
@@ -31,6 +52,15 @@ export class CnGcpInstance {
 
   get location(): string {
     return this.instance.zone;
+  }
+
+  get networkInterfaces(): protos.google.cloud.compute.v1.INetworkInterface[] {
+    return this.instance.networkInterfaces;
+  }
+
+  get mainVolumeName(): string {
+    // the main disk name has the same name as the instance
+    return this.instance.name;
   }
 
   public toStandardInstance(): CnCpInstance {
@@ -48,23 +78,18 @@ export class CnGcpInstance {
   }
 
   getStandardStatus(): CnCpInstanceStatusObject {
-    try {
-      const status = this.getStatus();
-      return {
-        status: this.gcpInstanceStatusToCpStatus(status),
-        message: status,
-      };
-    } catch (error: any) {
-      // TODO Text error.message
-      this.logger.error(`Error getting GCP instance status: ${error.message}`);
-      return {
-        status: 'ERROR',
-        message: error.message,
-      };
-    }
+    const status = this.getStatus();
+    return {
+      status: this.gcpInstanceStatusToCpStatus(status),
+      message: status,
+    };
   }
 
   private gcpInstanceStatusToCpStatus(status: CnGcpInstanceStatus): CnCpInstanceStatus {
+    if (status == null) {
+      this.logger.error(`GCP instance status is null for instance ${this.name}`);
+      return 'CREATING';
+    }
     switch (status) {
       case 'PROVISIONING':
       case 'STAGING':
@@ -85,26 +110,50 @@ export class CnGcpInstance {
     }
   }
 
-  async getNetworkId(): Promise<string> {
-    const networkInterfaces = this.instance.networkInterfaces;
-    if (ClHelpService.isNullOrEmpty(networkInterfaces)) {
-      throw new Error('No network interfaces found for the GCP instance');
-    }
-    return networkInterfaces[0].name;
-  }
-
-  async getAttachedDisks(): Promise<string[]> {
+  isAttachedToVolume(diskLink: string): boolean {
     const disks = this.instance.disks;
-    return disks
-      .filter((disk) => disk.type !== 'PERSISTENT' || disk.boot !== true)
-      .map((disk) => disk.deviceName);
-  }
-
-  async getOsDiskName(): Promise<string> {
-    const disks = this.instance.disks;
-    const osDisk = disks.find((disk) => disk.boot === true);
-    return osDisk ? osDisk.deviceName : null;
+    return disks.some((disk) => disk.source === diskLink);
   }
 }
 
-export type CnGcpVolumeStatus = 'CREATING' | 'READY' | 'FAILED' | 'RESTORING' | 'DELETING';
+export class CnGcpVolume {
+  constructor(public volume: google.cloud.compute.v1.IDisk) {}
+
+  get name(): string {
+    return this.volume.name;
+  }
+
+  get zoneName(): string {
+    return this.volume.zone.split('/').pop();
+  }
+
+  get selfLink(): string {
+    return this.volume.selfLink;
+  }
+
+  public toStandardVolume(): CnCpVolume {
+    return {
+      region: this.zoneName,
+      status: this.gcpVolumeStatusToCpStatus(),
+      type: CnLabVolumeType.HIGH_SPEED,
+      size: parseInt(this.volume.sizeGb.toString(), 10),
+      id: this.name,
+      originalObject: this.volume,
+    };
+  }
+
+  private gcpVolumeStatusToCpStatus(): CnCpVolumeStatus {
+    if (this.volume.status === 'READY' && this.volume.users?.length > 0) {
+      return 'IN_USE';
+    }
+    switch (this.volume.status) {
+      case 'READY':
+        return 'AVAILABLE';
+      case 'CREATING':
+        return 'CREATING';
+      case 'FAILED':
+      default:
+        throw new Error(`Unknown status ${this.volume.status} for GCP disk`);
+    }
+  }
+}

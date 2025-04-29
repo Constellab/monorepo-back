@@ -5,6 +5,8 @@ import {
   CnCpCreateVolumeRequest,
   CnCpInstance,
   CnCpInstanceStatus,
+  CnCpInstanceWithVolume,
+  CnCpStaticIpAddress,
   CnCpVolume,
   CnCpVolumeStatus,
 } from '../cn-cloud-provider.class';
@@ -86,6 +88,11 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
     return this.convertOvhInstance(ovhInstance);
   }
 
+  createInstanceWithVolume(): Promise<CnCpInstanceWithVolume> {
+    // the volume is created separately so this is not called
+    throw new Error('Not implemented');
+  }
+
   public async getInstance(id: string): Promise<CnCpInstance> {
     const ovhInstance = await this.ovhService.getInstance(id);
     return this.convertOvhInstance(ovhInstance);
@@ -162,6 +169,10 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
   }
 
   ///////////////////////////////////////// VOLUME //////////////////////////////////////////
+  volumeIsCreatedSeparately(): boolean {
+    return true;
+  }
+
   public async createVolume(volume: CnCpCreateVolumeRequest): Promise<CnCpVolume> {
     const request: CnOvhCreateVolumeRequest = {
       region: volume.region,
@@ -228,14 +239,6 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
     return this.ovhService.deleteVolume(volumeId);
   }
 
-  async getIpAddress(id: string): Promise<string> {
-    const instance = await this.ovhService.getInstance(id);
-
-    const ipAddress = instance.ipAddresses.find((ip) => ip.type === 'public' && ip.version === 4);
-
-    return ipAddress ? ipAddress.ip : null;
-  }
-
   async volumeIsAttachedToInstance(instanceId: string, volumeId: string): Promise<boolean> {
     const volume = await this.ovhService.getVolume(volumeId);
 
@@ -248,6 +251,31 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
     const mountScript = sshService.getMountFolder() + '/' + CnCloudProviderOvhService.MOUNT_FILE;
 
     await sshService.execSshCommand([`bash ${mountScript} ${CnCloudProviderOvhService.MOUNT_DISK_NAME}`]);
+  }
+
+  /////////////////////////////// IP ADDRESS ///////////////////////////////
+  needStaticIpAddressBeforeInstance(): boolean {
+    return false;
+  }
+
+  async createStaticIpAddress(): Promise<CnCpStaticIpAddress | null> {
+    return null;
+  }
+
+  async deleteIpAddress(): Promise<void> {
+    return null;
+  }
+
+  async getIpAddressFromId(): Promise<CnCpStaticIpAddress | null> {
+    return null;
+  }
+
+  async getIpAddressFromInstanceId(id: string): Promise<string> {
+    const instance = await this.ovhService.getInstance(id);
+
+    const ipAddress = instance.ipAddresses.find((ip) => ip.type === 'public' && ip.version === 4);
+
+    return ipAddress ? ipAddress.ip : null;
   }
 
   /////////////////////////////// DNS ///////////////////////////////
