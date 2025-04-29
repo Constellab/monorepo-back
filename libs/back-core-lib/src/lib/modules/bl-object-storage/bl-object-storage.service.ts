@@ -4,6 +4,7 @@ import { BlFileHelper } from '../../utils/bl-file-helper';
 import { BlFile } from '../../models/bl-file.class';
 import {
   BlBucketConfig,
+  BlBucketType,
   BlFileResponse,
   BlObject,
   BlObjectStorageObjectsInfo,
@@ -14,6 +15,7 @@ import { BlS3BucketService } from './bl-s3-bucket.service';
 import { BlExternalApiService } from '../bl-external-api/bl-external-api.service';
 import { BlLabS3BucketService } from './bl-lab-s3-bucket.service';
 import { Stream } from 'stream';
+import { BlGcpBucketService } from './bl-gcp-bucket.service';
 
 export interface BlObjectStorageUploadOptions {
   // if true generate a random name for the object
@@ -218,6 +220,7 @@ export class BlObjectStorageService {
   ////////////////////////////////////////// BUCKET //////////////////////////////////////////
 
   public async createBucket(config: BlBucketConfig): Promise<void> {
+    console.log(config);
     const service = this.getService(config);
     return service.createBucket();
   }
@@ -339,12 +342,15 @@ export class BlObjectStorageService {
   }
 
   private getService(config: BlBucketConfig): BlObjectStorageInterface {
-    if (config.type === 'azureBlob') {
-      return new BlAzureBucketService(config.config);
-    } else if (config.type === 'lab') {
-      return new BlLabS3BucketService(config.config, this.apiService);
-    } else {
-      return new BlS3BucketService(config.config);
+    switch (config.type) {
+      case BlBucketType.AZURE:
+        return new BlAzureBucketService(config.config);
+      case BlBucketType.LAB:
+        return new BlLabS3BucketService(config.config, this.apiService);
+      case BlBucketType.GCP:
+        return new BlGcpBucketService(config.config);
+      default:
+        return new BlS3BucketService(config.config);
     }
   }
 

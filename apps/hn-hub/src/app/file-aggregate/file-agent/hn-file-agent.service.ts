@@ -11,7 +11,7 @@ import { HnAgent } from '../../agent-aggregate/agent/hn-agent.entity';
 export class HnFileAgentService extends HnAbstractFileService<HnAgent> {
   constructor(
     @InjectRepository(HnFileAgent) fileDocumentationRepository: Repository<HnFileAgent>,
-    objectStorageService: BlObjectStorageService,
+                                   objectStorageService: BlObjectStorageService,
     private configService: HnCoreConfigService
   ) {
     super(fileDocumentationRepository, objectStorageService);
@@ -23,7 +23,7 @@ export class HnFileAgentService extends HnAbstractFileService<HnAgent> {
 
   getBackupBucketConfig(): BlBucketConfig {
     return {
-      type: 's3',
+      type: BlBucketType.NORMAL,
       config: {
         endpoint: this.configService.getBackupObjectStorageEndPoint(),
         region: this.configService.getBackupObjectStorageRegion(),
@@ -36,7 +36,7 @@ export class HnFileAgentService extends HnAbstractFileService<HnAgent> {
 
   getBucketConfig(): BlBucketConfig {
     return {
-      type: 's3',
+      type: BlBucketType.NORMAL,
       config: {
         endpoint: this.configService.getDefaultObjectStorageEndPoint(),
         region: this.configService.getDefaultObjectStorageRegion(),

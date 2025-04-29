@@ -6,6 +6,7 @@ import {
   BlAzureBlobContainerConfig,
   BlBucketConfig,
   BlBucketType,
+  blCloudBucketTypes,
   BlS3BucketConfig,
   BlTrim,
 } from '@monorepo/back-core-lib';
@@ -76,28 +77,21 @@ export class CnBucket extends CnBaseEntity {
   public getBucketConfig(): BlBucketConfig {
     switch (this.bucketType) {
       case BlBucketType.NORMAL:
-        return {
-          type: 's3',
-          config: this.getS3BucketConfig(),
-        };
       case BlBucketType.LAB:
+      case BlBucketType.GCP:
         return {
-          type: 'lab',
+          type: this.bucketType,
           config: this.getS3BucketConfig(),
         };
       case BlBucketType.AZURE:
         return {
-          type: 'azureBlob',
+          type: this.bucketType,
           config: this.getAzureBlobConfig(),
         };
     }
   }
 
-  public getS3BucketConfig(): BlS3BucketConfig {
-    if (!this.isS3Bucket()) {
-      throw new Error('The bucket is not a S3 bucket');
-    }
-
+  private getS3BucketConfig(): BlS3BucketConfig {
     if (this.region == null && this.lab == null) {
       throw new Error('Nor the region or the lab was loaded');
     }
@@ -133,11 +127,7 @@ export class CnBucket extends CnBaseEntity {
     }
   }
 
-  public getAzureBlobConfig(): BlAzureBlobContainerConfig {
-    if (this.bucketType !== BlBucketType.AZURE) {
-      throw new Error('The bucket is not an azure blob');
-    }
-
+  private getAzureBlobConfig(): BlAzureBlobContainerConfig {
     if (this.region == null) {
       throw new Error('The region was not loaded');
     }
@@ -169,17 +159,10 @@ export class CnBucket extends CnBaseEntity {
   }
 
   isCloudBucket(): boolean {
-    return [BlBucketType.NORMAL, BlBucketType.AZURE].includes(this.bucketType);
+    return blCloudBucketTypes.includes(this.bucketType);
   }
 
   isLabBucket(): boolean {
     return this.bucketType === BlBucketType.LAB;
-  }
-
-  /**
-   * Return true if the bucket supports the S3 protocol
-   */
-  isS3Bucket(): boolean {
-    return this.bucketType !== BlBucketType.AZURE;
   }
 }

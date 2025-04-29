@@ -1,29 +1,23 @@
-import { BlAzureBlobContainerConfig, BlBucketConfig, BlS3BucketConfig } from './bl-object-storage.class';
+import {
+  BlAzureBlobContainerConfig,
+  BlBucketConfig,
+  BlBucketType,
+  blCloudBucketTypes,
+  BlS3BucketConfig,
+} from './bl-object-storage.class';
 
 export class BlMultipleBucketConfig {
   constructor(public bucketConfigs: BlBucketConfig[]) {}
 
-  public countCloudBuckets(): number {
-    return this.bucketConfigs.filter((config) => config.type !== 'lab').length;
-  }
-
-  public countLabBuckets(): number {
-    return this.bucketConfigs.filter((config) => config.type === 'lab').length;
-  }
-
-  public containsOnlyLabBuckets(): boolean {
-    return this.bucketConfigs.every((config) => config.type === 'lab');
-  }
-
   public containsCloudBuckets(): boolean {
-    return this.bucketConfigs.some((config) => config.type !== 'lab');
+    return this.bucketConfigs.some((config) => blCloudBucketTypes.includes(config.type));
   }
 
   public getFirstBucket(): BlBucketConfig {
     return this.bucketConfigs[0];
   }
 
-  public getFirstBucketType(): 's3' | 'azureBlob' | 'lab' {
+  public getFirstBucketType(): BlBucketType {
     return this.bucketConfigs[0].type;
   }
 
@@ -40,7 +34,7 @@ export class BlMultipleBucketConfig {
 
   private bucketsAreEquals(config1: BlBucketConfig, config2: BlBucketConfig): boolean {
     if (config1.type !== config2.type) return false;
-    if (config1.type === 'azureBlob') {
+    if (config1.type === BlBucketType.AZURE) {
       return this.azureBlobBucketAreEqual(
         config1.config as BlAzureBlobContainerConfig,
         config2.config as BlAzureBlobContainerConfig

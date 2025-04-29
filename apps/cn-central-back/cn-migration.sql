@@ -203,3 +203,8 @@ ALTER TABLE resource
 
 alter table lab
   add column serverIpAddressId varchar(255) null;
+
+ALTER TABLE bucket
+  MODIFY bucketType enum ('NORMAL', 'LAB', 'AZURE', 'GCP') default 'NORMAL' not null;
+ALTER TABLE document
+  MODIFY bucketType enum ('NORMAL', 'LAB', 'AZURE', 'GCP') not null;

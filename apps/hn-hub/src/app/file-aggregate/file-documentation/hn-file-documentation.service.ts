@@ -52,7 +52,7 @@ export class HnFileDocumentationService extends HnAbstractFileService<HnDocument
 
   getBackupBucketConfig(): BlBucketConfig {
     return {
-      type: 's3',
+      type: BlBucketType.NORMAL,
       config: {
         endpoint: this.configService.getBackupObjectStorageEndPoint(),
         region: this.configService.getBackupObjectStorageRegion(),
@@ -65,7 +65,7 @@ export class HnFileDocumentationService extends HnAbstractFileService<HnDocument
 
   getBucketConfig(): BlBucketConfig {
     return {
-      type: 's3',
+      type: BlBucketType.NORMAL,
       config: {
         endpoint: this.configService.getDefaultObjectStorageEndPoint(),
         region: this.configService.getDefaultObjectStorageRegion(),

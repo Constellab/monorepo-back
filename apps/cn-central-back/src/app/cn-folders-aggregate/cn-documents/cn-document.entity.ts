@@ -165,7 +165,7 @@ export class CnDocumentEntity extends CnHierarchyRepresentation {
     mimeType: string,
     type: CnDocumentType,
     entityId: string,
-    bucketType: 's3' | 'azureBlob' | 'lab',
+    bucketType: BlBucketType,
     parentFolder: CnHierarchyObject,
     parentDocument?: CnDocument
   ): CnDocumentEntity {
@@ -176,13 +176,7 @@ export class CnDocumentEntity extends CnHierarchyRepresentation {
     document.mimeType = mimeType;
     document.type = type;
     document.entityId = entityId;
-    if (bucketType === 'lab') {
-      document.bucketType = BlBucketType.LAB;
-    } else if (bucketType === 'azureBlob') {
-      document.bucketType = BlBucketType.AZURE;
-    } else {
-      document.bucketType = BlBucketType.NORMAL;
-    }
+    document.bucketType = bucketType;
     document.style = this.buildStyle(type, document.getExtension());
     document.parentDocument = parentDocument;
     document.hierarchyRepresentation = CnHierarchyObjectEntity.newSubHierarchyObject(

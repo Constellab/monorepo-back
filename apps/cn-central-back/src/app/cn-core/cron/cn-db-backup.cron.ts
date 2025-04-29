@@ -19,7 +19,7 @@ export class CnDbBackupCron {
   async backupDb(): Promise<void> {
     this.logger.log('[Cron] Start of backup db');
     const bucketConfig: BlBucketConfig = {
-      type: 's3',
+      type: BlBucketType.NORMAL,
       config: {
         bucket: this.configService.getDbBackupBucket(),
         bucketType: BlBucketType.NORMAL,

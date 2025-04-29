@@ -115,7 +115,7 @@ export class CnSpaceService extends BlAbstractService<CnSpaceEntity> {
 
   private getBucketConfig(): BlBucketConfig {
     return {
-      type: 's3',
+      type: BlBucketType.NORMAL,
       config: {
         endpoint: this.configService.getDefaultObjectStorageEndPoint(),
         region: this.configService.getDefaultObjectStorageRegion(),

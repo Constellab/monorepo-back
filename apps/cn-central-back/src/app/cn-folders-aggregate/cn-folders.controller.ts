@@ -580,9 +580,4 @@ export class CnFoldersController {
   ): Promise<CnDocument> {
     return this.folderAggregateService.rollbackContent(documentId, modificationId);
   }
-
-  @Post('migrate-style')
-  async migrateStyle(): Promise<void> {
-    return this.folderAggregateService.migrateStyle();
-  }
 }

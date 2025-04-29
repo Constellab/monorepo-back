@@ -140,7 +140,7 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
 
   private getUserProfilePhotoBucketConfig(): BlBucketConfig {
     return {
-      type: 's3',
+      type: BlBucketType.NORMAL,
       config: {
         endpoint: this.configService.getDefaultObjectStorageEndPoint(),
         region: this.configService.getDefaultObjectStorageRegion(),

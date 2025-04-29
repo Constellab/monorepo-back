@@ -4,18 +4,21 @@ export enum BlBucketType {
   NORMAL = 'NORMAL',
   LAB = 'LAB', // bucket hosted on a lab
   AZURE = 'AZURE', // azure blob storage
+  GCP = 'GCP', // gcp bucket
 }
+
+export const blCloudBucketTypes: BlBucketType[] = [BlBucketType.NORMAL, BlBucketType.AZURE, BlBucketType.GCP];
 
 /**
  * Object that represent a S3 or Azure bucket config
  */
 export type BlBucketConfig =
   | {
-      type: 's3' | 'lab';
+      type: BlBucketType.NORMAL | BlBucketType.LAB | BlBucketType.GCP;
       config: BlS3BucketConfig;
     }
   | {
-      type: 'azureBlob';
+      type: BlBucketType.AZURE;
       config: BlAzureBlobContainerConfig;
     };
 

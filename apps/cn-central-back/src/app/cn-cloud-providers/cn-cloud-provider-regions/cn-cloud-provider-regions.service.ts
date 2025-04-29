@@ -48,11 +48,12 @@ export class CnCloudProviderRegionService extends BlAbstractService<CnCloudProvi
     if (existingRegion && existingRegion.id !== region.id) {
       // eslint-disable-next-line max-len
       throw new BlBadRequestException(
-        `There is already a ${region.type} region ${region.technicalName} for the cloud provider ${region.cloudProvider.name}`
+        `There is already a ${region.type} region ${region.technicalName} ` +
+          `for the cloud provider ${region.cloudProvider.name}`
       );
     }
 
-    if (region.type === CnCloudProviderRegionType.S3) {
+    if (region.type === CnCloudProviderRegionType.S3 || region.type === CnCloudProviderRegionType.ALL) {
       if (!region.s3Endpoint) {
         throw new BlBadRequestException(`The S3 endpoint is required for S3 region ${region.technicalName}`);
       }

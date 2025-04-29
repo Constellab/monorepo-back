@@ -3,6 +3,7 @@ import { CnBaseEntity } from '../../cn-core/model/entities/cn-base.entity';
 import { CnCloudProvider } from '../cn-cloud-provider.entity';
 import { CnCity } from '../../cn-city/cn-city.entity';
 import { BlTrim } from '@monorepo/back-core-lib';
+import { Type } from 'class-transformer';
 
 export enum CnCloudProviderRegionType {
   ALL = 'ALL', // server and s3
@@ -16,6 +17,7 @@ export enum CnCloudProviderRegionType {
 @Unique(['technicalName', 'cloudProvider', 'type'])
 @Entity('cloud_provider_region')
 export class CnCloudProviderRegion extends CnBaseEntity {
+  @Type(() => CnCloudProvider)
   @ManyToOne(() => CnCloudProvider, { nullable: true, eager: true })
   cloudProvider: CnCloudProvider;
 
@@ -29,9 +31,11 @@ export class CnCloudProviderRegion extends CnBaseEntity {
   @Column({ nullable: false, length: 20 })
   technicalName: string;
 
+  @BlTrim()
   @Column({ nullable: false, length: 100 })
   name: string;
 
+  @BlTrim()
   @Column({ nullable: true, length: 255 })
   s3Endpoint: string;
 

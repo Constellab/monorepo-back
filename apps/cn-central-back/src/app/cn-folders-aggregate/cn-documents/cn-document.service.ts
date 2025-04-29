@@ -786,24 +786,4 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
       relations: { hierarchyRepresentation: true },
     });
   }
-
-  public async migrateDocuments(): Promise<void> {
-    const documents = await this.repo.find({ relations: { hierarchyRepresentation: true } });
-
-    for (const document of documents) {
-      document.style = CnDocumentEntity.buildStyle(document.type, document.getExtension());
-
-      const bucketConfig = await this.folderBucketService.getAndCheckFolderBucketConfig(
-        document.hierarchyRepresentation.rootParentId
-      );
-      if (bucketConfig.getFirstBucketType() === 'azureBlob') {
-        document.bucketType = BlBucketType.AZURE;
-      } else if (bucketConfig.getFirstBucketType() === 'lab') {
-        document.bucketType = BlBucketType.LAB;
-      } else {
-        document.bucketType = BlBucketType.NORMAL;
-      }
-      await this.repo.save(document);
-    }
-  }
 }

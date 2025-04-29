@@ -3,6 +3,7 @@ import {
   BlAbstractService,
   BlBadRequestException,
   BlBucketType,
+  blCloudBucketTypes,
   BlObjectStorageService,
   BlSearchBuilder,
   BlSearchParams,
@@ -67,7 +68,7 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
     }
 
     // on cloud region there are only normal buckets
-    if (bucket.bucketType === BlBucketType.LAB) {
+    if (bucket.isLabBucket()) {
       if (bucket.lab == null) {
         throw new BlBadRequestException(`Lab must be defined for lab bucket`);
       }
@@ -93,9 +94,9 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
       }
     }
 
-    if (bucket.bucketType === BlBucketType.NORMAL || bucket.bucketType === BlBucketType.AZURE) {
+    if (bucket.isCloudBucket()) {
       if (bucket.region == null) {
-        throw new BlBadRequestException(`Region must be defined for normal or azure bucket`);
+        throw new BlBadRequestException(`Region must be defined for non lab bucket`);
       }
 
       if (!bucket.region.supportsS3()) {
@@ -117,14 +118,16 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
     }
 
     if (bucket.bucketType === BlBucketType.NORMAL) {
-      if (bucket.region.cloudProvider.name === 'AZURE') {
-        throw new BlBadRequestException(`Normal bucket cannot be linked to an Azure region`);
+      if (!bucket.region.cloudProvider.hasNativeS3()) {
+        throw new BlBadRequestException(
+          `Normal bucket cannot be linked cloud provider ${bucket.region.cloudProvider.name}`
+        );
       }
-    }
-
-    if (bucket.bucketType === BlBucketType.AZURE) {
-      if (bucket.region.cloudProvider.name !== 'AZURE') {
-        throw new BlBadRequestException(`Azure bucket must be linked to an Azure region`);
+    } else {
+      if (bucket.region.cloudProvider.getS3BucketType() !== bucket.bucketType) {
+        throw new BlBadRequestException(
+          `Bucket type ${bucket.bucketType} is not compatible with region ${bucket.region.cloudProvider.name}`
+        );
       }
     }
 
@@ -195,7 +198,7 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
       where: [
         {
           contentType: contentType,
-          bucketType: In([BlBucketType.NORMAL, BlBucketType.AZURE]),
+          bucketType: In(blCloudBucketTypes),
         },
         {
           contentType: contentType,

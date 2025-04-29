@@ -1,4 +1,5 @@
 export * from './bl-azure-bucket.service';
+export * from './bl-gcp-bucket.service';
 export * from './bl-lab-s3-bucket.service';
 export * from './bl-multiple-bucket-configs.class';
 export * from './bl-object-storage.class';

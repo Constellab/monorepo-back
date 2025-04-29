@@ -11,7 +11,7 @@ import { HnCommunityApp } from '../../community-app-aggregate/community-app/hn-c
 export class HnFileAppService extends HnAbstractFileService<HnCommunityApp> {
   constructor(
     @InjectRepository(HnFileApp) fileAppRepository: Repository<HnFileApp>,
-    objectStorageService: BlObjectStorageService,
+                                 objectStorageService: BlObjectStorageService,
     private configService: HnCoreConfigService
   ) {
     super(fileAppRepository, objectStorageService);
@@ -23,7 +23,7 @@ export class HnFileAppService extends HnAbstractFileService<HnCommunityApp> {
 
   getBackupBucketConfig(): BlBucketConfig {
     return {
-      type: 's3',
+      type: BlBucketType.NORMAL,
       config: {
         endpoint: this.configService.getBackupObjectStorageEndPoint(),
         region: this.configService.getBackupObjectStorageRegion(),
@@ -36,7 +36,7 @@ export class HnFileAppService extends HnAbstractFileService<HnCommunityApp> {
 
   getBucketConfig(): BlBucketConfig {
     return {
-      type: 's3',
+      type: BlBucketType.NORMAL,
       config: {
         endpoint: this.configService.getDefaultObjectStorageEndPoint(),
         region: this.configService.getDefaultObjectStorageRegion(),
