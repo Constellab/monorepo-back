@@ -181,29 +181,26 @@ export class CnExternalLabManagerApiService {
     apiInfo: CnExternalApiInfo,
     createBackup: CnLabManagerBackupInfoDTO
   ): Promise<CnLabBackupsHistory> {
-    const response = await lastValueFrom(
-      this.post(apiInfo, `${this.baseBackupRoute}/prod/MANUAL`, createBackup)
+    return await lastValueFrom(
+      this.post(apiInfo, `${this.baseBackupRoute}/prod/MANUAL`, createBackup, CnLabBackupsHistory)
     ).catch((error) => {
       console.error(error);
       throw error;
     });
-
-    return CnLabBackupsHistory.fromLabManagerResponse(response);
   }
 
   async stopCurrentBackup(apiInfo: CnExternalApiInfo): Promise<CnLabBackupsHistory> {
-    const response = await lastValueFrom(this.post(apiInfo, `${this.baseBackupRoute}/stop-current`, null));
-    return CnLabBackupsHistory.fromLabManagerResponse(response);
+    return await lastValueFrom(
+      this.post(apiInfo, `${this.baseBackupRoute}/stop-current`, null, CnLabBackupsHistory)
+    );
   }
 
   async getLastBackupsStatus(apiInfo: CnExternalApiInfo): Promise<CnLabBackupsHistory> {
-    const response = await lastValueFrom(this.get(apiInfo, `${this.baseBackupRoute}/last-status`));
-    return CnLabBackupsHistory.fromLabManagerResponse(response);
+    return await lastValueFrom(this.get(apiInfo, `${this.baseBackupRoute}/last-status`, CnLabBackupsHistory));
   }
 
   async getBackupHistory(apiInfo: CnExternalApiInfo): Promise<CnLabBackupsHistory> {
-    const response = await lastValueFrom(this.get(apiInfo, `${this.baseBackupRoute}/history`));
-    return CnLabBackupsHistory.fromLabManagerResponse(response);
+    return await lastValueFrom(this.get(apiInfo, `${this.baseBackupRoute}/history`, CnLabBackupsHistory));
   }
 
   restoreBackup(apiInfo: CnExternalApiInfo, restoreBackupDTO: CnLabManagerRestoreBackupDTO): Promise<void> {
