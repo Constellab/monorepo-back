@@ -2,9 +2,9 @@ import { Body, Controller, Get, Post } from '@nestjs/common';
 import { CnLabAggregateService } from '../cn-labs/cn-lab-aggregate.service';
 import { CnLabManagerGuard } from '../cn-core/decorators/cn-lab-manager-guard.decorator';
 import { CnLabRobotAuthentication } from '../cn-core/decorators/cn-lab-guard.decorator';
-import { BlParsePipe, BlPublic } from '@monorepo/back-core-lib';
+import { BlBucketType, BlParsePipe, BlPublic } from '@monorepo/back-core-lib';
 import { CnLabManagerBackupInfoDTO } from '../cn-external-lab-api/model/cn-lab-manager.class';
-import { CnLabBackupBucket, CnLabBackupsHistory } from '../cn-labs/backup/cn-lab-backup.dto';
+import { CnLabBackupsHistory } from '../cn-labs/backup/cn-lab-backup.dto';
 import { CnLabBackupHistory } from '../cn-labs/backup/cn-lab-backup-history.entity';
 
 /**
@@ -15,23 +15,31 @@ import { CnLabBackupHistory } from '../cn-labs/backup/cn-lab-backup-history.enti
 export class CnExternalLabsManagerController {
   constructor(private labAggregator: CnLabAggregateService) {}
 
+  // TODO @lab-manager-v1.20.0 : remove once the lab manager is updated
+  // this method is called for lab manager before 1.20.0
   @CnLabRobotAuthentication()
   @Get('lab/backup-info')
   async getLabBackupInfo(): Promise<CnLabManagerBackupInfoDTO> {
-    return this.labAggregator.getCurrentLabBackupInfo();
+    const data = await this.labAggregator.getCurrentLabBackupInfo();
+    for (const bucket of data.backupBuckets) {
+      if (bucket.bucketConfig.type === BlBucketType.AZURE) {
+        bucket.bucketConfig.type = 'azureBlob' as any;
+      } else {
+        bucket.bucketConfig.type = 's3' as any;
+      }
+    }
+    return data;
   }
 
-  // TODO @lab-manager-v1.12.0 : remove once the lab manager is updated
   @CnLabRobotAuthentication()
-  @Post('lab/backup-history')
-  async saveBackupHistory(@Body() backups: CnLabBackupBucket[]): Promise<CnLabBackupHistory[]> {
-    const history = CnLabBackupsHistory.fromLabManagerResponse(backups);
-    return this.labAggregator.saveCurrentLabBackupHistory(history);
+  @Get('lab/backup-info-v2')
+  async getLabBackupInfoV2(): Promise<CnLabManagerBackupInfoDTO> {
+    return this.labAggregator.getCurrentLabBackupInfo();
   }
 
   @CnLabRobotAuthentication()
   @Post('lab/backup-history-v2')
-  async saveBackupHistoryV2(
+  async saveBackupHistory(
     @Body(new BlParsePipe(CnLabBackupsHistory)) backupsHistory: CnLabBackupsHistory
   ): Promise<CnLabBackupHistory[]> {
     return this.labAggregator.saveCurrentLabBackupHistory(backupsHistory);

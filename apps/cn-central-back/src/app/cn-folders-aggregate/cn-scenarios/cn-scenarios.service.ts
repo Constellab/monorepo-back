@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import {
   CnScenario,
   CnScenarioEntity,
@@ -22,8 +22,6 @@ import { CnScenarioProtocol } from './cn-scenario-protocol.class';
 
 @Injectable()
 export class CnScenariosService extends BlAbstractService<CnScenarioEntity> {
-  private logger = new Logger(CnScenariosService.name);
-
   constructor(
     @InjectRepository(CnScenarioEntity) private repository: Repository<CnScenarioEntity>,
     private labConfigService: CnLabConfigsService,

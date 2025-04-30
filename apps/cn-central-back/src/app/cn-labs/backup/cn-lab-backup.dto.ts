@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon';
-import { ClCoreJsonConvert, ClLuxonDateTimeTransform } from '@monorepo/core-lib';
+import { ClLuxonDateTimeTransform } from '@monorepo/core-lib';
 import { Type } from 'class-transformer';
 import { CnCloudProviderRegion } from '../../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import { CnLabBackupHistory } from './cn-lab-backup-history.entity';
@@ -64,57 +64,10 @@ export class CnLabBackupBucket {
 }
 
 export class CnLabBackupsHistory {
-  private static readonly CURRENT_VERSION = 3;
-
   version: number;
 
   @Type(() => CnLabBackupBucket)
   backups: CnLabBackupBucket[];
-
-  // TODO @lab-manager-v1.12.0 : remove once the lab manager is updated
-  public static fromLabManagerResponse(
-    backups: CnLabBackupsHistory | CnLabBackupBucket[]
-  ): CnLabBackupsHistory {
-    let backupsHistory: CnLabBackupsHistory;
-    if (Array.isArray(backups)) {
-      backupsHistory = new CnLabBackupsHistory();
-      backupsHistory.version = 2;
-      backupsHistory.backups = ClCoreJsonConvert.deserialize(
-        backups,
-        CnLabBackupBucket
-      ) as CnLabBackupBucket[];
-    } else {
-      backupsHistory = ClCoreJsonConvert.deserialize(backups, CnLabBackupsHistory) as CnLabBackupsHistory;
-    }
-    return backupsHistory.migrateToV3();
-  }
-
-  public migrateToV3(): this {
-    if (this.version === 3) return this;
-
-    for (const backup of this.backups as any) {
-      if (!backup.data) {
-        backup.data = {
-          totalSize: backup.dataSize,
-          status: backup.dataStatus,
-          transfer: null,
-        } as CnLabBackupInfo;
-        delete backup.dataSize;
-        delete backup.dataStatus;
-      }
-      if (!backup.db) {
-        backup.db = {
-          totalSize: backup.dbSize,
-          status: backup.dbStatus,
-          transfer: null,
-        } as CnLabBackupInfo;
-        delete backup.dbSize;
-        delete backup.dbStatus;
-      }
-    }
-    this.version = CnLabBackupsHistory.CURRENT_VERSION;
-    return this;
-  }
 }
 
 export class CnLabBackupStatusDTO {
