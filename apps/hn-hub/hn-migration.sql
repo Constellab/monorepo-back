@@ -238,3 +238,9 @@ CREATE TABLE `app_user` (
 
 # DECLARE env var BUCKET_APPS
 # DECLARE env var BUCKET_APPS_BACKUP
+
+
+# 1.6.7
+ALTER TABLE `story`
+ADD COLUMN `title_path` varchar(255) DEFAULT NULL;
+# Call migration route POST /story/migrate-title-paths
