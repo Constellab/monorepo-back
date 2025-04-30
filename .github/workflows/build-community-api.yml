@@ -1,4 +1,4 @@
-name: Main Workflow hub back
+name: Main Workflow community api
 
 on:
   push:
@@ -10,10 +10,10 @@ jobs:
     uses: ./.github/workflows/build_github_package.yml
     with:
       registry: ghcr.io
-      image_name: ghcr.io/constellab/community-back
+      image_name: ghcr.io/constellab/community-api
       github_ref: ${{ github.ref }}
       tag_prefix: hn_
-      dockerfile_path: ./apps/hn-hub/Dockerfile
+      dockerfile_path: ./apps/hn-community-api/Dockerfile
     secrets:
       registry_username: ${{ github.actor }}
       registry_password: ${{ secrets.GITHUB_TOKEN }}

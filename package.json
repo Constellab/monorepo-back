@@ -33,11 +33,11 @@
     "cn-space-api:caprover-deploy-prod": "deploy.cmd https://captain.constellab.gencovery.com space-api ghcr.io/constellab/space-api",
     "cn-space-api:lint": "nx run cn-space-api:lint",
     "cn-space-api:build-image": "docker build -f apps/cn-space-api/Dockerfile -t cn-space-api .",
-    "hn-hub:serve": "nx run hn-hub:serve",
-    "hn-hub:build": "nx run hn-hub:build",
-    "hn-hub:caprover-deploy-pre-prod": "deploy.cmd https://captain.constellab-pre-prod.gencovery.com hub-back-pre-prod ghcr.io/constellab/community-back",
-    "hn-hub:caprover-deploy-prod": "deploy.cmd https://captain.constellab.gencovery.com hub-back ghcr.io/constellab/community-back",
-    "hn-hub:build-image": "docker build -f apps/hn-hub/Dockerfile -t hn-hub ."
+    "hn-community-api:serve": "nx run hn-community-api:serve",
+    "hn-community-api:build": "nx run hn-community-api:build",
+    "hn-community-api:caprover-deploy-pre-prod": "deploy.cmd https://captain.constellab-pre-prod.gencovery.com community-api-pre-prod ghcr.io/constellab/community-api",
+    "hn-community-api:caprover-deploy-prod": "deploy.cmd https://captain.constellab.gencovery.com community-api ghcr.io/constellab/community-api",
+    "hn-community-api:build-image": "docker build -f apps/hn-community-api/Dockerfile -t hn-community-api ."
   },
   "private": true,
   "dependencies": {

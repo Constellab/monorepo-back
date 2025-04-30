@@ -1,7 +1,7 @@
 {
-  "name": "hn-hub",
+  "name": "hn-community-api",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "apps/hn-hub/src",
+  "sourceRoot": "apps/hn-community-api/src",
   "projectType": "application",
   "tags": ["back"],
   "targets": {
@@ -10,15 +10,15 @@
       "defaultConfiguration": "development",
       "dependsOn": ["build"],
       "options": {
-        "buildTarget": "hn-hub:build",
+        "buildTarget": "hn-community-api:build",
         "runBuildTargetDependencies": false
       },
       "configurations": {
         "development": {
-          "buildTarget": "hn-hub:build:development"
+          "buildTarget": "hn-community-api:build:development"
         },
         "production": {
-          "buildTarget": "hn-hub:build:production"
+          "buildTarget": "hn-community-api:build:production"
         }
       }
     }
