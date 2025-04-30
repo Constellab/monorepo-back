@@ -156,15 +156,11 @@ export class TeRichTextBlockModification {
     // replace &nbsp; with ' ' to avoid HTML parsing error
     // replace '\"'  with &quot; to avoid HTML parsing error
     // the removes of '"' helps the diff lib to work correctly
-    return JSON.stringify(data)
-      .replace(/&nbsp;/g, ' ')
-      .replace(/\\"/g, '&quot;');
+    return JSON.stringify(data).replace(/&nbsp;/g, ' ');
   }
 
   public static parseBlockData(data: string): TeBlockData {
-    // replace back &quot; with "
-    const strData = data.replace(/&quot;/g, '\\"');
-    return JSON.parse(strData);
+    return JSON.parse(data);
   }
 
   public toJsonObject(): TeRichTextBlockModificationDTO {

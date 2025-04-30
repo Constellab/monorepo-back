@@ -74,10 +74,10 @@ export class HnStoryService extends BlAbstractService<HnStory> {
     const stories: HnStory[] = await this.findAllPublished();
     const storiesMarkDowns: HnMarkdownFile[] = [];
     for (const story of stories) {
-      const storyUrl = this.frontService.getStoryUrl(story.id, ClStringHelper.getCleanUrlPath(story.title));
+      const storyUrl = this.frontService.getStoryUrl(story.id, story.cleanTitlePath);
       const storyMarkDown = this.getStoryMarkdown(story, storyUrl);
       storiesMarkDowns.push({
-        name: ClStringHelper.getCleanUrlPath(story.title),
+        name: story.cleanTitlePath,
         content: storyMarkDown,
       });
     }
@@ -451,6 +451,7 @@ export class HnStoryService extends BlAbstractService<HnStory> {
     }
     story.status = HnStoryStatus.PUBLISHED;
     story.publishedAt = DateTime.now();
+    story.titlePath = story.cleanTitlePath;
     return this.storyRepository.save(story);
   }
 
@@ -528,7 +529,7 @@ export class HnStoryService extends BlAbstractService<HnStory> {
       where: { status: HnStoryStatus.PUBLISHED },
     });
     return stories.map((story: HnStory) => ({
-      url: this.frontService.getStoryUrl(story.id, story.titlePath),
+      url: this.frontService.getStoryUrl(story.id, story.cleanTitlePath),
       priority: 0.8,
       changefreq: HnSiteMapEnumChangefreq.MONTHLY,
       lastmod: story.lastModifiedAt.toFormat('yyyy-MM-dd'),
@@ -602,5 +603,16 @@ export class HnStoryService extends BlAbstractService<HnStory> {
     const richText = story.getContentEditionRichTextAggregate();
 
     return richText.getModificationsDTO((userId) => this.userService.findUserBasicDTO(userId));
+  }
+
+  ////////////////////////////////////////// MIGRATION ////////////////////////////////////
+  async migrateTitlePaths(): Promise<void> {
+    const stories: HnStory[] = await this.storyRepository.find();
+    for (const story of stories) {
+      if (story.titlePath == null && story.status == HnStoryStatus.PUBLISHED) {
+        story.titlePath = story.cleanTitlePath;
+        await this.storyRepository.save(story);
+      }
+    }
   }
 }

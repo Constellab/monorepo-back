@@ -71,7 +71,7 @@ export class HnAuthController {
         ? {
             path: '/',
             maxAge: expiresInMilliseconds,
-            sameSite: 'strict',
+            sameSite: 'lax',
             domain: this.configService.getDomain(),
             httpOnly: true,
             secure: !this.configService.isLocal(),
@@ -79,7 +79,7 @@ export class HnAuthController {
         : {
             path: '/',
             maxAge: expiresInMilliseconds,
-            sameSite: 'strict',
+            sameSite: 'lax',
             httpOnly: true,
             secure: !this.configService.isLocal(),
           }

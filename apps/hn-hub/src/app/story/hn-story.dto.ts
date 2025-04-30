@@ -29,6 +29,7 @@ export class HnStoryDto extends BlEntityWithIdDTO {
   topics?: HnTopic[];
   likes: number;
   comments: number;
+  titlePath?: string;
 
   constructor(story: HnStory) {
     super();
@@ -46,6 +47,7 @@ export class HnStoryDto extends BlEntityWithIdDTO {
     this.likes = story.likes;
     this.comments = story.comments;
     this.topics = story.topics;
+    this.titlePath = story.titlePath;
 
     if (story.storyAuthors?.length > 0) {
       this.storyAuthors = [];

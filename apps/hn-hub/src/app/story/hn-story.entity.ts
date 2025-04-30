@@ -85,6 +85,9 @@ export class HnStory extends BlEntityWithId {
   @Column({ default: 0 })
   comments: number;
 
+  @Column({ name: 'title_path', nullable: true })
+  titlePath: string;
+
   @BeforeInsert()
   setCreatedDate(): void {
     this.createdBy = HnCurrentUserHelper.getCurrentUser();
@@ -101,8 +104,8 @@ export class HnStory extends BlEntityWithId {
    * Path use in the url to have an explicit url (this is not mandatory to find the story)
    */
   @Expose()
-  get titlePath(): string {
-    return ClStringHelper.getCleanUrlPath(this.title);
+  get cleanTitlePath(): string {
+    return this.titlePath ?? ClStringHelper.getCleanUrlPath(this.title);
   }
 
   public getContentRichText(): TeRichText {

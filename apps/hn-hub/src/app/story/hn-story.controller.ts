@@ -352,4 +352,10 @@ export class HnStoryController extends HnAbstractFileController<HnStory> {
   public async setCreatedBy(): Promise<void> {
     return this.storyService.setCreatedBy();
   }
+
+  @IsAdmin()
+  @Post('migrate-title-paths')
+  public async migrateTitlePaths(): Promise<void> {
+    return this.storyService.migrateTitlePaths();
+  }
 }
