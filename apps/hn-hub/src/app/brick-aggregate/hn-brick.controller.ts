@@ -103,17 +103,19 @@ export class HnBrickController {
   }
 
   /**
-   * Special route that is called by the lab using the central API key to retrieve info about the brick.
+   * Special route that is called by the lab using the space API key to retrieve info about the brick.
    * If the key is present and valid, private bricks can be accessed.
+   * TODO remove central route once all lab manager are on v 1.20 and lab are on v 0.15.0
    */
   @BlPublic()
   @Get('central/name/:name/:version')
-  findOneByNameCentral(
+  @Get('space/name/:name/:version')
+  findOneByNameSpace(
     @Param('name') name: string,
     @Param('version') version: string,
     @Req() request: Request
   ): Promise<HnBrickVersionDownloadDTO> {
-    return this.brickAggregateService.findBrickByNameCentral(name, version, request.header('X-Api-Key'));
+    return this.brickAggregateService.findBrickByNameSpace(name, version, request.header('X-Api-Key'));
   }
 
   @BlPublic()
@@ -165,8 +167,8 @@ export class HnBrickController {
   }
 
   @BlPublic()
-  @Post('central-filters')
-  async getBricksByFilterFromCentral(
+  @Post('space-filters')
+  async getBricksByFilterFromSpace(
     @Body('spacesFilter') spacesFilter: string[],
     @Body('titleFilter') titleFilter: string,
     @Query('page', new ParseIntPipe()) page: number,
@@ -174,8 +176,8 @@ export class HnBrickController {
     @Body('userId') userId: string,
     @Req() request: Request
   ): Promise<ClPage<HnBrickDto>> {
-    const centralApiKey = request.header('X-Api-Key');
-    if (centralApiKey == null || this.configService.getCentralApiKey() !== centralApiKey) {
+    const spaceApiKey = request.header('X-Api-Key');
+    if (spaceApiKey == null || this.configService.getSpaceApiKey() !== spaceApiKey) {
       throw new BlUnauthorizedException();
     }
     return this.brickAggregateService.findBricksWithFilter(spacesFilter, titleFilter, page, size, userId);
@@ -233,14 +235,14 @@ export class HnBrickController {
   }
 
   @BlPublic()
-  @Post('central-versions-list/:brickId')
-  public getVersionsListForCentral(
+  @Post('space-versions-list/:brickId')
+  public getVersionsListForSpace(
     @Param('brickId') brickId: string,
     @Body('userId') userId: string,
     @Req() request: Request
   ): Promise<string[]> {
-    const centralApiKey = request.header('X-Api-Key');
-    if (centralApiKey == null || this.configService.getCentralApiKey() !== centralApiKey) {
+    const spaceApiKey = request.header('X-Api-Key');
+    if (spaceApiKey == null || this.configService.getSpaceApiKey() !== spaceApiKey) {
       throw new BlUnauthorizedException();
     }
     return this.brickAggregateService.getVersionsList(brickId, userId);
@@ -294,7 +296,7 @@ export class HnBrickController {
   @Post('is-actual-brick-and-new-version')
   async isActualBrickAndNewVersion(
     @Body(new BlParsePipe(HnIsActualBrickAndNewVersionDTO))
-    content: HnIsActualBrickAndNewVersionDTO
+      content: HnIsActualBrickAndNewVersionDTO
   ): Promise<[boolean, boolean]> {
     return this.brickAggregateService.isActualBrickAndNewVersion(content);
   }
@@ -368,14 +370,14 @@ export class HnBrickController {
   }
 
   @BlPublic()
-  @Post('central-name/:name')
-  async findOneByNameCentralClean(
+  @Post('space-name/:name')
+  async findOneByNameSpaceClean(
     @Param('name') name: string,
     @Body('userId') userId: string,
     @Req() request: Request
   ): Promise<HnBrickDto> {
-    const centralApiKey = request.header('X-Api-Key');
-    if (centralApiKey == null || this.configService.getCentralApiKey() !== centralApiKey) {
+    const spaceApiKey = request.header('X-Api-Key');
+    if (spaceApiKey == null || this.configService.getSpaceApiKey() !== spaceApiKey) {
       throw new BlUnauthorizedException();
     }
     return new HnBrickDto(await this.brickAggregateService.findBrickByName(name, userId));

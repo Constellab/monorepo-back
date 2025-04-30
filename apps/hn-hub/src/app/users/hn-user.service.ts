@@ -9,7 +9,7 @@ import {
   BlUserService,
 } from '@monorepo/back-core-lib';
 import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
-import { HnExternalCheckCredentialResponse } from '../auth/hn-central-auth.service';
+import { HnExternalCheckCredentialResponse } from '../auth/hn-space-auth.service';
 import { ClSupportedLanguage, ClTheme } from '@monorepo/core-lib';
 import { HnUserDetailDto, HnUserEditDetailDto } from './hn-user.dto';
 import { TeUser } from '@monorepo/te-text-editor';

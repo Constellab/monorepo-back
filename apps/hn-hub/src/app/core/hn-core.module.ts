@@ -4,7 +4,6 @@ import { BlExternalApiModule, BlRequestContextModule, BlTranslateModule } from '
 import { HttpModule } from '@nestjs/axios';
 import { HnFrontService } from './service/hn-front.service';
 import { HnDbBackupCron } from './cron/hn-db-backup.cron';
-import { HnLabConstellabApiService } from './service/hn-lab-constellab-api.service';
 import { MulterModule } from '@nestjs/platform-express';
 
 /**
@@ -26,7 +25,7 @@ import { MulterModule } from '@nestjs/platform-express';
       limits: { fileSize: 100 * 1024 * 1024 },
     }),
   ],
-  providers: [HnFrontService, HnDbBackupCron, HnLabConstellabApiService],
+  providers: [HnFrontService, HnDbBackupCron],
   exports: [
     HnCoreConfigModule,
 
@@ -36,7 +35,6 @@ import { MulterModule } from '@nestjs/platform-express';
 
     // Providers
     HnFrontService,
-    HnLabConstellabApiService,
   ],
 })
 export class HnCoreModule {}

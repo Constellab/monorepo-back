@@ -1,0 +1,26 @@
+{
+  "name": "cn-space-api",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/cn-space-api/src",
+  "projectType": "application",
+  "tags": ["back"],
+  "targets": {
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "dependsOn": ["build"],
+      "options": {
+        "buildTarget": "cn-space-api:build",
+        "runBuildTargetDependencies": false
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "cn-space-api:build:development"
+        },
+        "production": {
+          "buildTarget": "cn-space-api:build:production"
+        }
+      }
+    }
+  }
+}

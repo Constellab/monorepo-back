@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { HnUserService } from '../users/hn-user.service';
 import { BlCredentials, BlCredentials2Fa, BlJwtService } from '@monorepo/back-core-lib';
 import { HnUser } from '../users/hn-user.entity';
-import { HnCentralAuthService } from './hn-central-auth.service';
+import { HnSpaceAuthService } from './hn-space-auth.service';
 import { HnCoreConfigService } from '../core/modules/core-config/hn-core-config.service';
 
 export interface HnAuthResponse {
@@ -16,14 +16,14 @@ export class HnAuthService {
   constructor(
     private userService: HnUserService,
     private jwtService: BlJwtService,
-    private centralAuthService: HnCentralAuthService,
+    private spaceAuthService: HnSpaceAuthService,
     private coreConfigService: HnCoreConfigService
   ) {}
 
   async login(credentials: BlCredentials): Promise<HnAuthResponse> {
     const checkCredential = this.coreConfigService.isLocal()
       ? await this.userService.getUserCredentialsResponse(credentials)
-      : await this.centralAuthService.checkUserCredential(credentials);
+      : await this.spaceAuthService.checkUserCredential(credentials);
 
     // if there is no 2FA, the user can be logged in
     if (checkCredential.status === 'OK' && checkCredential.user) {
@@ -47,7 +47,7 @@ export class HnAuthService {
   }
 
   async loginWith2FA(credentials: BlCredentials2Fa): Promise<string> {
-    const user: HnUser = await this.centralAuthService.check2FA(credentials);
+    const user: HnUser = await this.spaceAuthService.check2FA(credentials);
     let dbUser = await this.userService.findOne(user.id);
 
     if (!dbUser) {

@@ -6,19 +6,19 @@ All the app and libraries hava a prefix to simplify search
 
 ## Apps
 
-### Central back : Cn
+### Space back : Cn
 
-The nest app for the central (constellab).
+The nest app for the space (constellab).
 
 Prefix: Cn
 
 To build the app, push a tag with the version number and the prefix 'cn\_'.
 For example, to build the version 1.0.0, push the tag `cn_1.0.0`.
 
-Then execute the npm script `cn-central-back:caprover-deploy-preprod` or `cn-central-back:caprover-deploy-prod`
+Then execute the npm script `cn-space-api:caprover-deploy-preprod` or `cn-space-api:caprover-deploy-prod`
 to deploy the app to caprover. Be careful of the image tag.
 
-To build the image locally : `docker build -t cn-central-back-test -f apps/cn-central-back/Dockerfile .`
+To build the image locally : `docker build -t cn-space-api-test -f apps/cn-space-api/Dockerfile .`
 
 ### Hub back (hn-hub) : Hn
 

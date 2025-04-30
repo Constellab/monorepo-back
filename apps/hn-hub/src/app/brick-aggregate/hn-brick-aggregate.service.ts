@@ -362,11 +362,11 @@ export class HnBrickAggregateService {
       const version: BlVersion =
         body.version.subPatch != null
           ? new BlVersion(
-              +body.version.major,
-              +body.version.minor,
-              +body.version.patch,
-              +body.version.subPatch
-            )
+            +body.version.major,
+            +body.version.minor,
+            +body.version.patch,
+            +body.version.subPatch
+          )
           : new BlVersion(+body.version.major, +body.version.minor, +body.version.patch);
 
       // TODO: Improve brick version creation (simplify in the aggregate)
@@ -447,21 +447,21 @@ export class HnBrickAggregateService {
     return brick;
   }
 
-  async findBrickByNameCentral(
+  async findBrickByNameSpace(
     name: string,
     version: string,
-    centralApiKey?: string
+    spaceApiKey?: string
   ): Promise<HnBrickVersionDownloadDTO> {
-    const brick = await this.brickService.findByNameCentral(name);
+    const brick = await this.brickService.findByNameSpace(name);
     if (brick == null) {
       throw new BlBadRequestException(HnErrorText.BRICK_NOT_FOUND, {
         detailArgs: { name: name },
       });
     }
 
-    // if the brick is private, it needs a valid centralApiKey
+    // if the brick is private, it needs a valid spaceApiKey
     if (brick.visibility === HnBrickVisibility.PRIVATE) {
-      if (centralApiKey == null || this.configService.getCentralApiKey() !== centralApiKey) {
+      if (spaceApiKey == null || this.configService.getSpaceApiKey() !== spaceApiKey) {
         throw new BlUnauthorizedException();
       }
     }

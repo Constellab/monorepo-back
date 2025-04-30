@@ -36,7 +36,7 @@ export class HnLabAuthGuard implements CanActivate {
     };
 
     let url: string =
-      this.coreConfigService.getCentralApiUrl() + 'external-community-labs/verify-without-user-rights';
+      this.coreConfigService.getSpaceApiUrl() + 'external-community-labs/verify-without-user-rights';
 
     if (!hnIsLabAllowWithoutUserAuth(this.reflector, context)) {
       if (request.header('user') == null) {
@@ -44,7 +44,7 @@ export class HnLabAuthGuard implements CanActivate {
       }
 
       headers['user'] = request.header('user');
-      url = this.coreConfigService.getCentralApiUrl() + 'external-community-labs/verify-rights';
+      url = this.coreConfigService.getSpaceApiUrl() + 'external-community-labs/verify-rights';
     }
 
     const checkApiKeyUserResult: HnLabAuthGuardResult = await lastValueFrom(

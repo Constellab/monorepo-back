@@ -244,3 +244,6 @@ CREATE TABLE `app_user` (
 ALTER TABLE `story`
 ADD COLUMN `title_path` varchar(255) DEFAULT NULL;
 # Call migration route POST /story/migrate-title-paths
+
+# 1.7.0
+-- Rename keys CENTRAL_API_URL to SPACE_API_URL and CENTRAL_API_KEY to SPACE_API_KEY

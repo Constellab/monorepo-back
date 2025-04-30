@@ -44,13 +44,13 @@ export class HnCoreConfigService {
     return env === 'dev' || env === 'docker' || env === 'test';
   }
 
-  public getCentralApiUrl(): string {
-    return this.isLocal() ? 'http://localhost:3001/' : this.configService.get('CENTRAL_API_URL');
+  public getSpaceApiUrl(): string {
+    return this.isLocal() ? 'http://localhost:3001/' : this.configService.get('SPACE_API_URL');
   }
 
-  // api key to communicate with central api
-  public getCentralApiKey(): string {
-    return this.configService.get('CENTRAL_API_KEY');
+  // api key to communicate with space api
+  public getSpaceApiKey(): string {
+    return this.configService.get('SPACE_API_KEY');
   }
 
   public getDatabaseConfig(): HnDatabaseConfig {

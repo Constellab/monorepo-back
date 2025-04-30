@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "command": "npm run cn-central-back:serve",
+      "command": "npm run cn-space-api:serve",
       "name": "Start dev",
       "request": "launch",
       "type": "node-terminal"

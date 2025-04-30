@@ -65,7 +65,7 @@ export class HnBrickService extends BlAbstractService<HnBrick> {
     return this.bricksRepository.findOne({ where: whereConditions });
   }
 
-  async findByNameCentral(name: string): Promise<HnBrick> {
+  async findByNameSpace(name: string): Promise<HnBrick> {
     return await this.bricksRepository.findOne({
       where: { name: name },
     });
