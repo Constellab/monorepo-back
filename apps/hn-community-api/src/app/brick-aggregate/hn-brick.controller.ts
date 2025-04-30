@@ -108,8 +108,7 @@ export class HnBrickController {
    * TODO remove central route once all lab manager are on v 1.20 and lab are on v 0.15.0
    */
   @BlPublic()
-  @Get('central/name/:name/:version')
-  @Get('space/name/:name/:version')
+  @Get(['central/name/:name/:version', 'space/name/:name/:version'])
   findOneByNameSpace(
     @Param('name') name: string,
     @Param('version') version: string,
