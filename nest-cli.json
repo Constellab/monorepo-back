@@ -1,5 +1,51 @@
 {
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "apps/cn-space-api/src",
+  "compilerOptions": {
+    "deleteOutDir": true,
+    "webpack": true,
+    "tsConfigPath": "apps/cn-space-api/tsconfig.app.json"
+  },
   "projects": {
+    "cn-space-api": {
+      "type": "application",
+      "root": "apps/cn-space-api",
+      "entryFile": "main",
+      "sourceRoot": "apps/cn-space-api/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/cn-space-api/tsconfig.app-nest.json",
+        "assets": ["assets/**/*", "environments/**/*"]
+      }
+    },
+    "hn-community-api": {
+      "type": "application",
+      "root": "apps/hn-community-api",
+      "entryFile": "main",
+      "sourceRoot": "apps/hn-community-api/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/hn-community-api/tsconfig.app-nest.json",
+        "assets": ["assets/**/*", "environments/**/*"]
+      }
+    },
+    "back-core-lib": {
+      "type": "library",
+      "root": "libs/back-core-lib",
+      "entryFile": "index",
+      "sourceRoot": "libs/back-core-lib/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/back-core-lib/tsconfig.lib.json"
+      }
+    },
+    "core-lib": {
+      "type": "library",
+      "root": "libs/core-lib",
+      "entryFile": "index",
+      "sourceRoot": "libs/core-lib/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/core-lib/tsconfig.lib.json"
+      }
+    },
     "te-text-editor": {
       "type": "library",
       "root": "libs/te-text-editor",
@@ -10,7 +56,6 @@
       }
     }
   },
-  "compilerOptions": {
-    "webpack": true
-  }
+  "monorepo": true,
+  "root": "apps/cn-space-api"
 }

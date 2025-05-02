@@ -6,6 +6,22 @@
       "name": "Start dev",
       "request": "launch",
       "type": "node-terminal"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug Nest Framework",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "cn-space-api:serve2"],
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug nx",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "cn-space-api:serve"],
+      "console": "integratedTerminal"
     }
   ]
 }
