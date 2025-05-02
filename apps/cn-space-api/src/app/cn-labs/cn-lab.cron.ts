@@ -1,24 +1,24 @@
+import { ClDateHelper } from '@monorepo/core-lib';
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
+import { DateTime } from 'luxon';
+import { CnExternalLabApiService } from '../cn-external-lab-api/cn-external-lab-api.service';
+import { CnLabBackupsHistory } from './backup/cn-lab-backup.dto';
+import { CnLabAggregateService } from './cn-lab-aggregate.service';
+import { CnLabManagerService } from './cn-lab-manager.service';
+import { CnLab } from './cn-lab.entity';
 import { CnLabsService } from './cn-labs.service';
-import { CnLabServerService } from './server/cn-lab-server.service';
-import { CnLabGreenOptionService } from './green-option/cn-lab-green-option.service';
 import {
   CnLabGreenOption,
   CnLabGreenOptionStopAfterInactivityValue,
   CnLabGreenOptionStopAfterTimeValue,
   CnLabGreenOptionType,
 } from './green-option/cn-lab-green-option.entity';
-import { CnExternalLabApiService } from '../cn-external-lab-api/cn-external-lab-api.service';
-import { ClDateHelper } from '@monorepo/core-lib';
-import { DateTime } from 'luxon';
-import { CnLab } from './cn-lab.entity';
-import { CnLabAggregateService } from './cn-lab-aggregate.service';
-import { CnLabStatus } from './status/cn-lab-status.enum';
-import { CnLabFreeService } from './lab-free/cn-lab-free.service';
+import { CnLabGreenOptionService } from './green-option/cn-lab-green-option.service';
 import { CnLabFree } from './lab-free/cn-lab-free.entity';
-import { CnLabBackupsHistory } from './backup/cn-lab-backup.dto';
-import { CnLabManagerService } from './cn-lab-manager.service';
+import { CnLabFreeService } from './lab-free/cn-lab-free.service';
+import { CnLabServerService } from './server/cn-lab-server.service';
+import { CnLabStatus } from './status/cn-lab-status.enum';
 
 /**
  * Service that gather all the cron jobs for the labs
@@ -96,9 +96,9 @@ export class CnLabCron {
     for (const option of options) {
       const lab = await this.labService.findByIdAndCheck(option.labId);
       if (lab.isRunning()) {
-        const backup: CnLabBackupsHistory = await this.labManagerService
+        const backup: CnLabBackupsHistory | null = await this.labManagerService
           .getLastBackupsStatus(lab)
-          .catch(() => null);
+          .catch((): null => null);
 
         // if a backup is in progress, we do nothing
         if (backup == null || backup.backups.some((b) => b.status === 'IN_PROGRESS')) {
@@ -118,7 +118,7 @@ export class CnLabCron {
       if (lab.isRunning()) {
         const labGlobalActivity = await this.externalLabApiService
           .getLabGlobalActivity(lab.getGlabSpaceApiInfo())
-          .catch(() => null);
+          .catch((): null => null);
 
         if (
           labGlobalActivity == null ||
@@ -172,7 +172,7 @@ export class CnLabCron {
 
         const labGlobalActivity = await this.externalLabApiService
           .getLabGlobalActivity(lab.getGlabSpaceApiInfo())
-          .catch(() => null);
+          .catch((): null => null);
         if (labGlobalActivity == null || labGlobalActivity.last_activity == null) continue;
 
         const lastActivityDate = ClDateHelper.getDate(labGlobalActivity.last_activity.created_at);

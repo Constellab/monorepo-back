@@ -2,13 +2,6 @@
   "extends": "../../tsconfig.base.json",
   "files": [],
   "include": [],
-  "compilerOptions": {
-    "module": "commonjs",
-    "declaration": true,
-    "removeComments": true,
-    "allowSyntheticDefaultImports": true,
-    "target": "es2017"
-  },
   "references": [
     {
       "path": "./tsconfig.app.json"
@@ -16,5 +9,8 @@
     {
       "path": "./tsconfig.spec.json"
     }
-  ]
+  ],
+  "compilerOptions": {
+    "esModuleInterop": true,
+  }
 }

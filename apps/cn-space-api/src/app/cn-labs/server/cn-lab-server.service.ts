@@ -535,7 +535,7 @@ export class CnLabServerService {
     // check if there are any running containers
     const labActivity = await this.externalLabApiService
       .getLabGlobalActivity(lab.getGlabSpaceApiInfo())
-      .catch((error) => {
+      .catch((error): null => {
         if (throwErrorOnActivityGetError) {
           throw error;
         }

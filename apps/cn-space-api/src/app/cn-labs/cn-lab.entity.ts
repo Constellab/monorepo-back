@@ -259,7 +259,7 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
   }
 
   isRunning(): boolean {
-    return this.currentStatus?.status === CnLabStatus.LAB_RUNNING ?? false;
+    return this.currentStatus?.status === CnLabStatus.LAB_RUNNING;
   }
 
   serverIsStopped(): boolean {

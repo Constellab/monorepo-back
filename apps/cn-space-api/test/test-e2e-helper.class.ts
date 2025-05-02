@@ -2,7 +2,6 @@ import { CnAppModule } from '../src/cn-app.module';
 import { CnCoreConfigService } from '../src/app/cn-core/modules/cn-core-config/cn-core-config.service';
 import { TestConfigService } from './test-config.service';
 import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
 import supertest, { SuperTest } from 'supertest';
 import { Test } from '@nestjs/testing';
 import { TestRequest } from './test-request.class';
@@ -116,7 +115,7 @@ export class TestE2EHelper {
   }
 
   private getSuperTest(): SuperTest<supertest.Test> {
-    return request(this.app.getHttpServer());
+    return supertest(this.app.getHttpServer());
   }
 
   private buildTestRequest(superTest: supertest.Test): TestRequest {
