@@ -34,6 +34,9 @@ export class CnFoldersService extends BlAbstractService<CnFolderEntity> {
 
   public async getDescription(id: string): Promise<TeRichText> {
     const folder = await this.findByIdAndCheckWithDescription(id);
+    // this is for test purpose and should be removed
+    const folderWithStorage = await this.findByIfAndCheckWithStorage(id);
+    console.log(folderWithStorage);
     return new TeRichText(folder.description);
   }
 
