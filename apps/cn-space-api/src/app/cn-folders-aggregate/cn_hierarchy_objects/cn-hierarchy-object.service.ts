@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { BlAbstractService, BlSearchParams } from '@monorepo/back-core-lib';
+import { BlAbstractService, BlSearchBuilder, BlSearchParams } from '@monorepo/back-core-lib';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   CnHierarchyObject,
   CnHierarchyObjectEntity,
   CnHierarchyObjectType,
   CnHierarchyObjectWithChildren,
+  CnHierarchyObjectWithParent,
 } from './cn-hierarchy-object.entity';
 import { EntityManager, In, IsNull, TreeRepository } from 'typeorm';
 import { ClPage } from '@monorepo/core-lib';
-import { CnHierarchyObjectSearch } from './cn-hierarchy-object.search';
 import { CnTag } from '../cn-hierarchy-object-tags/cn-hierarchy-object-tag.dto';
 
 @Injectable()
@@ -39,7 +39,7 @@ export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjec
     let currentFolder = parent;
     while (currentFolder != null) {
       folders.push(currentFolder);
-      currentFolder = currentFolder.parent;
+      currentFolder = currentFolder.parent as CnHierarchyObjectEntity;
     }
     return folders;
   }
@@ -126,7 +126,7 @@ export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjec
     page: number,
     size: number
   ): Promise<ClPage<CnHierarchyObject>> {
-    const searchBuilder = new CnHierarchyObjectSearch();
+    const searchBuilder: BlSearchBuilder<CnHierarchyObjectEntity> = new BlSearchBuilder();
     // force the sort by objectType first
     searchBuilder.mergeOrderOptions({ objectTypeOrder: 'ASC' });
     searchBuilder.addSearchParams(searchParam);
@@ -146,12 +146,38 @@ export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjec
     page: number,
     size: number
   ): Promise<ClPage<CnHierarchyObject>> {
-    const searchBuilder = new CnHierarchyObjectSearch();
+    const searchBuilder: BlSearchBuilder<CnHierarchyObjectEntity> = new BlSearchBuilder();
     // force the sort by objectType first
     searchBuilder.mergeOrderOptions({ objectTypeOrder: 'ASC' });
     searchBuilder.addSearchParams(searchParam);
     searchBuilder.mergeWhereOptions({ parentId: folderId, isVisible: true });
 
+    return await this.findPaginated(page, size, searchBuilder.build());
+  }
+
+  public async searchVisibleInRootFoldersAndChildren(
+    rootFoldersIds: string[],
+    spaceId: string,
+    searchParam: BlSearchParams,
+    page: number,
+    size: number
+  ): Promise<ClPage<CnHierarchyObjectWithParent>> {
+    const searchBuilder: BlSearchBuilder<CnHierarchyObjectEntity> = new BlSearchBuilder();
+    // force the sort by objectType first
+    searchBuilder.mergeOrderOptions({ objectTypeOrder: 'ASC' });
+    searchBuilder.addSearchParams(searchParam);
+    searchBuilder.mergeWhereOptions({
+      isVisible: true,
+      spaceId: spaceId,
+    });
+    searchBuilder.addOrOption({
+      rootParentId: In(rootFoldersIds),
+    });
+    searchBuilder.addOrOption({
+      id: In(rootFoldersIds),
+    });
+
+    searchBuilder.setRelations({ parent: true });
     return await this.findPaginated(page, size, searchBuilder.build());
   }
 

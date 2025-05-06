@@ -55,7 +55,10 @@ import {
   CnDocumentPreviewDTO,
   CnFolderStorageUsageDTO,
 } from './cn-documents/cn-document-dto.class';
-import { CnHierarchyObject } from './cn_hierarchy_objects/cn-hierarchy-object.entity';
+import {
+  CnHierarchyObject,
+  CnHierarchyObjectWithParent,
+} from './cn_hierarchy_objects/cn-hierarchy-object.entity';
 import { CnChatMessageDto } from '../cn-chat-message/cn-chat-message.dto';
 
 @Controller('folders')
@@ -86,6 +89,15 @@ export class CnFoldersController {
   public async getAllCurrentFolders(): Promise<CnFolderSimpleDTO[]> {
     const folders = await this.folderAggregateService.getAllCurrentRootFolders();
     return folders.map((folder) => new CnFolderSimpleDTO(folder));
+  }
+
+  @Post('/root/search-children')
+  public async searchInRootFoldersAndChildren(
+    @Body(new BlParsePipe(BlSearchParams)) searchParam: BlSearchParams,
+    @Query('page', ParseIntPipe) page: number,
+    @Query('size', ParseIntPipe) size: number
+  ): Promise<ClPageI<CnHierarchyObjectWithParent>> {
+    return await this.folderAggregateService.searchInRootFoldersAndChildren(searchParam, page, size);
   }
 
   @Get('current-space')
@@ -363,6 +375,7 @@ export class CnFoldersController {
   @Get('document/:documentId/download/:filename(*)')
   public async downloadDocument(
     @Param('documentId') documentId: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     @Param('filename') _: string
   ): Promise<StreamableFile> {
     const file = await this.folderAggregateService.getUploadedDocument(documentId);

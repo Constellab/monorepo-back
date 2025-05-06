@@ -55,14 +55,14 @@ export class CnHierarchyObjectEntity extends BlEntityWithId {
 
   // parent folder of this folder, can be null if this folder is a folder
   @TreeParent({ onDelete: 'RESTRICT' })
-  parent: CnHierarchyObjectEntity;
+  parent: CnHierarchyObject;
 
   @Column({ nullable: true })
   parentId: string | null;
 
-  @Exclude()
+  // @Exclude()
   @ManyToOne(() => CnHierarchyObjectEntity, { nullable: true, onDelete: 'RESTRICT', onUpdate: 'RESTRICT' })
-  rootParent: CnHierarchyObjectEntity;
+  rootParent: CnHierarchyObject;
 
   @Column({ nullable: true })
   rootParentId: string | null;
@@ -240,3 +240,8 @@ export type CnHierarchyObject = Omit<
 >;
 
 export type CnHierarchyObjectWithChildren = Omit<CnHierarchyObjectEntity, 'parent' | 'rootParent' | 'space'>;
+
+export type CnHierarchyObjectWithParent = Omit<
+  CnHierarchyObjectEntity,
+  'children' | 'sortChildrenTree' | 'filterChildrenFolder' | 'rootParent' | 'space' | 'tags'
+>;

@@ -22,7 +22,8 @@ import { FindOptionsRelations } from 'typeorm/find-options/FindOptionsRelations'
 import { ClHelpService } from '@monorepo/core-lib';
 
 export class BlSearchBuilder<T> {
-  public whereOptions: FindOptionsWhere<T> = {};
+  private whereOptions: FindOptionsWhere<T> = {};
+  private orOptions: FindOptionsWhere<T>[] = [];
   private orderOptions: FindOptionsOrder<T> = {};
   private relations: FindOptionsRelations<T> = {};
 
@@ -61,10 +62,10 @@ export class BlSearchBuilder<T> {
     }
 
     // specific case, if the property is a FindOperator (like IsNull()), we don't merge
-    if (source.hasOwnProperty('@instanceof')) return source;
+    if (Object.prototype.hasOwnProperty.call(source, '@instanceof')) return source;
 
     for (const key in source) {
-      if (source.hasOwnProperty(key)) {
+      if (Object.prototype.hasOwnProperty.call(source, key)) {
         if (source[key] instanceof Array) {
           if (!target[key]) {
             target[key] = [];
@@ -99,9 +100,30 @@ export class BlSearchBuilder<T> {
     this.relations = relations;
   }
 
+  /**
+   * Add an 'or' option to the builder. The where option are merged with all the 'or' option.
+   * @param option
+   */
+  public addOrOption(option: FindOptionsWhere<T>): void {
+    this.orOptions.push(option);
+  }
+
   public build(): FindOneOptions<T> {
+    let whereOptions: FindOptionsWhere<T> | FindOptionsWhere<T>[];
+    if (this.orOptions.length === 0) {
+      whereOptions = this.whereOptions;
+    } else {
+      whereOptions = this.orOptions.map((orOption) => {
+        // copy the where options to avoid modifying the original one
+        const whereOptionCopy = this.deepMergeWhereOptions({}, this.whereOptions);
+        // add the 'or' option to the where options
+        return this.deepMergeWhereOptions(whereOptionCopy, orOption);
+      });
+    }
+
     return {
-      where: this.whereOptions,
+      // if there is only one 'or' option, we can use it directly
+      where: Array.isArray(whereOptions) && whereOptions.length === 1 ? whereOptions[0] : whereOptions,
       order: !ClHelpService.isNullOrEmpty(this.orderOptions) ? this.orderOptions : this.defaultOrder,
       relations: this.relations,
     };

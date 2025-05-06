@@ -56,6 +56,7 @@ import {
   CnHierarchyObjectEntity,
   CnHierarchyObjectType,
   CnHierarchyObjectWithChildren,
+  CnHierarchyObjectWithParent,
 } from './cn_hierarchy_objects/cn-hierarchy-object.entity';
 import { CnHierarchyObjectService } from './cn_hierarchy_objects/cn-hierarchy-object.service';
 import {
@@ -388,6 +389,25 @@ export class CnFolderAggregateService {
     const folder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(folderId);
 
     return this.hierarchyObjectService.searchVisibleChildren(folder.id, searchParam, page, size);
+  }
+
+  public async searchInRootFoldersAndChildren(
+    searchParam: BlSearchParams,
+    page: number,
+    size: number
+  ): Promise<ClPage<CnHierarchyObjectWithParent>> {
+    const spaceId = CnCurrentUserHelper.getAndCheckCurrentSpace().id;
+    const rootFolders = await this.hierarchyObjectService.getAllRootFoldersOfUser(
+      CnCurrentUserHelper.getAndCheckCurrentUser().id,
+      spaceId
+    );
+    return this.hierarchyObjectService.searchVisibleInRootFoldersAndChildren(
+      rootFolders.map((folder) => folder.id),
+      spaceId,
+      searchParam,
+      page,
+      size
+    );
   }
 
   public async getFolderAncestors(folderId: string): Promise<CnHierarchyObject[]> {
