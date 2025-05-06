@@ -29,7 +29,8 @@ RUN apk add openrc openssh
 COPY --from=builder /app/package.json /app/package-lock.json ./
 
 # dependency are needed and there are not build in chunck
-RUN npm ci --only=production
+# ignore-scripts is needed to avoid running the postinstall script (like prepare husky)
+RUN npm ci --only=production --ignore-scripts
 
 # copy dist
 COPY --from=builder /app/dist/apps/cn-space-api ./dist
