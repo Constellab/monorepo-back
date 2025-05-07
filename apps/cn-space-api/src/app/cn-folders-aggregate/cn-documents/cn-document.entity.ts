@@ -66,9 +66,6 @@ export class CnDocumentEntity extends CnHierarchyRepresentation {
   @ManyToOne(() => CnDocumentEntity, { nullable: true })
   parentDocument?: CnDocument;
 
-  @Column({ nullable: false, default: false })
-  inTrash: boolean;
-
   // Use to differentiate between the different types of bucket
   // to calculate storage
   @Column({
@@ -101,17 +98,13 @@ export class CnDocumentEntity extends CnHierarchyRepresentation {
     } else {
       objectType = CnHierarchyObjectType.HIDDEN_DOCUMENT;
     }
+
     return {
       objectType: objectType,
       name: this.name,
       user: this.lastModifiedBy ?? CnCurrentUserHelper.getAndCheckCurrentUser(),
       lastModifiedAt: this.lastModifiedAt ?? ClDateHelper.getDate(),
       documentSize: this.size,
-      // the object is visible in the hierarchy only if it's an uploaded document or a constellab document
-      // and it is not in the trash
-      isVisible:
-        [CnDocumentType.UPLOADED_DOCUMENT, CnDocumentType.CONSTELLAB_DOCUMENT].includes(this.type) &&
-        !this.inTrash,
       style: this.style,
     };
   }

@@ -25,28 +25,68 @@ export interface CnFoldersAggregateSecurityI {
 @Injectable()
 export class CnFoldersSecurityService {
   constructor(
-    private folderObjectService: CnHierarchyObjectService,
+    private hierarchyObjectService: CnHierarchyObjectService,
     private folderUserService: CnFolderUserService
   ) {}
 
-  public async checkFindOneAndGetRootFolder(folder: CnHierarchyObject): Promise<CnHierarchyObject> {
-    const securityService = this.getSecurityService();
-    return securityService.checkFindOneAndGetRootFolder(folder);
+  public async getAndCheckAuthorizationForFindOneByHierarchyObject(
+    hierarchyObjectId: string
+  ): Promise<CnHierarchyObject> {
+    const folder = await this.hierarchyObjectService.findByIdAndCheck(hierarchyObjectId);
+
+    await this.checkFindOneAndGetRootFolder(folder.id);
+    return folder;
   }
 
-  public async checkFindOne(folder: CnHierarchyObject): Promise<void> {
-    await this.checkFindOneAndGetRootFolder(folder);
+  public async getAndCheckAuthorizationForFolderUpdate(folderId: string): Promise<CnHierarchyObject> {
+    const folder = await this.hierarchyObjectService.findByIdAndCheck(folderId);
+    this.checkHierarchyObject(folder);
+
+    await this.checkUpdate(folder);
+    return folder;
   }
 
-  public async checkUpdate(folder: CnHierarchyObject): Promise<void> {
+  /**
+   * Check the authorization for a hierarchy object update
+   * @param hierarchyObjectId
+   * @param allowObjectInTrash if true, the object can be in trash
+   */
+  public async getAndCheckAuthorizationForHierarchyObjectUpdate(
+    hierarchyObjectId: string,
+    allowObjectInTrash: boolean = false
+  ): Promise<CnHierarchyObject> {
+    const hierarchyObject = await this.hierarchyObjectService.findByIdAndCheck(hierarchyObjectId);
+    if (!allowObjectInTrash) {
+      this.checkHierarchyObject(hierarchyObject);
+    }
+
+    // if this is a folder, we check the folder security
+    if (hierarchyObject.isFolder()) {
+      await this.checkUpdate(hierarchyObject);
+    }
+    return hierarchyObject;
+  }
+
+  public async checkFindOneAndGetRootFolder(hierarchyObjectId: string): Promise<CnHierarchyObject> {
+    const hierarchyObject = await this.hierarchyObjectService.findByIdAndCheck(hierarchyObjectId);
+    this.checkHierarchyObject(hierarchyObject);
+
     const securityService = this.getSecurityService();
-    return securityService.checkUpdate(folder);
+    return securityService.checkFindOneAndGetRootFolder(hierarchyObject);
+  }
+
+  ////////////////////////////// CHECKS //////////////////////////////
+
+  private async checkUpdate(hierarchyObject: CnHierarchyObject): Promise<void> {
+    const securityService = this.getSecurityService();
+    return securityService.checkUpdate(hierarchyObject);
   }
 
   /**
    * Only the leader or leader of a parent folder can update the leader of children folder
    */
   public async checkUpdateFolderLeader(hierarchyObject: CnHierarchyObject): Promise<void> {
+    this.checkHierarchyObject(hierarchyObject);
     const securityService = this.getSecurityService();
     return securityService.checkUpdateFolderLeader(hierarchyObject);
   }
@@ -64,11 +104,17 @@ export class CnFoldersSecurityService {
     return securityService.checkFindAllBySpace();
   }
 
+  private checkHierarchyObject(hierarchyObject: CnHierarchyObject): void {
+    if (hierarchyObject.visibility === 'TRASH') {
+      throw new BlUnauthorizedException('The object is in the trash, please restore it before using it');
+    }
+  }
+
   private getSecurityService(): CnFoldersAggregateSecurityI {
     const authContext = CnCurrentUserHelper.getAndCheckAuthContext();
 
     if (authContext.type === 'labToken') {
-      return new CnFoldersSecurityLabAccessToken(authContext, this.folderObjectService);
+      return new CnFoldersSecurityLabAccessToken(authContext, this.hierarchyObjectService);
     } else if (
       authContext.type === 'user' ||
       authContext.type === 'labProd' ||
@@ -76,7 +122,7 @@ export class CnFoldersSecurityService {
     ) {
       return new CnFoldersSecurityUser(
         authContext.userInfo,
-        this.folderObjectService,
+        this.hierarchyObjectService,
         this.folderUserService
       );
     }

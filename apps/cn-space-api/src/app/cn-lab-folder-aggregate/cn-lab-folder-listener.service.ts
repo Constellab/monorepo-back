@@ -34,11 +34,19 @@ export class CnLabFolderListener {
         // on a folder upload, we sync the root folder
         await this.syncFolderWithLabs(event.parentFolder.getRootFolderId());
         break;
-      case 'DELETE_FOLDER':
+      case 'DELETE_OBJECT':
+      case 'MOVE_OBJECT_TO_TRASH':
         const hierarchyObject: CnHierarchyObject = event.entity;
         // if the root folder was deleted, do nothing
-        if (!hierarchyObject.isRootFolder()) {
+        if (hierarchyObject.isFolder() && !hierarchyObject.isRootFolder()) {
           await this.syncFolderWithLabs(hierarchyObject.getRootFolderId());
+        }
+        break;
+      case 'RESTORE_OBJECT_FROM_TRASH':
+        const restoredObject: CnHierarchyObject = event.entity;
+        // if the root folder was restored, do nothing
+        if (restoredObject.isFolder() && !restoredObject.isRootFolder()) {
+          await this.syncFolderWithLabs(restoredObject.getRootFolderId());
         }
         break;
       case 'MOVE_FOLDER':

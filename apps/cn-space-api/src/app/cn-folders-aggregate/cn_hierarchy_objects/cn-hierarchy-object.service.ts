@@ -5,6 +5,7 @@ import {
   CnHierarchyObject,
   CnHierarchyObjectEntity,
   CnHierarchyObjectType,
+  CnHierarchyObjectVisibility,
   CnHierarchyObjectWithChildren,
   CnHierarchyObjectWithParent,
 } from './cn-hierarchy-object.entity';
@@ -51,20 +52,30 @@ export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjec
   }
 
   /**
-   * Get the folder tree from the root folder, only return the node of type folder
+   * Get the folder tree from the root folder, only return the node of type folder and visible
    * @param folder
    */
   public async getFolderTree(folder: CnHierarchyObject): Promise<CnHierarchyObjectWithChildren> {
-    const folderTree = await this.repository.findDescendantsTree(folder as CnHierarchyObjectEntity);
+    const folderTree = await this.getObjectTree(folder);
 
-    return folderTree.filterChildrenFolder().sortChildrenTree();
+    return folderTree.filterChildrenRecursively(
+      (child) =>
+        child.objectType === CnHierarchyObjectType.FOLDER &&
+        child.visibility === CnHierarchyObjectVisibility.VISIBLE
+    );
+  }
+
+  public async getObjectTree(hierarchyObject: CnHierarchyObject): Promise<CnHierarchyObjectWithChildren> {
+    const folderTree = await this.repository.findDescendantsTree(hierarchyObject as CnHierarchyObjectEntity);
+
+    return folderTree.sortChildrenTree();
   }
 
   public async getChildrenFolder(parentFolderId: string): Promise<CnHierarchyObject[]> {
     return this.repository.find({
       where: {
         parentId: parentFolderId,
-        isVisible: true,
+        visibility: CnHierarchyObjectVisibility.VISIBLE,
         objectType: CnHierarchyObjectType.FOLDER,
       },
       order: {
@@ -94,12 +105,17 @@ export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjec
     });
   }
 
-  public async getAllRootFoldersOfUser(userId: string, spaceId: string): Promise<CnHierarchyObject[]> {
+  public async getAllRootFoldersOfUser(
+    userId: string,
+    spaceId: string,
+    visibility?: CnHierarchyObjectVisibility
+  ): Promise<CnHierarchyObject[]> {
     return await this.repository.find({
       where: {
         users: { userId: userId },
         spaceId: spaceId,
         parentId: IsNull(),
+        visibility: visibility,
       },
       order: {
         lastModifiedAt: 'DESC' as any,
@@ -132,7 +148,7 @@ export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjec
     searchBuilder.addSearchParams(searchParam);
     searchBuilder.mergeWhereOptions({
       spaceId: spaceId,
-      isVisible: true,
+      visibility: CnHierarchyObjectVisibility.VISIBLE,
       users: { userId: userId },
       parentId: IsNull(),
     });
@@ -140,8 +156,9 @@ export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjec
     return await this.findPaginated(page, size, searchBuilder.build());
   }
 
-  public async searchVisibleChildren(
+  public async searchInFolderChildren(
     folderId: string,
+    visibility: CnHierarchyObjectVisibility,
     searchParam: BlSearchParams,
     page: number,
     size: number
@@ -150,14 +167,15 @@ export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjec
     // force the sort by objectType first
     searchBuilder.mergeOrderOptions({ objectTypeOrder: 'ASC' });
     searchBuilder.addSearchParams(searchParam);
-    searchBuilder.mergeWhereOptions({ parentId: folderId, isVisible: true });
+    searchBuilder.mergeWhereOptions({ parentId: folderId, visibility: visibility });
 
     return await this.findPaginated(page, size, searchBuilder.build());
   }
 
-  public async searchVisibleInRootFoldersAndChildren(
+  public async searchInRootFoldersAndChildren(
     rootFoldersIds: string[],
     spaceId: string,
+    visibility: CnHierarchyObjectVisibility,
     searchParam: BlSearchParams,
     page: number,
     size: number
@@ -167,7 +185,7 @@ export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjec
     searchBuilder.mergeOrderOptions({ objectTypeOrder: 'ASC' });
     searchBuilder.addSearchParams(searchParam);
     searchBuilder.mergeWhereOptions({
-      isVisible: true,
+      visibility: visibility,
       spaceId: spaceId,
     });
     searchBuilder.addOrOption({
@@ -303,5 +321,28 @@ export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjec
     hierarchyObject.setLastTags(tags);
     await this.repository.update(hierarchyObject.id, { lastTagsStr: hierarchyObject.lastTagsStr });
     return hierarchyObject;
+  }
+
+  public async updateVisibility(
+    hierarchyObjectIds: string[],
+    visibility: CnHierarchyObjectVisibility
+  ): Promise<void> {
+    await this.repository.update(
+      {
+        id: In(hierarchyObjectIds),
+      },
+      {
+        visibility: visibility,
+      }
+    );
+  }
+
+  public getAllChildrenInTrash(folderId: string): Promise<CnHierarchyObject[]> {
+    return this.repository.find({
+      where: {
+        parentId: folderId,
+        visibility: CnHierarchyObjectVisibility.TRASH,
+      },
+    });
   }
 }

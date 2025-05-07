@@ -1,17 +1,17 @@
 import { Controller, Get, Param, ParseUUIDPipe } from '@nestjs/common';
 import { CnScenario } from './cn-scenario.entity';
 import { CnScenarioDto } from './cn-scenario.dto';
-import { CnFolderAggregateService } from '../cn-folder-aggregate.service';
 import { CnLabConfig } from '../../cn-lab-configs/cn-lab-config.entity';
 import { CnScenarioProtocol } from './cn-scenario-protocol.class';
+import { CnScenarioAggregateService } from '../cn-scenario-aggregate.service';
 
 @Controller('scenarios')
 export class CnScenariosController {
-  constructor(private folderAggregateService: CnFolderAggregateService) {}
+  constructor(private scenarioAggregateService: CnScenarioAggregateService) {}
 
   @Get(':id')
   findById(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnScenario> {
-    return this.folderAggregateService.findScenario(id);
+    return this.scenarioAggregateService.findScenario(id);
   }
 
   /**
@@ -21,13 +21,13 @@ export class CnScenariosController {
   public async getScenariosByFolder(
     @Param('folderId', ParseUUIDPipe) folderId: string
   ): Promise<CnScenarioDto[]> {
-    const scenarios = await this.folderAggregateService.getScenariosByFolder(folderId);
+    const scenarios = await this.scenarioAggregateService.getScenariosByFolder(folderId);
     return scenarios.map((scenario) => new CnScenarioDto().copyEntity(scenario));
   }
 
   @Get('note/:noteId')
   async getScenariosByNote(@Param('noteId', new ParseUUIDPipe()) noteId: string): Promise<CnScenarioDto[]> {
-    const scenarios = await this.folderAggregateService.getScenariosAssociatedToNotes(noteId);
+    const scenarios = await this.scenarioAggregateService.getScenariosAssociatedToNotes(noteId);
     return scenarios.map((scenario) => new CnScenarioDto().copyEntity(scenario));
   }
 
@@ -38,7 +38,7 @@ export class CnScenariosController {
   async getScenarioTechnicalReport(
     @Param('scenarioId', new ParseUUIDPipe()) scenarioId: string
   ): Promise<CnScenarioProtocol> {
-    return this.folderAggregateService.findScenarioTechnicalReport(scenarioId);
+    return this.scenarioAggregateService.findScenarioTechnicalReport(scenarioId);
   }
 
   /**
@@ -48,6 +48,6 @@ export class CnScenariosController {
   async getScenarioLabConfig(
     @Param('scenarioId', new ParseUUIDPipe()) scenarioId: string
   ): Promise<CnLabConfig> {
-    return this.folderAggregateService.findScenarioLabConfig(scenarioId);
+    return this.scenarioAggregateService.findScenarioLabConfig(scenarioId);
   }
 }

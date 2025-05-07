@@ -11,7 +11,6 @@ export interface CnHierarchyObjectInfo {
   style: CnTypeStyle;
   isValidated?: boolean;
   documentSize?: number;
-  isVisible?: boolean;
 }
 
 /**

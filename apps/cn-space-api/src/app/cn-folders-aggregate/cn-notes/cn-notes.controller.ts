@@ -1,28 +1,28 @@
-import { Controller, Delete, Get, Param, ParseUUIDPipe, Res } from '@nestjs/common';
+import { Controller, Get, Param, ParseUUIDPipe, Res } from '@nestjs/common';
 import { CnNote } from './cn-note.entity';
 import { Response } from 'express';
-import { CnFolderAggregateService } from '../cn-folder-aggregate.service';
 import { BlResponseHelper } from '@monorepo/back-core-lib';
 import { TeRichTextBlockModificationWithUser, TeRichTextDTO } from '@monorepo/te-text-editor';
+import { CnNoteAggregateService } from '../cn-note-aggregate.service';
 
 @Controller('notes')
 export class CnNotesController {
-  constructor(private folderAggregateService: CnFolderAggregateService) {}
+  constructor(private noteAggregateService: CnNoteAggregateService) {}
 
   @Get(':id/content')
   async getNoteContent(@Param('id', new ParseUUIDPipe()) id: string): Promise<TeRichTextDTO> {
-    const richText = await this.folderAggregateService.findNoteContent(id);
+    const richText = await this.noteAggregateService.findNoteContent(id);
     return richText.toJson();
   }
 
   @Get(':id')
   async findById(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnNote> {
-    return await this.folderAggregateService.findNote(id);
+    return await this.noteAggregateService.findNote(id);
   }
 
   @Get('scenario/:scenarioId')
   async getNotesByScenario(@Param('scenarioId', new ParseUUIDPipe()) scenarioId: string): Promise<CnNote[]> {
-    return await this.folderAggregateService.getNoteAssociatedToScenario(scenarioId);
+    return await this.noteAggregateService.getNoteAssociatedToScenario(scenarioId);
   }
 
   /**
@@ -35,7 +35,7 @@ export class CnNotesController {
     @Param('filename') filename: string,
     @Res() response: Response
   ): Promise<any> {
-    const file = await this.folderAggregateService.getNoteFile(id, filename);
+    const file = await this.noteAggregateService.getNoteFile(id, filename);
     BlResponseHelper.setFileResponseAndCache(response, file);
   }
 
@@ -48,13 +48,8 @@ export class CnNotesController {
     @Param('viewId') viewId: string,
     @Res() response: Response
   ): Promise<any> {
-    const file = await this.folderAggregateService.getNoteView(id, viewId);
+    const file = await this.noteAggregateService.getNoteView(id, viewId);
     BlResponseHelper.setFileResponseAndCache(response, file);
-  }
-
-  @Delete(':id')
-  public async deleteNote(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
-    await this.folderAggregateService.deleteNote(id);
   }
 
   /////////////////////////////////////////////// HISTORY ///////////////////////////////////////////////
@@ -62,7 +57,7 @@ export class CnNotesController {
   async getNoteModifications(
     @Param('noteId', new ParseUUIDPipe()) noteId: string
   ): Promise<TeRichTextBlockModificationWithUser[]> {
-    return this.folderAggregateService.getNoteModifications(noteId);
+    return this.noteAggregateService.getNoteModifications(noteId);
   }
 
   @Get(':noteId/history/undo-content/:modificationId')
@@ -70,6 +65,6 @@ export class CnNotesController {
     @Param('noteId', new ParseUUIDPipe()) noteId: string,
     @Param('modificationId', new ParseUUIDPipe()) modificationId: string
   ): Promise<Record<string, any>> {
-    return this.folderAggregateService.getNoteUndoContent(noteId, modificationId);
+    return this.noteAggregateService.getNoteUndoContent(noteId, modificationId);
   }
 }

@@ -7,7 +7,6 @@ import { CnExternalLabApiModule } from '../../cn-external-lab-api/cn-external-la
 import { CnLabConfigsModule } from '../../cn-lab-configs/cn-lab-configs.module';
 import { CnUsersModule } from '../../cn-users/cn-users.module';
 import { CnDocumentModule } from '../cn-documents/cn-document.module';
-import { CnHierarchyObjectModule } from '../cn_hierarchy_objects/cn-hierarchy-object.module';
 
 @Module({
   imports: [
@@ -18,7 +17,6 @@ import { CnHierarchyObjectModule } from '../cn_hierarchy_objects/cn-hierarchy-ob
     CnLabConfigsModule,
     CnUsersModule,
     CnDocumentModule,
-    CnHierarchyObjectModule,
   ],
   providers: [CnNotesService],
   exports: [CnNotesService],

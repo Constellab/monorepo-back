@@ -4,62 +4,39 @@ import {
   Delete,
   Get,
   Param,
-  ParseBoolPipe,
   ParseIntPipe,
   ParseUUIDPipe,
   Post,
   Put,
   Query,
   Res,
-  StreamableFile,
   UseInterceptors,
 } from '@nestjs/common';
 import { CnFolder, CnFolderWithHierarchy } from './cn-folders/cn-folder.entity';
 import {
-  BlDtoHelper,
   BlFile,
   BlParsePipe,
-  BlPublic,
   BlResponseHelper,
   BlSearchParams,
   BlUploadedFile,
-  BlUploadedFiles,
 } from '@monorepo/back-core-lib';
-import {
-  TeBlockFigureUploadedResponse,
-  TeBlockFileUploadResponse,
-  TeRichText,
-  TeRichTextBlockModificationWithUser,
-  TeRichTextDTO,
-  TeRichTextPipe,
-} from '@monorepo/te-text-editor';
+import { TeBlockFigureUploadedResponse, TeRichText, TeRichTextPipe } from '@monorepo/te-text-editor';
 import { ClPage, ClPageI } from '@monorepo/core-lib';
 import { CnFolderAggregateService } from './cn-folder-aggregate.service';
 import {
-  CnChatFolderDTO,
   CnFolderSimpleDTO,
   CnFolderStorageLocationDTO,
   CnGetFolderDescriptionDTO,
   CnSaveFolderDTO,
 } from './cn-folders/cn-folder.dto';
 import { CnUser } from '../cn-users/cn-user.entity';
-import { CnNewMessageDTO } from '../cn-core/model/entities/cn-message.entity';
-import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
 import { CnFolderUser, CnFolderUserEntity } from './cn-folder-user/cn-folder-user.entity';
 import { CnActivity } from '../cn-activity/cn-activity.entity';
 import { CnBucketLocationDTO } from '../cn-object-storages/cn-buckets/cn-bucket.entity';
-import { CnDocument } from './cn-documents/cn-document.entity';
-import {
-  CnConstellabDocumentDTO,
-  CnDocumentPreviewDTO,
-  CnFolderStorageUsageDTO,
-} from './cn-documents/cn-document-dto.class';
-import {
-  CnHierarchyObject,
-  CnHierarchyObjectWithParent,
-} from './cn_hierarchy_objects/cn-hierarchy-object.entity';
-import { CnChatMessageDto } from '../cn-chat-message/cn-chat-message.dto';
+import { CnFolderStorageUsageDTO } from './cn-documents/cn-document-dto.class';
+import { CnHierarchyObject } from './cn_hierarchy_objects/cn-hierarchy-object.entity';
 
 @Controller('folders')
 export class CnFoldersController {
@@ -89,15 +66,6 @@ export class CnFoldersController {
   public async getAllCurrentFolders(): Promise<CnFolderSimpleDTO[]> {
     const folders = await this.folderAggregateService.getAllCurrentRootFolders();
     return folders.map((folder) => new CnFolderSimpleDTO(folder));
-  }
-
-  @Post('/root/search-children')
-  public async searchInRootFoldersAndChildren(
-    @Body(new BlParsePipe(BlSearchParams)) searchParam: BlSearchParams,
-    @Query('page', ParseIntPipe) page: number,
-    @Query('size', ParseIntPipe) size: number
-  ): Promise<ClPageI<CnHierarchyObjectWithParent>> {
-    return await this.folderAggregateService.searchInRootFoldersAndChildren(searchParam, page, size);
   }
 
   @Get('current-space')
@@ -146,11 +114,6 @@ export class CnFoldersController {
     return this.folderAggregateService.renameFolder(id, body.name);
   }
 
-  @Delete(':id')
-  delete(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
-    return this.folderAggregateService.deleteFolder(id);
-  }
-
   @Put(':id/share/:groupId')
   shareFolder(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -171,21 +134,6 @@ export class CnFoldersController {
   async getFolderTree(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnFolderSimpleDTO[]> {
     const result = await this.folderAggregateService.getChildrenFolders(id);
     return result.map((folder) => new CnFolderSimpleDTO(folder));
-  }
-
-  @Post(':id/children/paginated')
-  getChildrenPaginated(
-    @Param('id', new ParseUUIDPipe()) id: string,
-    @Body(new BlParsePipe(BlSearchParams)) searchParam: BlSearchParams,
-    @Query('page', new ParseIntPipe()) page: number,
-    @Query('size', new ParseIntPipe()) size: number
-  ): Promise<ClPage<CnHierarchyObject>> {
-    return this.folderAggregateService.getChildrenPaginated(id, searchParam, page, size);
-  }
-
-  @Get(':id/ancestors')
-  getFolderWithAncestors(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnFolderSimpleDTO[]> {
-    return this.folderAggregateService.getFolderAncestors(id);
   }
 
   @Get(':id/users')
@@ -214,14 +162,6 @@ export class CnFoldersController {
     @Param('leaderId', new ParseUUIDPipe()) leaderId: string
   ): Promise<CnFolder> {
     return this.folderAggregateService.updateFolderLeader(id, leaderId);
-  }
-
-  @Put(':id/move/:parentId')
-  moveFolder(
-    @Param('id', new ParseUUIDPipe()) id: string,
-    @Param('parentId', new ParseUUIDPipe()) parentId: string
-  ): Promise<CnHierarchyObject> {
-    return this.folderAggregateService.moveFolder(id, parentId);
   }
 
   /////////////////////////////////// DESCRIPTION //////////////////////////////////////
@@ -260,252 +200,6 @@ export class CnFoldersController {
   ): Promise<any> {
     const file = await this.folderAggregateService.getDescriptionImage(folderId, documentName);
     BlResponseHelper.setFileResponseAndCache(response, file);
-  }
-
-  /////////////////////////////// CHAT ///////////////////////////////////////////
-  @Get('chat/folder-tree')
-  async getChatFolders(): Promise<CnChatFolderDTO[]> {
-    const folders = await this.folderAggregateService.getChatFolders();
-    return folders.map((folder) => new CnChatFolderDTO(folder));
-  }
-
-  /////////////////////////////// MESSAGES ///////////////////////////////////////////
-
-  @Put(':folderId/chat/:enabled')
-  activateChat(
-    @Param('folderId', ParseUUIDPipe) folderId: string,
-    @Param('enabled', ParseBoolPipe) enabled: boolean
-  ): Promise<CnFolder> {
-    return this.folderAggregateService.activateChat(folderId, enabled);
-  }
-
-  @UseInterceptors(FileInterceptor('file'))
-  @Put(':folderId/chat/message/image')
-  saveMessageImage(
-    @Param('folderId', new ParseUUIDPipe()) folderId: string,
-    @BlUploadedFile() file: BlFile
-  ): Promise<TeBlockFigureUploadedResponse> {
-    return this.folderAggregateService.saveMessageImage(file, folderId);
-  }
-
-  /**
-   * Return an image of a message
-   * Use documentName(*) to catch all the documentName (including slashes)
-   */
-  @Get(':folderId/chat/message/image/:documentName(*)')
-  public async getMessageImage(
-    @Param('folderId', new ParseUUIDPipe()) folderId: string,
-    @Param('documentName') documentName: string,
-    @Res() response: Response
-  ): Promise<any> {
-    const file = await this.folderAggregateService.getMessageImage(documentName, folderId);
-    BlResponseHelper.setFileResponseAndCache(response, file);
-  }
-
-  @Post(':folderId/chat/message')
-  async createFolderMessage(
-    @Param('folderId', new ParseUUIDPipe()) folderId: string,
-    @Body(new BlParsePipe(CnNewMessageDTO)) newMessageDTO: CnNewMessageDTO
-  ): Promise<CnChatMessageDto> {
-    const message = await this.folderAggregateService.createChatMessage(newMessageDTO, folderId);
-    return new CnChatMessageDto(message);
-  }
-
-  @Put(':folderId/chat/message/:messageId')
-  async updateFolderMessage(
-    @Param('folderId', new ParseUUIDPipe()) folderId: string,
-    @Param('messageId', new ParseUUIDPipe()) messageId: string,
-    @Body(new BlParsePipe(CnNewMessageDTO)) newMessageDTO: CnNewMessageDTO
-  ): Promise<CnChatMessageDto> {
-    const message = await this.folderAggregateService.updateChatMessage(folderId, messageId, newMessageDTO);
-    return new CnChatMessageDto(message);
-  }
-
-  @Get(':folderId/chat/message')
-  async getFolderMessages(
-    @Param('folderId', new ParseUUIDPipe()) folderId: string,
-    @Query('page', new ParseIntPipe()) page: number,
-    @Query('size', new ParseIntPipe()) size: number
-  ): Promise<ClPage<CnChatMessageDto>> {
-    const result = await this.folderAggregateService.getFolderMessages(folderId, page, size);
-    return BlDtoHelper.pageToDto(CnChatMessageDto, result);
-  }
-
-  @Delete(':folderId/chat/message/:messageId/delete')
-  deleteFolderMessage(
-    @Param('folderId', new ParseUUIDPipe()) folderId: string,
-    @Param('messageId', new ParseUUIDPipe()) messageId: string
-  ): Promise<void> {
-    return this.folderAggregateService.deleteChatMessage(folderId, messageId);
-  }
-
-  /////////////////////////////// DOCUMENT ///////////////////////////////////////////
-  @UseInterceptors(FileInterceptor('file'))
-  @Post(':folderId/document')
-  async uploadDocument(
-    @Param('folderId', new ParseUUIDPipe()) folderId: string,
-    @BlUploadedFile() file: BlFile
-  ): Promise<CnHierarchyObject> {
-    return this.folderAggregateService.uploadDocument(folderId, file);
-  }
-
-  // route to upload documents from a folder
-  @UseInterceptors(FilesInterceptor('files', 1000, { preservePath: true }))
-  @Post(':folderId/documents')
-  async uploadFolder(
-    @Param('folderId', new ParseUUIDPipe()) folderId: string,
-    @BlUploadedFiles() files: BlFile[]
-  ): Promise<void> {
-    return await this.folderAggregateService.uploadFolder(folderId, files);
-  }
-
-  /**
-   * Return a document
-   */
-  @Get('document/:documentId/preview/:filename(*)')
-  public async previewDocument(
-    @Param('documentId') documentId: string,
-    @Param('filename') _: string,
-    @Res() response: Response
-  ): Promise<any> {
-    const file = await this.folderAggregateService.getUploadedDocument(documentId);
-    BlResponseHelper.setFileResponse(response, file);
-  }
-
-  @Get('document/:documentId/download/:filename(*)')
-  public async downloadDocument(
-    @Param('documentId') documentId: string,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    @Param('filename') _: string
-  ): Promise<StreamableFile> {
-    const file = await this.folderAggregateService.getUploadedDocument(documentId);
-
-    // use as any as this still works
-    return BlResponseHelper.getFileResponse(file.file as any);
-  }
-
-  @Delete('document/:documentId')
-  deleteDocument(@Param('documentId', new ParseUUIDPipe()) documentId: string): Promise<void> {
-    return this.folderAggregateService.deleteDocument(documentId);
-  }
-
-  @Put('document/:documentId/move-to-trash')
-  moveToTrash(@Param('documentId', new ParseUUIDPipe()) documentId: string): Promise<CnDocument> {
-    return this.folderAggregateService.moveDocumentToTrash(documentId);
-  }
-
-  @Put('document/:documentId/restore-from-trash')
-  restoreDocument(@Param('documentId', new ParseUUIDPipe()) documentId: string): Promise<CnDocument> {
-    return this.folderAggregateService.restoreDocumentFromTrash(documentId);
-  }
-
-  @Put(':folderId/empty-trash')
-  emptyTrash(@Param('folderId', new ParseUUIDPipe()) folderId: string): Promise<void> {
-    return this.folderAggregateService.emptyTrash(folderId);
-  }
-
-  @Get(':folderId/document/trashed')
-  public getTrashedDocumentByFolder(
-    @Param('folderId', new ParseUUIDPipe()) folderId: string,
-    @Query('page', ParseIntPipe) page: number,
-    @Query('size', ParseIntPipe) size: number
-  ): Promise<ClPageI<CnDocument>> {
-    return this.folderAggregateService.getDocumentsByFolder(folderId, true, page, size);
-  }
-
-  @Put('document/:documentId/rename')
-  public renameDocument(
-    @Param('documentId', new ParseUUIDPipe()) documentId: string,
-    @Body() name: { name: string }
-  ): Promise<CnDocument> {
-    return this.folderAggregateService.renameDocument(documentId, name.name);
-  }
-
-  @Put('document/:documentId/move/:folderId')
-  public moveDocumentToFolder(
-    @Param('documentId', new ParseUUIDPipe()) documentId: string,
-    @Param('folderId', new ParseUUIDPipe()) folderId: string
-  ): Promise<CnDocument> {
-    return this.folderAggregateService.moveDocumentToFolder(documentId, folderId);
-  }
-
-  ///////////////////////// CONSTELLAB DOCUMENTS /////////////////////////////////////
-  @Post(':folderId/constellab-document')
-  public createConstellabDocument(
-    @Param('folderId', new ParseUUIDPipe()) folderId: string,
-    @Body() name: { name: string }
-  ): Promise<CnConstellabDocumentDTO> {
-    return this.folderAggregateService.createConstellabDocument(folderId, name.name);
-  }
-
-  @Put('constellab-document/:documentId')
-  public updateConstellabDocument(
-    @Param('documentId', new ParseUUIDPipe()) documentId: string,
-    @Body(TeRichTextPipe) richText: TeRichText
-  ): Promise<CnConstellabDocumentDTO> {
-    return this.folderAggregateService.updateConstellabDocument(documentId, richText);
-  }
-
-  // check if the user can edit (is no other user is editing the document)
-  @Get('constellab-document/:documentId/check-edit')
-  public checkEditConstellabDocument(
-    @Param('documentId', new ParseUUIDPipe()) documentId: string
-  ): Promise<void> {
-    return this.folderAggregateService.checkEditConstellabDocument(documentId);
-  }
-
-  @Get('constellab-document/:documentId')
-  public getConstellabDocument(
-    @Param('documentId', new ParseUUIDPipe()) documentId: string
-  ): Promise<CnConstellabDocumentDTO> {
-    return this.folderAggregateService.getConstellabDocument(documentId);
-  }
-
-  @UseInterceptors(FileInterceptor('file'))
-  @Post('constellab-document/:documentId/image')
-  async uploadImageToConstellabDocument(
-    @Param('documentId', new ParseUUIDPipe()) documentId: string,
-    @BlUploadedFile() file: BlFile
-  ): Promise<TeBlockFigureUploadedResponse> {
-    return this.folderAggregateService.uploadImageToConstellabDocument(documentId, file);
-  }
-
-  @UseInterceptors(FileInterceptor('file'))
-  @Post('constellab-document/:documentId/file')
-  async uploadFileToConstellabDocument(
-    @Param('documentId', new ParseUUIDPipe()) documentId: string,
-    @BlUploadedFile() file: BlFile
-  ): Promise<TeBlockFileUploadResponse> {
-    return this.folderAggregateService.uploadFileToConstellabDocument(documentId, file);
-  }
-
-  @Get('constellab-document/:documentId/file/:documentName(*)')
-  public async getConstellabDocumentImage(
-    @Param('documentId') documentId: string,
-    @Param('documentName') documentName: string,
-    @Res() response: Response
-  ): Promise<any> {
-    const file = await this.folderAggregateService.getConstellabDocumentContentDocument(
-      documentId,
-      documentName
-    );
-    BlResponseHelper.setFileResponse(response, file);
-  }
-
-  ////////////////////////// DOCUMENT PREVIEW  ///////////////////////////////////////
-
-  @Post('document/:documentId/preview-token')
-  public async generatePreviewToken(
-    @Param('documentId', new ParseUUIDPipe()) documentId: string
-  ): Promise<CnDocumentPreviewDTO> {
-    return this.folderAggregateService.generatePreviewToken(documentId);
-  }
-
-  @BlPublic()
-  @Get('document/preview/:token')
-  public async getDocumentPreview(@Param('token') token: string, @Res() response: Response): Promise<any> {
-    const file = await this.folderAggregateService.getDocumentByPreviewToken(token);
-    BlResponseHelper.setFileResponse(response, file);
   }
 
   /////////////////////////////// Folder Bucket ///////////////////////////////////////////
@@ -564,33 +258,5 @@ export class CnFoldersController {
     @Query('size', ParseIntPipe) size: number
   ): Promise<ClPageI<CnActivity>> {
     return await this.folderAggregateService.searchFolderActivity(folderId, searchParam, page, size);
-  }
-
-  /////////////////////////////// History ///////////////////////////////////////////
-  @Get('constellab-document/:documentId/history')
-  async getDocumentModifications(
-    @Param('documentId', new ParseUUIDPipe()) documentId: string
-  ): Promise<TeRichTextBlockModificationWithUser[]> {
-    return this.folderAggregateService.getConstellabDocumentModifications(documentId);
-  }
-
-  @Get('constellab-document/:documentId/history/undo-content/:modificationId')
-  async undoContent(
-    @Param('documentId', new ParseUUIDPipe()) documentId: string,
-    @Param('modificationId', new ParseUUIDPipe()) modificationId: string
-  ): Promise<TeRichTextDTO> {
-    const richText = await this.folderAggregateService.getConstellabDocumentationUndoContent(
-      documentId,
-      modificationId
-    );
-    return richText.toJson();
-  }
-
-  @Put('constellab-document/:documentId/history/rollback/:modificationId')
-  async rollbackContent(
-    @Param('documentId', new ParseUUIDPipe()) documentId: string,
-    @Param('modificationId', new ParseUUIDPipe()) modificationId: string
-  ): Promise<CnDocument> {
-    return this.folderAggregateService.rollbackContent(documentId, modificationId);
   }
 }

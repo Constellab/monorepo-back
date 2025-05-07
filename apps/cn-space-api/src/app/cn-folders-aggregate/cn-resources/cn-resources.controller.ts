@@ -1,13 +1,13 @@
-import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Put } from '@nestjs/common';
-import { CnFolderAggregateService } from '../cn-folder-aggregate.service';
+import { Body, Controller, Get, Param, ParseUUIDPipe, Put } from '@nestjs/common';
 import { CnResource } from './cn-resource.entity';
 import { CnLabFolderAggregateService } from '../../cn-lab-folder-aggregate/cn-lab-folder-aggregate.service';
 import { CnResourceAccessDTO } from './cn-resource.dto';
+import { CnResourceAggregateService } from '../cn-resource-aggregate.service';
 
 @Controller('resources')
 export class CnResourcesController {
   constructor(
-    private folderAggregateService: CnFolderAggregateService,
+    private resourceAggregateService: CnResourceAggregateService,
     private labFolderAggregateService: CnLabFolderAggregateService
   ) {}
 
@@ -16,21 +16,8 @@ export class CnResourcesController {
     return this.labFolderAggregateService.getResourceAccess(id);
   }
 
-  @Delete(':id')
-  delete(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
-    return this.folderAggregateService.deleteResource(id);
-  }
-
   @Put(':id/name')
   updateName(@Param('id', new ParseUUIDPipe()) id: string, @Body() body: any): Promise<CnResource> {
-    return this.folderAggregateService.renameResource(id, body.name);
-  }
-
-  @Put(':id/move/:folderId')
-  move(
-    @Param('id', new ParseUUIDPipe()) id: string,
-    @Param('folderId', new ParseUUIDPipe()) folderId: string
-  ): Promise<CnResource> {
-    return this.folderAggregateService.moveResource(id, folderId);
+    return this.resourceAggregateService.renameResource(id, body.name);
   }
 }

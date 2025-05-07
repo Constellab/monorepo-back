@@ -13,7 +13,7 @@ import { CnAuthContextLabToken } from '../cn-core/utils/cn-auth-context.class';
 export class CnFoldersSecurityLabAccessToken implements CnFoldersAggregateSecurityI {
   constructor(
     private labAuthContext: CnAuthContextLabToken,
-    private folderObjectService: CnHierarchyObjectService
+    private hierarchyObjectService: CnHierarchyObjectService
   ) {}
 
   async checkFindAllBySpace(): Promise<void> {
@@ -23,7 +23,7 @@ export class CnFoldersSecurityLabAccessToken implements CnFoldersAggregateSecuri
   checkFindOneAndGetRootFolder(folder: CnHierarchyObject): Promise<CnHierarchyObject> {
     if (folder.spaceId !== this.labAuthContext.space.id) throw new BlUnauthorizedException('Wrong space');
 
-    return this.folderObjectService.getRootFolder(folder);
+    return this.hierarchyObjectService.getRootFolder(folder);
   }
 
   async checkUpdate(folder: CnHierarchyObject): Promise<void> {

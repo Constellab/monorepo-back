@@ -33,7 +33,9 @@ import {
   CnLabFolderDTO,
 } from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.dto';
 import {
+  CnHierarchyObject,
   CnHierarchyObjectEntity,
+  CnHierarchyObjectVisibility,
 } from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.entity';
 import { CnLabMailService } from '../cn-labs/mail/cn-lab-mail.service';
 import {
@@ -43,15 +45,15 @@ import {
 } from './cn-external-labs.dto';
 import { CnLabSendMailDto, CnLabSendMailToMailsDto } from '../cn-labs/mail/cn-lab-mail.dto';
 import { TeRichTextBlockModificationsDTO, TeRichTextDTO, TeRichTextHelper } from '@monorepo/te-text-editor';
-import { CnNote } from '../cn-folders-aggregate/cn-notes/cn-note.entity';
-import { CnScenario } from '../cn-folders-aggregate/cn-scenarios/cn-scenario.entity';
 import { CnShareResourceRequestDTO } from '../cn-folders-aggregate/cn-resources/cn-resource.dto';
 import { CnSaveFolderDTO } from '../cn-folders-aggregate/cn-folders/cn-folder.dto';
 import { CnFolderWithHierarchy } from '../cn-folders-aggregate/cn-folders/cn-folder.entity';
 import { CnTag } from '../cn-folders-aggregate/cn-hierarchy-object-tags/cn-hierarchy-object-tag.dto';
-import {
-  CnHierarchyObjectTag,
-} from '../cn-folders-aggregate/cn-hierarchy-object-tags/cn-hierarchy-object-tag.entity';
+import { CnHierarchyObjectTag } from '../cn-folders-aggregate/cn-hierarchy-object-tags/cn-hierarchy-object-tag.entity';
+import { CnResourceAggregateService } from '../cn-folders-aggregate/cn-resource-aggregate.service';
+import { CnHierarchyObjectAggregateService } from '../cn-folders-aggregate/cn-hierarchy-object-aggregate.service';
+import { CnScenarioAggregateService } from '../cn-folders-aggregate/cn-scenario-aggregate.service';
+import { CnNoteAggregateService } from '../cn-folders-aggregate/cn-note-aggregate.service';
 
 /**
  * Specific controller for route called by the lab servers. These routes are not called by a user
@@ -62,7 +64,11 @@ export class CnExternalLabsController {
   constructor(
     private labAggregator: CnLabAggregateService,
     private folderAggregateService: CnFolderAggregateService,
+    private hierarchyObjectAggregateService: CnHierarchyObjectAggregateService,
     private labFolderAggregateService: CnLabFolderAggregateService,
+    private resourceAggregateService: CnResourceAggregateService,
+    private scenarioAggregateService: CnScenarioAggregateService,
+    private noteAggregateService: CnNoteAggregateService,
     private labMailService: CnLabMailService
   ) {}
 
@@ -105,15 +111,12 @@ export class CnExternalLabsController {
     @Param('parentFolderId', new ParseUUIDPipe()) parentFolderId: string,
     @Body(new BlParsePipe(CnCreateLabScenarioDto)) createLabScenarioDto: CnCreateLabScenarioDto
   ): Promise<void> {
-    return this.folderAggregateService.createLabScenario(parentFolderId, createLabScenarioDto);
+    return this.scenarioAggregateService.createLabScenario(parentFolderId, createLabScenarioDto);
   }
 
   @Delete(['folder/:parentFolderId/scenario/:scenarioId'])
-  deleteScenario(
-    @Param('parentFolderId', new ParseUUIDPipe()) parentFolderId: string,
-    @Param('scenarioId', new ParseUUIDPipe()) scenarioId: string
-  ): Promise<void> {
-    return this.folderAggregateService.deleteLabScenario(parentFolderId, scenarioId);
+  deleteScenario(@Param('scenarioId', new ParseUUIDPipe()) scenarioId: string): Promise<void> {
+    return this.hierarchyObjectAggregateService.deleteHierarchyObjectById(scenarioId);
   }
 
   @Put('folder/:parentFolderId/scenario/:scenarioId/folder/:newParentFolderId')
@@ -121,8 +124,8 @@ export class CnExternalLabsController {
     @Param('parentFolderId', new ParseUUIDPipe()) _: string,
     @Param('scenarioId', new ParseUUIDPipe()) scenarioId: string,
     @Param('newParentFolderId', new ParseUUIDPipe()) newParentFolderId: string
-  ): Promise<CnScenario> {
-    return this.folderAggregateService.updateScenarioFolder(scenarioId, newParentFolderId);
+  ): Promise<CnHierarchyObject> {
+    return this.hierarchyObjectAggregateService.moveHierarchyObjectToFolder(scenarioId, newParentFolderId);
   }
 
   //////////////////////////// NOTE ////////////////////////////
@@ -138,15 +141,12 @@ export class CnExternalLabsController {
       JSON.parse(body.body),
       CnCreateNoteWithConfigDto
     );
-    return this.folderAggregateService.createLabNote(createNoteDto, parentFolderId, files);
+    return this.noteAggregateService.createLabNote(createNoteDto, parentFolderId, files);
   }
 
   @Delete(['folder/:parentFolderId/note/:noteId'])
-  deleteNote(
-    @Param('parentFolderId', new ParseUUIDPipe()) parentFolderId: string,
-    @Param('noteId', new ParseUUIDPipe()) noteId: string
-  ): Promise<void> {
-    return this.folderAggregateService.deleteNoteFromLab(parentFolderId, noteId);
+  deleteNote(@Param('noteId', new ParseUUIDPipe()) noteId: string): Promise<void> {
+    return this.hierarchyObjectAggregateService.deleteHierarchyObjectById(noteId);
   }
 
   @Put(['folder/:parentFolderId/note/:noteId/folder/:newParentFolderId'])
@@ -154,8 +154,8 @@ export class CnExternalLabsController {
     @Param('parentFolderId', new ParseUUIDPipe()) _: string,
     @Param('noteId', new ParseUUIDPipe()) noteId: string,
     @Param('newParentFolderId', new ParseUUIDPipe()) newParentFolderId: string
-  ): Promise<CnNote> {
-    return this.folderAggregateService.updateNoteFolder(noteId, newParentFolderId);
+  ): Promise<CnHierarchyObject> {
+    return this.hierarchyObjectAggregateService.moveHierarchyObjectToFolder(noteId, newParentFolderId);
   }
 
   //////////////////////////// RESOURCE ////////////////////////////
@@ -165,7 +165,7 @@ export class CnExternalLabsController {
     @Param('parentFolderId', new ParseUUIDPipe()) parentFolderId: string,
     @Body() body: CnShareResourceRequestDTO
   ): Promise<void> {
-    return this.folderAggregateService.shareResourceToFolder(parentFolderId, body);
+    return this.resourceAggregateService.shareResourceToFolder(parentFolderId, body);
   }
 
   /////////////////////////////// SYNCHRONIZATION ///////////////////////////////
@@ -204,8 +204,8 @@ export class CnExternalLabsController {
   //////////////////////////// FOLDER //////////////////////////
   @CnLabAllowDev()
   @Get('folder/:id')
-  getFolder(@Param('id', new ParseUUIDPipe()) id: string): Promise<any> {
-    return this.folderAggregateService.getFolderAncestors(id);
+  getFolder(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnHierarchyObject[]> {
+    return this.hierarchyObjectAggregateService.getObjectAncestors(id);
   }
 
   @CnLabAllowDev()
@@ -225,8 +225,11 @@ export class CnExternalLabsController {
 
   @CnLabAllowDev()
   @Delete('folder/:id')
-  deleteFolder(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
-    return this.folderAggregateService.deleteFolder(id);
+  async deleteFolder(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
+    await this.hierarchyObjectAggregateService.updateHierarchyObjectVisibility(
+      id,
+      CnHierarchyObjectVisibility.TRASH
+    );
   }
 
   @CnLabAllowDev()
@@ -255,7 +258,7 @@ export class CnExternalLabsController {
     @Param('hierarchyObjectId', new ParseUUIDPipe()) hierarchyObjectId: string,
     @Body() tags: CnExternalLabTagsDTO
   ): Promise<CnHierarchyObjectTag[]> {
-    return this.folderAggregateService.createHierarchyObjectTags(hierarchyObjectId, tags.tags);
+    return this.hierarchyObjectAggregateService.createHierarchyObjectTags(hierarchyObjectId, tags.tags);
   }
 
   @CnLabAllowDev()
@@ -264,7 +267,7 @@ export class CnExternalLabsController {
     @Param('hierarchyObjectId', new ParseUUIDPipe()) hierarchyObjectId: string,
     @Body() tags: CnExternalLabTagsDTO
   ): Promise<CnHierarchyObjectTag[]> {
-    return this.folderAggregateService.createOrReplace(hierarchyObjectId, tags.tags);
+    return this.hierarchyObjectAggregateService.createOrReplace(hierarchyObjectId, tags.tags);
   }
 
   @CnLabAllowDev()
@@ -273,7 +276,7 @@ export class CnExternalLabsController {
     @Param('hierarchyObjectId', new ParseUUIDPipe()) hierarchyObjectId: string,
     @Body() tags: CnExternalLabTagsDTO
   ): Promise<void> {
-    return this.folderAggregateService.deleteHierarchyObjectTags(hierarchyObjectId, tags.tags);
+    return this.hierarchyObjectAggregateService.deleteHierarchyObjectTags(hierarchyObjectId, tags.tags);
   }
 
   @CnLabAllowDev()
@@ -283,7 +286,11 @@ export class CnExternalLabsController {
     @Query('page', ParseIntPipe) page: number,
     @Query('size', ParseIntPipe) size: number
   ): Promise<ClPageI<CnTag>> {
-    return this.folderAggregateService.getHierarchyObjectTagsPaginated(hierarchyObjectId, page, size);
+    return this.hierarchyObjectAggregateService.getHierarchyObjectTagsPaginated(
+      hierarchyObjectId,
+      page,
+      size
+    );
   }
 
   //////////////////////////// OTHERS //////////////////////////

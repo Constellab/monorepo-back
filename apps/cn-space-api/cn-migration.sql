@@ -213,3 +213,29 @@ ALTER TABLE bucket
   MODIFY bucketType enum ('NORMAL', 'LAB', 'AZURE', 'GCP') default 'NORMAL' not null;
 ALTER TABLE document
   MODIFY bucketType enum ('NORMAL', 'LAB', 'AZURE', 'GCP') not null;
+
+##################### 2.7.0 #####################
+alter table hierarchy_object
+  add column visibility enum ('VISIBLE', 'TRASH', 'HIDDEN') null;
+update hierarchy_object
+set visibility = 'VISIBLE'
+where isVisible = 1;
+update hierarchy_object
+set visibility = 'TRASH'
+where isVisible = 0;
+update hierarchy_object
+set visibility = 'HIDDEN'
+where objectType = 'HIDDEN_DOCUMENT';
+alter table hierarchy_object
+  modify column visibility enum ('VISIBLE', 'TRASH', 'HIDDEN') not null;
+
+alter table hierarchy_object
+  drop column isVisible;
+alter table document
+  drop column inTrash;
+
+alter table activity
+  modify entityType enum ('USER', 'FOLDER', 'SCENARIO', 'NOTE', 'DOCUMENT', 'RESOURCE', 'MESSAGE') not null;
+
+alter table activity
+  modify actionType enum ('CREATE', 'UPDATE', 'DELETE', 'TRASH') not null;

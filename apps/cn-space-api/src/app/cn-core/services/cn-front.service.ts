@@ -14,6 +14,10 @@ export class CnFrontService {
     return `${CnFrontService.appRoute}/admin/users`;
   }
 
+  public static getFoldersRoute(): string {
+    return `${CnFrontService.appRoute}/folder`;
+  }
+
   public static getFolderRoute(folderId: string): string {
     return `${CnFrontService.appRoute}/folder/${folderId}`;
   }
@@ -32,6 +36,10 @@ export class CnFrontService {
 
   public static getConstellabDocRoute(docId: string): string {
     return `${CnFrontService.appRoute}/folder/document/${docId}`;
+  }
+
+  public static getResourceRoute(resourceId: string): string {
+    return `${CnFrontService.appRoute}/folder/resource/${resourceId}`;
   }
 
   public static getLabUrl(labId: string): string {

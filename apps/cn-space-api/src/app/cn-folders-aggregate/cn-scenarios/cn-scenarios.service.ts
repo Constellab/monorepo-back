@@ -147,19 +147,11 @@ export class CnScenariosService extends BlAbstractService<CnScenarioEntity> {
     return this.findByIdAndCheck(scenario.id);
   }
 
-  public async deleteScenario(id: string, entityManager: EntityManager): Promise<CnScenario> {
-    const scenario = await this.findById(id);
-
-    // no error if scenario not found for more resilience
-    if (!scenario) {
-      return null;
-    }
-
+  public async deleteScenario(scenario: CnScenario, entityManager: EntityManager): Promise<void> {
     if (scenario.isValidated) {
       throw new BlBadRequestException("Can't delete a validated scenario");
     }
-    await this.deleteById(id, entityManager);
-    return scenario;
+    await this.deleteById(scenario.id, entityManager);
   }
 
   findByIdAndCheckWithNotes(id: string): Promise<CnScenarioWithNotes> {

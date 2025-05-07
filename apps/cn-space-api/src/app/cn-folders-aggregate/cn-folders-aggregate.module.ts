@@ -24,6 +24,17 @@ import { CnExternalLabApiModule } from '../cn-external-lab-api/cn-external-lab-a
 import { CnHierarchyObjectTagModule } from './cn-hierarchy-object-tags/cn-hierarchy-object-tag.module';
 import { CnHierarchyObjectController } from './cn_hierarchy_objects/cn-hierarchy-object.controller';
 import { CnHierarchyObjectListener } from './cn-hierarchy-object.listener';
+import { CnChatAggregateService } from './cn-chat-aggregate.service';
+import { CnConstellabDocumentAggregateService } from './cn-constellab-document.aggregate.service';
+import { CnDocumentAggregateService } from './cn-document-aggregate.service';
+import { CnHierarchyObjectAggregateService } from './cn-hierarchy-object-aggregate.service';
+import { CnNoteAggregateService } from './cn-note-aggregate.service';
+import { CnResourceAggregateService } from './cn-resource-aggregate.service';
+import { CnScenarioAggregateService } from './cn-scenario-aggregate.service';
+import { CnChatController } from './cn-chat.controller';
+import { CnConstellabDocumentController } from './cn-constellab-document.controller';
+import { CnDocumentController } from './cn-document.controller';
+import { CnFolderEventService } from './cn-folder.event';
 
 @Module({
   imports: [
@@ -48,14 +59,37 @@ import { CnHierarchyObjectListener } from './cn-hierarchy-object.listener';
 
     EventEmitterModule,
   ],
-  controllers: [CnFoldersController, CnScenariosController, CnNotesController, CnHierarchyObjectController],
+  controllers: [
+    CnFoldersController,
+    CnScenariosController,
+    CnNotesController,
+    CnHierarchyObjectController,
+    CnChatController,
+    CnConstellabDocumentController,
+    CnDocumentController,
+  ],
   providers: [
     CnFoldersSecurityService,
     CnFolderAggregateService,
     CnFolderListener,
     CnFolderCopierService,
     CnHierarchyObjectListener,
+    CnChatAggregateService,
+    CnConstellabDocumentAggregateService,
+    CnDocumentAggregateService,
+    CnHierarchyObjectAggregateService,
+    CnNoteAggregateService,
+    CnResourceAggregateService,
+    CnScenarioAggregateService,
+    CnFolderEventService,
   ],
-  exports: [CnFoldersSecurityService, CnFolderAggregateService],
+  exports: [
+    CnFoldersSecurityService,
+    CnFolderAggregateService,
+    CnHierarchyObjectAggregateService,
+    CnResourceAggregateService,
+    CnScenarioAggregateService,
+    CnNoteAggregateService,
+  ],
 })
 export class CnFoldersAggregateModule {}

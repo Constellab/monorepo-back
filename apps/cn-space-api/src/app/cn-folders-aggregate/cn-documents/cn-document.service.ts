@@ -19,7 +19,7 @@ import {
 } from '@monorepo/te-text-editor';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, In, IsNull, Repository } from 'typeorm';
-import { ClDateHelper, ClPage, ClStringHelper } from '@monorepo/core-lib';
+import { ClDateHelper, ClStringHelper } from '@monorepo/core-lib';
 import { CnErrorText } from '../../cn-core/model/config/cn-error-text.class';
 import { CnFolderBucketService } from '../cn-folders/cn-folder-bucket.service';
 import { CnDocument, CnDocumentEntity, CnDocumentType, CnDocumentWithHierarchy } from './cn-document.entity';
@@ -194,9 +194,6 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
     const bucketConfig = await this.folderBucketService.getAndCheckFolderBucketConfig(
       document.hierarchyRepresentation.getRootFolderId()
     );
-    if (document.documentTypeSupportsTrash() && !document.inTrash) {
-      throw new BlBadRequestException('Document is not in trash, please move it to trash first');
-    }
 
     const documentsToDelete: CnDocumentWithHierarchy[] = [document];
     // delete the children document as well
@@ -213,19 +210,6 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
     await this.objectStorageService.deleteMultipleObjects(bucketConfig.bucketConfigs, documentFilenames);
 
     this.emitEvent('DELETE_DOCUMENT', document);
-  }
-
-  public async emptyFolderTrash(parentFolderId: string): Promise<void> {
-    const documentToDelete = await this.repo.find({
-      where: {
-        hierarchyRepresentation: { parentId: parentFolderId },
-        inTrash: true,
-      },
-    });
-
-    for (const doc of documentToDelete) {
-      await this.deleteDocument(doc.id);
-    }
   }
 
   async renameDocument(rootFolderId: string, document: CnDocument, newName: string): Promise<CnDocument> {
@@ -272,27 +256,6 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
 
   public findWithHierarchyByIdAndCheck(documentId: string): Promise<CnDocumentWithHierarchy> {
     return this.findByIdAndCheck(documentId, { hierarchyRepresentation: true });
-  }
-
-  /**
-   * List the Uploaded and Constellab documents of a parentFolder
-   */
-  public getParentFolderDocuments(
-    parentFolderId: string,
-    inTrash: boolean,
-    page: number,
-    size: number
-  ): Promise<ClPage<CnDocument>> {
-    return this.findPaginated(page, size, {
-      where: {
-        hierarchyRepresentation: { parentId: parentFolderId },
-        inTrash: inTrash,
-        type: In([CnDocumentType.UPLOADED_DOCUMENT, CnDocumentType.CONSTELLAB_DOCUMENT]),
-      },
-      order: {
-        createdAt: 'DESC' as any,
-      },
-    });
   }
 
   ///////////////////////////////// JSON  DOCUMENTS //////////////////////////////////
@@ -481,17 +444,6 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
     };
   }
 
-  ////////////////////////////////////////////// TRASH ///////////////////////////////////////////////
-  public async moveToTrash(document: CnDocument): Promise<CnDocument> {
-    document.inTrash = true;
-    return await this.repo.save(document);
-  }
-
-  public async restoreFromTrash(document: CnDocument): Promise<CnDocument> {
-    document.inTrash = false;
-    return await this.repo.save(document);
-  }
-
   ////////////////////////////////////////////// SIZE /////////////////////////////////////////////
 
   public async getStorageSizeDetailByFolders(folderIds: string[]): Promise<CnFolderStorageUsageDTO> {
@@ -600,7 +552,7 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
     document: CnDocumentWithHierarchy,
     oldParentFolder: CnHierarchyObject,
     newParentFolder: CnHierarchyObject
-  ): Promise<CnDocumentWithHierarchy> {
+  ): Promise<CnHierarchyObject> {
     const oldBuckets = await this.folderBucketService.getAndCheckFolderBucketConfig(
       oldParentFolder.getRootFolderId()
     );
@@ -655,7 +607,7 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
     newParentFolder: CnHierarchyObject,
     oldBuckets: BlMultipleBucketConfig,
     newBuckets: BlMultipleBucketConfig
-  ): Promise<CnDocumentWithHierarchy> {
+  ): Promise<CnHierarchyObject> {
     const tags = this.getTags(document.name, newParentFolder.id);
     // move the object in the storage is needed
     if (oldBuckets.equals(newBuckets)) {
@@ -671,8 +623,10 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
     }
 
     // TODO there is no rollback if the there is an error
-    await this.hierarchyObjectService.updateLeafParent(document.hierarchyRepresentation.id, newParentFolder);
-    return document;
+    return await this.hierarchyObjectService.updateLeafParent(
+      document.hierarchyRepresentation.id,
+      newParentFolder
+    );
   }
 
   public async copyDocument(
@@ -781,7 +735,6 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
       where: {
         hierarchyRepresentation: { parentId: folderId },
         type: In(types),
-        inTrash: false,
       },
       relations: { hierarchyRepresentation: true },
     });

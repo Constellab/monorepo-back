@@ -171,24 +171,28 @@ export class CnFolderListener {
         return this.folderShared(event.entity, event.parentFolder);
       case 'UNSHARE_FOLDER':
         return this.folderUnshared(event.entity, event.parentFolder);
+      case 'MOVE_OBJECT_TO_FOLDER':
+        return this.hierarchyObjectMovedToFolder(event.entity, event.parentFolder);
+      case 'MOVE_OBJECT_TO_TRASH':
+        return this.hierarchyObjectMovedToTrash(event.entity, event.parentFolder);
+      case 'RESTORE_OBJECT_FROM_TRASH':
+        return this.hierarchyObjectRestoredFromTrash(event.entity, event.parentFolder);
+      case 'DELETE_OBJECT':
+        return this.hierarchyObjectDeleted(event.entity, event.parentFolder);
+      case 'EMPTY_TRASH':
+        return this.emptyFolderTrash(event.parentFolder);
       case 'CREATE_SCENARIO':
         return this.scenarioCreated(event.entity, event.parentFolder);
       case 'UPDATE_SCENARIO':
         return this.scenarioUpdated(event.entity, event.parentFolder);
-      case 'DELETE_SCENARIO':
-        return this.scenarioDeleted(event.entity, event.parentFolder);
       case 'CREATE_NOTE':
         return this.noteCreated(event.entity, event.parentFolder);
       case 'UPDATE_NOTE':
         return this.noteUpdated(event.entity, event.parentFolder);
-      case 'DELETE_NOTE':
-        return this.noteDeleted(event.entity, event.parentFolder);
       case 'CREATE_CONSTELLAB_DOCUMENT':
         return this.constellabDocCreated(event.entity);
       case 'UPLOAD_FOLDER_DOCUMENT':
         return this.documentCreated(event.entity, event.parentFolder);
-      case 'DELETE_FOLDER_DOCUMENT':
-        return this.documentDeleted(event.entity, event.parentFolder);
       case 'CREATE_FOLDER_MESSAGE':
         return this.messageCreated(event.entity, event.parentFolder);
       case 'DELETE_FOLDER_MESSAGE':
@@ -264,6 +268,105 @@ export class CnFolderListener {
     };
   }
 
+  ///////////////////////////// HIERARCHY OBJECTS /////////////////////////////
+  private hierarchyObjectMovedToFolder(
+    hierarchyObject: CnHierarchyObject,
+    parentFolder: CnHierarchyObject
+  ): CnActivityAndNotif {
+    return {
+      activity: {
+        entityType: hierarchyObject.getActivityEntityType(),
+        entity: hierarchyObject,
+        actionType: CnActivityType.UPDATE,
+        title:
+          `{{user.name}} has moved the ${hierarchyObject.getObjectTypeName()} ` +
+          `${hierarchyObject.name} to folder ${parentFolder.name}`,
+        entityName: hierarchyObject.name,
+      },
+      notif: { link: CnFrontService.getFolderRoute(parentFolder.id) },
+    };
+  }
+
+  private hierarchyObjectMovedToTrash(
+    hierarchyObject: CnHierarchyObject,
+    parentFolder?: CnHierarchyObject
+  ): CnActivityAndNotif {
+    return {
+      activity: {
+        entityType: hierarchyObject.getActivityEntityType(),
+        entity: hierarchyObject,
+        actionType: CnActivityType.TRASH,
+        title:
+          `{{user.name}} has moved the ${this.getHierarchyObjectInfoStr(hierarchyObject, parentFolder)} ` +
+          `to trash`,
+        entityName: hierarchyObject.name,
+      },
+      notif: {
+        link: parentFolder
+          ? CnFrontService.getFolderRoute(parentFolder.id)
+          : CnFrontService.getFoldersRoute(),
+      },
+    };
+  }
+
+  private hierarchyObjectRestoredFromTrash(
+    hierarchyObject: CnHierarchyObject,
+    parentFolder?: CnHierarchyObject
+  ): CnActivityAndNotif {
+    return {
+      activity: {
+        entityType: hierarchyObject.getActivityEntityType(),
+        entity: hierarchyObject,
+        actionType: CnActivityType.TRASH,
+        title:
+          `{{user.name}} has restored the ${this.getHierarchyObjectInfoStr(hierarchyObject, parentFolder)} ` +
+          `from trash`,
+        entityName: hierarchyObject.name,
+      },
+      notif: { link: hierarchyObject.getFrontRoute() },
+    };
+  }
+
+  private hierarchyObjectDeleted(
+    hierarchyObject: CnHierarchyObject,
+    parentFolder?: CnHierarchyObject
+  ): CnActivityAndNotif {
+    return {
+      activity: {
+        entityType: hierarchyObject.getActivityEntityType(),
+        entity: hierarchyObject,
+        actionType: CnActivityType.DELETE,
+        title:
+          '{{user.name}} has deleted the ' + this.getHierarchyObjectInfoStr(hierarchyObject, parentFolder),
+        entityName: hierarchyObject.name,
+      },
+    };
+  }
+
+  private getHierarchyObjectInfoStr(
+    hierarchyObject: CnHierarchyObject,
+    parentFolder: CnHierarchyObject
+  ): string {
+    let text = `${hierarchyObject.getObjectTypeName()} ${hierarchyObject.name}`;
+    if (parentFolder) {
+      text += ` under folder ${parentFolder.name}`;
+    }
+    return text;
+  }
+
+  private emptyFolderTrash(parentFolder: CnHierarchyObject): CnActivityAndNotif {
+    return {
+      activity: {
+        entityType: CnActivityEntityType.FOLDER,
+        entity: parentFolder,
+        actionType: CnActivityType.TRASH,
+        title: `{{user.name}} has emptied the trash of folder ${parentFolder.name}`,
+        entityName: parentFolder.name,
+      },
+      notif: { link: CnFrontService.getFolderRoute(parentFolder.id) },
+    };
+  }
+
   private scenarioCreated(scenario: CnScenario, parentFolder: CnHierarchyObject): CnActivityAndNotif {
     return {
       activity: {
@@ -287,19 +390,6 @@ export class CnFolderListener {
         entityName: scenario.title,
       },
       notif: { link: CnFrontService.getScenarioRoute(scenario.id) },
-    };
-  }
-
-  private scenarioDeleted(scenario: CnScenario, parentFolder: CnHierarchyObject): CnActivityAndNotif {
-    return {
-      activity: {
-        entityType: CnActivityEntityType.SCENARIO,
-        entity: scenario,
-        actionType: CnActivityType.DELETE,
-        title: `{{user.name}} has deleted scenario ${scenario.title} under folder ${parentFolder.name}`,
-        entityName: scenario.title,
-      },
-      notif: { link: CnFrontService.getFolderRoute(parentFolder.id) },
     };
   }
 
@@ -329,19 +419,6 @@ export class CnFolderListener {
     };
   }
 
-  private noteDeleted(note: CnNote, parentFolder: CnHierarchyObject): CnActivityAndNotif {
-    return {
-      activity: {
-        entityType: CnActivityEntityType.NOTE,
-        entity: note,
-        actionType: CnActivityType.DELETE,
-        title: `{{user.name}} has deleted note ${note.title} under folder ${parentFolder.name}`,
-        entityName: note.title,
-      },
-      notif: { link: CnFrontService.getFolderRoute(parentFolder.id) },
-    };
-  }
-
   private constellabDocCreated(document: CnDocument): CnActivityAndNotif {
     return {
       activity: {
@@ -362,19 +439,6 @@ export class CnFolderListener {
         entity: document,
         actionType: CnActivityType.CREATE,
         title: `{{user.name}} has uploaded document ${document.name}`,
-        entityName: document.name,
-      },
-      notif: { link: CnFrontService.getFolderRoute(parentFolder.id) },
-    };
-  }
-
-  private documentDeleted(document: CnDocument, parentFolder: CnHierarchyObject): CnActivityAndNotif {
-    return {
-      activity: {
-        entityType: CnActivityEntityType.DOCUMENT,
-        entity: document,
-        actionType: CnActivityType.DELETE,
-        title: `{{user.name}} has deleted document ${document.name}`,
         entityName: document.name,
       },
       notif: { link: CnFrontService.getFolderRoute(parentFolder.id) },
@@ -532,8 +596,6 @@ export class CnFolderListener {
       'RENAME_DOCUMENT',
       'RENAME_RESOURCE',
       'UPDATE_CONSTELLAB_DOCUMENT',
-      'MOVE_FOLDER_DOCUMENT_TO_TRASH',
-      'RESTORE_FOLDER_DOCUMENT_FROM_TRASH',
     ];
 
     if (!events.includes(event.type)) return;

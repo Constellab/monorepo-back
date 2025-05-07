@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CnFolderAggregateService } from '../cn-folders-aggregate/cn-folder-aggregate.service';
 import { CnLabAggregateService } from '../cn-labs/cn-lab-aggregate.service';
 import { CnLabFolder, CnLabFolderWithLab, CnLabFolderWithRootFolder } from './cn-lab-folder.entity';
@@ -16,11 +16,12 @@ import {
 } from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.entity';
 import { CnExternalLabShareService } from '../cn-external-lab-api/cn-external-lab-share.service';
 import { CnResourceAccessDTO } from '../cn-folders-aggregate/cn-resources/cn-resource.dto';
+import { CnScenarioAggregateService } from '../cn-folders-aggregate/cn-scenario-aggregate.service';
+import { CnNoteAggregateService } from '../cn-folders-aggregate/cn-note-aggregate.service';
+import { CnResourceAggregateService } from '../cn-folders-aggregate/cn-resource-aggregate.service';
 
 @Injectable()
 export class CnLabFolderAggregateService {
-  private logger = new Logger(CnLabFolderAggregateService.name);
-
   constructor(
     private folderAggregateService: CnFolderAggregateService,
     private labAggregateService: CnLabAggregateService,
@@ -28,7 +29,10 @@ export class CnLabFolderAggregateService {
     private dataSource: DataSource,
     private externalLabFolderService: CnExternalLabFolderService,
     private externalLabApiService: CnExternalLabApiService,
-    private externalLabShareService: CnExternalLabShareService
+    private externalLabShareService: CnExternalLabShareService,
+    private scenarioAggregateService: CnScenarioAggregateService,
+    private noteAggregateService: CnNoteAggregateService,
+    private resourceAggregateService: CnResourceAggregateService
   ) {}
 
   public async addFolderToLab(labId: string, rootFolderId: string): Promise<CnLabFolder> {
@@ -95,7 +99,7 @@ export class CnLabFolderAggregateService {
     }
 
     // Before delete folder from lab, check if this folder as sync object from this lab
-    const syncScenarios = await this.folderAggregateService.getScenariosByRootFolderAndLabNotSecure(
+    const syncScenarios = await this.scenarioAggregateService.getScenariosByRootFolderAndLabNotSecure(
       rootFolderId,
       labId
     );
@@ -105,7 +109,7 @@ export class CnLabFolderAggregateService {
       });
     }
 
-    const syncNotes = await this.folderAggregateService.getNotesByRootFolderAndLab(rootFolderId, labId);
+    const syncNotes = await this.noteAggregateService.getNotesByRootFolderAndLab(rootFolderId, labId);
     if (syncNotes.length > 0) {
       throw new BlBadRequestException(CnErrorText.REMOVE_FOLDER_SYNC_NOTE_ERROR, {
         detailArgs: { count: syncNotes.length },
@@ -148,7 +152,7 @@ export class CnLabFolderAggregateService {
   }
 
   public async getCurrentLabRootFolderById(folderId: string): Promise<CnHierarchyObject> {
-    const folder = await this.folderAggregateService.getFolderHierarchyNotSecure(folderId);
+    const folder = await this.folderAggregateService.getFolderHierarchyObject(folderId);
     const labFolder = await this.labFolderService.findByRootFolderIdAndLabId(
       folder.getRootFolderId(),
       CnCurrentUserHelper.getAndCheckCurrentLab().id
@@ -193,7 +197,7 @@ export class CnLabFolderAggregateService {
    * @param resourceId
    */
   public async getResourceAccess(resourceId: string): Promise<CnResourceAccessDTO> {
-    const resource = await this.folderAggregateService.findResource(resourceId);
+    const resource = await this.resourceAggregateService.findResource(resourceId);
     const lab = resource.lab;
 
     // Check that the lab is running

@@ -1,26 +1,140 @@
-import { Body, Controller, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, Query } from '@nestjs/common';
-import { CnFolderAggregateService } from '../cn-folder-aggregate.service';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  ParseUUIDPipe,
+  Post,
+  Put,
+  Query,
+} from '@nestjs/common';
 import { CnAvailableTags, CnTag } from '../cn-hierarchy-object-tags/cn-hierarchy-object-tag.dto';
 import { CnHierarchyObjectTag } from '../cn-hierarchy-object-tags/cn-hierarchy-object-tag.entity';
-import { ClPageI } from '@monorepo/core-lib';
-import { CnHierarchyObject } from './cn-hierarchy-object.entity';
+import { ClPage, ClPageI } from '@monorepo/core-lib';
+import {
+  CnHierarchyObject,
+  CnHierarchyObjectVisibility,
+  CnHierarchyObjectWithParent,
+} from './cn-hierarchy-object.entity';
+import { CnHierarchyObjectAggregateService } from '../cn-hierarchy-object-aggregate.service';
+import { BlParsePipe, BlSearchParams } from '@monorepo/back-core-lib';
 
 @Controller('hierarchy-objects')
 export class CnHierarchyObjectController {
-  constructor(private folderAggregateService: CnFolderAggregateService) {}
+  constructor(private hierarchyObjectAggregateService: CnHierarchyObjectAggregateService) {}
 
-  ////////////////////////////////////////////// TAGS ///////////////////////////////////////////
-
-  @Get('roots/tags/available')
-  async getAvailableTagForRootFolders(): Promise<CnAvailableTags> {
-    return this.folderAggregateService.getAvailableTagForRootFolders();
-  }
+  //////////////////// GET /////////////////////////
 
   @Get(':hierarchyObjectId')
   async getHierarchyObject(
     @Param('hierarchyObjectId', new ParseUUIDPipe()) hierarchyObjectId: string
   ): Promise<CnHierarchyObject> {
-    return this.folderAggregateService.getHierarchyObject(hierarchyObjectId);
+    return this.hierarchyObjectAggregateService.getHierarchyObject(hierarchyObjectId);
+  }
+
+  @Get(':id/ancestors')
+  getObjectAncestors(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnHierarchyObject[]> {
+    return this.hierarchyObjectAggregateService.getObjectAncestors(id);
+  }
+
+  @Post(':id/children/paginated')
+  getChildrenPaginated(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body(new BlParsePipe(BlSearchParams)) searchParam: BlSearchParams,
+    @Query('page', new ParseIntPipe()) page: number,
+    @Query('size', new ParseIntPipe()) size: number
+  ): Promise<ClPage<CnHierarchyObject>> {
+    return this.hierarchyObjectAggregateService.searchVisibleInFolderChildren(id, searchParam, page, size);
+  }
+
+  @Post(':id/trash/children/paginated')
+  getTrashChildrenPaginated(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body(new BlParsePipe(BlSearchParams)) searchParam: BlSearchParams,
+    @Query('page', new ParseIntPipe()) page: number,
+    @Query('size', new ParseIntPipe()) size: number
+  ): Promise<ClPage<CnHierarchyObject>> {
+    return this.hierarchyObjectAggregateService.searchTrashInFolderChildren(id, searchParam, page, size);
+  }
+
+  @Post('/root/search-children')
+  public async searchInRootFoldersAndChildren(
+    @Body(new BlParsePipe(BlSearchParams)) searchParam: BlSearchParams,
+    @Query('page', ParseIntPipe) page: number,
+    @Query('size', ParseIntPipe) size: number
+  ): Promise<ClPageI<CnHierarchyObjectWithParent>> {
+    return await this.hierarchyObjectAggregateService.searchVisibleInRootFoldersAndChildren(
+      searchParam,
+      page,
+      size
+    );
+  }
+
+  @Post('/root/trash/search-children')
+  public async searchTrashInRootFoldersAndChildren(
+    @Body(new BlParsePipe(BlSearchParams)) searchParam: BlSearchParams,
+    @Query('page', ParseIntPipe) page: number,
+    @Query('size', ParseIntPipe) size: number
+  ): Promise<ClPageI<CnHierarchyObjectWithParent>> {
+    return await this.hierarchyObjectAggregateService.searchTrashInRootFoldersAndChildren(
+      searchParam,
+      page,
+      size
+    );
+  }
+
+  ////////////////////// UPDATE ////////////////////
+
+  @Put(':hierarchyObjectId/move-to-trash')
+  async moveToTrash(
+    @Param('hierarchyObjectId', new ParseUUIDPipe()) hierarchyObjectId: string
+  ): Promise<CnHierarchyObject> {
+    return this.hierarchyObjectAggregateService.updateHierarchyObjectVisibility(
+      hierarchyObjectId,
+      CnHierarchyObjectVisibility.TRASH
+    );
+  }
+
+  @Put(':hierarchyObjectId/restore-from-trash')
+  async restoreFromTrash(
+    @Param('hierarchyObjectId', new ParseUUIDPipe()) hierarchyObjectId: string
+  ): Promise<CnHierarchyObject> {
+    return this.hierarchyObjectAggregateService.updateHierarchyObjectVisibility(
+      hierarchyObjectId,
+      CnHierarchyObjectVisibility.VISIBLE
+    );
+  }
+
+  @Put(':hierarchyObjectId/move-to-folder/:targetFolderId')
+  async moveToFolder(
+    @Param('hierarchyObjectId', new ParseUUIDPipe()) hierarchyObjectId: string,
+    @Param('targetFolderId', new ParseUUIDPipe()) targetFolderId: string
+  ): Promise<CnHierarchyObject> {
+    return this.hierarchyObjectAggregateService.moveHierarchyObjectToFolder(
+      hierarchyObjectId,
+      targetFolderId
+    );
+  }
+
+  @Delete(':hierarchyObjectId')
+  async deleteHierarchyObject(
+    @Param('hierarchyObjectId', new ParseUUIDPipe()) hierarchyObjectId: string
+  ): Promise<void> {
+    return this.hierarchyObjectAggregateService.deleteHierarchyObjectById(hierarchyObjectId);
+  }
+
+  @Put(':folderId/empty-trash')
+  emptyTrash(@Param('folderId', new ParseUUIDPipe()) folderId: string): Promise<void> {
+    return this.hierarchyObjectAggregateService.emptyTrash(folderId);
+  }
+
+  ////////////////////////////////////////////// TAGS ///////////////////////////////////////////
+
+  @Get('roots/tags/available')
+  async getAvailableTagForRootFolders(): Promise<CnAvailableTags> {
+    return this.hierarchyObjectAggregateService.getAvailableTagForRootFolders();
   }
 
   @Post(':hierarchyObjectId/tags')
@@ -28,7 +142,7 @@ export class CnHierarchyObjectController {
     @Param('hierarchyObjectId', new ParseUUIDPipe()) hierarchyObjectId: string,
     @Body() tag: CnTag
   ): Promise<CnHierarchyObjectTag> {
-    return this.folderAggregateService.createHierarchyObjectTag(hierarchyObjectId, tag);
+    return this.hierarchyObjectAggregateService.createHierarchyObjectTag(hierarchyObjectId, tag);
   }
 
   @Post(':hierarchyObjectId/tags/multiple')
@@ -36,7 +150,7 @@ export class CnHierarchyObjectController {
     @Param('hierarchyObjectId', new ParseUUIDPipe()) hierarchyObjectId: string,
     @Body() tags: CnTag[]
   ): Promise<CnHierarchyObjectTag[]> {
-    return this.folderAggregateService.createHierarchyObjectTags(hierarchyObjectId, tags);
+    return this.hierarchyObjectAggregateService.createHierarchyObjectTags(hierarchyObjectId, tags);
   }
 
   @Post(':hierarchyObjectId/tags/delete')
@@ -44,7 +158,7 @@ export class CnHierarchyObjectController {
     @Param('hierarchyObjectId', new ParseUUIDPipe()) hierarchyObjectId: string,
     @Body() tag: CnTag
   ): Promise<void> {
-    return this.folderAggregateService.deleteHierarchyObjectTag(hierarchyObjectId, tag);
+    return this.hierarchyObjectAggregateService.deleteHierarchyObjectTag(hierarchyObjectId, tag);
   }
 
   @Get(':hierarchyObjectId/tags')
@@ -53,27 +167,31 @@ export class CnHierarchyObjectController {
     @Query('page', ParseIntPipe) page: number,
     @Query('size', ParseIntPipe) size: number
   ): Promise<ClPageI<CnTag>> {
-    return this.folderAggregateService.getHierarchyObjectTagsPaginated(hierarchyObjectId, page, size);
+    return this.hierarchyObjectAggregateService.getHierarchyObjectTagsPaginated(
+      hierarchyObjectId,
+      page,
+      size
+    );
   }
 
   @Get(':hierarchyObjectId/tags/all')
   async getAllTags(
     @Param('hierarchyObjectId', new ParseUUIDPipe()) hierarchyObjectId: string
   ): Promise<CnTag[]> {
-    return this.folderAggregateService.getAllHierarchyObjectTags(hierarchyObjectId);
+    return this.hierarchyObjectAggregateService.getAllHierarchyObjectTags(hierarchyObjectId);
   }
 
   @Get(':hierarchyObjectId/tags/available-children')
   async getAvailableTagsInChildren(
     @Param('hierarchyObjectId', new ParseUUIDPipe()) hierarchyObjectId: string
   ): Promise<CnAvailableTags> {
-    return this.folderAggregateService.getAvailableTagsInChildren(hierarchyObjectId);
+    return this.hierarchyObjectAggregateService.getAvailableTagsInChildren(hierarchyObjectId);
   }
 
   @Get(':hierarchyObjectId/tags/available')
   async getAvailableTags(
     @Param('hierarchyObjectId', new ParseUUIDPipe()) hierarchyObjectId: string
   ): Promise<CnAvailableTags> {
-    return this.folderAggregateService.getAvailableTags(hierarchyObjectId);
+    return this.hierarchyObjectAggregateService.getAvailableTags(hierarchyObjectId);
   }
 }

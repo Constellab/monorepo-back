@@ -9,6 +9,7 @@ export enum CnActivityType {
   CREATE = 'CREATE',
   UPDATE = 'UPDATE',
   DELETE = 'DELETE',
+  TRASH = 'TRASH',
 }
 
 export enum CnActivityEntityType {
@@ -17,6 +18,7 @@ export enum CnActivityEntityType {
   SCENARIO = 'SCENARIO',
   NOTE = 'NOTE',
   DOCUMENT = 'DOCUMENT',
+  RESOURCE = 'RESOURCE',
   MESSAGE = 'MESSAGE',
 }
 
