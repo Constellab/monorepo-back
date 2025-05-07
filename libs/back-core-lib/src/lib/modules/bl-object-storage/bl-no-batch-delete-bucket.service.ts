@@ -1,6 +1,9 @@
 import { BlS3BucketService } from './bl-s3-bucket.service';
 
-export class BlGcpBucketService extends BlS3BucketService {
+/**
+ * An s3 service that does not support batch delete (OVH and GCP)
+ */
+export class BlNoBatchDeleteBucketService extends BlS3BucketService {
   /**
    * The delete multiple objects method is not
    * supported by GCP. So we need to delete each object

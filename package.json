@@ -43,8 +43,8 @@
   },
   "private": true,
   "dependencies": {
-    "@aws-sdk/client-ec2": "^3.621.0",
-    "@aws-sdk/client-s3": "^3.621.0",
+    "@aws-sdk/client-ec2": "^3.804.0",
+    "@aws-sdk/client-s3": "^3.804.0",
     "@azure/arm-compute": "^22.0.0",
     "@azure/arm-network": "^33.3.0",
     "@azure/arm-storage": "^18.3.0",

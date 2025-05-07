@@ -11,11 +11,10 @@ import {
 } from './bl-object-storage.class';
 import { BlAzureBucketService } from './bl-azure-bucket.service';
 import { BlObjectStorageInterface } from './bl-object-storage.interface';
-import { BlS3BucketService } from './bl-s3-bucket.service';
 import { BlExternalApiService } from '../bl-external-api/bl-external-api.service';
 import { BlLabS3BucketService } from './bl-lab-s3-bucket.service';
 import { Stream } from 'stream';
-import { BlGcpBucketService } from './bl-gcp-bucket.service';
+import { BlNoBatchDeleteBucketService } from './bl-no-batch-delete-bucket.service';
 
 export interface BlObjectStorageUploadOptions {
   // if true generate a random name for the object
@@ -348,9 +347,9 @@ export class BlObjectStorageService {
       case BlBucketType.LAB:
         return new BlLabS3BucketService(config.config, this.apiService);
       case BlBucketType.GCP:
-        return new BlGcpBucketService(config.config);
+        return new BlNoBatchDeleteBucketService(config.config);
       default:
-        return new BlS3BucketService(config.config);
+        return new BlNoBatchDeleteBucketService(config.config);
     }
   }
 

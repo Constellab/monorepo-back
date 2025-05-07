@@ -1393,6 +1393,7 @@ export class CnFolderAggregateService {
     await this.foldersService.update(folderWithStorage as CnFolderEntity);
 
     return {
+      rootFolderId: rootFolderId,
       mainStorage: folderWithStorage.mainStorage?.getBucketLocation() ?? null,
       backupStorage: folderWithStorage.backupStorage?.getBucketLocation() ?? null,
     };
