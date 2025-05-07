@@ -1398,15 +1398,13 @@ export class CnFolderAggregateService {
     };
   }
 
-  public async getFolderStorage(rootFolderId: string): Promise<CnFolderStorageLocationDTO> {
-    const folder = await this.getAndCheckAuthorizationForUpdate(rootFolderId);
-    if (!folder.isRootFolder()) {
-      throw new BlBadRequestException('The folder is not a root folder');
-    }
-    const buckets = await this.folderBucketService.getRootFolderBucket(rootFolderId);
+  public async getFolderStorage(folderId: string): Promise<CnFolderStorageLocationDTO> {
+    const folder = await this.getAndCheckAuthorizationForUpdate(folderId);
+    const buckets = await this.folderBucketService.getRootFolderBucket(folder.getRootFolderId());
 
     // return only region to the user, he doesn't need the bucket name
     return {
+      rootFolderId: folder.getRootFolderId(),
       mainStorage: buckets.mainStorage?.getBucketLocation() ?? null,
       backupStorage: buckets.backupStorage?.getBucketLocation() ?? null,
     };

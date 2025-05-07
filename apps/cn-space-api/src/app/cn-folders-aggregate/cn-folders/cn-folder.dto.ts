@@ -32,6 +32,7 @@ export class CnSaveFolderDTO {
 }
 
 export interface CnFolderStorageLocationDTO {
+  rootFolderId: string;
   mainStorage: CnBucketLocationDTO;
 
   backupStorage?: CnBucketLocationDTO;
