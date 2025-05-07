@@ -451,7 +451,8 @@ export class CnFolderAggregateService {
 
     const hierarchyObject = await this.getAndCheckAuthorizationForUpdate(folderId);
     const oldParentRootFolderId: string = hierarchyObject.getRootFolderId();
-    const newParentHierarchyObject = await this.getAndCheckAuthorizationForUpdate(newParentFolderId);
+    const newParentHierarchyObject =
+      await this.getAndCheckAuthorizationForFindOneByHierarchyObject(newParentFolderId);
 
     if (hierarchyObject.parentId === newParentHierarchyObject.id) {
       throw new BlBadRequestException('The folder already belong to this folder');
@@ -780,6 +781,15 @@ export class CnFolderAggregateService {
     );
 
     return resource;
+  }
+
+  public async moveResource(resourceId: string, newFolderId: string): Promise<CnResource> {
+    // check if user has authorization on object and new folder
+    await this.getAndCheckAuthorizationForFindOneByHierarchyObject(resourceId);
+    const newFolder = await this.getAndCheckAuthorizationForFindOneByHierarchyObject(newFolderId);
+    await this.hierarchyObjectService.updateLeafParent(resourceId, newFolder);
+
+    return this.resourceService.findByIdAndCheck(resourceId);
   }
 
   /////////////////////////////////////// GROUPS //////////////////////////////////

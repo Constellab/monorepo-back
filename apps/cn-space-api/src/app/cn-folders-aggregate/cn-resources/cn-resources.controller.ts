@@ -25,4 +25,12 @@ export class CnResourcesController {
   updateName(@Param('id', new ParseUUIDPipe()) id: string, @Body() body: any): Promise<CnResource> {
     return this.folderAggregateService.renameResource(id, body.name);
   }
+
+  @Put(':id/move/:folderId')
+  move(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('folderId', new ParseUUIDPipe()) folderId: string
+  ): Promise<CnResource> {
+    return this.folderAggregateService.moveResource(id, folderId);
+  }
 }
