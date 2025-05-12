@@ -13,11 +13,7 @@ import {
 import { CnAvailableTags, CnTag } from '../cn-hierarchy-object-tags/cn-hierarchy-object-tag.dto';
 import { CnHierarchyObjectTag } from '../cn-hierarchy-object-tags/cn-hierarchy-object-tag.entity';
 import { ClPage, ClPageI } from '@monorepo/core-lib';
-import {
-  CnHierarchyObject,
-  CnHierarchyObjectVisibility,
-  CnHierarchyObjectWithParent,
-} from './cn-hierarchy-object.entity';
+import { CnHierarchyObject, CnHierarchyObjectWithParent } from './cn-hierarchy-object.entity';
 import { CnHierarchyObjectAggregateService } from '../cn-hierarchy-object-aggregate.service';
 import { BlParsePipe, BlSearchParams } from '@monorepo/back-core-lib';
 
@@ -85,26 +81,29 @@ export class CnHierarchyObjectController {
     );
   }
 
+  @Post('current-space/search')
+  async searchInCurrentSpace(
+    @Body(new BlParsePipe(BlSearchParams)) searchParam: BlSearchParams,
+    @Query('page', ParseIntPipe) page: number,
+    @Query('size', ParseIntPipe) size: number
+  ): Promise<ClPageI<CnHierarchyObject>> {
+    return await this.hierarchyObjectAggregateService.searchInCurrentSpace(searchParam, page, size);
+  }
+
   ////////////////////// UPDATE ////////////////////
 
   @Put(':hierarchyObjectId/move-to-trash')
   async moveToTrash(
     @Param('hierarchyObjectId', new ParseUUIDPipe()) hierarchyObjectId: string
   ): Promise<CnHierarchyObject> {
-    return this.hierarchyObjectAggregateService.updateHierarchyObjectVisibility(
-      hierarchyObjectId,
-      CnHierarchyObjectVisibility.TRASH
-    );
+    return this.hierarchyObjectAggregateService.moveToTrash(hierarchyObjectId);
   }
 
   @Put(':hierarchyObjectId/restore-from-trash')
   async restoreFromTrash(
     @Param('hierarchyObjectId', new ParseUUIDPipe()) hierarchyObjectId: string
   ): Promise<CnHierarchyObject> {
-    return this.hierarchyObjectAggregateService.updateHierarchyObjectVisibility(
-      hierarchyObjectId,
-      CnHierarchyObjectVisibility.VISIBLE
-    );
+    return this.hierarchyObjectAggregateService.restoreFromTrash(hierarchyObjectId);
   }
 
   @Put(':hierarchyObjectId/move-to-folder/:targetFolderId')

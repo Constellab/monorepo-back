@@ -100,6 +100,16 @@ export class CnHierarchyObjectAggregateService {
     return this.searchInRootFoldersAndChildren(searchParam, CnHierarchyObjectVisibility.TRASH, page, size);
   }
 
+  public async searchInCurrentSpace(
+    searchParams: BlSearchParams,
+    page: number,
+    size: number
+  ): Promise<ClPageI<CnHierarchyObject>> {
+    const spaceId = CnCurrentUserHelper.getAndCheckCurrentSpace().id;
+    await this.securityService.checkFindAllBySpace();
+    return this.hierarchyObjectService.searchInSpace(spaceId, searchParams, page, size);
+  }
+
   private async searchInRootFoldersAndChildren(
     searchParam: BlSearchParams,
     visibility: CnHierarchyObjectVisibility,
@@ -124,57 +134,78 @@ export class CnHierarchyObjectAggregateService {
   ////////////////////// UPDATE ////////////////////
 
   /**
-   * Update the visibility of a hierarchy object and all its children
-   * @param hierarchyObjectId
-   * @param visibility
+   * Move an object and all its children to trash
    */
-  public async updateHierarchyObjectVisibility(
-    hierarchyObjectId: string,
-    visibility: CnHierarchyObjectVisibility
-  ): Promise<CnHierarchyObject> {
+  public async moveToTrash(hierarchyObjectId: string): Promise<CnHierarchyObject> {
     const hierarchyObject = await this.securityService.getAndCheckAuthorizationForHierarchyObjectUpdate(
       hierarchyObjectId,
       true
     );
 
-    if (hierarchyObject.visibility === CnHierarchyObjectVisibility.HIDDEN) {
-      throw new BlBadRequestException('Cannot modify the visibility of a hidden object');
-    }
-    if (hierarchyObject.visibility === visibility) {
+    if (hierarchyObject.visibility === CnHierarchyObjectVisibility.TRASH) {
       return hierarchyObject;
     }
 
-    let objectAndChildrenToUpdate: CnHierarchyObject[];
-    // if we move an object (folder) to trash, it must not have validated children
-    if (visibility === CnHierarchyObjectVisibility.TRASH) {
-      const objectTree = await this.checkHierarchyObjectBeforeDelete(hierarchyObject, 'trash');
-      objectAndChildrenToUpdate = objectTree
-        .flattenTreeRecursively()
-        .filter((hierarchyObject) => hierarchyObject.visibility === CnHierarchyObjectVisibility.VISIBLE);
-    } else {
-      const objectTree = await this.hierarchyObjectService.getObjectTree(hierarchyObject);
+    const objectTree = await this.checkHierarchyObjectBeforeDelete(hierarchyObject, 'trash');
+    const objectAndChildrenToUpdate = objectTree
+      .flattenTreeRecursively()
+      .filter((hierarchyObject) => hierarchyObject.visibility === CnHierarchyObjectVisibility.VISIBLE)
+      .map((object) => object.id);
 
-      objectAndChildrenToUpdate = objectTree
-        .flattenTreeRecursively()
-        .filter((child) => child.visibility === CnHierarchyObjectVisibility.TRASH);
-    }
-
-    await this.hierarchyObjectService.updateVisibility(
-      objectAndChildrenToUpdate.map((hierarchyObject) => hierarchyObject.id),
-      visibility
+    const newHierarchyObject = await this.hierarchyObjectService.updateObjectAndChildrenVisibility(
+      hierarchyObject.id,
+      objectAndChildrenToUpdate,
+      CnHierarchyObjectVisibility.TRASH
     );
-
-    const newHierarchyObject = await this.hierarchyObjectService.findByIdAndCheck(hierarchyObject.id);
 
     const parentFolder = hierarchyObject.parentId
       ? await this.hierarchyObjectService.findByIdAndCheck(hierarchyObject.parentId)
       : null;
 
-    this.eventService.emitFolderEvent(
-      visibility === CnHierarchyObjectVisibility.TRASH ? 'MOVE_OBJECT_TO_TRASH' : 'RESTORE_OBJECT_FROM_TRASH',
-      parentFolder,
-      newHierarchyObject
+    this.eventService.emitFolderEvent('MOVE_OBJECT_TO_TRASH', parentFolder, newHierarchyObject);
+
+    return newHierarchyObject;
+  }
+
+  /**
+   * Restore an object and its children from trash
+   */
+  public async restoreFromTrash(hierarchyObjectId: string): Promise<CnHierarchyObject> {
+    const hierarchyObject = await this.securityService.getAndCheckAuthorizationForHierarchyObjectUpdate(
+      hierarchyObjectId,
+      true
     );
+
+    if (hierarchyObject.visibility === CnHierarchyObjectVisibility.VISIBLE) {
+      return hierarchyObject;
+    }
+
+    // Check that the parent is not in the trash
+    if (hierarchyObject.parentId) {
+      const parent = await this.hierarchyObjectService.findByIdAndCheck(hierarchyObject.parentId);
+      if (parent.visibility === CnHierarchyObjectVisibility.TRASH) {
+        throw new BlBadRequestException('The parent folder is in the trash, this object cannot be restored');
+      }
+    }
+
+    const objectTree = await this.hierarchyObjectService.getObjectTree(hierarchyObject);
+
+    const objectAndChildrenToUpdate = objectTree
+      .flattenTreeRecursively()
+      .filter((child) => child.visibility === CnHierarchyObjectVisibility.TRASH)
+      .map((object) => object.id);
+
+    const newHierarchyObject = await this.hierarchyObjectService.updateObjectAndChildrenVisibility(
+      hierarchyObject.id,
+      objectAndChildrenToUpdate,
+      CnHierarchyObjectVisibility.VISIBLE
+    );
+
+    const parentFolder = hierarchyObject.parentId
+      ? await this.hierarchyObjectService.findByIdAndCheck(hierarchyObject.parentId)
+      : null;
+
+    this.eventService.emitFolderEvent('RESTORE_OBJECT_FROM_TRASH', parentFolder, newHierarchyObject);
 
     return newHierarchyObject;
   }

@@ -291,16 +291,6 @@ export class CnFolderAggregateService {
     return this.hierarchyObjectService.getRootFoldersBySpace(spaceId, page, size);
   }
 
-  public async searchInCurrentSpace(
-    searchParams: BlSearchParams,
-    page: number,
-    size: number
-  ): Promise<ClPageI<CnFolder>> {
-    const spaceId = CnCurrentUserHelper.getAndCheckCurrentSpace().id;
-    await this.securityService.checkFindAllBySpace();
-    return this.foldersService.searchFolderInSpace(spaceId, searchParams, page, size);
-  }
-
   public async getChildrenFolders(folderId: string): Promise<CnHierarchyObject[]> {
     await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(folderId);
 

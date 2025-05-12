@@ -2,10 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
 import { CnFolder, CnFolderEntity, CnFolderWithHierarchy, CnFolderWithStorage } from './cn-folder.entity';
-import { BlAbstractService, BlSearchParams } from '@monorepo/back-core-lib';
+import { BlAbstractService } from '@monorepo/back-core-lib';
 import { CnUser } from '../../cn-users/cn-user.entity';
-import { ClPage } from '@monorepo/core-lib';
-import { CnFolderSearch } from './cn-folder.search';
 import { TeRichText } from '@monorepo/te-text-editor';
 
 @Injectable()
@@ -43,19 +41,6 @@ export class CnFoldersService extends BlAbstractService<CnFolderEntity> {
 
   public async updateLeader(id: string, leader: CnUser, entityManager: EntityManager): Promise<void> {
     await this.updatePartial(id, { leader: leader }, entityManager);
-  }
-
-  public async searchFolderInSpace(
-    spaceId: string,
-    searchParam: BlSearchParams,
-    page: number,
-    size: number
-  ): Promise<ClPage<CnFolder>> {
-    const searchBuilder = new CnFolderSearch({ lastModifiedAt: 'DESC' as any });
-    searchBuilder.addSearchParams(searchParam);
-    searchBuilder.mergeWhereOptions({ hierarchyRepresentation: { spaceId: spaceId } });
-
-    return await this.findPaginated(page, size, searchBuilder.build());
   }
 
   public async findChildrenFolders(parentId: string): Promise<CnFolder[]> {

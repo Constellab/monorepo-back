@@ -35,7 +35,6 @@ import {
 import {
   CnHierarchyObject,
   CnHierarchyObjectEntity,
-  CnHierarchyObjectVisibility,
 } from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.entity';
 import { CnLabMailService } from '../cn-labs/mail/cn-lab-mail.service';
 import {
@@ -226,10 +225,7 @@ export class CnExternalLabsController {
   @CnLabAllowDev()
   @Delete('folder/:id')
   async deleteFolder(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
-    await this.hierarchyObjectAggregateService.updateHierarchyObjectVisibility(
-      id,
-      CnHierarchyObjectVisibility.TRASH
-    );
+    await this.hierarchyObjectAggregateService.moveToTrash(id);
   }
 
   @CnLabAllowDev()

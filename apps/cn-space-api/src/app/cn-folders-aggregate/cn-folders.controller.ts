@@ -76,15 +76,6 @@ export class CnFoldersController {
     return await this.folderAggregateService.getByCurrentSpace(page, size);
   }
 
-  @Post('current-space/search')
-  async searchInCurrentSpace(
-    @Body(new BlParsePipe(BlSearchParams)) searchParam: BlSearchParams,
-    @Query('page', ParseIntPipe) page: number,
-    @Query('size', ParseIntPipe) size: number
-  ): Promise<ClPageI<CnFolder>> {
-    return await this.folderAggregateService.searchInCurrentSpace(searchParam, page, size);
-  }
-
   @Post()
   create(@Body(new BlParsePipe(CnSaveFolderDTO)) folder: CnSaveFolderDTO): Promise<CnFolderWithHierarchy> {
     return this.folderAggregateService.createRootFolder(folder);

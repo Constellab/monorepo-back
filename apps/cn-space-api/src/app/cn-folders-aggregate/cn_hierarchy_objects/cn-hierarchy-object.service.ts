@@ -1,5 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { BlAbstractService, BlSearchBuilder, BlSearchParams } from '@monorepo/back-core-lib';
+import {
+  BlAbstractService,
+  BlBadRequestException,
+  BlSearchBuilder,
+  BlSearchParams,
+} from '@monorepo/back-core-lib';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   CnHierarchyObject,
@@ -98,6 +103,7 @@ export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjec
         users: { userId: userId },
         spaceId: spaceId,
         parentId: IsNull(),
+        visibility: CnHierarchyObjectVisibility.VISIBLE,
       },
       order: {
         lastModifiedAt: 'DESC' as any,
@@ -217,6 +223,31 @@ export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjec
     });
   }
 
+  public async searchInSpace(
+    spaceId: string,
+    searchParam: BlSearchParams,
+    page: number,
+    size: number
+  ): Promise<ClPage<CnHierarchyObject>> {
+    const searchBuilder: BlSearchBuilder<CnHierarchyObjectEntity> = new BlSearchBuilder();
+    // force the sort by objectType first
+    searchBuilder.mergeOrderOptions({ objectTypeOrder: 'ASC' });
+    searchBuilder.mergeWhereOptions({ spaceId: spaceId });
+
+    // handle includeTrashObject
+    if (searchParam.getFilterValue('includeTrashObjects')) {
+      searchBuilder.mergeWhereOptions({
+        visibility: In([CnHierarchyObjectVisibility.VISIBLE, CnHierarchyObjectVisibility.TRASH]),
+      });
+    } else {
+      searchBuilder.mergeWhereOptions({ visibility: CnHierarchyObjectVisibility.VISIBLE });
+    }
+    searchParam.removeFilter('includeTrashObjects');
+    searchBuilder.addSearchParams(searchParam);
+
+    return await this.findPaginated(page, size, searchBuilder.build());
+  }
+
   public async getFolderTreeForChat(
     folder: CnHierarchyObject
   ): Promise<CnHierarchyObjectWithChildren | null> {
@@ -323,10 +354,15 @@ export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjec
     return hierarchyObject;
   }
 
-  public async updateVisibility(
+  public async updateObjectAndChildrenVisibility(
+    hierarchyObjectId: string,
     hierarchyObjectIds: string[],
     visibility: CnHierarchyObjectVisibility
-  ): Promise<void> {
+  ): Promise<CnHierarchyObject> {
+    if (visibility === CnHierarchyObjectVisibility.HIDDEN) {
+      throw new BlBadRequestException('Cannot modify the visibility of a hidden object');
+    }
+
     await this.repository.update(
       {
         id: In(hierarchyObjectIds),
@@ -335,6 +371,8 @@ export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjec
         visibility: visibility,
       }
     );
+
+    return this.findByIdAndCheck(hierarchyObjectId);
   }
 
   public getAllChildrenInTrash(folderId: string): Promise<CnHierarchyObject[]> {
