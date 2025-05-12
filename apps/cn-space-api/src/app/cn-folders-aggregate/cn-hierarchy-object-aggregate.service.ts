@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CnHierarchyObjectService } from './cn_hierarchy_objects/cn-hierarchy-object.service';
 import { CnFoldersSecurityService } from './cn-folders-security.service';
-import { CnFolderEventService } from './cn-folder.event';
+import { CnFolderEventMoveObjectToFolderData, CnFolderEventService } from './cn-folder.event';
 import {
   CnHierarchyObject,
   CnHierarchyObjectType,
@@ -220,6 +220,8 @@ export class CnHierarchyObjectAggregateService {
       return hierarchyObject;
     }
 
+    const oldParentRootFolderId = hierarchyObject.getRootFolderId();
+
     const newParentFolder =
       await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(newFolderParentId);
 
@@ -253,7 +255,13 @@ export class CnHierarchyObjectAggregateService {
         throw new BlBadRequestException('Cannot move this object');
     }
 
-    this.eventService.emitFolderEvent('MOVE_OBJECT_TO_FOLDER', newParentFolder, newHierarchyObject);
+    const data: CnFolderEventMoveObjectToFolderData = {
+      hierarchyObject: newHierarchyObject,
+      oldParentRootFolderId: oldParentRootFolderId,
+      newParentFolder: newParentFolder,
+    };
+
+    this.eventService.emitFolderEvent('MOVE_OBJECT_TO_FOLDER', newParentFolder, data);
     return newHierarchyObject;
   }
 
@@ -276,7 +284,7 @@ export class CnHierarchyObjectAggregateService {
     const objectTree = await this.checkHierarchyObjectBeforeDelete(hierarchyObject, 'delete');
 
     if (hierarchyObject.visibility === CnHierarchyObjectVisibility.VISIBLE) {
-      throw new BlBadRequestException('The objec must be moved to trash before deleting it');
+      throw new BlBadRequestException('The object must be moved to trash before deleting it');
     }
     if (hierarchyObject.isFolder()) {
       return this.deleteFolderAndChildren(objectTree);

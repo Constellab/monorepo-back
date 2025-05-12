@@ -3,6 +3,7 @@ import {
   CnScenario,
   CnScenarioEntity,
   CnScenarioWithHierarchy,
+  CnScenarioWithLab,
   CnScenarioWithNotes,
 } from './cn-scenario.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -16,16 +17,15 @@ import { CnProtocolMigrator } from './cn-protocol-migrator.class';
 import {
   CnHierarchyObject,
   CnHierarchyObjectEntity,
+  CnHierarchyObjectVisibility,
 } from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
-import { CnHierarchyObjectService } from '../cn_hierarchy_objects/cn-hierarchy-object.service';
 import { CnScenarioProtocol } from './cn-scenario-protocol.class';
 
 @Injectable()
 export class CnScenariosService extends BlAbstractService<CnScenarioEntity> {
   constructor(
     @InjectRepository(CnScenarioEntity) private repository: Repository<CnScenarioEntity>,
-    private labConfigService: CnLabConfigsService,
-    private hierarchyObjectService: CnHierarchyObjectService
+    private labConfigService: CnLabConfigsService
   ) {
     super(repository, CnScenarioEntity);
   }
@@ -34,15 +34,6 @@ export class CnScenariosService extends BlAbstractService<CnScenarioEntity> {
     return this.repository.find({
       where: {
         hierarchyRepresentation: { parentId: parentFolderId },
-      },
-      order: { lastModifiedAt: 'DESC' as any },
-    });
-  }
-
-  getScenariosByLab(labId: string): Promise<CnScenario[]> {
-    return this.repository.find({
-      where: {
-        lab: { id: labId },
       },
       order: { lastModifiedAt: 'DESC' as any },
     });
@@ -129,24 +120,6 @@ export class CnScenariosService extends BlAbstractService<CnScenarioEntity> {
     }
   }
 
-  public async updateScenarioFolder(
-    scenarioId: string,
-    newParentFolder: CnHierarchyObject
-  ): Promise<CnScenario> {
-    const scenario = await this.findScenarioWithHierarchyById(scenarioId);
-    if (!scenario) {
-      throw new BlBadRequestException('Scenario not found');
-    }
-
-    if (scenario.hierarchyRepresentation.parentId === newParentFolder.id) {
-      return scenario;
-    }
-
-    await this.hierarchyObjectService.updateLeafParent(scenario.hierarchyRepresentation.id, newParentFolder);
-
-    return this.findByIdAndCheck(scenario.id);
-  }
-
   public async deleteScenario(scenario: CnScenario, entityManager: EntityManager): Promise<void> {
     if (scenario.isValidated) {
       throw new BlBadRequestException("Can't delete a validated scenario");
@@ -187,8 +160,24 @@ export class CnScenariosService extends BlAbstractService<CnScenarioEntity> {
     return this.findById(id, { hierarchyRepresentation: true });
   }
 
+  public async findWithLabById(id: string): Promise<CnScenarioWithLab | null> {
+    return this.findById(id, { lab: true, hierarchyRepresentation: true });
+  }
+
   public migrateProtocol(protocol: CnScenarioProtocol): CnScenarioProtocol {
     const protocolMigrator = new CnProtocolMigrator();
     return protocolMigrator.migrateProtocol(protocol);
+  }
+
+  public findByLab(labId: string): Promise<CnScenarioWithHierarchy[]> {
+    return this.repository.find({
+      where: {
+        lab: { id: labId },
+        hierarchyRepresentation: {
+          visibility: CnHierarchyObjectVisibility.VISIBLE,
+        },
+      },
+      relations: { hierarchyRepresentation: true },
+    });
   }
 }

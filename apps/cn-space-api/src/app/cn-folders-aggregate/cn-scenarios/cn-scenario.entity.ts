@@ -84,3 +84,5 @@ export type CnScenarioWithHierarchy = Omit<CnScenarioEntity, 'notes' | 'lab' | '
 export type CnScenario = Omit<CnScenarioWithHierarchy, 'hierarchyRepresentation'>;
 
 export type CnScenarioWithNotes = Omit<CnScenarioEntity, 'hierarchyRepresentation' | 'lab' | 'labConfig'>;
+
+export type CnScenarioWithLab = Omit<CnScenarioEntity, 'notes' | 'labConfig'>;

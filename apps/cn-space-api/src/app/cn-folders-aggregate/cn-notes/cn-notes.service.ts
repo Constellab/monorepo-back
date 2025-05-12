@@ -1,5 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { CnNote, CnNoteEntity, CnNoteWithDocument, CnNoteWithScenarios } from './cn-note.entity';
+import {
+  CnNote,
+  CnNoteEntity,
+  CnNoteWithDocument,
+  CnNoteWithHierarchy,
+  CnNoteWithLab,
+  CnNoteWithScenarios,
+} from './cn-note.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
 import { CnScenario } from '../cn-scenarios/cn-scenario.entity';
@@ -12,6 +19,7 @@ import { CnDocument, CnDocumentEntity, CnDocumentType } from '../cn-documents/cn
 import {
   CnHierarchyObject,
   CnHierarchyObjectEntity,
+  CnHierarchyObjectVisibility,
 } from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
 import { TeRichText, TeRichTextAggregate, TeRichTextModifications } from '@monorepo/te-text-editor';
 
@@ -27,22 +35,12 @@ export class CnNotesService extends BlAbstractService<CnNoteEntity> {
     super(repository, CnNoteEntity);
   }
 
-  public findByIdAndCheckWithDocument(id: string): Promise<CnNoteWithDocument> {
+  public findWithDocumentByIdAndCheck(id: string): Promise<CnNoteWithDocument> {
     return this.findByIdAndCheck(id, { document: true, hierarchyRepresentation: true });
   }
 
-  public findByIdWithDocument(id: string): Promise<CnNoteWithDocument | null> {
-    return this.findById(id, { document: true, hierarchyRepresentation: true });
-  }
-
-  getNotesByLab(labId: string): Promise<CnNote[]> {
-    return this.repository.find({
-      where: {
-        lab: {
-          id: labId,
-        },
-      },
-    });
+  public findWithLabByIdAndCheck(id: string): Promise<CnNoteWithLab> {
+    return this.findByIdAndCheck(id, { lab: true, hierarchyRepresentation: true });
   }
 
   getNotesByRootFolderAndLab(rootFolderId: string, labId: string): Promise<CnNote[]> {
@@ -339,6 +337,22 @@ export class CnNotesService extends BlAbstractService<CnNoteEntity> {
         hierarchyRepresentation: {
           spaceId: spaceId,
         },
+      },
+    });
+  }
+
+  public async findByLab(labId: string): Promise<CnNoteWithHierarchy[]> {
+    return this.repository.find({
+      where: {
+        lab: {
+          id: labId,
+        },
+        hierarchyRepresentation: {
+          visibility: CnHierarchyObjectVisibility.VISIBLE,
+        },
+      },
+      relations: {
+        hierarchyRepresentation: true,
       },
     });
   }

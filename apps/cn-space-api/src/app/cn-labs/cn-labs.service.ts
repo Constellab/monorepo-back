@@ -175,12 +175,12 @@ export class CnLabsService extends CnAbstractWithStatusService<CnLabEntity, CnLa
         "Can't delete the lab because the server or volume still exist. Please delete them first"
       );
     }
-    const scenarios: CnScenario[] = await this.scenarioService.getScenariosByLab(id);
+    const scenarios: CnScenario[] = await this.scenarioService.findByLab(id);
     if (scenarios?.length > 0) {
       throw new BlBadRequestException("Can't delete the lab because some scenario are linked to it");
     }
 
-    const notes = await this.noteService.getNotesByLab(id);
+    const notes = await this.noteService.findByLab(id);
     if (notes?.length > 0) {
       throw new BlBadRequestException("Can't delete the lab because some notes are linked to it");
     }

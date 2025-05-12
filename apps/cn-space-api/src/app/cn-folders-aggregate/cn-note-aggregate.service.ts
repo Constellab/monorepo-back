@@ -4,7 +4,7 @@ import { CnFoldersSecurityService } from './cn-folders-security.service';
 import { CnFolderEventService } from './cn-folder.event';
 import { DataSource } from 'typeorm';
 import { CnNotesService } from './cn-notes/cn-notes.service';
-import { CnNote, CnNoteWithDocument } from './cn-notes/cn-note.entity';
+import { CnNote, CnNoteWithDocument, CnNoteWithLab } from './cn-notes/cn-note.entity';
 import { TeRichText, TeRichTextBlockModificationWithUser } from '@monorepo/te-text-editor';
 import { CnCreateNoteWithConfigDto } from './cn-notes/cn-note.dto';
 import { BlBadRequestException, BlFile, BlFileResponse } from '@monorepo/back-core-lib';
@@ -13,6 +13,8 @@ import { CnHierarchyObject } from './cn_hierarchy_objects/cn-hierarchy-object.en
 import { CnScenariosService } from './cn-scenarios/cn-scenarios.service';
 import { CnDocumentService } from './cn-documents/cn-document.service';
 import { CnUsersService } from '../cn-users/cn-users.service';
+import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
+import { CnExternalLabSyncedObjectDTO } from '../cn-external-lab-api/model/cn-external-lab-api.class';
 
 @Injectable()
 export class CnNoteAggregateService {
@@ -75,7 +77,7 @@ export class CnNoteAggregateService {
   }
 
   async deleteNote(noteId: string): Promise<boolean> {
-    const note = await this.noteService.findByIdAndCheckWithDocument(noteId);
+    const note = await this.noteService.findWithDocumentByIdAndCheck(noteId);
     if (!note) {
       return false;
     }
@@ -113,7 +115,7 @@ export class CnNoteAggregateService {
     noteHierarchyObject: CnHierarchyObject,
     newParentFolder: CnHierarchyObject
   ): Promise<CnHierarchyObject> {
-    const note: CnNoteWithDocument = await this.noteService.findByIdAndCheckWithDocument(
+    const note: CnNoteWithDocument = await this.noteService.findWithDocumentByIdAndCheck(
       noteHierarchyObject.id
     );
     const document = await this.documentService.findWithHierarchyByIdAndCheck(note.document.id);
@@ -127,6 +129,23 @@ export class CnNoteAggregateService {
       note.hierarchyRepresentation.id,
       newParentFolder
     );
+  }
+
+  public async getNotesOfCurrentLab(): Promise<CnExternalLabSyncedObjectDTO[]> {
+    const notes = await this.noteService.findByLab(CnCurrentUserHelper.getAndCheckCurrentLab().id);
+
+    return notes.map((note) => {
+      return new CnExternalLabSyncedObjectDTO(
+        note.id,
+        note.hierarchyRepresentation.parentId,
+        note.lastSyncAt,
+        note.lastSyncBy.id
+      );
+    });
+  }
+
+  public async getNoteSyncLabDTO(noteId: string): Promise<CnNoteWithLab> {
+    return this.noteService.findWithLabByIdAndCheck(noteId);
   }
 
   ////////////////////////////// HISTORY ///////////////////////

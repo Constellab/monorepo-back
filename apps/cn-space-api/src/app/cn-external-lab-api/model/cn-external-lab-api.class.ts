@@ -39,3 +39,19 @@ export class CnExternalLabShareGenerateTokenResponse {
   valid_until: DateTime;
   access_url: string;
 }
+
+export class CnExternalLabSyncedObjectDTO {
+  id: string;
+  folder_id: string;
+
+  @ClLuxonDateTransform()
+  last_sync_at: DateTime;
+  last_sync_by_id: string;
+
+  constructor(id: string, folderId: string, lastSyncAt: DateTime, lastSyncById: string) {
+    this.id = id;
+    this.folder_id = folderId;
+    this.last_sync_at = lastSyncAt;
+    this.last_sync_by_id = lastSyncById;
+  }
+}

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { CnFolderUserService } from './cn-folder-user/cn-folder-user.service';
 import { OnEvent } from '@nestjs/event-emitter';
 import { CnActivityCreateDTO, CnActivityService } from '../cn-activity/cn-activity.service';
@@ -34,6 +34,8 @@ export interface CnActivityAndNotif {
 
 @Injectable()
 export class CnFolderListener {
+  protected readonly logger = new Logger(CnFolderListener.name);
+
   constructor(
     private folderUserService: CnFolderUserService,
     private folderHierarchyService: CnHierarchyObjectService,
@@ -46,25 +48,33 @@ export class CnFolderListener {
 
   @OnEvent(cnFolderEventName)
   async handleFolderEvent(event: CnFolderEvent): Promise<void> {
-    const activityAndNotif: CnActivityAndNotif = this.getActivityDTO(event);
-    if (activityAndNotif == null) return;
+    try {
+      const activityAndNotif: CnActivityAndNotif = this.getActivityDTO(event);
+      if (activityAndNotif == null) return;
 
-    const activity = await this.createActivity(activityAndNotif.activity, event);
+      const activity = await this.createActivity(activityAndNotif.activity, event);
 
-    // specific case for message to handle mentions
-    if (event.type === 'CREATE_FOLDER_MESSAGE') {
-      await this.handleMessageCreated(activity, event.entity, event.parentFolder);
-    } else if (event.type === 'DELETE_FOLDER_MESSAGE') {
-      await this.handleMessageDeleted(activity, event.entity);
-    } else if (activityAndNotif.notif) {
-      await this.createNotification(activity, activityAndNotif.notif, event.parentFolder);
+      // specific case for message to handle mentions
+      if (event.type === 'CREATE_FOLDER_MESSAGE') {
+        await this.handleMessageCreated(activity, event.entity, event.parentFolder);
+      } else if (event.type === 'DELETE_FOLDER_MESSAGE') {
+        await this.handleMessageDeleted(activity, event.entity);
+      } else if (activityAndNotif.notif) {
+        await this.createNotification(activity, activityAndNotif.notif, event.parentFolder);
+      }
+    } catch (error: any) {
+      this.logger.error(`[CnFolderListener] Error while handling folder event ${event.type}. Error ${error}`);
+      if (error.stack) {
+        this.logger.error(error.stack);
+      }
+      throw error;
     }
   }
 
   private async createActivity(activityDTO: CnActivityCreateDTO, event: CnFolderEvent): Promise<CnActivity> {
     activityDTO.user = event.user;
     activityDTO.space = event.space;
-    activityDTO.parentEntityId = event.parentFolder.id;
+    activityDTO.parentEntityId = event.parentFolder?.id;
 
     return await this.activityService.create(activityDTO);
   }

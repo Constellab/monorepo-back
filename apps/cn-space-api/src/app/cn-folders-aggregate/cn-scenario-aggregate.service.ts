@@ -3,13 +3,15 @@ import { CnFoldersSecurityService } from './cn-folders-security.service';
 import { CnFolderEventService } from './cn-folder.event';
 import { DataSource } from 'typeorm';
 import { CnScenariosService } from './cn-scenarios/cn-scenarios.service';
-import { CnScenario } from './cn-scenarios/cn-scenario.entity';
+import { CnScenario, CnScenarioWithLab } from './cn-scenarios/cn-scenario.entity';
 import { CnCreateLabScenarioDto } from './cn-scenarios/cn-scenario.dto';
 import { BlBadRequestException } from '@monorepo/back-core-lib';
 import { CnScenarioProtocol } from './cn-scenarios/cn-scenario-protocol.class';
 import { CnLabConfig } from '../cn-lab-configs/cn-lab-config.entity';
 import { CnNotesService } from './cn-notes/cn-notes.service';
 import { Injectable } from '@nestjs/common';
+import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
+import { CnExternalLabSyncedObjectDTO } from '../cn-external-lab-api/model/cn-external-lab-api.class';
 
 @Injectable()
 export class CnScenarioAggregateService {
@@ -93,5 +95,21 @@ export class CnScenarioAggregateService {
     labId: string
   ): Promise<CnScenario[]> {
     return this.scenarioService.getScenariosByRootFolderAndLab(rootFolderId, labId);
+  }
+
+  public async getScenariosOfCurrentLab(): Promise<CnExternalLabSyncedObjectDTO[]> {
+    const scenarios = await this.scenarioService.findByLab(CnCurrentUserHelper.getAndCheckCurrentLab().id);
+    return scenarios.map((scenario) => {
+      return new CnExternalLabSyncedObjectDTO(
+        scenario.id,
+        scenario.hierarchyRepresentation.parentId,
+        scenario.lastSyncAt,
+        scenario.lastSyncBy.id
+      );
+    });
+  }
+
+  public async getScenarioSyncLabDTO(scenarioId: string): Promise<CnScenarioWithLab> {
+    return this.scenarioService.findWithLabById(scenarioId);
   }
 }

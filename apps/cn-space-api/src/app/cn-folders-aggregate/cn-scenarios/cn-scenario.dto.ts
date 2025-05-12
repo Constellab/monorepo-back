@@ -83,3 +83,10 @@ export interface CnSaveScenarioResultDTO {
   mode: 'create' | 'update';
   scenario: CnScenario;
 }
+
+export interface CnScenarioLabSyncDTO {
+  id: string;
+  folder_id: string;
+  last_sync_at: DateTime;
+  last_sync_by: CnUser;
+}

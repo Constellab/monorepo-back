@@ -19,6 +19,9 @@ import { CnResourceAccessDTO } from '../cn-folders-aggregate/cn-resources/cn-res
 import { CnScenarioAggregateService } from '../cn-folders-aggregate/cn-scenario-aggregate.service';
 import { CnNoteAggregateService } from '../cn-folders-aggregate/cn-note-aggregate.service';
 import { CnResourceAggregateService } from '../cn-folders-aggregate/cn-resource-aggregate.service';
+import { CnLabGlabApiInfo } from '../cn-labs/cn-lab.dto';
+import { CnExternalLabObjectService } from '../cn-external-lab-api/cn-external-lab-object.service';
+import { CnExternalLabSyncedObjectDTO } from '../cn-external-lab-api/model/cn-external-lab-api.class';
 
 @Injectable()
 export class CnLabFolderAggregateService {
@@ -30,6 +33,7 @@ export class CnLabFolderAggregateService {
     private externalLabFolderService: CnExternalLabFolderService,
     private externalLabApiService: CnExternalLabApiService,
     private externalLabShareService: CnExternalLabShareService,
+    private externalLabObjectService: CnExternalLabObjectService,
     private scenarioAggregateService: CnScenarioAggregateService,
     private noteAggregateService: CnNoteAggregateService,
     private resourceAggregateService: CnResourceAggregateService
@@ -66,17 +70,16 @@ export class CnLabFolderAggregateService {
 
   public async syncFolderToLab(lab: CnLab, folderTree: CnHierarchyObjectWithChildren): Promise<void> {
     // add the user to the lab is the lab is running
-    const labIsRunning = await this.externalLabApiService.healthCheck(lab.getGlabSpaceApiInfo());
-    if (labIsRunning) {
-      const glabConfig = await this.labAggregateService.getGlabConfig(lab);
+    const glabConfig = await this.getAndCheckGlabConfig(lab);
+    if (glabConfig) {
       // add the folder to the lab
       await this.externalLabFolderService.addFolderInLab(glabConfig, folderTree);
     }
   }
 
   public async syncAllFolderInsecure(lab: CnLab): Promise<void> {
-    const labIsRunning = await this.externalLabApiService.healthCheck(lab.getGlabSpaceApiInfo());
-    if (!labIsRunning) {
+    const glabConfig = await this.getAndCheckGlabConfig(lab);
+    if (!glabConfig) {
       return;
     }
 
@@ -84,7 +87,6 @@ export class CnLabFolderAggregateService {
 
     const folders = labFolders.map((labFolder) => labFolder.rootFolder);
     const rootFoldersWithChildren = await this.folderAggregateService.getFolderTrees(folders);
-    const glabConfig = await this.labAggregateService.getGlabConfig(lab);
 
     await this.externalLabFolderService.syncAllFoldersInLab(glabConfig, rootFoldersWithChildren);
   }
@@ -179,15 +181,44 @@ export class CnLabFolderAggregateService {
     return this.labFolderService.findByLabId(labId);
   }
 
-  public async getAndCheckAuthorizationToManageLab(
-    id: string,
-    refuseDesktop: boolean = true
-  ): Promise<CnLab> {
-    return this.labAggregateService.getAndCheckAuthorizationToManageLab(id, refuseDesktop);
+  /////////////////////////////////////// SCENARIO //////////////////////////////////
+
+  public async syncScenarioToLab(scenarioId: string): Promise<void> {
+    const scenarioWithLab = await this.scenarioAggregateService.getScenarioSyncLabDTO(scenarioId);
+    if (scenarioWithLab == null) return;
+
+    const glabConfig = await this.getAndCheckGlabConfig(scenarioWithLab.lab);
+    if (!glabConfig) return;
+
+    await this.externalLabObjectService.syncScenarioWithLab(
+      glabConfig,
+      new CnExternalLabSyncedObjectDTO(
+        scenarioWithLab.id,
+        scenarioWithLab.hierarchyRepresentation.parentId,
+        scenarioWithLab.lastSyncAt,
+        scenarioWithLab.lastSyncBy.id
+      )
+    );
   }
 
-  public async getAndCheckAuthorizationToFindLabById(id: string): Promise<CnLab> {
-    return this.labAggregateService.getAndCheckAuthorizationToFindById(id);
+  /////////////////////////////////////// NOTE //////////////////////////////////
+
+  public async syncNoteToLab(noteId: string): Promise<void> {
+    const noteWithLab = await this.noteAggregateService.getNoteSyncLabDTO(noteId);
+    if (noteWithLab == null) return;
+
+    const glabConfig = await this.getAndCheckGlabConfig(noteWithLab.lab);
+    if (!glabConfig) return;
+
+    await this.externalLabObjectService.syncNoteWithLab(
+      glabConfig,
+      new CnExternalLabSyncedObjectDTO(
+        noteWithLab.id,
+        noteWithLab.hierarchyRepresentation.parentId,
+        noteWithLab.lastSyncAt,
+        noteWithLab.lastSyncBy.id
+      )
+    );
   }
 
   /////////////////////////////////////// RESOURCE //////////////////////////////////
@@ -222,5 +253,31 @@ export class CnLabFolderAggregateService {
       labUser
     );
     return new CnResourceAccessDTO(resource, userAccess.access_url, userAccess.valid_until);
+  }
+
+  /////////////////////////////////////// OTHER //////////////////////////////////
+
+  /**
+   * Method that check if the lab is running and get the glab config if it is
+   * @param lab
+   */
+  public async getAndCheckGlabConfig(lab: CnLab): Promise<CnLabGlabApiInfo | null> {
+    const labIsRunning = await this.externalLabApiService.healthCheck(lab.getGlabSpaceApiInfo());
+    if (!labIsRunning) {
+      return null;
+    }
+
+    return await this.labAggregateService.getGlabConfig(lab);
+  }
+
+  public async getAndCheckAuthorizationToManageLab(
+    id: string,
+    refuseDesktop: boolean = true
+  ): Promise<CnLab> {
+    return this.labAggregateService.getAndCheckAuthorizationToManageLab(id, refuseDesktop);
+  }
+
+  public async getAndCheckAuthorizationToFindLabById(id: string): Promise<CnLab> {
+    return this.labAggregateService.getAndCheckAuthorizationToFindById(id);
   }
 }

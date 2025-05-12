@@ -25,11 +25,7 @@ import { CnFolderBucketService } from './cn-folders/cn-folder-bucket.service';
 import { CnFolderUserService } from './cn-folder-user/cn-folder-user.service';
 import { CnUsersService } from '../cn-users/cn-users.service';
 import { CnFolderUser } from './cn-folder-user/cn-folder-user.entity';
-import {
-  CnFolderEventMoveFolderData,
-  CnFolderEventService,
-  cnRemoveFolderFromAllLabsEventName,
-} from './cn-folder.event';
+import { CnFolderEventService, cnRemoveFolderFromAllLabsEventName } from './cn-folder.event';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { CnActivity, CnActivityEntityType } from '../cn-activity/cn-activity.entity';
 import { CnActivityService } from '../cn-activity/cn-activity.service';
@@ -345,7 +341,6 @@ export class CnFolderAggregateService {
   ): Promise<CnHierarchyObject> {
     // check that the user can modify the folder
     await this.securityService.getAndCheckAuthorizationForFolderUpdate(folder.id);
-    const oldParentRootFolderId: string = folder.getRootFolderId();
 
     if (folder.isRootFolder()) {
       throw new BlBadRequestException('The root folder can not be moved');
@@ -392,12 +387,6 @@ export class CnFolderAggregateService {
       await this.hierarchyObjectService.updateFolderParent(folder, newParentFolder, entityManager);
     });
 
-    const data: CnFolderEventMoveFolderData = {
-      hierarchyObject: folder,
-      newParentFolder: newParentFolder,
-      oldParentRootFolderId: oldParentRootFolderId,
-    };
-    this.folderEventService.emitFolderEvent('MOVE_FOLDER', newParentFolder, data);
     return this.hierarchyObjectService.findByIdAndCheck(folder.id);
   }
 

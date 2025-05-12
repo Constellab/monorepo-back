@@ -25,7 +25,10 @@ import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
 import { CnLabAggregateService } from '../cn-labs/cn-lab-aggregate.service';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ClCoreJsonConvert, ClPageI } from '@monorepo/core-lib';
-import { CnExternalLabUser } from '../cn-external-lab-api/model/cn-external-lab-api.class';
+import {
+  CnExternalLabSyncedObjectDTO,
+  CnExternalLabUser,
+} from '../cn-external-lab-api/model/cn-external-lab-api.class';
 import { CnExternalCheckCredentialResponse } from '../cn-auth/cn-auth.service';
 import { CnLabFolderAggregateService } from '../cn-lab-folder-aggregate/cn-lab-folder-aggregate.service';
 import {
@@ -127,6 +130,11 @@ export class CnExternalLabsController {
     return this.hierarchyObjectAggregateService.moveHierarchyObjectToFolder(scenarioId, newParentFolderId);
   }
 
+  @Get('scenario/sync')
+  async getScenarioOfCurrentLab(): Promise<CnExternalLabSyncedObjectDTO[]> {
+    return this.scenarioAggregateService.getScenariosOfCurrentLab();
+  }
+
   //////////////////////////// NOTE ////////////////////////////
 
   @UseInterceptors(FilesInterceptor('files'))
@@ -155,6 +163,11 @@ export class CnExternalLabsController {
     @Param('newParentFolderId', new ParseUUIDPipe()) newParentFolderId: string
   ): Promise<CnHierarchyObject> {
     return this.hierarchyObjectAggregateService.moveHierarchyObjectToFolder(noteId, newParentFolderId);
+  }
+
+  @Get('note/sync')
+  async getNoteOfCurrentLab(): Promise<CnExternalLabSyncedObjectDTO[]> {
+    return this.noteAggregateService.getNotesOfCurrentLab();
   }
 
   //////////////////////////// RESOURCE ////////////////////////////

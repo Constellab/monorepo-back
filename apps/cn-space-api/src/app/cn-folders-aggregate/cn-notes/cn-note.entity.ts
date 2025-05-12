@@ -67,8 +67,12 @@ export class CnNoteEntity extends CnHierarchyRepresentation {
   }
 }
 
-export type CnNoteWithDocument = Omit<CnNoteEntity, 'scenarios'>;
+export type CnNoteWithDocument = Omit<CnNoteEntity, 'scenarios' | 'lab' | 'labConfig'>;
 
 export type CnNote = Omit<CnNoteWithDocument, 'hierarchyRepresentation' | 'document'>;
 
 export type CnNoteWithScenarios = Omit<CnNoteEntity, 'hierarchyRepresentation' | 'document'>;
+
+export type CnNoteWithHierarchy = Omit<CnNoteEntity, 'document' | 'lab' | 'labConfig'>;
+
+export type CnNoteWithLab = Omit<CnNoteEntity, 'scenarios' | 'document' | 'labConfig'>;

@@ -642,8 +642,8 @@ export class CnLabAggregateService {
       );
 
       return new CnLabToken(lab, token.temp_token);
-      // eslint-disable-next-line no-empty
-    } catch (e: any) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (_: any) {
       return null;
     }
   }

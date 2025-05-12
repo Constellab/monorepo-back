@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import {
   CnFolderEvent,
-  CnFolderEventMoveFolderData,
+  CnFolderEventMoveObjectToFolderData,
   cnFolderEventName,
   cnRemoveFolderFromAllLabsEventName,
 } from '../cn-folders-aggregate/cn-folder.event';
@@ -10,10 +10,15 @@ import { CnFolder } from '../cn-folders-aggregate/cn-folders/cn-folder.entity';
 import { CnFolderAggregateService } from '../cn-folders-aggregate/cn-folder-aggregate.service';
 import { CnLabFolderAggregateService } from './cn-lab-folder-aggregate.service';
 import { CnFolderBucketService } from '../cn-folders-aggregate/cn-folders/cn-folder-bucket.service';
-import { CnHierarchyObject } from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.entity';
+import {
+  CnHierarchyObject,
+  CnHierarchyObjectType,
+} from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.entity';
 
 @Injectable()
 export class CnLabFolderListener {
+  protected readonly logger = new Logger(CnLabFolderListener.name);
+
   constructor(
     private labFolderAggregateService: CnLabFolderAggregateService,
     private folderAggregateService: CnFolderAggregateService,
@@ -22,36 +27,43 @@ export class CnLabFolderListener {
 
   @OnEvent(cnFolderEventName)
   async handleCnFolderEvent(event: CnFolderEvent): Promise<void> {
-    switch (event.type) {
-      case 'CREATE_ROOT_FOLDER':
-        await this.handleCreateRootFolder(event.entity);
-        break;
-      case 'CREATE_SUB_FOLDER':
-      case 'UPDATE_FOLDER':
-        await this.syncFolderWithLabs(event.parentFolder.getRootFolderId());
-        break;
-      case 'UPLOAD_FOLDER':
-        // on a folder upload, we sync the root folder
-        await this.syncFolderWithLabs(event.parentFolder.getRootFolderId());
-        break;
-      case 'DELETE_OBJECT':
-      case 'MOVE_OBJECT_TO_TRASH':
-        const hierarchyObject: CnHierarchyObject = event.entity;
-        // if the root folder was deleted, do nothing
-        if (hierarchyObject.isFolder() && !hierarchyObject.isRootFolder()) {
-          await this.syncFolderWithLabs(hierarchyObject.getRootFolderId());
-        }
-        break;
-      case 'RESTORE_OBJECT_FROM_TRASH':
-        const restoredObject: CnHierarchyObject = event.entity;
-        // if the root folder was restored, do nothing
-        if (restoredObject.isFolder() && !restoredObject.isRootFolder()) {
-          await this.syncFolderWithLabs(restoredObject.getRootFolderId());
-        }
-        break;
-      case 'MOVE_FOLDER':
-        await this.handledMovedFolder(event.entity);
-        break;
+    try {
+      switch (event.type) {
+        case 'CREATE_ROOT_FOLDER':
+          await this.handleCreateRootFolder(event.entity);
+          break;
+        case 'CREATE_SUB_FOLDER':
+        case 'UPDATE_FOLDER':
+          await this.syncFolderWithLabs(event.parentFolder.getRootFolderId());
+          break;
+        case 'UPLOAD_FOLDER':
+          // on a folder upload, we sync the root folder
+          await this.syncFolderWithLabs(event.parentFolder.getRootFolderId());
+          break;
+        case 'MOVE_OBJECT_TO_TRASH':
+          await this.handleMoveToTrash(event.entity);
+          break;
+        case 'DELETE_OBJECT':
+          await this.handleDelete(event.entity);
+          break;
+        case 'RESTORE_OBJECT_FROM_TRASH':
+          const restoredObject: CnHierarchyObject = event.entity;
+          // if the root folder was restored, do nothing
+          if (restoredObject.isFolder() && !restoredObject.isRootFolder()) {
+            await this.syncFolderWithLabs(restoredObject.getRootFolderId());
+          }
+          break;
+        case 'MOVE_OBJECT_TO_FOLDER':
+          await this.handleMoveObject(event.entity);
+          break;
+      }
+    } catch (error: any) {
+      this.logger.error(
+        `[CnLabFolderListener] Error while handling folder event ${event.type}. Error ${error}`
+      );
+      if (error.stack) {
+        this.logger.error(error.stack);
+      }
     }
   }
 
@@ -80,7 +92,7 @@ export class CnLabFolderListener {
 
   /**
    * Method when the root folder is updated or sub folder are CRUD.
-   * It sync the folder with all the labs that uses this folder.
+   * It syncs the folder with all the labs that uses this folder.
    * @param rootFolderId
    * @private
    */
@@ -103,12 +115,22 @@ export class CnLabFolderListener {
     }
   }
 
+  private async handleMoveObject(data: CnFolderEventMoveObjectToFolderData): Promise<void> {
+    if (data.hierarchyObject.isFolder()) {
+      await this.handledMovedFolder(data);
+    } else if (data.hierarchyObject.objectType === CnHierarchyObjectType.SCENARIO) {
+      await this.labFolderAggregateService.syncScenarioToLab(data.hierarchyObject.id);
+    } else if (data.hierarchyObject.objectType === CnHierarchyObjectType.NOTE) {
+      await this.labFolderAggregateService.syncNoteToLab(data.hierarchyObject.id);
+    }
+  }
+
   /**
    * When a folder is moved, we sync all the folder of the labs that uses the old or new root folder.
    * @param data
    * @private
    */
-  private async handledMovedFolder(data: CnFolderEventMoveFolderData): Promise<void> {
+  private async handledMovedFolder(data: CnFolderEventMoveObjectToFolderData): Promise<void> {
     const rootFolderIds = [data.newParentFolder.getRootFolderId()];
     if (data.oldParentRootFolderId !== data.newParentFolder.getRootFolderId()) {
       rootFolderIds.push(data.oldParentRootFolderId);
@@ -133,6 +155,21 @@ export class CnLabFolderListener {
 
     if (promises.length > 0) {
       await Promise.all(promises);
+    }
+  }
+
+  private async handleMoveToTrash(hierarchyObject: CnHierarchyObject): Promise<void> {
+    // if the root folder was deleted, do nothing
+    if (hierarchyObject.isFolder() && !hierarchyObject.isRootFolder()) {
+      await this.syncFolderWithLabs(hierarchyObject.getRootFolderId());
+    }
+  }
+
+  private async handleDelete(hierarchyObject: CnHierarchyObject): Promise<void> {
+    // if the root folder was deleted, do nothing
+    if (hierarchyObject.isFolder() && !hierarchyObject.isRootFolder()) {
+      await this.syncFolderWithLabs(hierarchyObject.getRootFolderId());
+      return;
     }
   }
 
