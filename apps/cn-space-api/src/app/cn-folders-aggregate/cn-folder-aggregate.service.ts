@@ -88,8 +88,10 @@ export class CnFolderAggregateService {
             folderDTO.backupStorage.bucketId
           );
 
+          // for now we prevent different bucket type because folder document stores
+          // the bucket type and is used to differentiate lab bucket to other bucket
           if (entity.mainStorage.bucketType !== entity.backupStorage.bucketType) {
-            throw new BlBadRequestException('Main and backup storage must have the same type (cloud or lab)');
+            throw new BlBadRequestException('Use the same cloud provider for main and backup storage');
           }
         }
       } else {

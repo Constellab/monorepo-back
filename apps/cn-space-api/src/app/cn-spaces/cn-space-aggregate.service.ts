@@ -614,6 +614,12 @@ export class CnSpaceAggregateService {
       defaultBackupBucket = null;
     }
 
+    if (defaultBucket && defaultBackupBucket) {
+      if (defaultBucket.bucketType !== defaultBackupBucket.bucketType) {
+        throw new BlBadRequestException('Use the same cloud provider for main and backup storage');
+      }
+    }
+
     return { defaultFolderBucket: defaultBucket, defaultFolderBackupBucket: defaultBackupBucket };
   }
 
