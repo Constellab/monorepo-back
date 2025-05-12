@@ -76,7 +76,7 @@ export class CnLabMailService {
         user: {
           firstname: user.firstname,
           lastname: user.lastname,
-          mail: user.email,
+          email: user.email,
         },
         space: {
           name: space.name,
