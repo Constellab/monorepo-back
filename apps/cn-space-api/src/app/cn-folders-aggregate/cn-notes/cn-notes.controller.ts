@@ -4,6 +4,7 @@ import { Response } from 'express';
 import { BlResponseHelper } from '@monorepo/back-core-lib';
 import { TeRichTextBlockModificationWithUser, TeRichTextDTO } from '@monorepo/te-text-editor';
 import { CnNoteAggregateService } from '../cn-note-aggregate.service';
+import { CnLabMinimumDTO } from '../../cn-labs/cn-lab.dto';
 
 @Controller('notes')
 export class CnNotesController {
@@ -50,6 +51,11 @@ export class CnNotesController {
   ): Promise<any> {
     const file = await this.noteAggregateService.getNoteView(id, viewId);
     BlResponseHelper.setFileResponseAndCache(response, file);
+  }
+
+  @Get(':id/lab')
+  async getNoteLab(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabMinimumDTO> {
+    return this.noteAggregateService.getNoteLab(id);
   }
 
   /////////////////////////////////////////////// HISTORY ///////////////////////////////////////////////

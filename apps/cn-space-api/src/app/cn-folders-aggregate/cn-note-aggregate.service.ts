@@ -15,6 +15,7 @@ import { CnDocumentService } from './cn-documents/cn-document.service';
 import { CnUsersService } from '../cn-users/cn-users.service';
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
 import { CnExternalLabSyncedObjectDTO } from '../cn-external-lab-api/model/cn-external-lab-api.class';
+import { CnLabMinimumDTO } from '../cn-labs/cn-lab.dto';
 
 @Injectable()
 export class CnNoteAggregateService {
@@ -146,6 +147,17 @@ export class CnNoteAggregateService {
 
   public async getNoteSyncLabDTO(noteId: string): Promise<CnNoteWithLab> {
     return this.noteService.findWithLabByIdAndCheck(noteId);
+  }
+
+  public async getNoteLab(noteId: string): Promise<CnLabMinimumDTO> {
+    await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(noteId);
+    const note = await this.noteService.findWithLabByIdAndCheck(noteId);
+    return {
+      id: note.lab.id,
+      name: note.lab.name,
+      isFreeLab: note.lab.isFreeLab,
+      type: note.lab.type,
+    };
   }
 
   ////////////////////////////// HISTORY ///////////////////////
