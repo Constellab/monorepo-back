@@ -506,7 +506,7 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
 
     // Generate the preview URL that use office online viewer with public api route
     const constellabPreviewUrl =
-      `${this.configService.getApiUrl()}/folders/document/preview/` + `${document.previewToken}`;
+      `${this.configService.getApiUrl()}/documents/preview/` + `${document.previewToken}`;
     return new CnDocumentPreviewDTO(`${CnDocumentService.OFFICE_PREVIEW_URL}${constellabPreviewUrl}`);
   }
 
