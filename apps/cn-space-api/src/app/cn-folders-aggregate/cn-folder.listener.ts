@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { CnFolderUserService } from './cn-folder-user/cn-folder-user.service';
 import { OnEvent } from '@nestjs/event-emitter';
 import { CnActivityCreateDTO, CnActivityService } from '../cn-activity/cn-activity.service';
-import { CnFolderNotifOptions, CnFolderUser } from './cn-folder-user/cn-folder-user.entity';
+import { CnFolderUser, CnRootFolderNotifOptions } from './cn-folder-user/cn-folder-user.entity';
 import { CnActivity, CnActivityEntityType, CnActivityType } from '../cn-activity/cn-activity.entity';
 import { CnNotificationService } from '../cn-notification/cn-notification.service';
 import { CnFrontService } from '../cn-core/services/cn-front.service';
@@ -11,17 +11,18 @@ import { CnFolder } from './cn-folders/cn-folder.entity';
 import { CnUser } from '../cn-users/cn-user.entity';
 import { CnScenario } from './cn-scenarios/cn-scenario.entity';
 import { CnNote } from './cn-notes/cn-note.entity';
-import { CnChatMessage, getFakeUserEveryoneMention } from '../cn-chat-message/cn-chat-message.entity';
+import { CnChatMessage, getFakeUserEveryoneMention } from './cn-chat/cn-chat-message.entity';
 import { BlMailService } from '@monorepo/back-core-lib';
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
 import { CnMailTemplate } from '../cn-core/model/config/cn-mail-template.class';
 import { CnDocument } from './cn-documents/cn-document.entity';
-import { CnHierarchyObjectService } from './cn_hierarchy_objects/cn-hierarchy-object.service';
-import { CnHierarchyObject } from './cn_hierarchy_objects/cn-hierarchy-object.entity';
-import { CnHierarchyRepresentation } from './cn_hierarchy_objects/cn-hierarchy-representation';
+import { CnHierarchyObjectService } from './cn-hierarchy-objects/cn-hierarchy-object.service';
+import { CnHierarchyObject } from './cn-hierarchy-objects/cn-hierarchy-object.entity';
+import { CnHierarchyRepresentation } from './cn-hierarchy-objects/cn-hierarchy-representation';
 import { CnSpaceEvent, cnSpaceEventName } from '../cn-spaces/cn-space.event';
 import { CnFolderAggregateService } from './cn-folder-aggregate.service';
 import { TeMentionUser, TeRichText, TeRichTextMentionHelper } from '@monorepo/te-text-editor';
+import { CnHierarchyObjectTagAggregateService } from './cn-hierarchy-object-tags/cn-hierarchy-object-tag-aggregate.service';
 
 export interface CnNotifInfo {
   link: string;
@@ -38,12 +39,13 @@ export class CnFolderListener {
 
   constructor(
     private folderUserService: CnFolderUserService,
-    private folderHierarchyService: CnHierarchyObjectService,
+    private hierarchyObjectService: CnHierarchyObjectService,
     private notificationService: CnNotificationService,
     private activityService: CnActivityService,
     private mailService: BlMailService,
     private frontService: CnFrontService,
-    private folderAggregateService: CnFolderAggregateService
+    private folderAggregateService: CnFolderAggregateService,
+    private hierarchyObjectTagService: CnHierarchyObjectTagAggregateService
   ) {}
 
   @OnEvent(cnFolderEventName)
@@ -95,7 +97,7 @@ export class CnFolderListener {
     let ancestorIds: string[] = [];
     // for delete type, don't store the ancestors
     if (activity.actionType !== CnActivityType.DELETE) {
-      const ancestors = await this.folderHierarchyService.getAncestorsByFolderId(parentFolder.id);
+      const ancestors = await this.hierarchyObjectService.getAncestorsByFolderId(parentFolder.id);
       ancestorIds = ancestors.map((a) => a.id);
     }
 
@@ -132,10 +134,13 @@ export class CnFolderListener {
     if (folderUser.userId === activityUser.id) return;
 
     const notifMode = this.getNotifMode(folderUser, entityType);
-    if (notifMode === CnFolderNotifOptions.NONE) return;
+    if (notifMode === CnRootFolderNotifOptions.NONE) return;
 
     // notif
-    if (notifMode === CnFolderNotifOptions.NOTIF_AND_EMAIL || notifMode === CnFolderNotifOptions.NOTIF_ONLY) {
+    if (
+      notifMode === CnRootFolderNotifOptions.NOTIF_AND_EMAIL ||
+      notifMode === CnRootFolderNotifOptions.NOTIF_ONLY
+    ) {
       await this.notificationService.createNotification({
         user: folderUser.user,
         link: appRoute,
@@ -150,7 +155,10 @@ export class CnFolderListener {
     }
 
     // mail
-    if (notifMode === CnFolderNotifOptions.NOTIF_AND_EMAIL || notifMode === CnFolderNotifOptions.EMAIL_ONLY) {
+    if (
+      notifMode === CnRootFolderNotifOptions.NOTIF_AND_EMAIL ||
+      notifMode === CnRootFolderNotifOptions.EMAIL_ONLY
+    ) {
       const fullLink = this.frontService.getBaseWebsiteURL() + '/' + appRoute;
       await this.mailService.sendMailToUser(
         CnMailTemplate.folder_notification,
@@ -175,8 +183,6 @@ export class CnFolderListener {
         return this.subFolderCreated(event.entity, event.parentFolder);
       case 'UPDATE_FOLDER':
         return this.folderUpdated(event.entity);
-      case 'UPDATE_FOLDER_LEADER':
-        return this.folderLeaderUpdated(event.entity);
       case 'SHARE_FOLDER':
         return this.folderShared(event.entity, event.parentFolder);
       case 'UNSHARE_FOLDER':
@@ -232,19 +238,6 @@ export class CnFolderListener {
         entity: folder,
         actionType: CnActivityType.UPDATE,
         title: `{{user.name}} has updated folder ${folder.name}`,
-        entityName: folder.name,
-      },
-      notif: { link: CnFrontService.getFolderRoute(folder.id) },
-    };
-  }
-
-  private folderLeaderUpdated(folder: CnFolder): CnActivityAndNotif {
-    return {
-      activity: {
-        entityType: CnActivityEntityType.FOLDER,
-        entity: folder,
-        actionType: CnActivityType.UPDATE,
-        title: `{{user.name}} has changed leader of folder ${folder.name} to ${folder.leader.alias}`,
         entityName: folder.name,
       },
       notif: { link: CnFrontService.getFolderRoute(folder.id) },
@@ -495,7 +488,7 @@ export class CnFolderListener {
 
     const link = CnFrontService.getChatMessageRoute(parentFolder.id);
 
-    const ancestors = await this.folderHierarchyService.getAncestorsByFolderId(parentFolder.id);
+    const ancestors = await this.hierarchyObjectService.getAncestorsByFolderId(parentFolder.id);
     const ancestorIds = ancestors.map((a) => a.id);
 
     const userMentions = this.getUserMentions(message.getRichTextContent(), folderUsers);
@@ -574,7 +567,7 @@ export class CnFolderListener {
     await this.notificationService.deleteNotificationByObject(activity.entityType, message.id);
   }
 
-  private getNotifMode(folderUser: CnFolderUser, entityType: CnActivityEntityType): CnFolderNotifOptions {
+  private getNotifMode(folderUser: CnFolderUser, entityType: CnActivityEntityType): CnRootFolderNotifOptions {
     switch (entityType) {
       case CnActivityEntityType.FOLDER:
         return folderUser.folderNotif;
@@ -587,7 +580,7 @@ export class CnFolderListener {
       case CnActivityEntityType.MESSAGE:
         return folderUser.messageNotif;
       default:
-        return CnFolderNotifOptions.NONE;
+        return CnRootFolderNotifOptions.NONE;
     }
   }
 
@@ -600,7 +593,6 @@ export class CnFolderListener {
   async updateHierarchyObject(event: CnFolderEvent): Promise<void> {
     const events: CnFolderEventType[] = [
       'UPDATE_FOLDER',
-      'UPDATE_FOLDER_LEADER',
       'UPDATE_SCENARIO',
       'UPDATE_NOTE',
       'RENAME_DOCUMENT',
@@ -612,10 +604,27 @@ export class CnFolderListener {
     if (!(event.entity instanceof CnHierarchyRepresentation)) return;
 
     const objectInfo = event.entity.getHierarchyObjectInfo();
-    const folderObjectDb = await this.folderHierarchyService.findByIdAndCheck(event.entity.id);
+    const folderObjectDb = await this.hierarchyObjectService.findByIdAndCheck(event.entity.id);
 
     folderObjectDb.setObjectInfo(objectInfo);
-    await this.folderHierarchyService.update(folderObjectDb);
+    await this.hierarchyObjectService.update(folderObjectDb);
+  }
+
+  @OnEvent(cnFolderEventName)
+  async handleHierarchyObjectEvent(event: CnFolderEvent): Promise<void> {
+    if (event.type === 'OBJECT_TAG_MODIFIED') {
+      await this.refreshHierarchyObjectLastTags(event.entity);
+    }
+  }
+
+  /**
+   * Store the last 4 tags of the hierarchy object in the hierarchy object directly
+   * @param hierarchyObject
+   * @private
+   */
+  private async refreshHierarchyObjectLastTags(hierarchyObject: CnHierarchyObject): Promise<void> {
+    const tags = await this.hierarchyObjectTagService.findByHierarchyObjectPaginated(hierarchyObject, 0, 4);
+    await this.hierarchyObjectService.updateLastTags(hierarchyObject, tags.objects);
   }
 
   @OnEvent(cnSpaceEventName)

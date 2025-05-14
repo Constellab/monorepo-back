@@ -7,7 +7,7 @@ import { CnShareResourceRequestDTO } from './cn-resource.dto';
 import {
   CnHierarchyObject,
   CnHierarchyObjectEntity,
-} from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
+} from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
 import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
 import { ClDateHelper } from '@monorepo/core-lib';
 

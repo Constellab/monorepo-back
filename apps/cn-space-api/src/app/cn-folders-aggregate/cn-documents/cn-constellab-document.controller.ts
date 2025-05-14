@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Put, Res, UseInterceptors } from '@nestjs/common';
 import { CnConstellabDocumentAggregateService } from './cn-constellab-document.aggregate.service';
-import { CnConstellabDocumentDTO } from './cn-documents/cn-document-dto.class';
+import { CnConstellabDocumentDTO } from './cn-document-dto.class';
 import {
   TeBlockFigureUploadedResponse,
   TeBlockFileUploadResponse,
@@ -12,7 +12,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { BlFile, BlResponseHelper, BlUploadedFile } from '@monorepo/back-core-lib';
 import { Response } from 'express';
-import { CnDocument } from './cn-documents/cn-document.entity';
+import { CnDocument } from './cn-document.entity';
 
 @Controller('constellab-documents')
 export class CnConstellabDocumentController {

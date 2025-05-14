@@ -1,17 +1,17 @@
-import { CnHierarchyObjectService } from './cn_hierarchy_objects/cn-hierarchy-object.service';
-import { CnFoldersSecurityService } from './cn-folders-security.service';
-import { CnFolderEventService } from './cn-folder.event';
+import { CnHierarchyObjectService } from '../cn-hierarchy-objects/cn-hierarchy-object.service';
+import { CnFoldersSecurityService } from '../cn-security/cn-folders-security.service';
+import { CnFolderEventService } from '../cn-folder.event';
 import { DataSource } from 'typeorm';
-import { CnScenariosService } from './cn-scenarios/cn-scenarios.service';
-import { CnScenario, CnScenarioWithLab } from './cn-scenarios/cn-scenario.entity';
-import { CnCreateLabScenarioDto } from './cn-scenarios/cn-scenario.dto';
+import { CnScenariosService } from './cn-scenarios.service';
+import { CnScenario, CnScenarioWithLab } from './cn-scenario.entity';
+import { CnCreateLabScenarioDto } from './cn-scenario.dto';
 import { BlBadRequestException } from '@monorepo/back-core-lib';
-import { CnScenarioProtocol } from './cn-scenarios/cn-scenario-protocol.class';
-import { CnLabConfig } from '../cn-lab-configs/cn-lab-config.entity';
-import { CnNotesService } from './cn-notes/cn-notes.service';
+import { CnScenarioProtocol } from './cn-scenario-protocol.class';
+import { CnLabConfig } from '../../cn-lab-configs/cn-lab-config.entity';
+import { CnNotesService } from '../cn-notes/cn-notes.service';
 import { Injectable } from '@nestjs/common';
-import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
-import { CnExternalLabSyncedObjectDTO } from '../cn-external-lab-api/model/cn-external-lab-api.class';
+import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
+import { CnExternalLabSyncedObjectDTO } from '../../cn-external-lab-api/model/cn-external-lab-api.class';
 
 @Injectable()
 export class CnScenarioAggregateService {
@@ -25,20 +25,20 @@ export class CnScenarioAggregateService {
   ) {}
 
   public async findScenario(id: string): Promise<CnScenario> {
-    await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(id);
+    await this.securityService.getAndCheckAuthorizationForFindOne(id);
     return await this.scenarioService.findByIdAndCheck(id);
   }
 
   async getScenariosByFolder(folderId: string): Promise<CnScenario[]> {
     // check that the user can get the folder
-    const folder = await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(folderId);
+    const folder = await this.securityService.getAndCheckAuthorizationForFindOne(folderId);
 
     return this.scenarioService.getScenariosByParentFolder(folder.id);
   }
 
   async getScenariosAssociatedToNotes(noteId: string): Promise<CnScenario[]> {
     // check that the user can get the folder
-    await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(noteId);
+    await this.securityService.getAndCheckAuthorizationForFindOne(noteId);
 
     return (await this.noteService.findByIdAndCheckWithScenarios(noteId)).scenarios;
   }
@@ -48,8 +48,7 @@ export class CnScenarioAggregateService {
     createLabScenarioDto: CnCreateLabScenarioDto
   ): Promise<void> {
     // check that the user can get the folder
-    const parentFolder =
-      await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(parentFolderId);
+    const parentFolder = await this.securityService.getAndCheckAuthorizationForUpdate(parentFolderId);
 
     const result = await this.scenarioService.saveLabScenario(parentFolder, createLabScenarioDto);
 

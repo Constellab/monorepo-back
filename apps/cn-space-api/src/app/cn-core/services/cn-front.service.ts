@@ -58,6 +58,11 @@ export class CnFrontService {
     return this.getSpaceWebsiteURL(spaceDomain) + '/' + CnFrontService.getLabUrl(labId);
   }
 
+  ////////////////////////// PUBLIC ROUTES ////////////////////////////
+  public getHierarchyObjectTokenUrl(spaceDomain: string, token: string): string {
+    return this.getSpaceWebsiteURL(spaceDomain) + `/public/object/${token}`;
+  }
+
   /**
    * Get the base url of the website (without the url of the space)
    */
@@ -80,6 +85,7 @@ export class CnFrontService {
     }
   }
 
+  //////////////////////////// COMMUNITY ////////////////////////////
   //////////////////////////// COMMUNITY ////////////////////////////
   public getCommunityUrl(): string {
     return this.configService.getCommunityFrontUrl();

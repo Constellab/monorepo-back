@@ -1,15 +1,15 @@
-import { CnHierarchyObjectService } from './cn_hierarchy_objects/cn-hierarchy-object.service';
-import { CnFoldersSecurityService } from './cn-folders-security.service';
-import { CnDocumentService } from './cn-documents/cn-document.service';
-import { CnFolderEventService } from './cn-folder.event';
+import { CnHierarchyObjectService } from '../cn-hierarchy-objects/cn-hierarchy-object.service';
+import { CnFoldersSecurityService } from '../cn-security/cn-folders-security.service';
+import { CnDocumentService } from './cn-document.service';
+import { CnFolderEventService } from '../cn-folder.event';
 import { DataSource } from 'typeorm';
 import { BlBadRequestException, BlFile, BlFileResponse } from '@monorepo/back-core-lib';
-import { CnHierarchyObject, CnHierarchyObjectType } from './cn_hierarchy_objects/cn-hierarchy-object.entity';
-import { CnDocument, CnDocumentType } from './cn-documents/cn-document.entity';
-import { CnSaveFolderDTO } from './cn-folders/cn-folder.dto';
-import { CnFolderAggregateService } from './cn-folder-aggregate.service';
+import { CnHierarchyObject, CnHierarchyObjectType } from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
+import { CnDocument, CnDocumentType } from './cn-document.entity';
+import { CnSaveFolderDTO } from '../cn-folders/cn-folder.dto';
+import { CnFolderAggregateService } from '../cn-folder-aggregate.service';
 import { Injectable } from '@nestjs/common';
-import { CnDocumentPreviewDTO } from './cn-documents/cn-document-dto.class';
+import { CnDocumentPreviewDTO } from './cn-document-dto.class';
 
 @Injectable()
 export class CnDocumentAggregateService {
@@ -23,8 +23,7 @@ export class CnDocumentAggregateService {
   ) {}
 
   public async uploadDocument(parentFolderId: string, file: BlFile): Promise<CnHierarchyObject> {
-    const folder =
-      await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(parentFolderId);
+    const folder = await this.securityService.getAndCheckAuthorizationForFindOne(parentFolderId);
 
     const doc = await this.documentService.uploadDocument(
       file,
@@ -40,7 +39,7 @@ export class CnDocumentAggregateService {
   }
 
   public async getUploadedDocument(documentId: string): Promise<BlFileResponse> {
-    const folder = await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(documentId);
+    const folder = await this.securityService.getAndCheckAuthorizationForFindOne(documentId);
     const document = await this.documentService.findByIdAndCheck(documentId);
 
     return await this.documentService.getDocumentContentByDocument(folder.getRootFolderId(), document);
@@ -54,7 +53,7 @@ export class CnDocumentAggregateService {
   }
 
   public async renameDocument(documentId: string, newName: string): Promise<CnDocument> {
-    const folder = await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(documentId);
+    const folder = await this.securityService.getAndCheckAuthorizationForUpdate(documentId);
 
     const document = await this.documentService.findByIdAndCheck(documentId, {
       hierarchyRepresentation: true,
@@ -78,7 +77,7 @@ export class CnDocumentAggregateService {
     const documentWithHierarchy = await this.documentService.findWithHierarchyByIdAndCheck(document.id);
 
     // check if the user has the authorization to move the document on 2 folders
-    const oldFolder = await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(
+    const oldFolder = await this.securityService.getAndCheckAuthorizationForFindOne(
       documentWithHierarchy.hierarchyRepresentation.parentId
     );
 
@@ -92,8 +91,7 @@ export class CnDocumentAggregateService {
    * @param files
    */
   public async uploadFolder(parentFolderId: string, files: BlFile[]): Promise<void> {
-    const parentFolder =
-      await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(parentFolderId);
+    const parentFolder = await this.securityService.getAndCheckAuthorizationForFindOne(parentFolderId);
 
     if (files.length === 0) {
       throw new BlBadRequestException('The uploaded folder is empty');
@@ -162,7 +160,7 @@ export class CnDocumentAggregateService {
   ////////////////////////////////////// DOCUMENT PREVIEW  /////////////////////////////////////////
 
   public async generatePreviewToken(documentId: string): Promise<CnDocumentPreviewDTO> {
-    await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(documentId);
+    await this.securityService.getAndCheckAuthorizationForFindOne(documentId);
 
     const document = await this.documentService.findByIdAndCheck(documentId);
 

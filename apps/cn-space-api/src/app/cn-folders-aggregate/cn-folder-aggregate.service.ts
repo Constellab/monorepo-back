@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { CnFoldersService } from './cn-folders/cn-folders.service';
-import { CnFoldersSecurityService } from './cn-folders-security.service';
+import { CnFoldersSecurityService } from './cn-security/cn-folders-security.service';
 import { CnFolder, CnFolderEntity, CnFolderWithHierarchy } from './cn-folders/cn-folder.entity';
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
 import { ClHelpService, ClPage, ClPageI } from '@monorepo/core-lib';
@@ -11,8 +11,8 @@ import {
   CnSaveFolderDTO,
 } from './cn-folders/cn-folder.dto';
 import { CnUser } from '../cn-users/cn-user.entity';
-import { getFakeUserEveryoneMention } from '../cn-chat-message/cn-chat-message.entity';
-import { CnChatMessageService } from '../cn-chat-message/cn-chat-message.service';
+import { getFakeUserEveryoneMention } from './cn-chat/cn-chat-message.entity';
+import { CnChatMessageService } from './cn-chat/cn-chat-message.service';
 import {
   BlBadRequestException,
   BlFile,
@@ -24,7 +24,11 @@ import { DataSource, In } from 'typeorm';
 import { CnFolderBucketService } from './cn-folders/cn-folder-bucket.service';
 import { CnFolderUserService } from './cn-folder-user/cn-folder-user.service';
 import { CnUsersService } from '../cn-users/cn-users.service';
-import { CnFolderUser } from './cn-folder-user/cn-folder-user.entity';
+import {
+  CnFolderUser,
+  CnFolderUserWithSharedBy,
+  CnRootFolderUserRole,
+} from './cn-folder-user/cn-folder-user.entity';
 import { CnFolderEventService, cnRemoveFolderFromAllLabsEventName } from './cn-folder.event';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { CnActivity, CnActivityEntityType } from '../cn-activity/cn-activity.entity';
@@ -39,11 +43,12 @@ import {
   CnHierarchyObjectType,
   CnHierarchyObjectVisibility,
   CnHierarchyObjectWithChildren,
-} from './cn_hierarchy_objects/cn-hierarchy-object.entity';
-import { CnHierarchyObjectService } from './cn_hierarchy_objects/cn-hierarchy-object.service';
+} from './cn-hierarchy-objects/cn-hierarchy-object.entity';
+import { CnHierarchyObjectService } from './cn-hierarchy-objects/cn-hierarchy-object.service';
 import { TeBlockFigureUploadedResponse, TeRichText } from '@monorepo/te-text-editor';
 import { CnHierarchyObjectTagAggregateService } from './cn-hierarchy-object-tags/cn-hierarchy-object-tag-aggregate.service';
 import { CnSpaceAggregateService } from '../cn-spaces/cn-space-aggregate.service';
+import { CnFolderUserConfigDTO } from './cn-folder-user/cn-folder-user.dto';
 
 @Injectable()
 export class CnFolderAggregateService {
@@ -72,7 +77,6 @@ export class CnFolderAggregateService {
     const newFolder = await this.datasource.transaction(async (manager) => {
       const entity = this.createFolderFromDTO(folderDTO);
 
-      entity.leader = CnCurrentUserHelper.getAndCheckCurrentUser();
       entity.style = CnFolderEntity.ROOT_FOLDER_STYLE;
       entity.hierarchyRepresentation = CnHierarchyObjectEntity.newRootFolderHierarchy(
         CnCurrentUserHelper.getAndCheckCurrentSpace(),
@@ -102,8 +106,13 @@ export class CnFolderAggregateService {
       }
       const dbFolder = await this.foldersService.create(entity, manager);
 
-      // share the folder with the leader
-      await this.folderUserService.shareRootFolderToUserIfNot(dbFolder.id, dbFolder.leader.id, manager);
+      // share the folder with the current user
+      await this.folderUserService.shareRootFolderToUserIfNot(
+        dbFolder.id,
+        CnCurrentUserHelper.getAndCheckCurrentUser().id,
+        CnRootFolderUserRole.OWNER,
+        manager
+      );
 
       if (folderDTO.tags?.length > 0) {
         await this.tagService.createTagsTransaction(
@@ -121,8 +130,7 @@ export class CnFolderAggregateService {
   }
 
   async createSubFolder(folderDto: CnSaveFolderDTO, parentFolderId: string): Promise<CnFolderWithHierarchy> {
-    const parentFolder =
-      await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(parentFolderId);
+    const parentFolder = await this.securityService.getAndCheckAuthorizationForUpdate(parentFolderId);
     const newFolder = await this.createSubFolderEntity(folderDto, parentFolder);
 
     this.folderEventService.emitFolderEvent('CREATE_SUB_FOLDER', parentFolder, newFolder);
@@ -140,7 +148,6 @@ export class CnFolderAggregateService {
     parentFolder: CnHierarchyObject
   ): Promise<CnFolderWithHierarchy> {
     const entity = this.createFolderFromDTO(folderDTO);
-    entity.leader = CnCurrentUserHelper.getAndCheckCurrentUser();
     entity.style = CnFolderEntity.CHILD_FOLDER_STYLE;
 
     const parentFolderEntity = await this.foldersService.findByIdAndCheck(parentFolder.id);
@@ -184,7 +191,7 @@ export class CnFolderAggregateService {
   }
 
   async updateFolder(id: string, entity: CnSaveFolderDTO): Promise<CnFolderWithHierarchy> {
-    const folder = await this.securityService.getAndCheckAuthorizationForFolderUpdate(id);
+    const folder = await this.securityService.getAndCheckAuthorizationForUpdate(id);
     const dbFolder = await this.foldersService.findByIdAndCheck(id);
 
     // check that the ending date is not after the parent ending date
@@ -206,7 +213,7 @@ export class CnFolderAggregateService {
   }
 
   async renameFolder(id: string, name: string): Promise<CnFolderWithHierarchy> {
-    await this.securityService.getAndCheckAuthorizationForFolderUpdate(id);
+    await this.securityService.getAndCheckAuthorizationForUpdate(id);
     const dbFolder = await this.foldersService.findByIdAndCheck(id);
 
     dbFolder.name = name;
@@ -248,7 +255,7 @@ export class CnFolderAggregateService {
   }
 
   async findFolder(id: string): Promise<CnFolder> {
-    await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(id);
+    await this.securityService.getAndCheckAuthorizationForFindOne(id);
     return this.foldersService.findByIdAndCheck(id);
   }
 
@@ -290,7 +297,7 @@ export class CnFolderAggregateService {
   }
 
   public async getChildrenFolders(folderId: string): Promise<CnHierarchyObject[]> {
-    await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(folderId);
+    await this.securityService.getAndCheckAuthorizationForFindOne(folderId);
 
     return await this.hierarchyObjectService.getChildrenFolder(folderId);
   }
@@ -313,36 +320,12 @@ export class CnFolderAggregateService {
     return this.hierarchyObjectService.findByIdAndCheck(id);
   }
 
-  public async updateFolderLeader(folderId: string, userId: string): Promise<CnFolder> {
-    const folderHierarchy = await this.hierarchyObjectService.findByIdAndCheck(folderId);
-
-    // check if the current user has the authorization to update the leader
-    await this.securityService.checkUpdateFolderLeader(folderHierarchy);
-
-    const newLeader = await this.userService.findByIdAndCheck(userId);
-    await this.datasource.transaction(async (entityManager) => {
-      // the group must be shared with the new leader single group
-      // so if it is not shared, we add it
-      await this.folderUserService.shareRootFolderToUserIfNot(
-        folderHierarchy.getRootFolderId(),
-        userId,
-        entityManager
-      );
-
-      await this.foldersService.updateLeader(folderHierarchy.id, newLeader, entityManager);
-    });
-
-    const folder = await this.foldersService.findByIdAndCheck(folderId);
-    this.folderEventService.emitFolderEvent('UPDATE_FOLDER_LEADER', folderHierarchy, folder);
-    return folder;
-  }
-
   public async moveFolder(
     folder: CnHierarchyObject,
     newParentFolder: CnHierarchyObject
   ): Promise<CnHierarchyObject> {
     // check that the user can modify the folder
-    await this.securityService.getAndCheckAuthorizationForFolderUpdate(folder.id);
+    await this.securityService.getAndCheckAuthorizationForUpdate(folder.id);
 
     if (folder.isRootFolder()) {
       throw new BlBadRequestException('The root folder can not be moved');
@@ -395,17 +378,17 @@ export class CnFolderAggregateService {
   /////////////////////////////////////// FOLDER DESCRIPTION //////////////////////////////////
 
   public async getDescription(folderId: string): Promise<CnGetFolderDescriptionDTO> {
-    const folder = await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(folderId);
+    await this.securityService.getAndCheckAuthorizationForFindOne(folderId);
     const description = await this.foldersService.getDescription(folderId);
 
     return {
       description: description.toJson(),
-      canEdit: this.securityService.isFolderLeader(folder),
+      canEdit: true,
     };
   }
 
   public async updateDescription(folderId: string, description: TeRichText): Promise<void> {
-    const folder = await this.securityService.getAndCheckAuthorizationForFolderUpdate(folderId);
+    const folder = await this.securityService.getAndCheckAuthorizationForUpdate(folderId);
     await this.foldersService.updateDescription(folderId, description);
 
     // update the folder object to set the hasDescription flag
@@ -417,7 +400,7 @@ export class CnFolderAggregateService {
   }
 
   public async saveDescriptionImage(folderId: string, file: BlFile): Promise<TeBlockFigureUploadedResponse> {
-    const folder = await this.securityService.getAndCheckAuthorizationForFolderUpdate(folderId);
+    const folder = await this.securityService.getAndCheckAuthorizationForUpdate(folderId);
 
     return this.documentService.uploadImageDocument(
       file,
@@ -428,7 +411,7 @@ export class CnFolderAggregateService {
   }
 
   public async getDescriptionImage(folderId: string, filename: string): Promise<BlFileResponse> {
-    const folder = await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(folderId);
+    const folder = await this.securityService.getAndCheckAuthorizationForFindOne(folderId);
 
     return this.documentService.getDocumentContentByTypeAndName(
       folder.getRootFolderId(),
@@ -440,47 +423,55 @@ export class CnFolderAggregateService {
 
   /////////////////////////////////////// USERS //////////////////////////////////
 
-  public async shareFolder(rootFolderId: string, groupId: string): Promise<CnUser[]> {
-    const folder = await this.securityService.getAndCheckAuthorizationForFolderUpdate(rootFolderId);
+  public async shareFolder(
+    rootFolderId: string,
+    groupId: string,
+    role: CnRootFolderUserRole
+  ): Promise<CnFolderUserWithSharedBy[]> {
+    const folder = await this.securityService.getAndCheckAuthorizationForOwner(rootFolderId);
 
     if (!folder.isRootFolder()) {
       throw new BlBadRequestException('Only root folders can be shared');
     }
 
-    const newUsers = await this.folderUserService.shareRootFolderToGroup(folder.id, groupId);
+    const newUsers = await this.folderUserService.shareRootFolderToGroup(folder.id, groupId, role);
 
     this.folderEventService.emitFolderEvent('SHARE_FOLDER', folder, newUsers);
 
-    return this.folderUserService.findUsersByRootFolderId(rootFolderId);
+    return this.folderUserService.findByRootFolderIdWithSharedBy(rootFolderId);
+  }
+
+  public async updateFolderUserRole(
+    rootFolderId: string,
+    userId: string,
+    role: CnRootFolderUserRole
+  ): Promise<CnFolderUserWithSharedBy> {
+    const folder = await this.securityService.getAndCheckAuthorizationForOwner(rootFolderId);
+
+    if (!folder.isRootFolder()) {
+      throw new BlBadRequestException('Only root folders can be shared');
+    }
+
+    const updatedUser = await this.folderUserService.updateRootFolderUserRole(folder.id, userId, role);
+    this.folderEventService.emitFolderEvent('UPDATE_FOLDER_USER_ROLE', folder, updatedUser);
+
+    return this.folderUserService.findByRootFolderIdAndUserIdAndCheckWithSharedBy(folder.id, userId);
   }
 
   public async unshareFolder(folderId: string, userId: string): Promise<void> {
-    const folderHierarchy = await this.securityService.getAndCheckAuthorizationForFolderUpdate(folderId);
+    const folderHierarchy = await this.securityService.getAndCheckAuthorizationForOwner(folderId);
 
-    await this.unshareFolderNotSecure(folderHierarchy, userId);
+    await this.folderUserService.unshareRootFolderFromUser(folderHierarchy.id, userId);
 
     const user = await this.userService.findByIdAndCheck(userId);
     this.folderEventService.emitFolderEvent('UNSHARE_FOLDER', folderHierarchy, user);
-  }
-
-  private async unshareFolderNotSecure(folderHierarchy: CnHierarchyObject, userId: string): Promise<void> {
-    const folder = await this.foldersService.findByIdAndCheck(folderHierarchy.id);
-    // forbid to unshare the single user group of the leader
-    // this is to unsure the leader will always have access to the folder
-    if (userId === folder.leader.id) {
-      throw new BlBadRequestException(CnErrorText.CANT_UNSHARED_FOLDER_LEADER_GROUP, {
-        detailArgs: { folderName: folderHierarchy.name },
-      });
-    }
-
-    await this.folderUserService.unshareRootFolderFromUser(folderHierarchy.id, userId);
   }
 
   public async unshareAllFolderForUser(userId: string, spaceId: string): Promise<void> {
     const rootFolders = await this.hierarchyObjectService.getAllRootFoldersOfUser(userId, spaceId);
 
     for (const rootFolder of rootFolders) {
-      await this.unshareFolderNotSecure(rootFolder, userId);
+      await this.folderUserService.unshareRootFolderFromUser(rootFolder.id, userId);
     }
   }
 
@@ -489,9 +480,20 @@ export class CnFolderAggregateService {
    * @param folderId
    */
   public async getUsersOfFolder(folderId: string): Promise<CnUser[]> {
-    const rootFolder = await this.securityService.checkFindOneAndGetRootFolder(folderId);
+    const hierarchyObject = await this.securityService.getAndCheckAuthorizationForFindOne(folderId);
+    const rootFolder = await this.hierarchyObjectService.getRootFolder(hierarchyObject);
 
     return this.folderUserService.findUsersByRootFolderId(rootFolder.id);
+  }
+
+  /**
+   * Return the complete list of folder user with that have access to the folder
+   * @param folderId
+   */
+  public async getFolderUsersWithRole(folderId: string): Promise<CnFolderUserWithSharedBy[]> {
+    const rootFolder = await this.securityService.getAndCheckAuthorizationForOwner(folderId);
+
+    return this.folderUserService.findByRootFolderIdWithSharedBy(rootFolder.id);
   }
 
   public async searchFolderUsersByName(
@@ -500,7 +502,8 @@ export class CnFolderAggregateService {
     page: number,
     size: number
   ): Promise<ClPage<CnUser>> {
-    const rootFolder = await this.securityService.checkFindOneAndGetRootFolder(folderId);
+    const hierarchyObject = await this.securityService.getAndCheckAuthorizationForFindOne(folderId);
+    const rootFolder = await this.hierarchyObjectService.getRootFolder(hierarchyObject);
 
     const result = await this.folderUserService.smartSearchByName(rootFolder.id, name, page, size);
     const users = result.map((user) => user.user);
@@ -512,10 +515,8 @@ export class CnFolderAggregateService {
     return users;
   }
 
-  public async getCurrentUserRootFolderConfig(rootFolderId: string): Promise<CnFolderUser> {
-    await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(rootFolderId);
-
-    return this.folderUserService.findByRootFolderIdAndUserId(
+  public async getCurrentUserFolderInfo(rootFolderId: string): Promise<CnFolderUser> {
+    return await this.folderUserService.findByRootFolderIdAndUserIdAndCheck(
       rootFolderId,
       CnCurrentUserHelper.getAndCheckCurrentUser().id
     );
@@ -523,19 +524,26 @@ export class CnFolderAggregateService {
 
   public async updateRootFolderCurrentUserConfig(
     rootFolderId: string,
-    options: CnFolderUser
+    userConfig: CnFolderUserConfigDTO
   ): Promise<CnFolderUser> {
-    const folder =
-      await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(rootFolderId);
+    const folder = await this.securityService.getAndCheckAuthorizationForFindOne(rootFolderId);
 
     if (!folder.isRootFolder()) {
       throw new BlBadRequestException('The folder is not a root folder');
     }
 
-    options.rootFolderId = rootFolderId;
-    options.userId = CnCurrentUserHelper.getAndCheckCurrentUser().id;
+    const userFolder = await this.folderUserService.findByRootFolderIdAndUserIdAndCheck(
+      rootFolderId,
+      CnCurrentUserHelper.getAndCheckCurrentUser().id
+    );
 
-    return this.folderUserService.updateFolderUser(options);
+    userFolder.folderNotif = userConfig.folderNotif;
+    userFolder.messageNotif = userConfig.messageNotif;
+    userFolder.scenarioNotif = userConfig.scenarioNotif;
+    userFolder.noteNotif = userConfig.noteNotif;
+    userFolder.documentNotif = userConfig.documentNotif;
+
+    return this.folderUserService.updateFolderUser(userFolder);
   }
 
   /////////////////////////////////////// FOLDER BUCKET //////////////////////////////////
@@ -544,7 +552,7 @@ export class CnFolderAggregateService {
     rootFolderId: string,
     folderStorageLocationDTO: CnFolderStorageLocationDTO
   ): Promise<CnFolderStorageLocationDTO> {
-    const folder = await this.securityService.getAndCheckAuthorizationForFolderUpdate(rootFolderId);
+    const folder = await this.securityService.getAndCheckAuthorizationForOwner(rootFolderId);
     if (!folder.isRootFolder()) {
       throw new BlBadRequestException('The folder is not a root folder');
     }
@@ -577,7 +585,7 @@ export class CnFolderAggregateService {
   }
 
   public async getFolderStorage(folderId: string): Promise<CnFolderStorageLocationDTO> {
-    const folder = await this.securityService.getAndCheckAuthorizationForFolderUpdate(folderId);
+    const folder = await this.securityService.getAndCheckAuthorizationForFindOne(folderId);
     const buckets = await this.folderBucketService.getRootFolderBucket(folder.getRootFolderId());
 
     // return only region to the user, he doesn't need the bucket name
@@ -597,7 +605,7 @@ export class CnFolderAggregateService {
   }
 
   public async getStorageSizeByFolder(folderId: string): Promise<CnFolderStorageUsageDTO> {
-    await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(folderId);
+    await this.securityService.getAndCheckAuthorizationForFindOne(folderId);
 
     const children = await this.hierarchyObjectService.getDirectChildren(folderId);
 
@@ -625,7 +633,7 @@ export class CnFolderAggregateService {
     size: number
   ): Promise<ClPage<CnActivity>> {
     // check that the user can view the folder
-    const folder = await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(folderId);
+    const folder = await this.securityService.getAndCheckAuthorizationForFindOne(folderId);
 
     const searchBuilder = new BlSearchBuilder<CnActivity>({ createdAt: 'DESC' as any });
 

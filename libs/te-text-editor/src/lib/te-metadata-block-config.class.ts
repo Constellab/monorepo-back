@@ -12,7 +12,6 @@ export enum TeMetadataPermission {
   SPACE_ADMIN = 'You are a space admin',
   SPACE_ACCESS = 'You have access to the space',
   ROOT_FOLDER_ACCESS = 'You have access to the root folder',
-  FOLDER_LEADER = 'You are the folder leader',
   LAB_ACCESS = 'You have access to the lab',
   LAB_OWNER = 'You are the owner of the lab',
   STORY_OWNER = 'Your are the owner of the story',

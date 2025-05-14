@@ -4,7 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CnFoldersModule } from '../cn-folders/cn-folders.module';
 import { CnDocumentEntity } from './cn-document.entity';
 import { CnDocumentService } from './cn-document.service';
-import { CnHierarchyObjectModule } from '../cn_hierarchy_objects/cn-hierarchy-object.module';
+import { CnHierarchyObjectModule } from '../cn-hierarchy-objects/cn-hierarchy-object.module';
 
 @Module({
   imports: [

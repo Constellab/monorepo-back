@@ -3,7 +3,7 @@ import { CnScenario } from './cn-scenario.entity';
 import { CnScenarioDto } from './cn-scenario.dto';
 import { CnLabConfig } from '../../cn-lab-configs/cn-lab-config.entity';
 import { CnScenarioProtocol } from './cn-scenario-protocol.class';
-import { CnScenarioAggregateService } from '../cn-scenario-aggregate.service';
+import { CnScenarioAggregateService } from './cn-scenario-aggregate.service';
 
 @Controller('scenarios')
 export class CnScenariosController {

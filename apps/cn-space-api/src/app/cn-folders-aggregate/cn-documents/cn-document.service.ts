@@ -33,8 +33,8 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { CnDocumentEvent, cnDocumentEventName, CnDocumentEventType } from './cn-document.event';
 import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
 import { CnCoreConfigService } from '../../cn-core/modules/cn-core-config/cn-core-config.service';
-import { CnHierarchyObject } from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
-import { CnHierarchyObjectService } from '../cn_hierarchy_objects/cn-hierarchy-object.service';
+import { CnHierarchyObject } from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
+import { CnHierarchyObjectService } from '../cn-hierarchy-objects/cn-hierarchy-object.service';
 
 interface CnDocumentS3Tags {
   name: string;

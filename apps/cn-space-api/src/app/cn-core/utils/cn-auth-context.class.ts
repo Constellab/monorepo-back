@@ -3,9 +3,18 @@ import { CnSpace } from '../../cn-spaces/cn-space.entity';
 import { CnLab } from '../../cn-labs/cn-lab.entity';
 import { CnSpaceUserRole } from '../../cn-spaces/cn-space-user.entity';
 import { CnUserSpaceInfo } from '../../cn-users/cn-user.dto';
+import { CnHierarchyObject } from '../../cn-folders-aggregate/cn-hierarchy-objects/cn-hierarchy-object.entity';
 
 abstract class CnAuthContextBase {
-  type: 'user' | 'labDev' | 'labProd' | 'labManager' | 'labToken' | 'userNoSpace' | 'cron';
+  type:
+    | 'user'
+    | 'labDev'
+    | 'labProd'
+    | 'labManager'
+    | 'labToken'
+    | 'userNoSpace'
+    | 'cron'
+    | 'hierarchyObjectToken';
 
   abstract getUser(): CnUser | null;
 
@@ -193,10 +202,41 @@ export class CnAuthContextCron extends CnAuthContextBase {
   }
 }
 
+/**
+ * Auth for request coming from the lab if the request is made from the lab using a token
+ */
+export class CnAuthContextHierarchyObjectToken extends CnAuthContextBase {
+  type = 'hierarchyObjectToken' as const;
+
+  constructor(
+    public space: CnSpace,
+    public hierarchyObject: CnHierarchyObject
+  ) {
+    super();
+  }
+
+  getUser(): CnUser {
+    return null;
+  }
+
+  getSpace(): CnSpace {
+    return this.space;
+  }
+
+  getRoleInSpace(): null {
+    return null;
+  }
+
+  getLab(): CnLab {
+    return null;
+  }
+}
+
 export type CnAuthContext =
   | CnAuthContextUser
   | CnAuthContextUserNoSpace
   | CnAuthContextLab
   | CnAuthContextLabToken
   | CnAuthContextLabManager
-  | CnAuthContextCron;
+  | CnAuthContextCron
+  | CnAuthContextHierarchyObjectToken;

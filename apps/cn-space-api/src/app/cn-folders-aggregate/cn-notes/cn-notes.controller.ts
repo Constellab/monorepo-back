@@ -3,7 +3,7 @@ import { CnNote } from './cn-note.entity';
 import { Response } from 'express';
 import { BlResponseHelper } from '@monorepo/back-core-lib';
 import { TeRichTextBlockModificationWithUser, TeRichTextDTO } from '@monorepo/te-text-editor';
-import { CnNoteAggregateService } from '../cn-note-aggregate.service';
+import { CnNoteAggregateService } from './cn-note-aggregate.service';
 import { CnLabMinimumDTO } from '../../cn-labs/cn-lab.dto';
 
 @Controller('notes')

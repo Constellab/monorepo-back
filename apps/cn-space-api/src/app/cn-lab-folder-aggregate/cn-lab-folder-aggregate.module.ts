@@ -9,7 +9,7 @@ import { CnLabFolderListener } from './cn-lab-folder-listener.service';
 import { CnLabFolderService } from './cn-lab-folder.service';
 import { CnLabFolderEntity } from './cn-lab-folder.entity';
 import { CnLabFolderController } from './cn-lab-folder.controller';
-import { CnHierarchyObjectModule } from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.module';
+import { CnHierarchyObjectModule } from '../cn-folders-aggregate/cn-hierarchy-objects/cn-hierarchy-object.module';
 import { CnFoldersModule } from '../cn-folders-aggregate/cn-folders/cn-folders.module';
 import { CnResourcesController } from '../cn-folders-aggregate/cn-resources/cn-resources.controller';
 

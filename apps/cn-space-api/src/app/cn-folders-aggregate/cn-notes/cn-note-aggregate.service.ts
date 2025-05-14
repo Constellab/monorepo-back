@@ -1,21 +1,21 @@
 import { Injectable } from '@nestjs/common';
-import { CnHierarchyObjectService } from './cn_hierarchy_objects/cn-hierarchy-object.service';
-import { CnFoldersSecurityService } from './cn-folders-security.service';
-import { CnFolderEventService } from './cn-folder.event';
+import { CnHierarchyObjectService } from '../cn-hierarchy-objects/cn-hierarchy-object.service';
+import { CnFoldersSecurityService } from '../cn-security/cn-folders-security.service';
+import { CnFolderEventService } from '../cn-folder.event';
 import { DataSource } from 'typeorm';
-import { CnNotesService } from './cn-notes/cn-notes.service';
-import { CnNote, CnNoteWithDocument, CnNoteWithLab } from './cn-notes/cn-note.entity';
+import { CnNotesService } from './cn-notes.service';
+import { CnNote, CnNoteWithDocument, CnNoteWithLab } from './cn-note.entity';
 import { TeRichText, TeRichTextBlockModificationWithUser } from '@monorepo/te-text-editor';
-import { CnCreateNoteWithConfigDto } from './cn-notes/cn-note.dto';
+import { CnCreateNoteWithConfigDto } from './cn-note.dto';
 import { BlBadRequestException, BlFile, BlFileResponse } from '@monorepo/back-core-lib';
-import { CnScenario } from './cn-scenarios/cn-scenario.entity';
-import { CnHierarchyObject } from './cn_hierarchy_objects/cn-hierarchy-object.entity';
-import { CnScenariosService } from './cn-scenarios/cn-scenarios.service';
-import { CnDocumentService } from './cn-documents/cn-document.service';
-import { CnUsersService } from '../cn-users/cn-users.service';
-import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
-import { CnExternalLabSyncedObjectDTO } from '../cn-external-lab-api/model/cn-external-lab-api.class';
-import { CnLabMinimumDTO } from '../cn-labs/cn-lab.dto';
+import { CnScenario } from '../cn-scenarios/cn-scenario.entity';
+import { CnHierarchyObject } from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
+import { CnScenariosService } from '../cn-scenarios/cn-scenarios.service';
+import { CnDocumentService } from '../cn-documents/cn-document.service';
+import { CnUsersService } from '../../cn-users/cn-users.service';
+import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
+import { CnExternalLabSyncedObjectDTO } from '../../cn-external-lab-api/model/cn-external-lab-api.class';
+import { CnLabMinimumDTO } from '../../cn-labs/cn-lab.dto';
 
 @Injectable()
 export class CnNoteAggregateService {
@@ -31,12 +31,12 @@ export class CnNoteAggregateService {
   ) {}
 
   public async findNote(id: string): Promise<CnNote> {
-    await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(id);
+    await this.securityService.getAndCheckAuthorizationForFindOne(id);
     return await this.noteService.findByIdAndCheck(id);
   }
 
   public async findNoteContent(id: string): Promise<TeRichText> {
-    const noteFolder = await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(id);
+    const noteFolder = await this.securityService.getAndCheckAuthorizationForFindOne(id);
     const parentFolder = await this.hierarchyObjectService.findByIdAndCheck(noteFolder.parentId);
     return await this.noteService.getNoteContent(parentFolder, id);
   }
@@ -46,8 +46,7 @@ export class CnNoteAggregateService {
     parentFolderId: string,
     files: BlFile[]
   ): Promise<void> {
-    const parentFolder =
-      await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(parentFolderId);
+    const parentFolder = await this.securityService.getAndCheckAuthorizationForUpdate(parentFolderId);
 
     // get and check all scenario
     const scenarios: CnScenario[] = [];
@@ -91,19 +90,19 @@ export class CnNoteAggregateService {
   }
 
   async getNoteAssociatedToScenario(scenarioId: string): Promise<CnNote[]> {
-    await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(scenarioId);
+    await this.securityService.getAndCheckAuthorizationForFindOne(scenarioId);
 
     return (await this.scenarioService.findByIdAndCheckWithNotes(scenarioId)).notes;
   }
 
   async getNoteFile(noteId: string, filename: string): Promise<BlFileResponse> {
-    const noteFolder = await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(noteId);
+    const noteFolder = await this.securityService.getAndCheckAuthorizationForFindOne(noteId);
     const parentFolder = await this.hierarchyObjectService.findByIdAndCheck(noteFolder.parentId);
     return this.noteService.getFile(filename, parentFolder, noteId);
   }
 
   async getNoteView(noteId: string, viewId: string): Promise<BlFileResponse> {
-    const noteFolder = await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(noteId);
+    const noteFolder = await this.securityService.getAndCheckAuthorizationForFindOne(noteId);
     const parentFolder = await this.hierarchyObjectService.findByIdAndCheck(noteFolder.parentId);
     return this.noteService.getView(viewId, parentFolder, noteId);
   }
@@ -150,7 +149,7 @@ export class CnNoteAggregateService {
   }
 
   public async getNoteLab(noteId: string): Promise<CnLabMinimumDTO> {
-    await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(noteId);
+    await this.securityService.getAndCheckAuthorizationForFindOne(noteId);
     const note = await this.noteService.findWithLabByIdAndCheck(noteId);
     return {
       id: note.lab.id,
@@ -162,7 +161,7 @@ export class CnNoteAggregateService {
 
   ////////////////////////////// HISTORY ///////////////////////
   public async getNoteModifications(noteId: string): Promise<TeRichTextBlockModificationWithUser[]> {
-    const folder = await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(noteId);
+    const folder = await this.securityService.getAndCheckAuthorizationForFindOne(noteId);
 
     await this.noteService.findByIdAndCheck(noteId);
 
@@ -171,7 +170,7 @@ export class CnNoteAggregateService {
   }
 
   public async getNoteUndoContent(noteId: string, modificationId: string): Promise<TeRichText> {
-    const folder = await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(noteId);
+    const folder = await this.securityService.getAndCheckAuthorizationForFindOne(noteId);
     await this.noteService.findByIdAndCheck(noteId);
     return await this.noteService.getNotePreviousVersion(folder, noteId, modificationId);
   }

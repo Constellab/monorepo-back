@@ -1,7 +1,14 @@
-import { CnHierarchyObjectType, CnHierarchyObjectWithChildren } from './cn-hierarchy-object.entity';
+import {
+  CnHierarchyObject,
+  CnHierarchyObjectEntity,
+  CnHierarchyObjectType,
+  CnHierarchyObjectWithChildren,
+} from './cn-hierarchy-object.entity';
 import { CnUser } from '../../cn-users/cn-user.entity';
 import { DateTime } from 'luxon';
 import { CnTypeStyle } from '../../cn-core/model/config/cn-type-style.class';
+import { CnRootFolderUserRole } from '../cn-folder-user/cn-folder-user.entity';
+import { Type } from 'class-transformer';
 
 export interface CnHierarchyObjectInfo {
   objectType: CnHierarchyObjectType;
@@ -11,6 +18,17 @@ export interface CnHierarchyObjectInfo {
   style: CnTypeStyle;
   isValidated?: boolean;
   documentSize?: number;
+}
+
+export class CnHierarchyObjectFindOneDTO {
+  @Type(() => CnHierarchyObjectEntity)
+  hierarchyObject: CnHierarchyObject;
+  userRole: CnRootFolderUserRole;
+
+  constructor(hierarchyObject: CnHierarchyObject, userRole: CnRootFolderUserRole) {
+    this.hierarchyObject = hierarchyObject;
+    this.userRole = userRole;
+  }
 }
 
 /**

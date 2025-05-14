@@ -1,13 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { CnExternalLabApiService } from './cn-external-lab-api.service';
 import { lastValueFrom } from 'rxjs';
-import {
-  CnHierarchyObjectWithChildren,
-} from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.entity';
+import { CnHierarchyObjectWithChildren } from '../cn-folders-aggregate/cn-hierarchy-objects/cn-hierarchy-object.entity';
 import {
   CnFolderDtoHelper,
   CnLabFolderDTO,
-} from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.dto';
+} from '../cn-folders-aggregate/cn-hierarchy-objects/cn-hierarchy-object.dto';
 import { CnLabGlabApiInfo } from '../cn-labs/cn-lab.dto';
 import { BlBadRequestException, BlVersion } from '@monorepo/back-core-lib';
 

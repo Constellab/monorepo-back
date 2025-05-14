@@ -239,3 +239,75 @@ alter table activity
 
 alter table activity
   modify actionType enum ('CREATE', 'UPDATE', 'DELETE', 'TRASH') not null;
+
+
+####################### 2.8.0 #######################
+
+create table hierarchy_object_token
+(
+  id                varchar(36)  not null primary key,
+  createdAt         datetime     not null,
+  lastModifiedAt    datetime     not null,
+  createdById       varchar(36)  not null,
+  lastModifiedById  varchar(36)  not null,
+  expirationDate    datetime     null,
+  token             varchar(255) not null,
+  hierarchyObjectId varchar(36)  not null,
+  constraint FK_hierarchy_object_token_created_by
+    foreign key (createdById) references user (id),
+  constraint FK_hierarchy_object_token_last_modified_by
+    foreign key (lastModifiedById) references user (id),
+  constraint FK_hierarchy_object_token_hierarchy_object
+    foreign key (hierarchyObjectId) references hierarchy_object (id)
+);
+
+alter table folder_user
+  add column role enum ('OWNER', 'USER', 'VIEWER') null;
+
+
+-- First, set users to OWNER if they are leaders in folders
+UPDATE folder_user fu
+  JOIN folder f ON fu.rootFolderId = f.id
+SET fu.role = 'OWNER'
+WHERE fu.userId = f.leaderId;
+
+-- Then set all remaining users (with null role) to USER
+UPDATE folder_user
+SET role = 'USER'
+WHERE role IS NULL;
+
+alter table folder_user
+  modify column role enum ('OWNER', 'USER', 'VIEWER') not null;
+
+alter table folder_user
+  add column sharedAt datetime null;
+
+update folder_user set sharedAt = now();
+
+alter table folder_user
+  modify column sharedAt datetime not null;
+
+alter table folder_user add sharedById varchar(36) null;
+
+update folder_user fu
+set sharedById = (select userId from folder_user f where f.rootFolderId = fu.rootFolderId and f.role = 'OWNER');
+
+-- Check foreign key folder_user
+alter table folder_user drop foreign key FK_TO_NAME;
+alter table folder_user add foreign key FK_folder_user_root_folder
+  (rootFolderId) references hierarchy_object (id);
+
+-- Clean folder_user table
+# delete from folder_user where rootFolderId not in (select id from hierarchy_object);
+-- End check
+
+
+alter table folder_user
+  modify column sharedById varchar(36) not null;
+
+alter table folder_user add foreign key FK_folder_user_shared_by
+  (sharedById) references user (id);
+
+
+alter table folder drop foreign key FK_34673de22eda86531dd8ab2ce22;
+alter table folder drop column leaderId;

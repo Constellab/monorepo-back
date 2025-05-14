@@ -7,9 +7,9 @@ import { BlLuxonDateTimeColumn, BlNotUpdatable } from '@monorepo/back-core-lib';
 import { DateTime } from 'luxon';
 import { CnLab, CnLabEntity } from '../../cn-labs/cn-lab.entity';
 import { CnDocument, CnDocumentEntity } from '../cn-documents/cn-document.entity';
-import { CnHierarchyRepresentation } from '../cn_hierarchy_objects/cn-hierarchy-representation';
-import { CnHierarchyObjectInfo } from '../cn_hierarchy_objects/cn-hierarchy-object.dto';
-import { CnHierarchyObjectType } from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
+import { CnHierarchyRepresentation } from '../cn-hierarchy-objects/cn-hierarchy-representation';
+import { CnHierarchyObjectInfo } from '../cn-hierarchy-objects/cn-hierarchy-object.dto';
+import { CnHierarchyObjectType } from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
 
 @Entity('note')
 export class CnNoteEntity extends CnHierarchyRepresentation {

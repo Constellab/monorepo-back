@@ -2,12 +2,18 @@ import { Injectable } from '@nestjs/common';
 import { BlAbstractPaginatedService, BlBadRequestException } from '@monorepo/back-core-lib';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, EntityManager, Repository } from 'typeorm';
-import { CnFolderUser, CnFolderUserEntity } from './cn-folder-user.entity';
+import {
+  CnFolderUser,
+  CnFolderUserEntity,
+  CnFolderUserWithSharedBy,
+  CnRootFolderUserRole,
+} from './cn-folder-user.entity';
 import { CnUser } from '../../cn-users/cn-user.entity';
 import { CnGroupsService } from '../../cn-groups/cn-groups.service';
 import { CnErrorText } from '../../cn-core/model/config/cn-error-text.class';
-import { ClHelpService, ClPage } from '@monorepo/core-lib';
+import { ClDateHelper, ClHelpService, ClPage } from '@monorepo/core-lib';
 import { CnFolderUserSearch } from './cn-folder-user-search.class';
+import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
 
 @Injectable()
 export class CnFolderUserService extends BlAbstractPaginatedService<CnFolderUserEntity> {
@@ -18,11 +24,15 @@ export class CnFolderUserService extends BlAbstractPaginatedService<CnFolderUser
     super(repository, CnFolderUserEntity);
   }
 
-  public async shareRootFolderToGroup(rootFolderId: string, groupId: string): Promise<CnUser[]> {
+  public async shareRootFolderToGroup(
+    rootFolderId: string,
+    groupId: string,
+    role: CnRootFolderUserRole
+  ): Promise<CnUser[]> {
     const users = await this.groupService.getUsersOfGroups([groupId]);
 
     for (const user of users) {
-      await this.shareRootFolderToUserIfNot(rootFolderId, user.id);
+      await this.shareRootFolderToUserIfNot(rootFolderId, user.id, role);
     }
 
     // return all users of the folder
@@ -32,26 +42,56 @@ export class CnFolderUserService extends BlAbstractPaginatedService<CnFolderUser
   public async shareRootFolderToUserIfNot(
     rootFolderId: string,
     userId: string,
+    role: CnRootFolderUserRole,
     entityManager?: EntityManager
   ): Promise<CnFolderUser> {
     const folderUser = await this.findByRootFolderIdAndUserId(rootFolderId, userId);
     if (folderUser) {
+      // if the user is already in the folder, but if the role is lower than the new one, update the role
+      if (folderUser.roleObj.isLowerThan(role)) {
+        folderUser.role = role;
+        return await this.updateFolderUser(folderUser);
+      }
       return folderUser;
     }
 
     const newFolderUser = new CnFolderUserEntity();
     newFolderUser.rootFolderId = rootFolderId;
     newFolderUser.userId = userId;
+    newFolderUser.role = role;
+    newFolderUser.sharedBy = CnCurrentUserHelper.getAndCheckCurrentUser();
+    newFolderUser.sharedAt = ClDateHelper.getDate();
     return await this.getEntityManager(entityManager).save(newFolderUser);
   }
 
   public async unshareRootFolderFromUser(rootFolderId: string, userId: string): Promise<DeleteResult> {
-    const users = await this.findUsersByRootFolderId(rootFolderId);
-    if (users.length === 1) {
-      throw new BlBadRequestException(CnErrorText.FOLDER_MUST_HAVE_A_GROUP);
+    if (await this.userIsLastOwner(rootFolderId, userId)) {
+      throw new BlBadRequestException(CnErrorText.CANT_UNSHARE_LAST_FOLDER_OWNER);
     }
-
     return this.repository.delete({ rootFolderId: rootFolderId, userId: userId });
+  }
+
+  public async updateRootFolderUserRole(
+    rootFolderId: string,
+    userId: string,
+    role: CnRootFolderUserRole
+  ): Promise<CnFolderUser> {
+    if (await this.userIsLastOwner(rootFolderId, userId)) {
+      throw new BlBadRequestException(CnErrorText.CANT_UPDATE_LAST_OWNER_ROLE);
+    }
+    const folderUser = await this.findByRootFolderIdAndUserIdAndCheck(rootFolderId, userId);
+
+    folderUser.role = role;
+    return await this.updateFolderUser(folderUser);
+  }
+
+  private async userIsLastOwner(rootFolderId: string, userId: string): Promise<boolean> {
+    // check if the user is the last owner of the folder
+    const folderOwners = await this.repository.find({
+      where: { rootFolderId: rootFolderId, role: CnRootFolderUserRole.OWNER },
+    });
+
+    return folderOwners.length === 1 && folderOwners[0].userId === userId;
   }
 
   public async findUsersByRootFolderId(rootFolderId: string): Promise<CnUser[]> {
@@ -63,13 +103,37 @@ export class CnFolderUserService extends BlAbstractPaginatedService<CnFolderUser
     return await this.repository.find({ where: { rootFolderId: rootFolderId } });
   }
 
-  public findByRootFolderIdAndUserId(rootFolderId: string, userId: string): Promise<CnFolderUser> {
+  public async findByRootFolderIdWithSharedBy(rootFolderId: string): Promise<CnFolderUserWithSharedBy[]> {
+    return await this.repository.find({
+      where: { rootFolderId: rootFolderId },
+      relations: { sharedBy: true },
+    });
+  }
+
+  public findByRootFolderIdAndUserIdAndCheckWithSharedBy(
+    rootFolderId: string,
+    userId: string
+  ): Promise<CnFolderUserWithSharedBy> {
+    const userFolder = this.repository.findOne({
+      where: { rootFolderId: rootFolderId, userId: userId },
+      relations: { sharedBy: true },
+    });
+    if (!userFolder) {
+      throw new BlBadRequestException('The user is not a member of the folder');
+    }
+    return userFolder;
+  }
+
+  public findByRootFolderIdAndUserId(rootFolderId: string, userId: string): Promise<CnFolderUser | null> {
     return this.repository.findOne({ where: { rootFolderId: rootFolderId, userId: userId } });
   }
 
-  public async userIsInRootFolder(rootFolderId: string, userId: string): Promise<boolean> {
-    const folderUser = await this.findByRootFolderIdAndUserId(rootFolderId, userId);
-    return folderUser != null;
+  public findByRootFolderIdAndUserIdAndCheck(rootFolderId: string, userId: string): Promise<CnFolderUser> {
+    const userFolder = this.findByRootFolderIdAndUserId(rootFolderId, userId);
+    if (!userFolder) {
+      throw new BlBadRequestException('The user is not a member of the folder');
+    }
+    return userFolder;
   }
 
   public updateFolderUser(folderUser: CnFolderUser): Promise<CnFolderUser> {

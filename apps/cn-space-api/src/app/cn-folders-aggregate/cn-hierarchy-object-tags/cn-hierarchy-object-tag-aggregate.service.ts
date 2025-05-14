@@ -2,14 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { CnHierarchyObjectTagService } from './cn-hierarchy-object-tag.service';
 import { CnHierarchyObjectTagHistoryService } from './cn-hierarchy-object-tag-history.service';
 import { CnHierarchyObjectTag } from './cn-hierarchy-object-tag.entity';
-import { CnHierarchyObject } from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
+import { CnHierarchyObject } from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
 import { DataSource, EntityManager } from 'typeorm';
 import { CnHierarchyObjectTagHistoryType } from './cn-hierarchy-object-tag-history.entity';
 import { CnAvailableTags, CnTag, CnTagList } from './cn-hierarchy-object-tag.dto';
 import { BlBadRequestException } from '@monorepo/back-core-lib';
 import { ClPage } from '@monorepo/core-lib';
-import { EventEmitter2 } from '@nestjs/event-emitter';
-import { CnHierarchyObjectEvent, cnHierarchyObjectEventName } from '../cn-hierarchy-object.event';
+import { CnFolderEventService } from '../cn-folder.event';
 
 @Injectable()
 export class CnHierarchyObjectTagAggregateService {
@@ -17,7 +16,7 @@ export class CnHierarchyObjectTagAggregateService {
     private tagService: CnHierarchyObjectTagService,
     private historyService: CnHierarchyObjectTagHistoryService,
     private datasource: DataSource,
-    private eventEmitter: EventEmitter2
+    private folderEventService: CnFolderEventService
   ) {}
 
   public async createTag(tag: CnTag, hierarchyObject: CnHierarchyObject): Promise<CnHierarchyObjectTag> {
@@ -214,10 +213,7 @@ export class CnHierarchyObjectTagAggregateService {
   }
 
   private emitTagModifiedEvent(hierarchyObject: CnHierarchyObject): void {
-    this.eventEmitter.emit(cnHierarchyObjectEventName, {
-      type: 'TAG_MODIFIED',
-      hierarchyObject,
-    } as CnHierarchyObjectEvent);
+    this.folderEventService.emitFolderEvent('OBJECT_TAG_MODIFIED', null, hierarchyObject);
   }
 
   /////////////////////////////////////////// FIND ///////////////////////////////////////////

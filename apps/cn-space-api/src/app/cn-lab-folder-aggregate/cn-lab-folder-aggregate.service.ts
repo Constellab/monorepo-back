@@ -13,12 +13,12 @@ import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
 import {
   CnHierarchyObject,
   CnHierarchyObjectWithChildren,
-} from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.entity';
+} from '../cn-folders-aggregate/cn-hierarchy-objects/cn-hierarchy-object.entity';
 import { CnExternalLabShareService } from '../cn-external-lab-api/cn-external-lab-share.service';
 import { CnResourceAccessDTO } from '../cn-folders-aggregate/cn-resources/cn-resource.dto';
-import { CnScenarioAggregateService } from '../cn-folders-aggregate/cn-scenario-aggregate.service';
-import { CnNoteAggregateService } from '../cn-folders-aggregate/cn-note-aggregate.service';
-import { CnResourceAggregateService } from '../cn-folders-aggregate/cn-resource-aggregate.service';
+import { CnScenarioAggregateService } from '../cn-folders-aggregate/cn-scenarios/cn-scenario-aggregate.service';
+import { CnNoteAggregateService } from '../cn-folders-aggregate/cn-notes/cn-note-aggregate.service';
+import { CnResourceAggregateService } from '../cn-folders-aggregate/cn-resources/cn-resource-aggregate.service';
 import { CnLabGlabApiInfo } from '../cn-labs/cn-lab.dto';
 import { CnExternalLabObjectService } from '../cn-external-lab-api/cn-external-lab-object.service';
 import { CnExternalLabSyncedObjectDTO } from '../cn-external-lab-api/model/cn-external-lab-api.class';

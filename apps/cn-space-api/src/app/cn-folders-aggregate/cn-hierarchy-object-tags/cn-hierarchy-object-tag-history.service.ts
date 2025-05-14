@@ -7,7 +7,7 @@ import {
 } from './cn-hierarchy-object-tag-history.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
-import { CnHierarchyObject } from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
+import { CnHierarchyObject } from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
 import { CnTag } from './cn-hierarchy-object-tag.dto';
 
 @Injectable()

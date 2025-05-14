@@ -2,15 +2,15 @@ import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne } from 'typeorm';
 import { BlBucketType, BlFileHelper, BlLuxonDateTimeColumn, BlNotUpdatable } from '@monorepo/back-core-lib';
 import { Exclude, Expose } from 'class-transformer';
 import { DateTime } from 'luxon';
-import { CnHierarchyRepresentation } from '../cn_hierarchy_objects/cn-hierarchy-representation';
+import { CnHierarchyRepresentation } from '../cn-hierarchy-objects/cn-hierarchy-representation';
 import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
 import { ClDateHelper } from '@monorepo/core-lib';
-import { CnHierarchyObjectInfo } from '../cn_hierarchy_objects/cn-hierarchy-object.dto';
+import { CnHierarchyObjectInfo } from '../cn-hierarchy-objects/cn-hierarchy-object.dto';
 import {
   CnHierarchyObject,
   CnHierarchyObjectEntity,
   CnHierarchyObjectType,
-} from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
+} from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
 import { CnTypeStyle } from '../../cn-core/model/config/cn-type-style.class';
 
 export enum CnDocumentType {

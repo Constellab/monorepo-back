@@ -1,14 +1,13 @@
-import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne, Relation } from 'typeorm';
-import { Exclude, Type } from 'class-transformer';
+import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne } from 'typeorm';
+import { Exclude } from 'class-transformer';
 import { DateTime } from 'luxon';
 import { BlLuxonDateColumn } from '@monorepo/back-core-lib';
-import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
 import { CnBucket } from '../../cn-object-storages/cn-buckets/cn-bucket.entity';
-import { CnHierarchyRepresentation } from '../cn_hierarchy_objects/cn-hierarchy-representation';
+import { CnHierarchyRepresentation } from '../cn-hierarchy-objects/cn-hierarchy-representation';
 import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
 import { ClDateHelper } from '@monorepo/core-lib';
-import { CnHierarchyObjectInfo } from '../cn_hierarchy_objects/cn-hierarchy-object.dto';
-import { CnHierarchyObjectType } from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
+import { CnHierarchyObjectInfo } from '../cn-hierarchy-objects/cn-hierarchy-object.dto';
+import { CnHierarchyObjectType } from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
 import { TeRichTextInput } from '@monorepo/te-text-editor';
 import { CnTypeStyle } from '../../cn-core/model/config/cn-type-style.class';
 
@@ -44,10 +43,6 @@ export class CnFolderEntity extends CnHierarchyRepresentation {
   @BlLuxonDateColumn({ nullable: true })
   endingDate: DateTime;
 
-  @Type(() => CnUserEntity)
-  @ManyToOne(() => CnUserEntity, { eager: true, nullable: false })
-  leader: Relation<CnUser>;
-
   // the storage is only provided in root folder
   @Exclude()
   @ManyToOne(() => CnBucket, { nullable: true })
@@ -80,7 +75,7 @@ export class CnFolderEntity extends CnHierarchyRepresentation {
     return {
       objectType: CnHierarchyObjectType.FOLDER,
       name: this.name,
-      user: this.leader,
+      user: this.lastModifiedBy,
       lastModifiedAt: this.lastModifiedAt ?? ClDateHelper.getDate(),
       style: this.style,
     };

@@ -6,7 +6,7 @@ import { CnScenariosModule } from '../cn-folders-aggregate/cn-scenarios/cn-scena
 import { CnNotesModule } from '../cn-folders-aggregate/cn-notes/cn-notes.module';
 import { CnGroupsModule } from '../cn-groups/cn-groups.module';
 import { CnLabsModule } from '../cn-labs/cn-labs.module';
-import { CnHierarchyObjectModule } from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.module';
+import { CnHierarchyObjectModule } from '../cn-folders-aggregate/cn-hierarchy-objects/cn-hierarchy-object.module';
 
 @Module({
   imports: [

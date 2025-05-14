@@ -14,8 +14,9 @@ import { CnAvailableTags, CnTag } from '../cn-hierarchy-object-tags/cn-hierarchy
 import { CnHierarchyObjectTag } from '../cn-hierarchy-object-tags/cn-hierarchy-object-tag.entity';
 import { ClPage, ClPageI } from '@monorepo/core-lib';
 import { CnHierarchyObject, CnHierarchyObjectWithParent } from './cn-hierarchy-object.entity';
-import { CnHierarchyObjectAggregateService } from '../cn-hierarchy-object-aggregate.service';
+import { CnHierarchyObjectAggregateService } from './cn-hierarchy-object-aggregate.service';
 import { BlParsePipe, BlSearchParams } from '@monorepo/back-core-lib';
+import { CnHierarchyObjectFindOneDTO } from './cn-hierarchy-object.dto';
 
 @Controller('hierarchy-objects')
 export class CnHierarchyObjectController {
@@ -26,7 +27,7 @@ export class CnHierarchyObjectController {
   @Get(':hierarchyObjectId')
   async getHierarchyObject(
     @Param('hierarchyObjectId', new ParseUUIDPipe()) hierarchyObjectId: string
-  ): Promise<CnHierarchyObject> {
+  ): Promise<CnHierarchyObjectFindOneDTO> {
     return this.hierarchyObjectAggregateService.getHierarchyObject(hierarchyObjectId);
   }
 

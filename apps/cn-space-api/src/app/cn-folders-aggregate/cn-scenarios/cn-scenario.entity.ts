@@ -7,9 +7,9 @@ import { CnScenarioStatus } from './cn-scenario-status.enum';
 import { CnLabConfig } from '../../cn-lab-configs/cn-lab-config.entity';
 import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
 import { DateTime } from 'luxon';
-import { CnHierarchyRepresentation } from '../cn_hierarchy_objects/cn-hierarchy-representation';
-import { CnHierarchyObjectInfo } from '../cn_hierarchy_objects/cn-hierarchy-object.dto';
-import { CnHierarchyObjectType } from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
+import { CnHierarchyRepresentation } from '../cn-hierarchy-objects/cn-hierarchy-representation';
+import { CnHierarchyObjectInfo } from '../cn-hierarchy-objects/cn-hierarchy-object.dto';
+import { CnHierarchyObjectType } from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
 import { TeRichTextInput } from '@monorepo/te-text-editor';
 import { CnScenarioProtocol } from './cn-scenario-protocol.class';
 

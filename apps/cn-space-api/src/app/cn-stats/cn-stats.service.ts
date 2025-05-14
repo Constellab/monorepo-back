@@ -5,7 +5,7 @@ import { CnGroupsService } from '../cn-groups/cn-groups.service';
 import { CnScenariosService } from '../cn-folders-aggregate/cn-scenarios/cn-scenarios.service';
 import { CnNotesService } from '../cn-folders-aggregate/cn-notes/cn-notes.service';
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
-import { CnHierarchyObjectService } from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.service';
+import { CnHierarchyObjectService } from '../cn-folders-aggregate/cn-hierarchy-objects/cn-hierarchy-object.service';
 
 @Injectable()
 export class CnStatsService {

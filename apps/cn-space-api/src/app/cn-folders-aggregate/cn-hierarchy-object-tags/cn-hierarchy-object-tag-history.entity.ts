@@ -4,7 +4,7 @@ import { BlNotUpdatable } from '@monorepo/back-core-lib';
 import {
   CnHierarchyObject,
   CnHierarchyObjectEntity,
-} from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
+} from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
 
 export enum CnHierarchyObjectTagHistoryType {
   CREATED = 'CREATED',

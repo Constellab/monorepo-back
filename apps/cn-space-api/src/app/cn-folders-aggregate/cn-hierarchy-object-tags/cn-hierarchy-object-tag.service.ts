@@ -3,7 +3,7 @@ import { BlAbstractService, BlBadRequestException } from '@monorepo/back-core-li
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
 import { CnHierarchyObjectTag, CnHierarchyObjectTagEntity } from './cn-hierarchy-object-tag.entity';
-import { CnHierarchyObject } from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
+import { CnHierarchyObject } from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
 import { CnAvailableTags, CnTag } from './cn-hierarchy-object-tag.dto';
 import { ClPage } from '@monorepo/core-lib';
 

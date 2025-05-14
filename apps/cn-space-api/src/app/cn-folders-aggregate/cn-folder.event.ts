@@ -1,4 +1,4 @@
-import { CnHierarchyObject } from './cn_hierarchy_objects/cn-hierarchy-object.entity';
+import { CnHierarchyObject } from './cn-hierarchy-objects/cn-hierarchy-object.entity';
 import { CnSpace } from '../cn-spaces/cn-space.entity';
 import { CnUser } from '../cn-users/cn-user.entity';
 import { Injectable } from '@nestjs/common';
@@ -15,15 +15,16 @@ export type CnFolderEventType =
   | 'CREATE_ROOT_FOLDER'
   | 'CREATE_SUB_FOLDER'
   | 'UPDATE_FOLDER'
-  | 'UPDATE_FOLDER_LEADER'
   | 'UPDATE_FOLDER_DESCRIPTION'
   | 'SHARE_FOLDER'
   | 'UNSHARE_FOLDER'
+  | 'UPDATE_FOLDER_USER_ROLE'
   | 'UPLOAD_FOLDER'
   | 'MOVE_OBJECT_TO_FOLDER'
   | 'MOVE_OBJECT_TO_TRASH'
   | 'RESTORE_OBJECT_FROM_TRASH'
   | 'DELETE_OBJECT'
+  | 'OBJECT_TAG_MODIFIED'
   | 'CREATE_SCENARIO'
   | 'UPDATE_SCENARIO'
   | 'CREATE_NOTE'

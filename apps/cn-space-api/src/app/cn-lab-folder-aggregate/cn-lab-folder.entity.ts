@@ -9,7 +9,7 @@ import { ClDateHelper } from '@monorepo/core-lib';
 import {
   CnHierarchyObject,
   CnHierarchyObjectEntity,
-} from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.entity';
+} from '../cn-folders-aggregate/cn-hierarchy-objects/cn-hierarchy-object.entity';
 
 /**
  * Entity for N to N relation between lab and folder shared to lab

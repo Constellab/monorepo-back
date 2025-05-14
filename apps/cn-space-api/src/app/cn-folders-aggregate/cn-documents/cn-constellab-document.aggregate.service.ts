@@ -1,19 +1,19 @@
-import { CnDocumentService } from './cn-documents/cn-document.service';
-import { CnHierarchyObjectService } from './cn_hierarchy_objects/cn-hierarchy-object.service';
-import { CnFoldersSecurityService } from './cn-folders-security.service';
-import { CnFolderEventService } from './cn-folder.event';
-import { CnConstellabDocumentDTO } from './cn-documents/cn-document-dto.class';
+import { CnDocumentService } from './cn-document.service';
+import { CnHierarchyObjectService } from '../cn-hierarchy-objects/cn-hierarchy-object.service';
+import { CnFoldersSecurityService } from '../cn-security/cn-folders-security.service';
+import { CnFolderEventService } from '../cn-folder.event';
+import { CnConstellabDocumentDTO } from './cn-document-dto.class';
 import {
   TeBlockFigureUploadedResponse,
   TeBlockFileUploadResponse,
   TeRichText,
   TeRichTextBlockModificationWithUser,
 } from '@monorepo/te-text-editor';
-import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
+import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
 import { BlBadRequestException, BlFile, BlFileResponse } from '@monorepo/back-core-lib';
-import { CnDocument, CnDocumentType } from './cn-documents/cn-document.entity';
+import { CnDocument, CnDocumentType } from './cn-document.entity';
 import { Injectable } from '@nestjs/common';
-import { CnUsersService } from '../cn-users/cn-users.service';
+import { CnUsersService } from '../../cn-users/cn-users.service';
 
 @Injectable()
 export class CnConstellabDocumentAggregateService {
@@ -29,8 +29,7 @@ export class CnConstellabDocumentAggregateService {
     parentFolderId: string,
     filename: string
   ): Promise<CnConstellabDocumentDTO> {
-    const parentFolder =
-      await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(parentFolderId);
+    const parentFolder = await this.securityService.getAndCheckAuthorizationForUpdate(parentFolderId);
 
     const doc = await this.documentService.createConstellabDocument(parentFolder, filename);
     this.folderEventService.emitFolderEvent('CREATE_CONSTELLAB_DOCUMENT', parentFolder, doc.document);
@@ -41,7 +40,7 @@ export class CnConstellabDocumentAggregateService {
     documentId: string,
     richText: TeRichText
   ): Promise<CnConstellabDocumentDTO> {
-    const folder = await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(documentId);
+    const folder = await this.securityService.getAndCheckAuthorizationForUpdate(documentId);
 
     const document = await this.documentService.findByIdAndCheck(documentId);
 
@@ -73,7 +72,7 @@ export class CnConstellabDocumentAggregateService {
   }
 
   public async checkEditConstellabDocument(documentId: string): Promise<void> {
-    await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(documentId);
+    await this.securityService.getAndCheckAuthorizationForUpdate(documentId);
 
     const document = await this.documentService.findByIdAndCheck(documentId);
 
@@ -92,7 +91,7 @@ export class CnConstellabDocumentAggregateService {
   }
 
   public async getConstellabDocument(documentId: string): Promise<CnConstellabDocumentDTO> {
-    const folder = await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(documentId);
+    const folder = await this.securityService.getAndCheckAuthorizationForFindOne(documentId);
 
     const document = await this.documentService.findByIdAndCheck(documentId);
     const richTextAggregate = await this.documentService.getConstellabDocument(
@@ -106,7 +105,7 @@ export class CnConstellabDocumentAggregateService {
     documentId: string,
     file: BlFile
   ): Promise<TeBlockFigureUploadedResponse> {
-    const folder = await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(documentId);
+    const folder = await this.securityService.getAndCheckAuthorizationForUpdate(documentId);
 
     const document = await this.documentService.findByIdAndCheck(documentId);
     const parentFolder = await this.hierarchyObjectService.findByIdAndCheck(folder.parentId);
@@ -118,7 +117,7 @@ export class CnConstellabDocumentAggregateService {
     documentId: string,
     file: BlFile
   ): Promise<TeBlockFileUploadResponse> {
-    const folder = await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(documentId);
+    const folder = await this.securityService.getAndCheckAuthorizationForUpdate(documentId);
 
     const document = await this.documentService.findByIdAndCheck(documentId);
     const parentFolder = await this.hierarchyObjectService.findByIdAndCheck(folder.parentId);
@@ -135,7 +134,7 @@ export class CnConstellabDocumentAggregateService {
     documentId: string,
     documentName: string
   ): Promise<BlFileResponse> {
-    const folder = await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(documentId);
+    const folder = await this.securityService.getAndCheckAuthorizationForFindOne(documentId);
 
     return this.documentService.getDocumentContentByTypeAndName(
       folder.getRootFolderId(),
@@ -149,7 +148,7 @@ export class CnConstellabDocumentAggregateService {
   public async getConstellabDocumentModifications(
     documentId: string
   ): Promise<TeRichTextBlockModificationWithUser[]> {
-    const folder = await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(documentId);
+    const folder = await this.securityService.getAndCheckAuthorizationForFindOne(documentId);
 
     const document = await this.documentService.findByIdAndCheck(documentId);
 
@@ -165,7 +164,7 @@ export class CnConstellabDocumentAggregateService {
     documentId: string,
     modificationId: string
   ): Promise<TeRichText> {
-    const folder = await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(documentId);
+    const folder = await this.securityService.getAndCheckAuthorizationForFindOne(documentId);
     const document = await this.documentService.findByIdAndCheck(documentId);
     const richText = await this.documentService.getConstellabDocumentPreviousVersion(
       folder.getRootFolderId(),
@@ -176,7 +175,7 @@ export class CnConstellabDocumentAggregateService {
   }
 
   public async rollbackContent(documentId: string, modificationId: string): Promise<CnDocument> {
-    const folder = await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(documentId);
+    const folder = await this.securityService.getAndCheckAuthorizationForUpdate(documentId);
 
     const document = await this.documentService.findByIdAndCheck(documentId);
     return await this.documentService.rollbackConstellabDocumentContent(

@@ -14,7 +14,9 @@ import {
 } from '@nestjs/common';
 import { CnFolder, CnFolderWithHierarchy } from './cn-folders/cn-folder.entity';
 import {
+  BlDtoHelper,
   BlFile,
+  BlParseEnumPipe,
   BlParsePipe,
   BlResponseHelper,
   BlSearchParams,
@@ -32,11 +34,12 @@ import {
 import { CnUser } from '../cn-users/cn-user.entity';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
-import { CnFolderUser, CnFolderUserEntity } from './cn-folder-user/cn-folder-user.entity';
+import { CnRootFolderUserRole } from './cn-folder-user/cn-folder-user.entity';
 import { CnActivity } from '../cn-activity/cn-activity.entity';
 import { CnBucketLocationDTO } from '../cn-object-storages/cn-buckets/cn-bucket.entity';
 import { CnFolderStorageUsageDTO } from './cn-documents/cn-document-dto.class';
-import { CnHierarchyObject } from './cn_hierarchy_objects/cn-hierarchy-object.entity';
+import { CnHierarchyObject } from './cn-hierarchy-objects/cn-hierarchy-object.entity';
+import { CnFolderUserConfigDTO, CnFolderUserDTO } from './cn-folder-user/cn-folder-user.dto';
 
 @Controller('folders')
 export class CnFoldersController {
@@ -105,12 +108,24 @@ export class CnFoldersController {
     return this.folderAggregateService.renameFolder(id, body.name);
   }
 
-  @Put(':id/share/:groupId')
-  shareFolder(
+  @Post(':id/share/:groupId/role/:role')
+  async shareFolder(
     @Param('id', new ParseUUIDPipe()) id: string,
-    @Param('groupId', new ParseUUIDPipe()) groupId: string
-  ): Promise<CnUser[]> {
-    return this.folderAggregateService.shareFolder(id, groupId);
+    @Param('groupId', new ParseUUIDPipe()) groupId: string,
+    @Param('role', new BlParseEnumPipe(CnRootFolderUserRole)) role: CnRootFolderUserRole
+  ): Promise<CnFolderUserDTO[]> {
+    const folderUsers = await this.folderAggregateService.shareFolder(id, groupId, role);
+    return BlDtoHelper.listToDto(CnFolderUserDTO, folderUsers);
+  }
+
+  @Put(':id/share/:userId/role/:role')
+  async updateShareFolder(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('userId', new ParseUUIDPipe()) userId: string,
+    @Param('role', new BlParseEnumPipe(CnRootFolderUserRole)) role: CnRootFolderUserRole
+  ): Promise<CnFolderUserDTO> {
+    const folderUser = await this.folderAggregateService.updateFolderUserRole(id, userId, role);
+    return new CnFolderUserDTO(folderUser);
   }
 
   @Delete(':id/unshare/:userId')
@@ -132,6 +147,12 @@ export class CnFoldersController {
     return this.folderAggregateService.getUsersOfFolder(id);
   }
 
+  @Get(':id/users-role')
+  async getFolderUsersWithRole(@Param('id', ParseUUIDPipe) id: string): Promise<CnFolderUserDTO[]> {
+    const folderUsers = await this.folderAggregateService.getFolderUsersWithRole(id);
+    return BlDtoHelper.listToDto(CnFolderUserDTO, folderUsers);
+  }
+
   @Get(':id/users/search/name/:name?')
   searchFolderUsersByName(
     @Param('id', ParseUUIDPipe) id: string,
@@ -145,14 +166,6 @@ export class CnFoldersController {
   @Get(':id')
   findOne(@Param('id', ParseUUIDPipe) id: string): Promise<CnFolder> {
     return this.folderAggregateService.findFolder(id);
-  }
-
-  @Put(':id/leader/:leaderId')
-  updateLeader(
-    @Param('id', new ParseUUIDPipe()) id: string,
-    @Param('leaderId', new ParseUUIDPipe()) leaderId: string
-  ): Promise<CnFolder> {
-    return this.folderAggregateService.updateFolderLeader(id, leaderId);
   }
 
   /////////////////////////////////// DESCRIPTION //////////////////////////////////////
@@ -227,16 +240,20 @@ export class CnFoldersController {
   /////////////////////////////// Folder user ///////////////////////////////////////////
 
   @Get(':folderId/user-config')
-  getFolderUserConfig(@Param('folderId', new ParseUUIDPipe()) folderId: string): Promise<CnFolderUser> {
-    return this.folderAggregateService.getCurrentUserRootFolderConfig(folderId);
+  async getFolderUserConfig(
+    @Param('folderId', new ParseUUIDPipe()) folderId: string
+  ): Promise<CnFolderUserConfigDTO> {
+    const folderUser = await this.folderAggregateService.getCurrentUserFolderInfo(folderId);
+    return new CnFolderUserConfigDTO(folderUser);
   }
 
   @Put(':folderId/user-config')
-  updateFolderUserConfig(
+  async updateFolderUserConfig(
     @Param('folderId', new ParseUUIDPipe()) folderId: string,
-    @Body() body: CnFolderUserEntity
-  ): Promise<CnFolderUser> {
-    return this.folderAggregateService.updateRootFolderCurrentUserConfig(folderId, body);
+    @Body(new BlParsePipe(CnFolderUserConfigDTO)) body: CnFolderUserConfigDTO
+  ): Promise<CnFolderUserConfigDTO> {
+    const folderUser = await this.folderAggregateService.updateRootFolderCurrentUserConfig(folderId, body);
+    return new CnFolderUserConfigDTO(folderUser);
   }
 
   /////////////////////////////// Activity ///////////////////////////////////////////

@@ -10,7 +10,7 @@ import {
   CnHierarchyObject,
   CnHierarchyObjectType,
   CnHierarchyObjectWithChildren,
-} from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
+} from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
 
 export class CnSaveFolderDTO {
   @BlTrim()

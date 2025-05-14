@@ -5,7 +5,7 @@ import { CnScenariosService } from './cn-scenarios.service';
 import { CnCoreModule } from '../../cn-core/cn-core.module';
 import { CnLabConfigsModule } from '../../cn-lab-configs/cn-lab-configs.module';
 import { CnUsersModule } from '../../cn-users/cn-users.module';
-import { CnHierarchyObjectModule } from '../cn_hierarchy_objects/cn-hierarchy-object.module';
+import { CnHierarchyObjectModule } from '../cn-hierarchy-objects/cn-hierarchy-object.module';
 
 @Module({
   imports: [

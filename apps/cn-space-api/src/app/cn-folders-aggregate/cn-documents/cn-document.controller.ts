@@ -13,9 +13,9 @@ import {
 import { CnDocumentAggregateService } from './cn-document-aggregate.service';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { BlFile, BlPublic, BlResponseHelper, BlUploadedFile, BlUploadedFiles } from '@monorepo/back-core-lib';
-import { CnHierarchyObject } from './cn_hierarchy_objects/cn-hierarchy-object.entity';
-import { CnDocument } from './cn-documents/cn-document.entity';
-import { CnDocumentPreviewDTO } from './cn-documents/cn-document-dto.class';
+import { CnHierarchyObject } from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
+import { CnDocument } from './cn-document.entity';
+import { CnDocumentPreviewDTO } from './cn-document-dto.class';
 import { Response } from 'express';
 
 @Controller('documents')

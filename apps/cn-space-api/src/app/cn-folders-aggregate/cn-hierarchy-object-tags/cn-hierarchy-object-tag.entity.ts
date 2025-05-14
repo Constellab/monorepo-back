@@ -4,7 +4,7 @@ import { BlNotUpdatable } from '@monorepo/back-core-lib';
 import {
   CnHierarchyObject,
   CnHierarchyObjectEntity,
-} from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
+} from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
 import { Exclude } from 'class-transformer';
 
 @Unique('hierarchy_object_tag_key_value_lab', ['key', 'value', 'hierarchyObject'])

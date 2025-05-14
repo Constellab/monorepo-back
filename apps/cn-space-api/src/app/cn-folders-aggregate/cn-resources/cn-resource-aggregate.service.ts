@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { CnResourcesService } from './cn-resources/cn-resources.service';
-import { CnShareResourceRequestDTO } from './cn-resources/cn-resource.dto';
-import { CnResource, CnResourceWithLab } from './cn-resources/cn-resource.entity';
-import { CnFoldersSecurityService } from './cn-folders-security.service';
+import { CnResourcesService } from './cn-resources.service';
+import { CnShareResourceRequestDTO } from './cn-resource.dto';
+import { CnResource, CnResourceWithLab } from './cn-resource.entity';
+import { CnFoldersSecurityService } from '../cn-security/cn-folders-security.service';
 import { DataSource } from 'typeorm';
-import { CnHierarchyObjectService } from './cn_hierarchy_objects/cn-hierarchy-object.service';
-import { CnFolderEventService } from './cn-folder.event';
+import { CnHierarchyObjectService } from '../cn-hierarchy-objects/cn-hierarchy-object.service';
+import { CnFolderEventService } from '../cn-folder.event';
 
 @Injectable()
 export class CnResourceAggregateService {
@@ -21,8 +21,7 @@ export class CnResourceAggregateService {
     parentFolderId: string,
     requestDTO: CnShareResourceRequestDTO
   ): Promise<void> {
-    const parentFolder =
-      await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(parentFolderId);
+    const parentFolder = await this.securityService.getAndCheckAuthorizationForUpdate(parentFolderId);
 
     await this.resourceService.saveResource(parentFolder, requestDTO);
   }
@@ -36,13 +35,12 @@ export class CnResourceAggregateService {
   }
 
   public async findResource(resourceId: string): Promise<CnResourceWithLab> {
-    await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(resourceId);
+    await this.securityService.getAndCheckAuthorizationForFindOne(resourceId);
     return await this.resourceService.findWithLabByIdAndCheck(resourceId);
   }
 
   public async renameResource(resourceId: string, name: string): Promise<CnResource> {
-    const hierarchyObject =
-      await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(resourceId);
+    const hierarchyObject = await this.securityService.getAndCheckAuthorizationForUpdate(resourceId);
     const resource = await this.resourceService.renameResource(resourceId, name);
 
     this.eventService.emitFolderEvent(

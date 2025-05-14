@@ -1,25 +1,27 @@
 import { Injectable } from '@nestjs/common';
-import { CnHierarchyObjectService } from './cn_hierarchy_objects/cn-hierarchy-object.service';
-import { CnFoldersSecurityService } from './cn-folders-security.service';
-import { CnFolderEventMoveObjectToFolderData, CnFolderEventService } from './cn-folder.event';
+import { CnHierarchyObjectService } from './cn-hierarchy-object.service';
+import { CnFoldersSecurityService } from '../cn-security/cn-folders-security.service';
+import { CnFolderEventMoveObjectToFolderData, CnFolderEventService } from '../cn-folder.event';
 import {
   CnHierarchyObject,
   CnHierarchyObjectType,
   CnHierarchyObjectVisibility,
   CnHierarchyObjectWithChildren,
   CnHierarchyObjectWithParent,
-} from './cn_hierarchy_objects/cn-hierarchy-object.entity';
+} from './cn-hierarchy-object.entity';
 import { BlBadRequestException, BlSearchParams } from '@monorepo/back-core-lib';
-import { CnHierarchyObjectTagAggregateService } from './cn-hierarchy-object-tags/cn-hierarchy-object-tag-aggregate.service';
-import { CnHierarchyObjectTag } from './cn-hierarchy-object-tags/cn-hierarchy-object-tag.entity';
-import { CnAvailableTags, CnTag } from './cn-hierarchy-object-tags/cn-hierarchy-object-tag.dto';
-import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
+import { CnHierarchyObjectTagAggregateService } from '../cn-hierarchy-object-tags/cn-hierarchy-object-tag-aggregate.service';
+import { CnHierarchyObjectTag } from '../cn-hierarchy-object-tags/cn-hierarchy-object-tag.entity';
+import { CnAvailableTags, CnTag } from '../cn-hierarchy-object-tags/cn-hierarchy-object-tag.dto';
+import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
 import { ClPage, ClPageI } from '@monorepo/core-lib';
-import { CnResourceAggregateService } from './cn-resource-aggregate.service';
-import { CnScenarioAggregateService } from './cn-scenario-aggregate.service';
-import { CnNoteAggregateService } from './cn-note-aggregate.service';
-import { CnDocumentAggregateService } from './cn-document-aggregate.service';
-import { CnFolderAggregateService } from './cn-folder-aggregate.service';
+import { CnResourceAggregateService } from '../cn-resources/cn-resource-aggregate.service';
+import { CnScenarioAggregateService } from '../cn-scenarios/cn-scenario-aggregate.service';
+import { CnNoteAggregateService } from '../cn-notes/cn-note-aggregate.service';
+import { CnDocumentAggregateService } from '../cn-documents/cn-document-aggregate.service';
+import { CnFolderAggregateService } from '../cn-folder-aggregate.service';
+import { CnHierarchyObjectFindOneDTO } from './cn-hierarchy-object.dto';
+import { CnRootFolderUserRole } from '../cn-folder-user/cn-folder-user.entity';
 
 @Injectable()
 export class CnHierarchyObjectAggregateService {
@@ -37,14 +39,16 @@ export class CnHierarchyObjectAggregateService {
 
   //////////////////// GET /////////////////////////
 
-  public async getHierarchyObject(hierarchyObjectId: string): Promise<CnHierarchyObject> {
-    return this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(hierarchyObjectId);
+  public async getHierarchyObject(hierarchyObjectId: string): Promise<CnHierarchyObjectFindOneDTO> {
+    const hierarchyObject = await this.securityService.getAndCheckAuthorizationForFindOne(hierarchyObjectId);
+
+    const role: CnRootFolderUserRole = await this.securityService.getRoleForObject(hierarchyObject);
+    return new CnHierarchyObjectFindOneDTO(hierarchyObject, role);
   }
 
   public async getObjectAncestors(hierarchyObjectId: string): Promise<CnHierarchyObject[]> {
     // retrieve the folder ancestors
-    const hierarchyObject =
-      await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(hierarchyObjectId);
+    const hierarchyObject = await this.securityService.getAndCheckAuthorizationForFindOne(hierarchyObjectId);
     return await this.hierarchyObjectService.getAncestors(hierarchyObject);
   }
 
@@ -79,7 +83,7 @@ export class CnHierarchyObjectAggregateService {
     page: number,
     size: number
   ): Promise<ClPage<CnHierarchyObject>> {
-    const folder = await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(folderId);
+    const folder = await this.securityService.getAndCheckAuthorizationForFindOne(folderId);
 
     return this.hierarchyObjectService.searchInFolderChildren(folder.id, visibility, searchParam, page, size);
   }
@@ -137,7 +141,7 @@ export class CnHierarchyObjectAggregateService {
    * Move an object and all its children to trash
    */
   public async moveToTrash(hierarchyObjectId: string): Promise<CnHierarchyObject> {
-    const hierarchyObject = await this.securityService.getAndCheckAuthorizationForHierarchyObjectUpdate(
+    const hierarchyObject = await this.securityService.getAndCheckAuthorizationForUpdate(
       hierarchyObjectId,
       true
     );
@@ -171,7 +175,7 @@ export class CnHierarchyObjectAggregateService {
    * Restore an object and its children from trash
    */
   public async restoreFromTrash(hierarchyObjectId: string): Promise<CnHierarchyObject> {
-    const hierarchyObject = await this.securityService.getAndCheckAuthorizationForHierarchyObjectUpdate(
+    const hierarchyObject = await this.securityService.getAndCheckAuthorizationForUpdate(
       hierarchyObjectId,
       true
     );
@@ -214,16 +218,14 @@ export class CnHierarchyObjectAggregateService {
     hierarchyObjectId: string,
     newFolderParentId: string
   ): Promise<CnHierarchyObject> {
-    const hierarchyObject =
-      await this.securityService.getAndCheckAuthorizationForHierarchyObjectUpdate(hierarchyObjectId);
+    const hierarchyObject = await this.securityService.getAndCheckAuthorizationForUpdate(hierarchyObjectId);
     if (hierarchyObject.parentId === newFolderParentId) {
       return hierarchyObject;
     }
 
     const oldParentRootFolderId = hierarchyObject.getRootFolderId();
 
-    const newParentFolder =
-      await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(newFolderParentId);
+    const newParentFolder = await this.securityService.getAndCheckAuthorizationForFindOne(newFolderParentId);
 
     let newHierarchyObject: CnHierarchyObject;
     switch (hierarchyObject.objectType) {
@@ -266,7 +268,7 @@ export class CnHierarchyObjectAggregateService {
   }
 
   public async deleteHierarchyObjectById(hierarchyObjectId: string): Promise<void> {
-    const hierarchyObject = await this.securityService.getAndCheckAuthorizationForHierarchyObjectUpdate(
+    const hierarchyObject = await this.securityService.getAndCheckAuthorizationForUpdate(
       hierarchyObjectId,
       true
     );
@@ -353,7 +355,7 @@ export class CnHierarchyObjectAggregateService {
   }
 
   public async emptyTrash(folderId: string): Promise<void> {
-    const folder = await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(folderId);
+    const folder = await this.securityService.getAndCheckAuthorizationForUpdate(folderId);
 
     const trashedChildren = await this.hierarchyObjectService.getAllChildrenInTrash(folder.id);
     for (const child of trashedChildren) {
@@ -368,8 +370,7 @@ export class CnHierarchyObjectAggregateService {
     hierarchyObjectId: string,
     tag: CnTag
   ): Promise<CnHierarchyObjectTag> {
-    const hierarchyObject =
-      await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(hierarchyObjectId);
+    const hierarchyObject = await this.securityService.getAndCheckAuthorizationForFindOne(hierarchyObjectId);
     return this.tagService.createTag(tag, hierarchyObject);
   }
 
@@ -377,26 +378,22 @@ export class CnHierarchyObjectAggregateService {
     hierarchyObjectId: string,
     tags: CnTag[]
   ): Promise<CnHierarchyObjectTag[]> {
-    const hierarchyObject =
-      await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(hierarchyObjectId);
+    const hierarchyObject = await this.securityService.getAndCheckAuthorizationForFindOne(hierarchyObjectId);
     return this.tagService.createTags(tags, hierarchyObject);
   }
 
   public async createOrReplace(hierarchyObjectId: string, tags: CnTag[]): Promise<CnHierarchyObjectTag[]> {
-    const hierarchyObject =
-      await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(hierarchyObjectId);
+    const hierarchyObject = await this.securityService.getAndCheckAuthorizationForFindOne(hierarchyObjectId);
     return this.tagService.createOrReplaceTagsByKey(tags, hierarchyObject);
   }
 
   public async deleteHierarchyObjectTag(hierarchyObjectId: string, tag: CnTag): Promise<void> {
-    const hierarchyObject =
-      await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(hierarchyObjectId);
+    const hierarchyObject = await this.securityService.getAndCheckAuthorizationForFindOne(hierarchyObjectId);
     await this.tagService.deleteTag(tag, hierarchyObject);
   }
 
   public async deleteHierarchyObjectTags(hierarchyObjectId: string, tags: CnTag[]): Promise<void> {
-    const hierarchyObject =
-      await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(hierarchyObjectId);
+    const hierarchyObject = await this.securityService.getAndCheckAuthorizationForFindOne(hierarchyObjectId);
     await this.tagService.deleteTags(tags, hierarchyObject);
   }
 
@@ -405,26 +402,22 @@ export class CnHierarchyObjectAggregateService {
     page: number,
     size: number
   ): Promise<ClPageI<CnTag>> {
-    const hierarchyObject =
-      await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(hierarchyObjectId);
+    const hierarchyObject = await this.securityService.getAndCheckAuthorizationForFindOne(hierarchyObjectId);
     return this.tagService.findByHierarchyObjectPaginated(hierarchyObject, page, size);
   }
 
   public async getAllHierarchyObjectTags(hierarchyObjectId: string): Promise<CnTag[]> {
-    const hierarchyObject =
-      await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(hierarchyObjectId);
+    const hierarchyObject = await this.securityService.getAndCheckAuthorizationForFindOne(hierarchyObjectId);
     return this.tagService.findAllByHierarchyObject(hierarchyObject);
   }
 
   public async getAvailableTagsInChildren(hierarchyObjectId: string): Promise<CnAvailableTags> {
-    const hierarchyObject =
-      await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(hierarchyObjectId);
+    const hierarchyObject = await this.securityService.getAndCheckAuthorizationForFindOne(hierarchyObjectId);
     return this.tagService.getAvailableTagsInChildren(hierarchyObject.id);
   }
 
   public async getAvailableTags(hierarchyObjectId: string): Promise<CnAvailableTags> {
-    const hierarchyObject =
-      await this.securityService.getAndCheckAuthorizationForFindOneByHierarchyObject(hierarchyObjectId);
+    const hierarchyObject = await this.securityService.getAndCheckAuthorizationForFindOne(hierarchyObjectId);
 
     // get the available tag of parent, use current for root
     if (hierarchyObject.isRootFolder()) {

@@ -20,6 +20,7 @@ import { CnCoreConfigService } from '../modules/cn-core-config/cn-core-config.se
 import { CnSpaceService } from '../../cn-spaces/cn-space.service';
 import { CnUserSpaceInfo } from '../../cn-users/cn-user.dto';
 import { CnAuthContextUser, CnAuthContextUserNoSpace } from '../utils/cn-auth-context.class';
+import { cnIsDecoratedWithHierarchyObjectTokenAuth } from '../../cn-folders-aggregate/cn-hierarchy-object-token/cn-hierarchy-object-token-guard.decorator';
 
 export const CN_LOCAL_SPACE_COOKIE = 'local-space';
 
@@ -59,12 +60,19 @@ export class CnJwtAuthGuard extends AuthGuard('jwt') {
       return true;
     }
 
+    // if the method or class is annotated with @HierarchyObjectToken
+    // authentication is manage by {@link CnHierarchyObjectTokenGuard}
+    if (this.contextIsHierarchyObjectToken(context)) {
+      return true;
+    }
+
     // jwt authentication
     try {
       // this set the user in the request (accessible by CnCurrentUserHelper)
       const result = await (super.canActivate(context) as Promise<boolean>);
       if (!result) return false;
-    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (_) {
       throw new BlUnauthorizedException(CnErrorText.WRONG_TOKEN);
     }
 
@@ -151,5 +159,10 @@ export class CnJwtAuthGuard extends AuthGuard('jwt') {
       cnIsDecoratedWithLabAuth(this.reflector, context) ||
       cnIsDecoratedWithLabManagerAuth(this.reflector, context)
     );
+  }
+
+  private contextIsHierarchyObjectToken(context: ExecutionContext): boolean {
+    // Check if the route is annotated with @HierarchyObjectTokenToken
+    return cnIsDecoratedWithHierarchyObjectTokenAuth(this.reflector, context);
   }
 }

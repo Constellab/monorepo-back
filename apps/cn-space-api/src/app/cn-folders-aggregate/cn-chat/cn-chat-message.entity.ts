@@ -1,11 +1,11 @@
 import { Column, Entity, ManyToOne } from 'typeorm';
 import { Type } from 'class-transformer';
-import { CnMessage, CnNewMessageDTO } from '../cn-core/model/entities/cn-message.entity';
-import { CnUser, CnUserEntity } from '../cn-users/cn-user.entity';
+import { CnMessage, CnNewMessageDTO } from '../../cn-core/model/entities/cn-message.entity';
+import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
 import {
   CnHierarchyObject,
   CnHierarchyObjectEntity,
-} from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.entity';
+} from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
 import { BlNotUpdatable } from '@monorepo/back-core-lib';
 
 /**

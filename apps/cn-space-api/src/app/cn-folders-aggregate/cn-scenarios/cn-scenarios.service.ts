@@ -18,7 +18,7 @@ import {
   CnHierarchyObject,
   CnHierarchyObjectEntity,
   CnHierarchyObjectVisibility,
-} from '../cn_hierarchy_objects/cn-hierarchy-object.entity';
+} from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
 import { CnScenarioProtocol } from './cn-scenario-protocol.class';
 
 @Injectable()

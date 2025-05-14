@@ -16,7 +16,14 @@ import {
   CnLabGuard,
   CnLabRobotAuthentication,
 } from '../cn-core/decorators/cn-lab-guard.decorator';
-import { BlCredentials, BlFile, BlParsePipe, BlPublic, BlUploadedFiles } from '@monorepo/back-core-lib';
+import {
+  BlCredentials,
+  BlFile,
+  BlParseEnumPipe,
+  BlParsePipe,
+  BlPublic,
+  BlUploadedFiles,
+} from '@monorepo/back-core-lib';
 import { CnCreateLabScenarioDto } from '../cn-folders-aggregate/cn-scenarios/cn-scenario.dto';
 import { CnCreateNoteWithConfigDto } from '../cn-folders-aggregate/cn-notes/cn-note.dto';
 import { CnLabStartDTO } from '../cn-labs/cn-lab.dto';
@@ -34,11 +41,11 @@ import { CnLabFolderAggregateService } from '../cn-lab-folder-aggregate/cn-lab-f
 import {
   CnFolderDtoHelper,
   CnLabFolderDTO,
-} from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.dto';
+} from '../cn-folders-aggregate/cn-hierarchy-objects/cn-hierarchy-object.dto';
 import {
   CnHierarchyObject,
   CnHierarchyObjectEntity,
-} from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.entity';
+} from '../cn-folders-aggregate/cn-hierarchy-objects/cn-hierarchy-object.entity';
 import { CnLabMailService } from '../cn-labs/mail/cn-lab-mail.service';
 import {
   CnExternalLabTagsDTO,
@@ -52,10 +59,11 @@ import { CnSaveFolderDTO } from '../cn-folders-aggregate/cn-folders/cn-folder.dt
 import { CnFolderWithHierarchy } from '../cn-folders-aggregate/cn-folders/cn-folder.entity';
 import { CnTag } from '../cn-folders-aggregate/cn-hierarchy-object-tags/cn-hierarchy-object-tag.dto';
 import { CnHierarchyObjectTag } from '../cn-folders-aggregate/cn-hierarchy-object-tags/cn-hierarchy-object-tag.entity';
-import { CnResourceAggregateService } from '../cn-folders-aggregate/cn-resource-aggregate.service';
-import { CnHierarchyObjectAggregateService } from '../cn-folders-aggregate/cn-hierarchy-object-aggregate.service';
-import { CnScenarioAggregateService } from '../cn-folders-aggregate/cn-scenario-aggregate.service';
-import { CnNoteAggregateService } from '../cn-folders-aggregate/cn-note-aggregate.service';
+import { CnResourceAggregateService } from '../cn-folders-aggregate/cn-resources/cn-resource-aggregate.service';
+import { CnHierarchyObjectAggregateService } from '../cn-folders-aggregate/cn-hierarchy-objects/cn-hierarchy-object-aggregate.service';
+import { CnScenarioAggregateService } from '../cn-folders-aggregate/cn-scenarios/cn-scenario-aggregate.service';
+import { CnNoteAggregateService } from '../cn-folders-aggregate/cn-notes/cn-note-aggregate.service';
+import { CnRootFolderUserRole } from '../cn-folders-aggregate/cn-folder-user/cn-folder-user.entity';
 
 /**
  * Specific controller for route called by the lab servers. These routes are not called by a user
@@ -251,12 +259,13 @@ export class CnExternalLabsController {
   }
 
   @CnLabAllowDev()
-  @Put('folder/:id/share/:groupId')
+  @Put('folder/:id/share/:groupId/role/:role')
   async shareFolder(
     @Param('id', new ParseUUIDPipe()) id: string,
-    @Param('groupId', new ParseUUIDPipe()) groupId: string
+    @Param('groupId', new ParseUUIDPipe()) groupId: string,
+    @Param('role', new BlParseEnumPipe(CnRootFolderUserRole)) role: CnRootFolderUserRole
   ): Promise<void> {
-    await this.folderAggregateService.shareFolder(id, groupId);
+    await this.folderAggregateService.shareFolder(id, groupId, role);
   }
 
   //////////////////////////// HIERARCHY OBJECT TAG //////////////////////////

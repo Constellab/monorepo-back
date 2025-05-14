@@ -13,15 +13,15 @@ import {
   Res,
   UseInterceptors,
 } from '@nestjs/common';
-import { CnFolder } from './cn-folders/cn-folder.entity';
+import { CnFolder } from '../cn-folders/cn-folder.entity';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { BlDtoHelper, BlFile, BlParsePipe, BlResponseHelper, BlUploadedFile } from '@monorepo/back-core-lib';
 import { TeBlockFigureUploadedResponse } from '@monorepo/te-text-editor';
 import { Response } from 'express';
-import { CnNewMessageDTO } from '../cn-core/model/entities/cn-message.entity';
-import { CnChatMessageDto } from '../cn-chat-message/cn-chat-message.dto';
+import { CnNewMessageDTO } from '../../cn-core/model/entities/cn-message.entity';
+import { CnChatMessageDto } from './cn-chat-message.dto';
 import { ClPage } from '@monorepo/core-lib';
-import { CnChatFolderDTO } from './cn-folders/cn-folder.dto';
+import { CnChatFolderDTO } from '../cn-folders/cn-folder.dto';
 import { CnChatAggregateService } from './cn-chat-aggregate.service';
 
 @Controller('chat')

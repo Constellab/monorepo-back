@@ -13,7 +13,7 @@ import { CnFolderBucketService } from '../cn-folders-aggregate/cn-folders/cn-fol
 import {
   CnHierarchyObject,
   CnHierarchyObjectType,
-} from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.entity';
+} from '../cn-folders-aggregate/cn-hierarchy-objects/cn-hierarchy-object.entity';
 
 @Injectable()
 export class CnLabFolderListener {

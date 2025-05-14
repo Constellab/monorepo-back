@@ -56,7 +56,6 @@ import { CnCountryModule } from './app/cn-country/cn-country.module';
 import { CnCityModule } from './app/cn-city/cn-city.module';
 import { AppService } from './app.service';
 import { CnNotificationModule } from './app/cn-notification/cn-notification.module';
-import { CnChatMessageModule } from './app/cn-chat-message/cn-chat-message.module';
 import { CnCloudProvidersModule } from './app/cn-cloud-providers/cn-cloud-providers.module';
 import { I18nAbstractLoaderOptions } from 'nestjs-i18n/dist/loaders/i18n.abstract.loader';
 import { ScheduleModule } from '@nestjs/schedule';
@@ -227,7 +226,6 @@ TeRichTextModifications.setBackTimeDifference();
     CnCountryModule,
     CnCityModule,
     CnNotificationModule,
-    CnChatMessageModule,
     CnCloudProvidersModule,
     CnActivityModule,
     CnSettingsModule,

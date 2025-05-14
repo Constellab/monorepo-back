@@ -2,12 +2,12 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CnChatMessage, CnChatMessageEntity } from './cn-chat-message.entity';
 import { DataSource, EntityManager, Repository } from 'typeorm';
-import { CnNewMessageDTO } from '../cn-core/model/entities/cn-message.entity';
+import { CnNewMessageDTO } from '../../cn-core/model/entities/cn-message.entity';
 import { ClPage } from '@monorepo/core-lib';
 import { BlAbstractService, BlFile, BlFileResponse } from '@monorepo/back-core-lib';
-import { CnDocumentService } from '../cn-folders-aggregate/cn-documents/cn-document.service';
-import { CnDocumentType } from '../cn-folders-aggregate/cn-documents/cn-document.entity';
-import { CnHierarchyObject } from '../cn-folders-aggregate/cn_hierarchy_objects/cn-hierarchy-object.entity';
+import { CnDocumentService } from '../cn-documents/cn-document.service';
+import { CnDocumentType } from '../cn-documents/cn-document.entity';
+import { CnHierarchyObject } from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
 import { TeBlockFigureUploadedResponse, TeRichText } from '@monorepo/te-text-editor';
 
 @Injectable()
