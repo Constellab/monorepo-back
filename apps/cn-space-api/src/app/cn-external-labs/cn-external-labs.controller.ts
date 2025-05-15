@@ -138,6 +138,7 @@ export class CnExternalLabsController {
     return this.hierarchyObjectAggregateService.moveHierarchyObjectToFolder(scenarioId, newParentFolderId);
   }
 
+  @CnLabRobotAuthentication()
   @Get('scenario/sync')
   async getScenarioOfCurrentLab(): Promise<CnExternalLabSyncedObjectDTO[]> {
     return this.scenarioAggregateService.getScenariosOfCurrentLab();
@@ -173,6 +174,7 @@ export class CnExternalLabsController {
     return this.hierarchyObjectAggregateService.moveHierarchyObjectToFolder(noteId, newParentFolderId);
   }
 
+  @CnLabRobotAuthentication()
   @Get('note/sync')
   async getNoteOfCurrentLab(): Promise<CnExternalLabSyncedObjectDTO[]> {
     return this.noteAggregateService.getNotesOfCurrentLab();
