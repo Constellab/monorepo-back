@@ -1,27 +1,27 @@
-import { Injectable } from '@nestjs/common';
-import { CnFolderAggregateService } from '../cn-folders-aggregate/cn-folder-aggregate.service';
-import { CnLabAggregateService } from '../cn-labs/cn-lab-aggregate.service';
-import { CnLabFolder, CnLabFolderWithLab, CnLabFolderWithRootFolder } from './cn-lab-folder.entity';
-import { CnLab } from '../cn-labs/cn-lab.entity';
 import { BlBadRequestException, BlUnauthorizedException } from '@monorepo/back-core-lib';
-import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
-import { CnLabFolderService } from './cn-lab-folder.service';
+import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
-import { CnExternalLabFolderService } from '../cn-external-lab-api/cn-external-lab-folder.service';
-import { CnExternalLabApiService } from '../cn-external-lab-api/cn-external-lab-api.service';
+import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
+import { CnExternalLabApiService } from '../cn-external-lab-api/cn-external-lab-api.service';
+import { CnExternalLabFolderService } from '../cn-external-lab-api/cn-external-lab-folder.service';
+import { CnExternalLabObjectService } from '../cn-external-lab-api/cn-external-lab-object.service';
+import { CnExternalLabShareService } from '../cn-external-lab-api/cn-external-lab-share.service';
+import { CnExternalLabSyncedObjectDTO } from '../cn-external-lab-api/model/cn-external-lab-api.class';
+import { CnFolderAggregateService } from '../cn-folders-aggregate/cn-folder-aggregate.service';
 import {
   CnHierarchyObject,
   CnHierarchyObjectWithChildren,
 } from '../cn-folders-aggregate/cn-hierarchy-objects/cn-hierarchy-object.entity';
-import { CnExternalLabShareService } from '../cn-external-lab-api/cn-external-lab-share.service';
-import { CnResourceAccessDTO } from '../cn-folders-aggregate/cn-resources/cn-resource.dto';
-import { CnScenarioAggregateService } from '../cn-folders-aggregate/cn-scenarios/cn-scenario-aggregate.service';
 import { CnNoteAggregateService } from '../cn-folders-aggregate/cn-notes/cn-note-aggregate.service';
 import { CnResourceAggregateService } from '../cn-folders-aggregate/cn-resources/cn-resource-aggregate.service';
+import { CnResourceAccessDTO } from '../cn-folders-aggregate/cn-resources/cn-resource.dto';
+import { CnScenarioAggregateService } from '../cn-folders-aggregate/cn-scenarios/cn-scenario-aggregate.service';
+import { CnLabAggregateService } from '../cn-labs/cn-lab-aggregate.service';
 import { CnLabGlabApiInfo } from '../cn-labs/cn-lab.dto';
-import { CnExternalLabObjectService } from '../cn-external-lab-api/cn-external-lab-object.service';
-import { CnExternalLabSyncedObjectDTO } from '../cn-external-lab-api/model/cn-external-lab-api.class';
+import { CnLab } from '../cn-labs/cn-lab.entity';
+import { CnLabFolder, CnLabFolderWithLab, CnLabFolderWithRootFolder } from './cn-lab-folder.entity';
+import { CnLabFolderService } from './cn-lab-folder.service';
 
 @Injectable()
 export class CnLabFolderAggregateService {

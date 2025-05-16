@@ -1,13 +1,14 @@
-import { ExecutionContext, SetMetadata, UseGuards } from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
 import { BlReflectorHelper } from '@monorepo/back-core-lib';
-import { CnHierarchyObjectTokenGuard } from './cn-hierarchy-object-token-guard.service';
+import { ExecutionContext, SetMetadata } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
 
 const cnHierarchyObjectTokenMetadata = 'hierarchyObjectToken';
 
 /**
  * @CnHierarchyObjectTokenDecorator decorator for method or class to make a route authenticated with
- * folder access token/
+ * folder access token.
+ * when used the token authentication is priorized over the user authentication
+ * If there is not token, the user authentication is used
  *
  * The {@link CnLabAuthGuard} check this decorator
  */
@@ -17,7 +18,7 @@ export function CnHierarchyObjectTokenDecorator(): MethodDecorator & ClassDecora
     // set the labAuth metadata
     SetMetadata(cnHierarchyObjectTokenMetadata, true)(target, property, descriptor);
     // activate the CnLabAuthGuard
-    UseGuards(CnHierarchyObjectTokenGuard)(target, property, descriptor);
+    // UseGuards(CnHierarchyObjectTokenGuard)(target, property, descriptor);
   };
 }
 

@@ -1,28 +1,28 @@
-import { ExecutionContext, Injectable, Logger } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { Reflector } from '@nestjs/core';
-import { CnErrorText } from '../model/config/cn-error-text.class';
-import { cnIsDecoratedWithLabAuth } from '../decorators/cn-lab-guard.decorator';
 import {
   BlCookieHelper,
   blIsDecoratedWithPublic,
   BlRequestContext,
   BlUnauthorizedException,
 } from '@monorepo/back-core-lib';
-import { CnCurrentUserHelper, CnRequest } from '../utils/cn-current-user.helper';
-import { CnSpaceUserService } from '../../cn-spaces/cn-space-user.service';
-import { CnSpaceUserRole } from '../../cn-spaces/cn-space-user.entity';
-import { cnIsDecoratedWithLabManagerAuth } from '../decorators/cn-lab-manager-guard.decorator';
-import { CnUsersService } from '../../cn-users/cn-users.service';
-import { CnSpace } from '../../cn-spaces/cn-space.entity';
 import { ClStringHelper } from '@monorepo/core-lib';
-import { CnCoreConfigService } from '../modules/cn-core-config/cn-core-config.service';
+import { ExecutionContext, Injectable, Logger } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
+import { AuthGuard } from '@nestjs/passport';
+import { cnIsDecoratedWithHierarchyObjectTokenAuth } from '../../cn-folders-aggregate/cn-hierarchy-object-token/cn-hierarchy-object-token-guard.decorator';
+import { CnHierarchyObjectTokenGuard } from '../../cn-folders-aggregate/cn-hierarchy-object-token/cn-hierarchy-object-token-guard.service';
+import { CnSpaceUserRole } from '../../cn-spaces/cn-space-user.entity';
+import { CnSpaceUserService } from '../../cn-spaces/cn-space-user.service';
+import { CnSpace } from '../../cn-spaces/cn-space.entity';
 import { CnSpaceService } from '../../cn-spaces/cn-space.service';
 import { CnUserSpaceInfo } from '../../cn-users/cn-user.dto';
+import { CnUsersService } from '../../cn-users/cn-users.service';
+import { cnIsDecoratedWithLabAuth } from '../decorators/cn-lab-guard.decorator';
+import { cnIsDecoratedWithLabManagerAuth } from '../decorators/cn-lab-manager-guard.decorator';
+import { CN_LOCAL_SPACE_COOKIE } from '../model/config/cn-config.class';
+import { CnErrorText } from '../model/config/cn-error-text.class';
+import { CnCoreConfigService } from '../modules/cn-core-config/cn-core-config.service';
 import { CnAuthContextUser, CnAuthContextUserNoSpace } from '../utils/cn-auth-context.class';
-import { cnIsDecoratedWithHierarchyObjectTokenAuth } from '../../cn-folders-aggregate/cn-hierarchy-object-token/cn-hierarchy-object-token-guard.decorator';
-
-export const CN_LOCAL_SPACE_COOKIE = 'local-space';
+import { CnCurrentUserHelper, CnRequest } from '../utils/cn-current-user.helper';
 
 /**
  * Guard to check if the user has an authentication token
@@ -42,7 +42,8 @@ export class CnJwtAuthGuard extends AuthGuard('jwt') {
     private spaceUserService: CnSpaceUserService,
     private userService: CnUsersService,
     private configService: CnCoreConfigService,
-    private spaceService: CnSpaceService
+    private spaceService: CnSpaceService,
+    private hierarchyObjectTokenGuard2: CnHierarchyObjectTokenGuard
   ) {
     super();
   }
@@ -63,7 +64,8 @@ export class CnJwtAuthGuard extends AuthGuard('jwt') {
     // if the method or class is annotated with @HierarchyObjectToken
     // authentication is manage by {@link CnHierarchyObjectTokenGuard}
     if (this.contextIsHierarchyObjectToken(context)) {
-      return true;
+      const canActivate = await this.hierarchyObjectTokenGuard2.canActivate(context);
+      if (canActivate) return true;
     }
 
     // jwt authentication

@@ -6,11 +6,12 @@ export type CnEnvironmentProfile = 'dev' | 'docker' | 'preprod' | 'prod' | 'test
 export const CN_ENVIRONMENT_PROFILE_KEY = 'ENVIRONMENT_PROFILE';
 export const CN_ENVIRONMENT_PROFILE_PROD_VALUE = 'prod';
 
-
-/**
+export const CN_LOCAL_SPACE_COOKIE = 'local-space';
+export const CN_HIERARCHY_OBJECT_TOKEN_HEADER = 'cn-hierarchy-object-token';
+export /**
  * Object containing info for database connexion
  */
-export interface CnDatabaseConfig {
+interface CnDatabaseConfig {
   host: string;
   port: number;
   username: string;

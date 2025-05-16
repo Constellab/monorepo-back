@@ -1,8 +1,8 @@
 import { Body, Controller, Get, Param, ParseUUIDPipe, Put } from '@nestjs/common';
-import { CnResource } from './cn-resource.entity';
 import { CnLabFolderAggregateService } from '../../cn-lab-folder-aggregate/cn-lab-folder-aggregate.service';
-import { CnResourceAccessDTO } from './cn-resource.dto';
 import { CnResourceAggregateService } from './cn-resource-aggregate.service';
+import { CnResourceAccessDTO } from './cn-resource.dto';
+import { CnResource } from './cn-resource.entity';
 
 @Controller('resources')
 export class CnResourcesController {

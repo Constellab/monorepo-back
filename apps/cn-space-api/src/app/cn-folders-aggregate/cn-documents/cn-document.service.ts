@@ -1,4 +1,3 @@
-import { Injectable, Logger } from '@nestjs/common';
 import {
   BlAbstractService,
   BlBadRequestException,
@@ -10,6 +9,7 @@ import {
   BlMultipleBucketConfig,
   BlObjectStorageService,
 } from '@monorepo/back-core-lib';
+import { ClDateHelper, ClStringHelper } from '@monorepo/core-lib';
 import {
   TeBlockFigureUploadedResponse,
   TeBlockFileUploadResponse,
@@ -17,24 +17,24 @@ import {
   TeRichText,
   TeRichTextAggregate,
 } from '@monorepo/te-text-editor';
+import { Injectable, Logger } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, In, IsNull, Repository } from 'typeorm';
-import { ClDateHelper, ClStringHelper } from '@monorepo/core-lib';
 import { CnErrorText } from '../../cn-core/model/config/cn-error-text.class';
+import { CnCoreConfigService } from '../../cn-core/modules/cn-core-config/cn-core-config.service';
+import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
 import { CnFolderBucketService } from '../cn-folders/cn-folder-bucket.service';
-import { CnDocument, CnDocumentEntity, CnDocumentType, CnDocumentWithHierarchy } from './cn-document.entity';
+import { CnHierarchyObject } from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
+import { CnHierarchyObjectService } from '../cn-hierarchy-objects/cn-hierarchy-object.service';
 import {
   CnConstellabDocumentDTO,
   CnDocumentPreviewDTO,
   CnDocumentStorageType,
   CnFolderStorageUsageDTO,
 } from './cn-document-dto.class';
-import { EventEmitter2 } from '@nestjs/event-emitter';
+import { CnDocument, CnDocumentEntity, CnDocumentType, CnDocumentWithHierarchy } from './cn-document.entity';
 import { CnDocumentEvent, cnDocumentEventName, CnDocumentEventType } from './cn-document.event';
-import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
-import { CnCoreConfigService } from '../../cn-core/modules/cn-core-config/cn-core-config.service';
-import { CnHierarchyObject } from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
-import { CnHierarchyObjectService } from '../cn-hierarchy-objects/cn-hierarchy-object.service';
 
 interface CnDocumentS3Tags {
   name: string;
@@ -494,7 +494,21 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
 
   public async generatePreviewToken(document: CnDocument): Promise<CnDocumentPreviewDTO> {
     if (!document.canTokenPreview) {
-      throw new BlBadRequestException('This document cannot be previewed');
+      const authContext = CnCurrentUserHelper.getAndCheckAuthContext();
+
+      if (authContext.type === 'hierarchyObjectToken') {
+        return new CnDocumentPreviewDTO(
+          document,
+          `${this.configService.getApiUrl()}/documents/${document.id}` +
+            `/preview/${document.name}?token=${authContext.accessToken}`
+        );
+      } else {
+        // Generate the preview URL that use office online viewer with public api route
+        return new CnDocumentPreviewDTO(
+          document,
+          `${this.configService.getApiUrl()}/documents/${document.id}/preview/` + `${document.name}`
+        );
+      }
     }
     // don't generate the token if the last token is still valid with 10 minutes margin
     if (document.previewTokenExpiration < ClDateHelper.getDate().plus({ minutes: 10 })) {
@@ -507,7 +521,10 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
     // Generate the preview URL that use office online viewer with public api route
     const constellabPreviewUrl =
       `${this.configService.getApiUrl()}/documents/preview/` + `${document.previewToken}`;
-    return new CnDocumentPreviewDTO(`${CnDocumentService.OFFICE_PREVIEW_URL}${constellabPreviewUrl}`);
+    return new CnDocumentPreviewDTO(
+      document,
+      `${CnDocumentService.OFFICE_PREVIEW_URL}${constellabPreviewUrl}`
+    );
   }
 
   public async getAndCheckByPreviewToken(token: string): Promise<CnDocument> {

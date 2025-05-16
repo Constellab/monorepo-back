@@ -15,6 +15,7 @@ export class CnShareResourceRequestDTO {
 }
 
 export class CnResourceAccessDTO {
+  id: string;
   accessUrl: string;
   resourceId: string;
   name: string;
@@ -25,6 +26,7 @@ export class CnResourceAccessDTO {
   validUntil: DateTime;
 
   constructor(resource: CnResource, accessUrl: string, validUntil: DateTime) {
+    this.id = resource.id;
     this.accessUrl = accessUrl;
     this.resourceId = resource.resourceId;
     this.name = resource.name;

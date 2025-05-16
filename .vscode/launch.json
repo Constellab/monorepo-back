@@ -2,26 +2,10 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "command": "npm run cn-space-api:serve",
-      "name": "Start dev",
+      "command": "npm run cn-space-api:serve-nest",
+      "name": "Serve space",
       "request": "launch",
       "type": "node-terminal"
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Debug Nest Framework",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "cn-space-api:serve2"],
-      "console": "integratedTerminal"
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Debug nx",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "cn-space-api:serve"],
-      "console": "integratedTerminal"
     }
   ]
 }

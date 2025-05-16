@@ -1,7 +1,7 @@
-import { Type } from 'class-transformer';
 import { BlBucketType } from '@monorepo/back-core-lib';
-import { CnDocument, CnDocumentEntity } from './cn-document.entity';
 import { TeRichTextDTO } from '@monorepo/te-text-editor';
+import { Type } from 'class-transformer';
+import { CnDocument, CnDocumentEntity } from './cn-document.entity';
 
 export class CnConstellabDocumentDTO {
   @Type(() => CnDocumentEntity)
@@ -84,9 +84,13 @@ export class CnFolderStorageUsageDTO {
 }
 
 export class CnDocumentPreviewDTO {
+  @Type(() => CnDocumentEntity)
+  document: CnDocument;
+
   previewUrl: string;
 
-  constructor(previewUrl: string) {
+  constructor(document: CnDocument, previewUrl: string) {
+    this.document = document;
     this.previewUrl = previewUrl;
   }
 }

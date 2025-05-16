@@ -1,6 +1,4 @@
-import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Put, Res, UseInterceptors } from '@nestjs/common';
-import { CnConstellabDocumentAggregateService } from './cn-constellab-document.aggregate.service';
-import { CnConstellabDocumentDTO } from './cn-document-dto.class';
+import { BlFile, BlResponseHelper, BlUploadedFile } from '@monorepo/back-core-lib';
 import {
   TeBlockFigureUploadedResponse,
   TeBlockFileUploadResponse,
@@ -9,9 +7,12 @@ import {
   TeRichTextDTO,
   TeRichTextPipe,
 } from '@monorepo/te-text-editor';
+import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Put, Res, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { BlFile, BlResponseHelper, BlUploadedFile } from '@monorepo/back-core-lib';
 import { Response } from 'express';
+import { CnHierarchyObjectTokenDecorator } from '../cn-hierarchy-object-token/cn-hierarchy-object-token-guard.decorator';
+import { CnConstellabDocumentAggregateService } from './cn-constellab-document.aggregate.service';
+import { CnConstellabDocumentDTO } from './cn-document-dto.class';
 import { CnDocument } from './cn-document.entity';
 
 @Controller('constellab-documents')
@@ -42,6 +43,7 @@ export class CnConstellabDocumentController {
     return this.constellabDocumentAggregateService.checkEditConstellabDocument(documentId);
   }
 
+  @CnHierarchyObjectTokenDecorator()
   @Get(':documentId')
   public getConstellabDocument(
     @Param('documentId', new ParseUUIDPipe()) documentId: string
@@ -67,6 +69,11 @@ export class CnConstellabDocumentController {
     return this.constellabDocumentAggregateService.uploadFileToConstellabDocument(documentId, file);
   }
 
+  /**
+   * We create a specific endpoint to get the file from the token
+   * because the token is not in the cookie so we must pass it in the url
+   */
+  @CnHierarchyObjectTokenDecorator()
   @Get(':documentId/file/:documentName(*)')
   public async getConstellabDocumentImage(
     @Param('documentId') documentId: string,
@@ -81,6 +88,7 @@ export class CnConstellabDocumentController {
   }
 
   /////////////////////////////// History ///////////////////////////////////////////
+  @CnHierarchyObjectTokenDecorator()
   @Get(':documentId/history')
   async getDocumentModifications(
     @Param('documentId', new ParseUUIDPipe()) documentId: string
@@ -88,6 +96,7 @@ export class CnConstellabDocumentController {
     return this.constellabDocumentAggregateService.getConstellabDocumentModifications(documentId);
   }
 
+  @CnHierarchyObjectTokenDecorator()
   @Get(':documentId/history/undo-content/:modificationId')
   async undoContent(
     @Param('documentId', new ParseUUIDPipe()) documentId: string,

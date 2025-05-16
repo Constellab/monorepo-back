@@ -1,9 +1,9 @@
-import { CnUser } from '../../cn-users/cn-user.entity';
-import { CnSpace } from '../../cn-spaces/cn-space.entity';
+import { CnHierarchyObject } from '../../cn-folders-aggregate/cn-hierarchy-objects/cn-hierarchy-object.entity';
 import { CnLab } from '../../cn-labs/cn-lab.entity';
 import { CnSpaceUserRole } from '../../cn-spaces/cn-space-user.entity';
+import { CnSpace } from '../../cn-spaces/cn-space.entity';
 import { CnUserSpaceInfo } from '../../cn-users/cn-user.dto';
-import { CnHierarchyObject } from '../../cn-folders-aggregate/cn-hierarchy-objects/cn-hierarchy-object.entity';
+import { CnUser } from '../../cn-users/cn-user.entity';
 
 abstract class CnAuthContextBase {
   type:
@@ -210,7 +210,8 @@ export class CnAuthContextHierarchyObjectToken extends CnAuthContextBase {
 
   constructor(
     public space: CnSpace,
-    public hierarchyObject: CnHierarchyObject
+    public hierarchyObject: CnHierarchyObject,
+    public accessToken: string
   ) {
     super();
   }

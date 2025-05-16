@@ -1,13 +1,13 @@
-import { Injectable } from '@nestjs/common';
-import { CnHierarchyObjectTokenService } from './cn-hierarchy-object-token.service';
-import { CnFoldersSecurityService } from '../cn-security/cn-folders-security.service';
-import { CnHierarchyObject } from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
-import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
-import { BlUnauthorizedException } from '@monorepo/back-core-lib';
-import { CnHierarchyObjectToken } from './cn-hierarchy-object-token.entity';
-import { CnHierarchyObjectTokenDTO, CnHierarchyObjectTokenSaveDTO } from './cn-hierarchy-object-token.dto';
-import { CnFrontService } from '../../cn-core/services/cn-front.service';
+import { BlBadRequestException, BlUnauthorizedException } from '@monorepo/back-core-lib';
 import { ClPageI } from '@monorepo/core-lib';
+import { Injectable } from '@nestjs/common';
+import { CnFrontService } from '../../cn-core/services/cn-front.service';
+import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
+import { CnHierarchyObject, CnHierarchyObjectType } from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
+import { CnFoldersSecurityService } from '../cn-security/cn-folders-security.service';
+import { CnHierarchyObjectTokenDTO, CnHierarchyObjectTokenSaveDTO } from './cn-hierarchy-object-token.dto';
+import { CnHierarchyObjectToken } from './cn-hierarchy-object-token.entity';
+import { CnHierarchyObjectTokenService } from './cn-hierarchy-object-token.service';
 
 @Injectable()
 export class CnHierarchyObjectTokenAggregateService {
@@ -36,6 +36,17 @@ export class CnHierarchyObjectTokenAggregateService {
     saveDTO: CnHierarchyObjectTokenSaveDTO
   ): Promise<CnHierarchyObjectTokenDTO> {
     const hierarchyObject = await this.securityService.getAndCheckAuthorizationForUpdate(hierarchyObjectId);
+
+    if (
+      ![
+        CnHierarchyObjectType.SCENARIO,
+        CnHierarchyObjectType.NOTE,
+        CnHierarchyObjectType.DOCUMENT,
+        CnHierarchyObjectType.CONSTELLAB_DOCUMENT,
+      ].includes(hierarchyObject.objectType)
+    ) {
+      throw new BlBadRequestException("This object doesn't support share link.");
+    }
     const hierarchyObjectToken = await this.hierarchyObjectTokenService.createAccessToken(
       hierarchyObject,
       saveDTO

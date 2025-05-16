@@ -1,36 +1,4 @@
 import {
-  ClassSerializerInterceptor,
-  MiddlewareConsumer,
-  Module,
-  NestModule,
-  RequestMethod,
-} from '@nestjs/common';
-import { CnUsersModule } from './app/cn-users/cn-users.module';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { CnAuthModule } from './app/cn-auth/cn-auth.module';
-import { ConfigModule } from '@nestjs/config';
-import { CnCoreModule } from './app/cn-core/cn-core.module';
-import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
-import { CnCoreConfigService } from './app/cn-core/modules/cn-core-config/cn-core-config.service';
-import { TypeOrmModuleOptions } from '@nestjs/typeorm/dist/interfaces/typeorm-options.interface';
-import { CnCoreConfigModule } from './app/cn-core/modules/cn-core-config/cn-core-config.module';
-import { AcceptLanguageResolver, CookieResolver, I18nJsonLoader, I18nModule } from 'nestjs-i18n';
-import { join } from 'path';
-import { CnLabConfigsModule } from './app/cn-lab-configs/cn-lab-configs.module';
-import { CnScenariosModule } from './app/cn-folders-aggregate/cn-scenarios/cn-scenarios.module';
-import { CnBricksModule } from './app/cn-bricks/cn-bricks.module';
-import { CnGroupsModule } from './app/cn-groups/cn-groups.module';
-import { CnSpacesModule } from './app/cn-spaces/cn-spaces.module';
-import { CnLabsModule } from './app/cn-labs/cn-labs.module';
-import { CnJwtAuthGuard } from './app/cn-core/guards/cn-jwt-auth.guard';
-import { CnUserCategoryGuard } from './app/cn-core/guards/cn-user-category-guard.service';
-import { CnExternalLabsModule } from './app/cn-external-labs/cn-external-labs.module';
-import { CnCoreExceptionHandlerFilter } from './app/cn-core/filters/cn-core-exception-handler.filter';
-import { CnNotesModule } from './app/cn-folders-aggregate/cn-notes/cn-notes.module';
-import { clDefaultLang } from '@monorepo/core-lib';
-import { CnFrontErrorsModule } from './app/cn-front-errors/cn-front-errors.module';
-import { WinstonModule, WinstonModuleOptions } from 'nest-winston';
-import {
   BlCaptchaModule,
   BlCaptchaModuleConfig,
   blConfigureLogger,
@@ -46,31 +14,64 @@ import {
   BlTransportModuleConfig,
   blTransportRedisForRoot,
 } from '@monorepo/back-core-lib';
-import { cnJwtConfig } from './app/cn-auth/cn-jwt.config';
-import { Request } from 'express';
-import { CnUsersService } from './app/cn-users/cn-users.service';
-import { CnDatabaseConfig } from './app/cn-core/model/config/cn-config.class';
-import { CnFoldersAggregateModule } from './app/cn-folders-aggregate/cn-folders-aggregate.module';
-import { CnStatsModule } from './app/cn-stats/cn-stats.module';
-import { CnCountryModule } from './app/cn-country/cn-country.module';
-import { CnCityModule } from './app/cn-city/cn-city.module';
-import { AppService } from './app.service';
-import { CnNotificationModule } from './app/cn-notification/cn-notification.module';
-import { CnCloudProvidersModule } from './app/cn-cloud-providers/cn-cloud-providers.module';
-import { I18nAbstractLoaderOptions } from 'nestjs-i18n/dist/loaders/i18n.abstract.loader';
+import { clDefaultLang } from '@monorepo/core-lib';
+import { TeRichTextModifications } from '@monorepo/te-text-editor';
+import { BullModule } from '@nestjs/bullmq';
+import {
+  ClassSerializerInterceptor,
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { EventEmitterModule } from '@nestjs/event-emitter';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { TypeOrmModuleOptions } from '@nestjs/typeorm/dist/interfaces/typeorm-options.interface';
+import { Request } from 'express';
+import { WinstonModule, WinstonModuleOptions } from 'nest-winston';
+import { AcceptLanguageResolver, CookieResolver, I18nJsonLoader, I18nModule } from 'nestjs-i18n';
+import { I18nAbstractLoaderOptions } from 'nestjs-i18n/dist/loaders/i18n.abstract.loader';
+import { join } from 'path';
+import { AppService } from './app.service';
 import { CnActivityModule } from './app/cn-activity/cn-activity.module';
-import { CnUserAccountModule } from './app/cn-users/cn-user-accounts/cn-user-account.module';
+import { CnAuthModule } from './app/cn-auth/cn-auth.module';
+import { cnJwtConfig } from './app/cn-auth/cn-jwt.config';
+import { CnBricksModule } from './app/cn-bricks/cn-bricks.module';
+import { CnCityModule } from './app/cn-city/cn-city.module';
+import { CnCloudProvidersModule } from './app/cn-cloud-providers/cn-cloud-providers.module';
+import { CnCommunityModule } from './app/cn-community/cn-community.module';
+import { CnCoreModule } from './app/cn-core/cn-core.module';
+import { CnCoreExceptionHandlerFilter } from './app/cn-core/filters/cn-core-exception-handler.filter';
+import { CnJwtAuthGuard } from './app/cn-core/guards/cn-jwt-auth.guard';
+import { CnUserCategoryGuard } from './app/cn-core/guards/cn-user-category-guard.service';
+import { CnLogRequestMiddleware } from './app/cn-core/middleware/cn-log-request-middleware.service';
+import { CnDatabaseConfig } from './app/cn-core/model/config/cn-config.class';
+import { CnMailConfig } from './app/cn-core/model/config/cn-mail.config';
+import { CnCoreConfigModule } from './app/cn-core/modules/cn-core-config/cn-core-config.module';
+import { CnCoreConfigService } from './app/cn-core/modules/cn-core-config/cn-core-config.service';
+import { CnCurrentUserHelper } from './app/cn-core/utils/cn-current-user.helper';
+import { CnCountryModule } from './app/cn-country/cn-country.module';
+import { CnExternalLabsModule } from './app/cn-external-labs/cn-external-labs.module';
+import { CnFoldersAggregateModule } from './app/cn-folders-aggregate/cn-folders-aggregate.module';
+import { CnHierarchyObjectTokenModule } from './app/cn-folders-aggregate/cn-hierarchy-object-token/cn-hierarchy-object-token.module';
+import { CnNotesModule } from './app/cn-folders-aggregate/cn-notes/cn-notes.module';
+import { CnScenariosModule } from './app/cn-folders-aggregate/cn-scenarios/cn-scenarios.module';
+import { CnFrontErrorsModule } from './app/cn-front-errors/cn-front-errors.module';
+import { CnGroupsModule } from './app/cn-groups/cn-groups.module';
+import { CnLabConfigsModule } from './app/cn-lab-configs/cn-lab-configs.module';
+import { CnLabsModule } from './app/cn-labs/cn-labs.module';
+import { CnNotificationModule } from './app/cn-notification/cn-notification.module';
 import { CnServerAggregateModule } from './app/cn-servers-info/cn-server-aggregate.module';
 import { CnSettingsModule } from './app/cn-settings/cn-settings.module';
-import { CnCommunityModule } from './app/cn-community/cn-community.module';
-import { CnLogRequestMiddleware } from './app/cn-core/middleware/cn-log-request-middleware.service';
-import { BullModule } from '@nestjs/bullmq';
-import { CnMailConfig } from './app/cn-core/model/config/cn-mail.config';
-import { TeRichTextModifications } from '@monorepo/te-text-editor';
-import { CnCurrentUserHelper } from './app/cn-core/utils/cn-current-user.helper';
+import { CnSpacesModule } from './app/cn-spaces/cn-spaces.module';
+import { CnStatsModule } from './app/cn-stats/cn-stats.module';
+import { CnUserAccountModule } from './app/cn-users/cn-user-accounts/cn-user-account.module';
+import { CnUsersModule } from './app/cn-users/cn-users.module';
+import { CnUsersService } from './app/cn-users/cn-users.service';
 
 function typeOrmConfig(configService: CnCoreConfigService): TypeOrmModuleOptions {
   const dbConfig: CnDatabaseConfig = configService.getDatabaseConfig();
@@ -230,6 +231,8 @@ TeRichTextModifications.setBackTimeDifference();
     CnActivityModule,
     CnSettingsModule,
     CnCommunityModule,
+    // TODO to see if we can remove this
+    CnHierarchyObjectTokenModule,
   ],
   controllers: [],
   providers: [

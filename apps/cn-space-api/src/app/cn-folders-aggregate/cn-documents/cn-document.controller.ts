@@ -1,3 +1,4 @@
+import { BlFile, BlPublic, BlResponseHelper, BlUploadedFile, BlUploadedFiles } from '@monorepo/back-core-lib';
 import {
   Body,
   Controller,
@@ -10,13 +11,13 @@ import {
   StreamableFile,
   UseInterceptors,
 } from '@nestjs/common';
-import { CnDocumentAggregateService } from './cn-document-aggregate.service';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
-import { BlFile, BlPublic, BlResponseHelper, BlUploadedFile, BlUploadedFiles } from '@monorepo/back-core-lib';
-import { CnHierarchyObject } from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
-import { CnDocument } from './cn-document.entity';
-import { CnDocumentPreviewDTO } from './cn-document-dto.class';
 import { Response } from 'express';
+import { CnHierarchyObjectTokenDecorator } from '../cn-hierarchy-object-token/cn-hierarchy-object-token-guard.decorator';
+import { CnHierarchyObject } from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
+import { CnDocumentAggregateService } from './cn-document-aggregate.service';
+import { CnDocumentPreviewDTO } from './cn-document-dto.class';
+import { CnDocument } from './cn-document.entity';
 
 @Controller('documents')
 export class CnDocumentController {
@@ -43,7 +44,11 @@ export class CnDocumentController {
 
   /**
    * Return a document
+   *
+   * We create a specific endpoint to get the file from the token
+   * because the token is not in the cookie so we must pass it in the url
    */
+  @CnHierarchyObjectTokenDecorator()
   @Get(':documentId/preview/:filename(*)')
   public async previewDocument(
     @Param('documentId') documentId: string,
@@ -54,6 +59,7 @@ export class CnDocumentController {
     BlResponseHelper.setFileResponse(response, file);
   }
 
+  @CnHierarchyObjectTokenDecorator()
   @Get(':documentId/download/:filename(*)')
   public async downloadDocument(
     @Param('documentId') documentId: string,
@@ -76,6 +82,7 @@ export class CnDocumentController {
 
   ////////////////////////// DOCUMENT PREVIEW  ///////////////////////////////////////
 
+  @CnHierarchyObjectTokenDecorator()
   @Post(':documentId/preview-token')
   public async generatePreviewToken(
     @Param('documentId', new ParseUUIDPipe()) documentId: string
