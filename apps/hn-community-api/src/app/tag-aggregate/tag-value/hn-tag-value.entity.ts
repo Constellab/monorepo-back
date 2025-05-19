@@ -1,0 +1,21 @@
+import { Column, Entity, ManyToOne } from 'typeorm';
+import { BlEntityWithId } from '@monorepo/back-core-lib';
+import { HnTagKey } from '../tag-key/hn-tag-key.entity';
+
+@Entity('tag_value')
+export class HnTagValue extends BlEntityWithId {
+  @Column({ unique: true, update: false })
+  value: string;
+
+  @Column()
+  deprecated: boolean;
+
+  @Column({ nullable: true })
+  shortDescription?: string;
+
+  @Column({ nullable: true, type: 'simple-json' })
+  additionalInfos?: Record<string, any>;
+
+  @ManyToOne(() => HnTagKey, (tagKey) => tagKey, { eager: true, onUpdate: 'CASCADE', onDelete: 'CASCADE' })
+  tagKey: HnTagKey;
+}

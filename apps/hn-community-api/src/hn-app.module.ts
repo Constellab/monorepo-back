@@ -92,6 +92,11 @@ import { HnFileAgentModule } from './app/file-aggregate/file-agent/hn-file-agent
 import { HnFileAppModule } from './app/file-aggregate/file-app/hn-file-app.module';
 import { HnCommunityAppUserModule } from './app/community-app-aggregate/community-app-user/hn-community-app-user.module';
 import { HnDifyModule } from './app/dify/hn-dify.module';
+import { HnTagAggregateModule } from './app/tag-aggregate/hn-tag-aggregate.module';
+import { HnTagKeyModule } from './app/tag-aggregate/tag-key/hn-tag-key.module';
+import { HnTagValueModule } from './app/tag-aggregate/tag-value/hn-tag-value.module';
+import { HnTagCoAuthorModule } from './app/tag-aggregate/tag-co-author/hn-tag-co-author.module';
+import { HnTagCoAuthorInviteModule } from './app/tag-aggregate/tag-co-author-invite/hn-tag-co-author-invite.module';
 
 function typeOrmConfig(configService: HnCoreConfigService): TypeOrmModuleOptions {
   const dbConfig: HnDatabaseConfig = configService.getDatabaseConfig();
@@ -276,6 +281,12 @@ TeRichTextModifications.setBackTimeDifference();
     HnCommunityAppStatModule,
     HnCommunityAppAggregateModule,
     HnCommunityAppUserModule,
+
+    HnTagValueModule,
+    HnTagKeyModule,
+    HnTagCoAuthorModule,
+    HnTagCoAuthorInviteModule,
+    HnTagAggregateModule,
 
     HnPublicModule,
 

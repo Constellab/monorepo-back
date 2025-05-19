@@ -11,6 +11,7 @@ import {
 import { HnStoryCoAuthor } from '../story-author/hn-story-author.entity';
 import { HnBrickUser } from '../brick-aggregate/brick-user/hn-brick-user.entity';
 import { HnAgentCoAuthor } from '../agent-aggregate/agent-co-author/hn-agent-co-author.entity';
+import { HnTagCoAuthor } from '../tag-aggregate/tag-co-author/hn-tag-co-author.entity';
 
 @Unique(['userCode'])
 @Entity('user')
@@ -71,6 +72,9 @@ export class HnUser {
 
   @OneToMany(() => HnBrickUser, (brickUser) => brickUser.user, { nullable: true })
   brickUsers: HnBrickUser[];
+
+  @OneToMany(() => HnTagCoAuthor, (tagCoAuthor) => tagCoAuthor.user, { nullable: true })
+  tagCoAuthors: HnTagCoAuthor[];
 
   @BeforeInsert()
   initValues(): void {

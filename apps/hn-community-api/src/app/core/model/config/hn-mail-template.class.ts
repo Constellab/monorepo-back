@@ -8,4 +8,6 @@ export enum HnMailTemplate {
   brick_invite_new_user = 'hn-brick-invite-new-user',
   agent_invite_existing_user = 'hn-agent-invite-existing-user',
   agent_invite_new_user = 'hn-agent-invite-new-user',
+  tag_invite_existing_user = 'hn-tag-invite-existing-user',
+  tag_invite_new_user = 'hn-tag-invite-new-user',
 }

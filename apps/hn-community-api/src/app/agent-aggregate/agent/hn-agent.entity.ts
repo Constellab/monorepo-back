@@ -49,7 +49,7 @@ export class HnAgent extends BlEntityWithId {
   @Column({ default: 0 })
   comments: number;
 
-  @OneToMany(() => HnAgentCoAuthor, (agentCoAuthor) => agentCoAuthor.user, {
+  @OneToMany(() => HnAgentCoAuthor, (agentCoAuthor) => agentCoAuthor.agent, {
     nullable: true,
     onDelete: 'CASCADE',
   })
