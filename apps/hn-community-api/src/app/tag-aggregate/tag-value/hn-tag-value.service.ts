@@ -100,4 +100,8 @@ export class HnTagValueService {
     tagValue.deprecated = true;
     return this.tagValueRepository.save(tagValue);
   }
+
+  async checkTagHasValues(tagKeyId: string): Promise<boolean> {
+    return this.tagValueRepository.exists({ where: { tagKey: { id: tagKeyId } } });
+  }
 }

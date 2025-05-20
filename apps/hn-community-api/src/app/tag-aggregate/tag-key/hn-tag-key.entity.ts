@@ -11,10 +11,11 @@ import { HnCurrentUserHelper } from '../../core/utils/hn-current-user.helper';
 import { ClDateHelper } from '@monorepo/core-lib';
 
 export enum HnTagKeyType {
-  TEXT = 'text',
-  NUMBER = 'number',
-  BOOLEAN = 'boolean',
-  DATE = 'date',
+  STRING = 'STRING',
+  INT = 'INTEGER',
+  FLOAT = 'FLOAT',
+  BOOLEAN = 'BOOLEAN',
+  DATETIME = 'DATETIME',
 }
 
 @Entity('tag_key')

@@ -149,6 +149,12 @@ export class HnTagAggregateService {
     if (additionalInfoSpec.name in additionalInfoSpecs) {
       throw new Error(`Additional info spec ${additionalInfoSpec.name} already exists`);
     }
+    const hasValues = await this.checkIfTagHasValues(tagKey);
+    if (hasValues && !additionalInfoSpec.optional) {
+      throw new Error(
+        'You cannot create a required additional info spec on a tag key that already has values'
+      );
+    }
     additionalInfoSpecs[additionalInfoSpec.name] = {
       optional: additionalInfoSpec.optional,
     };
@@ -270,5 +276,9 @@ export class HnTagAggregateService {
     ) {
       throw new Error('You do not have the rights to edit this tag key');
     }
+  }
+
+  private async checkIfTagHasValues(tagKey: HnTagKey): Promise<boolean> {
+    return this.tagValueService.checkTagHasValues(tagKey.id);
   }
 }

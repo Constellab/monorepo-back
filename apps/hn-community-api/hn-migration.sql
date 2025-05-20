@@ -254,7 +254,7 @@ CREATE TABLE `tag_key` (
    `id` varchar(36) NOT NULL,
    `technicalName` varchar(255) NOT NULL,
    `label` varchar(255) NOT NULL,
-   `type` enum('text','number','boolean','date') NOT NULL,
+   `type` enum('STRING','INTEGER','FLOAT','BOOLEAN', 'DATETIME') NOT NULL,
    `deprecated` tinyint(4) NOT NULL DEFAULT 0,
    `createdAt` datetime DEFAULT NULL,
    `lastModifiedAt` datetime DEFAULT NULL,
