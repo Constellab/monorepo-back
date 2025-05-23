@@ -1,7 +1,12 @@
-import { Injectable } from '@nestjs/common';
 import { ClHelpService, ClStringHelper } from '@monorepo/core-lib';
-import { BlFileHelper } from '../../utils/bl-file-helper';
+import { Injectable } from '@nestjs/common';
+import { Stream } from 'stream';
 import { BlFile } from '../../models/bl-file.class';
+import { BlFileHelper } from '../../utils/bl-file-helper';
+import { BlExternalApiService } from '../bl-external-api/bl-external-api.service';
+import { BlAzureBucketService } from './bl-azure-bucket.service';
+import { BlLabS3BucketService } from './bl-lab-s3-bucket.service';
+import { BlNoBatchDeleteBucketService } from './bl-no-batch-delete-bucket.service';
 import {
   BlBucketConfig,
   BlBucketType,
@@ -9,12 +14,7 @@ import {
   BlObject,
   BlObjectStorageObjectsInfo,
 } from './bl-object-storage.class';
-import { BlAzureBucketService } from './bl-azure-bucket.service';
 import { BlObjectStorageInterface } from './bl-object-storage.interface';
-import { BlExternalApiService } from '../bl-external-api/bl-external-api.service';
-import { BlLabS3BucketService } from './bl-lab-s3-bucket.service';
-import { Stream } from 'stream';
-import { BlNoBatchDeleteBucketService } from './bl-no-batch-delete-bucket.service';
 
 export interface BlObjectStorageUploadOptions {
   // if true generate a random name for the object
@@ -297,7 +297,9 @@ export class BlObjectStorageService {
 
   private cleanTagString(tag: string): string {
     // Replace unwanted characters with a space
-    return tag.replace(/[^a-zA-Z0-9 +\-._:=/]/g, ' ');
+    tag = ClStringHelper.removeAccentFromString(tag);
+    tag = tag.replace(/[^a-zA-Z0-9 +\-._:=/]/g, ' ');
+    return ClStringHelper.trimAndRemoveDuplicateSpaces(tag);
   }
 
   /////////////////////////////////// OTHER ///////////////////////////////////
