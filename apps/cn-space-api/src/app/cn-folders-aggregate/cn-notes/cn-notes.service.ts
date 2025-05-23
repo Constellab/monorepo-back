@@ -1,4 +1,19 @@
+import { BlAbstractService, BlBadRequestException, BlFile, BlFileResponse } from '@monorepo/back-core-lib';
+import { TeRichText, TeRichTextAggregate, TeRichTextModifications } from '@monorepo/te-text-editor';
 import { Injectable, Logger } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { EntityManager, Repository } from 'typeorm';
+import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
+import { CnLabConfigsService } from '../../cn-lab-configs/cn-lab-configs.service';
+import { CnDocument, CnDocumentEntity, CnDocumentType } from '../cn-documents/cn-document.entity';
+import { CnDocumentService } from '../cn-documents/cn-document.service';
+import {
+  CnHierarchyObject,
+  CnHierarchyObjectEntity,
+  CnHierarchyObjectVisibility,
+} from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
+import { CnScenario } from '../cn-scenarios/cn-scenario.entity';
+import { CnCreateNoteWithConfigDto, CnSaveNoteDto, CnSaveNoteResultDTO } from './cn-note.dto';
 import {
   CnNote,
   CnNoteEntity,
@@ -7,21 +22,6 @@ import {
   CnNoteWithLab,
   CnNoteWithScenarios,
 } from './cn-note.entity';
-import { InjectRepository } from '@nestjs/typeorm';
-import { EntityManager, Repository } from 'typeorm';
-import { CnScenario } from '../cn-scenarios/cn-scenario.entity';
-import { BlAbstractService, BlBadRequestException, BlFile, BlFileResponse } from '@monorepo/back-core-lib';
-import { CnCreateNoteWithConfigDto, CnSaveNoteDto, CnSaveNoteResultDTO } from './cn-note.dto';
-import { CnLabConfigsService } from '../../cn-lab-configs/cn-lab-configs.service';
-import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
-import { CnDocumentService } from '../cn-documents/cn-document.service';
-import { CnDocument, CnDocumentEntity, CnDocumentType } from '../cn-documents/cn-document.entity';
-import {
-  CnHierarchyObject,
-  CnHierarchyObjectEntity,
-  CnHierarchyObjectVisibility,
-} from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
-import { TeRichText, TeRichTextAggregate, TeRichTextModifications } from '@monorepo/te-text-editor';
 
 @Injectable()
 export class CnNotesService extends BlAbstractService<CnNoteEntity> {
@@ -353,6 +353,16 @@ export class CnNotesService extends BlAbstractService<CnNoteEntity> {
       },
       relations: {
         hierarchyRepresentation: true,
+      },
+    });
+  }
+
+  public async findByDocumentId(documentId: string): Promise<CnNoteWithDocument | null> {
+    return this.repository.findOne({
+      where: {
+        document: {
+          id: documentId,
+        },
       },
     });
   }

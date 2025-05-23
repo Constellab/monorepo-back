@@ -30,6 +30,10 @@ export class CnFrontService {
     return `${CnFrontService.appRoute}/folder/note/${folderId}`;
   }
 
+  public getNoteUrl(spaceDomain: string, noteId: string): string {
+    return this.getSpaceWebsiteURL(spaceDomain) + '/' + CnFrontService.getNoteRoute(noteId);
+  }
+
   public static getScenarioRoute(folderId: string): string {
     return `${CnFrontService.appRoute}/folder/scenario/${folderId}`;
   }
@@ -42,8 +46,11 @@ export class CnFrontService {
     return `${CnFrontService.appRoute}/folder/document/${documentId}/preview`;
   }
 
-  public getDocumentUrl(spaceDomain: string, documentId: string): string {
-    return this.getSpaceWebsiteURL(spaceDomain) + '/' + CnFrontService.getDocumentRoute(documentId);
+  public getDocumentUrl(spaceDomain: string, documentId: string, isConstellabDocument: boolean): string {
+    const route = isConstellabDocument
+      ? CnFrontService.getConstellabDocRoute(documentId)
+      : CnFrontService.getDocumentRoute(documentId);
+    return this.getSpaceWebsiteURL(spaceDomain) + '/' + route;
   }
 
   public static getResourceRoute(resourceId: string): string {

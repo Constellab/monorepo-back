@@ -8,6 +8,7 @@ import { CnFolderEventService } from '../cn-folder.event';
 import { CnSaveFolderDTO } from '../cn-folders/cn-folder.dto';
 import { CnHierarchyObject, CnHierarchyObjectType } from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
 import { CnHierarchyObjectService } from '../cn-hierarchy-objects/cn-hierarchy-object.service';
+import { CnNotesService } from '../cn-notes/cn-notes.service';
 import { CnFoldersSecurityService } from '../cn-security/cn-folders-security.service';
 import { CnDocumentPreviewDTO } from './cn-document-dto.class';
 import { CnDocument, CnDocumentType } from './cn-document.entity';
@@ -23,7 +24,8 @@ export class CnDocumentAggregateService {
     private eventService: CnFolderEventService,
     private datasource: DataSource,
     private spaceService: CnSpaceService,
-    private frontService: CnFrontService
+    private frontService: CnFrontService,
+    private noteService: CnNotesService
   ) {}
 
   public async uploadDocument(parentFolderId: string, file: BlFile): Promise<CnHierarchyObject> {
@@ -92,7 +94,18 @@ export class CnDocumentAggregateService {
     const document = await this.documentService.findDocumentByFilename(filename);
     const space = await this.spaceService.findByIdAndCheck(document.hierarchyRepresentation.spaceId);
 
-    return this.frontService.getDocumentUrl(space.domain, document.id);
+    if (document.type === CnDocumentType.NOTE) {
+      const note = await this.noteService.findByDocumentId(document.id);
+      if (note == null) {
+        throw new BlBadRequestException('Note not found');
+      }
+      return this.frontService.getNoteUrl(space.domain, note.id);
+    }
+    return this.frontService.getDocumentUrl(
+      space.domain,
+      document.id,
+      document.type === CnDocumentType.CONSTELLAB_DOCUMENT
+    );
   }
 
   ////////////////////////////// UPLOAD FOLDER //////////////////////////////////
