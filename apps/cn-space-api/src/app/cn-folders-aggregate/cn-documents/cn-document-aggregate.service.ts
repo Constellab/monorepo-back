@@ -92,7 +92,7 @@ export class CnDocumentAggregateService {
     const document = await this.documentService.findDocumentByFilename(filename);
     const space = await this.spaceService.findByIdAndCheck(document.hierarchyRepresentation.spaceId);
 
-    return this.frontService.getDocumentUrl(space.domain, document.filename);
+    return this.frontService.getDocumentUrl(space.domain, document.id);
   }
 
   ////////////////////////////// UPLOAD FOLDER //////////////////////////////////
