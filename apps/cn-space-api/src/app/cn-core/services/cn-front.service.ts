@@ -38,6 +38,14 @@ export class CnFrontService {
     return `${CnFrontService.appRoute}/folder/document/${docId}`;
   }
 
+  public static getDocumentRoute(documentId: string): string {
+    return `${CnFrontService.appRoute}/folder/document/${documentId}/preview`;
+  }
+
+  public getDocumentUrl(spaceDomain: string, documentId: string): string {
+    return this.getSpaceWebsiteURL(spaceDomain) + '/' + CnFrontService.getDocumentRoute(documentId);
+  }
+
   public static getResourceRoute(resourceId: string): string {
     return `${CnFrontService.appRoute}/folder/resource/${resourceId}`;
   }

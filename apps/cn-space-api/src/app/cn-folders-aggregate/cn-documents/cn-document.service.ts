@@ -243,6 +243,15 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
     });
   }
 
+  async findDocumentByFilename(filename: string): Promise<CnDocumentWithHierarchy | null> {
+    return this.repo.findOne({
+      where: {
+        filename: filename,
+      },
+      relations: { hierarchyRepresentation: true },
+    });
+  }
+
   ////////////////////////////// FOLDER DOCUMENTS  //////////////////////////////////
 
   public findRootDocumentsByParentFolder(parentFolderId: string): Promise<CnDocument[]> {

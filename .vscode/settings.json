@@ -1,8 +1,8 @@
 {
-  "typescript.preferences.importModuleSpecifier": "relative",
   "javascript.preferences.quoteStyle": "single",
+  "javascript.preferences.importModuleSpecifier": "project-relative",
   "typescript.preferences.quoteStyle": "single",
-  "javascript.preferences.importModuleSpecifier": "relative",
+  "typescript.preferences.importModuleSpecifier": "project-relative",
   "editor.tabSize": 2,
   "editor.detectIndentation": false,
   "eslint.format.enable": true,

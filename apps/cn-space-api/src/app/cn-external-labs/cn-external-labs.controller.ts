@@ -1,4 +1,14 @@
 import {
+  BlCredentials,
+  BlFile,
+  BlParseEnumPipe,
+  BlParsePipe,
+  BlPublic,
+  BlUploadedFiles,
+} from '@monorepo/back-core-lib';
+import { ClCoreJsonConvert, ClPageI } from '@monorepo/core-lib';
+import { TeRichTextBlockModificationsDTO, TeRichTextDTO, TeRichTextHelper } from '@monorepo/te-text-editor';
+import {
   Body,
   Controller,
   Delete,
@@ -11,33 +21,25 @@ import {
   Query,
   UseInterceptors,
 } from '@nestjs/common';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { CnExternalCheckCredentialResponse } from '../cn-auth/cn-auth.service';
 import {
   CnLabAllowDev,
   CnLabGuard,
   CnLabRobotAuthentication,
 } from '../cn-core/decorators/cn-lab-guard.decorator';
-import {
-  BlCredentials,
-  BlFile,
-  BlParseEnumPipe,
-  BlParsePipe,
-  BlPublic,
-  BlUploadedFiles,
-} from '@monorepo/back-core-lib';
-import { CnCreateLabScenarioDto } from '../cn-folders-aggregate/cn-scenarios/cn-scenario.dto';
-import { CnCreateNoteWithConfigDto } from '../cn-folders-aggregate/cn-notes/cn-note.dto';
-import { CnLabStartDTO } from '../cn-labs/cn-lab.dto';
-import { CnFolderAggregateService } from '../cn-folders-aggregate/cn-folder-aggregate.service';
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
-import { CnLabAggregateService } from '../cn-labs/cn-lab-aggregate.service';
-import { FilesInterceptor } from '@nestjs/platform-express';
-import { ClCoreJsonConvert, ClPageI } from '@monorepo/core-lib';
 import {
   CnExternalLabSyncedObjectDTO,
   CnExternalLabUser,
 } from '../cn-external-lab-api/model/cn-external-lab-api.class';
-import { CnExternalCheckCredentialResponse } from '../cn-auth/cn-auth.service';
-import { CnLabFolderAggregateService } from '../cn-lab-folder-aggregate/cn-lab-folder-aggregate.service';
+import { CnFolderAggregateService } from '../cn-folders-aggregate/cn-folder-aggregate.service';
+import { CnRootFolderUserRole } from '../cn-folders-aggregate/cn-folder-user/cn-folder-user.entity';
+import { CnSaveFolderDTO } from '../cn-folders-aggregate/cn-folders/cn-folder.dto';
+import { CnFolderWithHierarchy } from '../cn-folders-aggregate/cn-folders/cn-folder.entity';
+import { CnTag } from '../cn-folders-aggregate/cn-hierarchy-object-tags/cn-hierarchy-object-tag.dto';
+import { CnHierarchyObjectTag } from '../cn-folders-aggregate/cn-hierarchy-object-tags/cn-hierarchy-object-tag.entity';
+import { CnHierarchyObjectAggregateService } from '../cn-folders-aggregate/cn-hierarchy-objects/cn-hierarchy-object-aggregate.service';
 import {
   CnFolderDtoHelper,
   CnLabFolderDTO,
@@ -46,24 +48,22 @@ import {
   CnHierarchyObject,
   CnHierarchyObjectEntity,
 } from '../cn-folders-aggregate/cn-hierarchy-objects/cn-hierarchy-object.entity';
+import { CnNoteAggregateService } from '../cn-folders-aggregate/cn-notes/cn-note-aggregate.service';
+import { CnCreateNoteWithConfigDto } from '../cn-folders-aggregate/cn-notes/cn-note.dto';
+import { CnResourceAggregateService } from '../cn-folders-aggregate/cn-resources/cn-resource-aggregate.service';
+import { CnShareResourceRequestDTO } from '../cn-folders-aggregate/cn-resources/cn-resource.dto';
+import { CnScenarioAggregateService } from '../cn-folders-aggregate/cn-scenarios/cn-scenario-aggregate.service';
+import { CnCreateLabScenarioDto } from '../cn-folders-aggregate/cn-scenarios/cn-scenario.dto';
+import { CnLabFolderAggregateService } from '../cn-lab-folder-aggregate/cn-lab-folder-aggregate.service';
+import { CnLabAggregateService } from '../cn-labs/cn-lab-aggregate.service';
+import { CnLabStartDTO } from '../cn-labs/cn-lab.dto';
+import { CnLabSendMailDto, CnLabSendMailToMailsDto } from '../cn-labs/mail/cn-lab-mail.dto';
 import { CnLabMailService } from '../cn-labs/mail/cn-lab-mail.service';
 import {
   CnExternalLabTagsDTO,
   CnRichTextCompareRequestDTO,
   CnRichTextUndoRequestDTO,
 } from './cn-external-labs.dto';
-import { CnLabSendMailDto, CnLabSendMailToMailsDto } from '../cn-labs/mail/cn-lab-mail.dto';
-import { TeRichTextBlockModificationsDTO, TeRichTextDTO, TeRichTextHelper } from '@monorepo/te-text-editor';
-import { CnShareResourceRequestDTO } from '../cn-folders-aggregate/cn-resources/cn-resource.dto';
-import { CnSaveFolderDTO } from '../cn-folders-aggregate/cn-folders/cn-folder.dto';
-import { CnFolderWithHierarchy } from '../cn-folders-aggregate/cn-folders/cn-folder.entity';
-import { CnTag } from '../cn-folders-aggregate/cn-hierarchy-object-tags/cn-hierarchy-object-tag.dto';
-import { CnHierarchyObjectTag } from '../cn-folders-aggregate/cn-hierarchy-object-tags/cn-hierarchy-object-tag.entity';
-import { CnResourceAggregateService } from '../cn-folders-aggregate/cn-resources/cn-resource-aggregate.service';
-import { CnHierarchyObjectAggregateService } from '../cn-folders-aggregate/cn-hierarchy-objects/cn-hierarchy-object-aggregate.service';
-import { CnScenarioAggregateService } from '../cn-folders-aggregate/cn-scenarios/cn-scenario-aggregate.service';
-import { CnNoteAggregateService } from '../cn-folders-aggregate/cn-notes/cn-note-aggregate.service';
-import { CnRootFolderUserRole } from '../cn-folders-aggregate/cn-folder-user/cn-folder-user.entity';
 
 /**
  * Specific controller for route called by the lab servers. These routes are not called by a user
@@ -268,6 +268,12 @@ export class CnExternalLabsController {
     @Param('role', new BlParseEnumPipe(CnRootFolderUserRole)) role: CnRootFolderUserRole
   ): Promise<void> {
     await this.folderAggregateService.shareFolder(id, groupId, role);
+  }
+
+  @CnLabAllowDev()
+  @Get('folder/user/current')
+  async getRootFoldersOfCurrentUser(): Promise<CnHierarchyObject[]> {
+    return this.folderAggregateService.getAllCurrentRootFolders();
   }
 
   //////////////////////////// HIERARCHY OBJECT TAG //////////////////////////

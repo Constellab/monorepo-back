@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "paths": {
+      "@monorepo/back-core-lib": ["libs/back-core-lib/src/index.ts"],
+      "@monorepo/core-lib": ["libs/core-lib/src/index.ts"],
+      "@monorepo/te-text-editor": ["libs/te-text-editor/src/index.ts"]
+    }
+  }
+}

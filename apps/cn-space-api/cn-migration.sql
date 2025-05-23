@@ -293,12 +293,12 @@ update folder_user fu
 set sharedById = (select userId from folder_user f where f.rootFolderId = fu.rootFolderId and f.role = 'OWNER');
 
 -- Check foreign key folder_user
-alter table folder_user drop foreign key FK_TO_NAME;
-alter table folder_user add foreign key FK_folder_user_root_folder
-  (rootFolderId) references hierarchy_object (id);
+-- alter table folder_user drop foreign key FK_TO_NAME;
+-- alter table folder_user add foreign key FK_folder_user_root_folder
+  -- (rootFolderId) references hierarchy_object (id) on update cascade on delete cascade;
 
 -- Clean folder_user table
-# delete from folder_user where rootFolderId not in (select id from hierarchy_object);
+-- # delete from folder_user where rootFolderId not in (select id from hierarchy_object);
 -- End check
 
 

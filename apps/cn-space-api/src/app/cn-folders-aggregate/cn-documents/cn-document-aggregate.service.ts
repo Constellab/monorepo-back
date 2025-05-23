@@ -1,15 +1,15 @@
+import { BlBadRequestException, BlFile, BlFileResponse } from '@monorepo/back-core-lib';
+import { Injectable } from '@nestjs/common';
+import { DataSource } from 'typeorm';
+import { CnFolderAggregateService } from '../cn-folder-aggregate.service';
+import { CnFolderEventService } from '../cn-folder.event';
+import { CnSaveFolderDTO } from '../cn-folders/cn-folder.dto';
+import { CnHierarchyObject, CnHierarchyObjectType } from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
 import { CnHierarchyObjectService } from '../cn-hierarchy-objects/cn-hierarchy-object.service';
 import { CnFoldersSecurityService } from '../cn-security/cn-folders-security.service';
-import { CnDocumentService } from './cn-document.service';
-import { CnFolderEventService } from '../cn-folder.event';
-import { DataSource } from 'typeorm';
-import { BlBadRequestException, BlFile, BlFileResponse } from '@monorepo/back-core-lib';
-import { CnHierarchyObject, CnHierarchyObjectType } from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
-import { CnDocument, CnDocumentType } from './cn-document.entity';
-import { CnSaveFolderDTO } from '../cn-folders/cn-folder.dto';
-import { CnFolderAggregateService } from '../cn-folder-aggregate.service';
-import { Injectable } from '@nestjs/common';
 import { CnDocumentPreviewDTO } from './cn-document-dto.class';
+import { CnDocument, CnDocumentType } from './cn-document.entity';
+import { CnDocumentService } from './cn-document.service';
 
 @Injectable()
 export class CnDocumentAggregateService {
@@ -82,6 +82,10 @@ export class CnDocumentAggregateService {
     );
 
     return this.documentService.moveDocument(documentWithHierarchy, oldFolder, parentFolder);
+  }
+
+  public async findDocumentByFilename(filename: string): Promise<CnDocument | null> {
+    return await this.documentService.findDocumentByFilename(filename);
   }
 
   ////////////////////////////// UPLOAD FOLDER //////////////////////////////////

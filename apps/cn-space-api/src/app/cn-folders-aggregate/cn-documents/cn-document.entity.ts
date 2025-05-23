@@ -1,17 +1,17 @@
-import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne } from 'typeorm';
 import { BlBucketType, BlFileHelper, BlLuxonDateTimeColumn, BlNotUpdatable } from '@monorepo/back-core-lib';
+import { ClDateHelper } from '@monorepo/core-lib';
 import { Exclude, Expose } from 'class-transformer';
 import { DateTime } from 'luxon';
-import { CnHierarchyRepresentation } from '../cn-hierarchy-objects/cn-hierarchy-representation';
+import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne } from 'typeorm';
+import { CnTypeStyle } from '../../cn-core/model/config/cn-type-style.class';
 import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
-import { ClDateHelper } from '@monorepo/core-lib';
 import { CnHierarchyObjectInfo } from '../cn-hierarchy-objects/cn-hierarchy-object.dto';
 import {
   CnHierarchyObject,
   CnHierarchyObjectEntity,
   CnHierarchyObjectType,
 } from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
-import { CnTypeStyle } from '../../cn-core/model/config/cn-type-style.class';
+import { CnHierarchyRepresentation } from '../cn-hierarchy-objects/cn-hierarchy-representation';
 
 export enum CnDocumentType {
   // Uploaded document
@@ -40,6 +40,7 @@ export class CnDocumentEntity extends CnHierarchyRepresentation {
   name: string;
 
   // name of the file in the S3 server
+  @Exclude()
   @Column({ nullable: false })
   filename: string;
 
