@@ -261,13 +261,13 @@ export class CnExternalLabsController {
   }
 
   @CnLabAllowDev()
-  @Put('folder/:id/share/:groupId/role/:role')
+  @Put(['folder/:id/share/:groupId/role/:role', 'folder/:id/share/:groupId'])
   async shareFolder(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Param('groupId', new ParseUUIDPipe()) groupId: string,
-    @Param('role', new BlParseEnumPipe(CnRootFolderUserRole)) role: CnRootFolderUserRole
+    @Param('role', new BlParseEnumPipe(CnRootFolderUserRole)) role?: CnRootFolderUserRole
   ): Promise<void> {
-    await this.folderAggregateService.shareFolder(id, groupId, role);
+    await this.folderAggregateService.shareFolder(id, groupId, role ?? CnRootFolderUserRole.USER);
   }
 
   @CnLabAllowDev()
