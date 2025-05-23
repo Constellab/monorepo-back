@@ -185,11 +185,7 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
 
   public async deleteDocument(id: string, entityManager?: EntityManager): Promise<void> {
     entityManager = this.getEntityManager(entityManager);
-    const document = await this.findByIdAndCheck(
-      id,
-      { hierarchyRepresentation: { parent: true } },
-      entityManager
-    );
+    const document = await this.findByIdAndCheck(id, { hierarchyRepresentation: true }, entityManager);
 
     const bucketConfig = await this.folderBucketService.getAndCheckFolderBucketConfig(
       document.hierarchyRepresentation.getRootFolderId()

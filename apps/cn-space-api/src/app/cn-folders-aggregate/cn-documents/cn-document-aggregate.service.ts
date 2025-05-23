@@ -1,6 +1,8 @@
 import { BlBadRequestException, BlFile, BlFileResponse } from '@monorepo/back-core-lib';
 import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
+import { CnFrontService } from '../../cn-core/services/cn-front.service';
+import { CnSpaceService } from '../../cn-spaces/cn-space.service';
 import { CnFolderAggregateService } from '../cn-folder-aggregate.service';
 import { CnFolderEventService } from '../cn-folder.event';
 import { CnSaveFolderDTO } from '../cn-folders/cn-folder.dto';
@@ -19,7 +21,9 @@ export class CnDocumentAggregateService {
     private securityService: CnFoldersSecurityService,
     private folderAggregateService: CnFolderAggregateService,
     private eventService: CnFolderEventService,
-    private datasource: DataSource
+    private datasource: DataSource,
+    private spaceService: CnSpaceService,
+    private frontService: CnFrontService
   ) {}
 
   public async uploadDocument(parentFolderId: string, file: BlFile): Promise<CnHierarchyObject> {
@@ -84,8 +88,11 @@ export class CnDocumentAggregateService {
     return this.documentService.moveDocument(documentWithHierarchy, oldFolder, parentFolder);
   }
 
-  public async findDocumentByFilename(filename: string): Promise<CnDocument | null> {
-    return await this.documentService.findDocumentByFilename(filename);
+  public async findDocumentUrlByFilename(filename: string): Promise<string> {
+    const document = await this.documentService.findDocumentByFilename(filename);
+    const space = await this.spaceService.findByIdAndCheck(document.hierarchyRepresentation.spaceId);
+
+    return this.frontService.getDocumentUrl(space.domain, document.filename);
   }
 
   ////////////////////////////// UPLOAD FOLDER //////////////////////////////////
