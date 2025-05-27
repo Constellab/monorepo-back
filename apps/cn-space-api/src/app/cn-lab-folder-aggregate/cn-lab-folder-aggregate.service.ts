@@ -252,7 +252,7 @@ export class CnLabFolderAggregateService {
       resource.token,
       labUser
     );
-    return new CnResourceAccessDTO(resource, userAccess.access_url, userAccess.valid_until);
+    return new CnResourceAccessDTO(resource, userAccess.access_url, userAccess.share_link_valid_until);
   }
 
   /////////////////////////////////////// OTHER //////////////////////////////////

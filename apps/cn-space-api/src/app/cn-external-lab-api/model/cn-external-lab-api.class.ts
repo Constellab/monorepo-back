@@ -36,7 +36,7 @@ export interface CnLabGlobalActivity {
 
 export class CnExternalLabShareGenerateTokenResponse {
   @ClLuxonDateTransform()
-  valid_until: DateTime;
+  share_link_valid_until: DateTime;
   access_url: string;
 }
 
