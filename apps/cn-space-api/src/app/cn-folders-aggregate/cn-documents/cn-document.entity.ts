@@ -152,6 +152,18 @@ export class CnDocumentEntity extends CnHierarchyRepresentation {
     return BlFileHelper.getFileExtension(this.filename);
   }
 
+  isImage(): boolean {
+    return this.mimeType.startsWith('image/');
+  }
+
+  isVideo(): boolean {
+    return this.mimeType.startsWith('video/');
+  }
+
+  isAudio(): boolean {
+    return this.mimeType.startsWith('audio/');
+  }
+
   public static newDocument(
     name: string,
     filename: string,
@@ -171,7 +183,7 @@ export class CnDocumentEntity extends CnHierarchyRepresentation {
     document.type = type;
     document.entityId = entityId;
     document.bucketType = bucketType;
-    document.style = this.buildStyle(type, document.getExtension());
+    document.style = document.buildStyle();
     document.parentDocument = parentDocument;
     document.hierarchyRepresentation = CnHierarchyObjectEntity.newSubHierarchyObject(
       parentFolder,
@@ -180,13 +192,13 @@ export class CnDocumentEntity extends CnHierarchyRepresentation {
     return document;
   }
 
-  public static buildStyle(documentType: CnDocumentType, extension: string): CnTypeStyle {
-    if (documentType === CnDocumentType.UPLOADED_DOCUMENT) {
+  public buildStyle(): CnTypeStyle {
+    if (this.type === CnDocumentType.UPLOADED_DOCUMENT) {
       return {
         icon_type: 'MATERIAL_ICON',
-        icon_technical_name: this.getFileIconFromExtension(extension),
+        icon_technical_name: this.getFileIconFromExtension(),
       };
-    } else if (documentType === CnDocumentType.CONSTELLAB_DOCUMENT) {
+    } else if (this.type === CnDocumentType.CONSTELLAB_DOCUMENT) {
       return {
         icon_type: 'MATERIAL_ICON',
         icon_technical_name: 'constellab_document',
@@ -199,10 +211,17 @@ export class CnDocumentEntity extends CnHierarchyRepresentation {
     }
   }
 
-  private static getFileIconFromExtension(extension: string): string {
-    if (!extension) return 'insert_drive_file';
+  private getFileIconFromExtension(): string {
+    if (this.isImage()) {
+      return 'image';
+    }
 
-    extension = extension.replace('.', '').toLowerCase();
+    if (this.isVideo()) {
+      return 'smart_display';
+    }
+
+    const extension = this.getExtension();
+    if (!extension) return 'insert_drive_file';
 
     switch (extension.toLowerCase()) {
       case 'csv':
