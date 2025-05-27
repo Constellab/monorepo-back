@@ -22,8 +22,8 @@ export class CnDocumentController {
   }
 
   // route to upload documents from a folder
-  @UseInterceptors(FilesInterceptor('files', 1000, { preservePath: true }))
-  @Post('folder/:folderId')
+  @UseInterceptors(FilesInterceptor('file', 1000, { preservePath: true }))
+  @Post('folder/:folderId/folder')
   async uploadFolder(
     @Param('folderId', new ParseUUIDPipe()) folderId: string,
     @BlUploadedFiles() files: BlFile[]
