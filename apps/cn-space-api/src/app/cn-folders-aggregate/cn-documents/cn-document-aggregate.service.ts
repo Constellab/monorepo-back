@@ -48,7 +48,16 @@ export class CnDocumentAggregateService {
     const folder = await this.securityService.getAndCheckAuthorizationForFindOne(documentId);
     const document = await this.documentService.findByIdAndCheck(documentId);
 
-    return await this.documentService.getDocumentContentByDocument(folder.getRootFolderId(), document);
+    const fileResponse = await this.documentService.getDocumentContentByDocument(
+      folder.getRootFolderId(),
+      document
+    );
+    return {
+      name: document.name,
+      contentType: fileResponse.contentType,
+      contentLength: fileResponse.contentLength,
+      file: fileResponse.file,
+    };
   }
 
   public async deleteDocument(documentId: string): Promise<boolean> {

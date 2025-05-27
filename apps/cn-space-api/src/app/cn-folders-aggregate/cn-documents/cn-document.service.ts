@@ -209,6 +209,13 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
   }
 
   async renameDocument(rootFolderId: string, document: CnDocument, newName: string): Promise<CnDocument> {
+    // force the extension in the name
+    const newExtensionName = BlFileHelper.getFileExtension(newName);
+    const fileExtension = document.getExtension();
+    if (fileExtension && newExtensionName !== fileExtension) {
+      newName += `.${fileExtension}`;
+    }
+
     const bucketConfig = await this.folderBucketService.getAndCheckFolderBucketConfig(rootFolderId);
     const tags: Partial<CnDocumentS3Tags> = { name: newName };
     await this.objectStorageService.setObjectTags(bucketConfig.bucketConfigs, document.filename, tags);

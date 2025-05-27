@@ -84,7 +84,7 @@ export class CnConstellabDocumentController {
       documentId,
       documentName
     );
-    BlResponseHelper.setFileResponse(response, file);
+    BlResponseHelper.setFileResponse(response, file, 'preview');
   }
 
   /////////////////////////////// History ///////////////////////////////////////////

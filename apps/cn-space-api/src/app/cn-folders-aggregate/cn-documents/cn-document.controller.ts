@@ -1,16 +1,5 @@
 import { BlFile, BlPublic, BlResponseHelper, BlUploadedFile, BlUploadedFiles } from '@monorepo/back-core-lib';
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  ParseUUIDPipe,
-  Post,
-  Put,
-  Res,
-  StreamableFile,
-  UseInterceptors,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Put, Res, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
 import { CnHierarchyObjectTokenDecorator } from '../cn-hierarchy-object-token/cn-hierarchy-object-token-guard.decorator';
@@ -54,9 +43,9 @@ export class CnDocumentController {
     @Param('documentId') documentId: string,
     @Param('filename') _: string,
     @Res() response: Response
-  ): Promise<any> {
+  ): Promise<void> {
     const file = await this.documentAggregateService.getUploadedDocument(documentId);
-    BlResponseHelper.setFileResponse(response, file);
+    BlResponseHelper.setFileResponse(response, file, 'preview');
   }
 
   @CnHierarchyObjectTokenDecorator()
@@ -64,12 +53,13 @@ export class CnDocumentController {
   public async downloadDocument(
     @Param('documentId') documentId: string,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    @Param('filename') _: string
-  ): Promise<StreamableFile> {
+    @Param('filename') _: string,
+    @Res() response: Response
+  ): Promise<void> {
     const file = await this.documentAggregateService.getUploadedDocument(documentId);
 
     // use as any as this still works
-    return BlResponseHelper.getFileResponse(file.file as any);
+    BlResponseHelper.setFileResponse(response, file, 'download');
   }
 
   @Put(':documentId/rename')
@@ -94,6 +84,6 @@ export class CnDocumentController {
   @Get('preview/:token')
   public async getDocumentPreview(@Param('token') token: string, @Res() response: Response): Promise<any> {
     const file = await this.documentAggregateService.getDocumentByPreviewToken(token);
-    BlResponseHelper.setFileResponse(response, file);
+    BlResponseHelper.setFileResponse(response, file, 'download');
   }
 }
