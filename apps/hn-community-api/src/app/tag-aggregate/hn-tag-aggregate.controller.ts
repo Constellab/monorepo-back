@@ -14,7 +14,7 @@ import { HnTagAggregateService } from './hn-tag-aggregate.service';
 import { HnCreateTagKeyDto, HnTagKeyDto } from './tag-key/hn-tag-key.dto';
 import { BlParsePipe, BlPublic } from '@monorepo/back-core-lib';
 import { ClPage } from '@monorepo/core-lib';
-import { HnTagKey, HnTagKeyEditAdditionalInfoSpec } from './tag-key/hn-tag-key.entity';
+import { HnTagKey, HnTagKeyAdditionalInfosSpecs, HnTagParamSpec } from './tag-key/hn-tag-key.entity';
 import { TeRichTextDTO } from '@monorepo/te-text-editor';
 import { HnEditTagValueDto, HnTagValueDto } from './tag-value/hn-tag-value.dto';
 
@@ -30,6 +30,7 @@ export class HnTagAggregateController {
   ): Promise<ClPage<HnTagKeyDto>> {
     const tagKeys: ClPage<HnTagKey> = await this.tagAggregateService.getAllTagKeysWithFilters(
       ['public'],
+      '',
       '',
       page,
       size
@@ -64,6 +65,7 @@ export class HnTagAggregateController {
     const tagKeys: ClPage<HnTagKey> = await this.tagAggregateService.getAllTagKeysWithFilters(
       [],
       '',
+      '',
       page,
       size
     );
@@ -73,6 +75,7 @@ export class HnTagAggregateController {
   @BlPublic()
   @Post('filters')
   async getAllTagKeysWithFilters(
+    @Body('technicalNameFilter') technicalNameFilter: string,
     @Body('spacesFilter') spacesFilter: string[],
     @Body('labelFilter') labelFilter: string,
     @Query('page', new ParseIntPipe()) page: number,
@@ -80,6 +83,7 @@ export class HnTagAggregateController {
   ): Promise<ClPage<HnTagKeyDto>> {
     const tagKeys: ClPage<HnTagKey> = await this.tagAggregateService.getAllTagKeysWithFilters(
       spacesFilter,
+      technicalNameFilter,
       labelFilter,
       page,
       size
@@ -122,31 +126,40 @@ export class HnTagAggregateController {
     return new HnTagKeyDto(tagKey);
   }
 
-  @Post('additional-info-spec/:id')
+  @Post('additional-info-spec/:technicalName')
   async createAdditionalInfoSpec(
-    @Param('id') id: string,
-    @Body() additionalInfoSpec: HnTagKeyEditAdditionalInfoSpec
-  ): Promise<HnTagKeyDto> {
-    const tagKey = await this.tagAggregateService.createAdditionalInfoSpec(id, additionalInfoSpec);
-    return new HnTagKeyDto(tagKey);
+    @Param('technicalName') technicalName: string,
+    @Body('specName') specName: string,
+    @Body('spec') spec: HnTagParamSpec
+  ): Promise<HnTagKeyAdditionalInfosSpecs> {
+    return await this.tagAggregateService.createAdditionalInfoSpec(technicalName, specName, spec);
   }
 
-  @Put('additional-info-spec/:id')
+  @Put('additional-info-spec/:technicalName/:specName')
   async updateAdditionalInfoSpec(
-    @Param('id') id: string,
-    @Body() additionalInfoSpec: HnTagKeyEditAdditionalInfoSpec
-  ): Promise<HnTagKeyDto> {
-    const tagKey = await this.tagAggregateService.updateAdditionalInfoSpec(id, additionalInfoSpec);
-    return new HnTagKeyDto(tagKey);
+    @Param('technicalName') technicalName: string,
+    @Param('specName') specName: string,
+    @Body() spec: HnTagParamSpec
+  ): Promise<HnTagKeyAdditionalInfosSpecs> {
+    return this.tagAggregateService.updateAdditionalInfoSpec(technicalName, specName, spec);
   }
 
-  @Delete('additional-info-spec/:id/:additionalInfoSpecName')
+  @Put('additional-info-spec/:technicalName/:oldName/:newName')
+  async renameAndEditAdditionalInfoSpec(
+    @Param('technicalName') technicalName: string,
+    @Param('oldName') oldName: string,
+    @Param('newName') newName: string,
+    @Body() spec: HnTagParamSpec
+  ): Promise<HnTagKeyAdditionalInfosSpecs> {
+    return this.tagAggregateService.renameAndEditAdditionalInfoSpec(technicalName, oldName, newName, spec);
+  }
+
+  @Delete('additional-info-spec/:technicalName/:specName')
   async deleteAdditionalInfoSpec(
-    @Param('id') id: string,
-    @Param('additionalInfoSpecName') additionalInfoSpecName: string
-  ): Promise<HnTagKeyDto> {
-    const tagKey = await this.tagAggregateService.deleteAdditionalInfoSpec(id, additionalInfoSpecName);
-    return new HnTagKeyDto(tagKey);
+    @Param('technicalName') technicalName: string,
+    @Param('specName') specName: string
+  ): Promise<HnTagKeyAdditionalInfosSpecs> {
+    return await this.tagAggregateService.deleteAdditionalInfoSpec(technicalName, specName);
   }
 
   @Put('publish/:id')

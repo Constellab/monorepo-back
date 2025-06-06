@@ -59,9 +59,27 @@ export class HnTagKeyService {
     });
   }
 
+  async getTagKeyByTechnicalName(technicalName: string, userSpacesIds: string[]): Promise<HnTagKey> {
+    return this.tagKeyRepository.findOne({
+      where: [
+        {
+          technicalName: technicalName,
+          space: {
+            id: In(userSpacesIds),
+          },
+        },
+        {
+          technicalName: technicalName,
+          space: IsNull(),
+        },
+      ],
+    });
+  }
+
   /**
    * Get paginated tag keys with filters
    * @param spacesFilter
+   * @param technicalNameFilter
    * @param labelFilter
    * @param publicSelected
    * @param myTagKeysSelected
@@ -74,6 +92,7 @@ export class HnTagKeyService {
    */
   public async findAllTagKeysWithFiltersPaginated(
     spacesFilter: string[],
+    technicalNameFilter: string,
     labelFilter: string,
     publicSelected: boolean,
     myTagKeysSelected: boolean,
@@ -86,6 +105,7 @@ export class HnTagKeyService {
   ): Promise<ClPage<HnTagKey>> {
     const where = this.buildFindWhereWithFilters(
       spacesFilter,
+      technicalNameFilter,
       labelFilter,
       publicSelected,
       myTagKeysSelected,
@@ -123,7 +143,6 @@ export class HnTagKeyService {
     tagKey.label = createTagKeyDto.label;
     tagKey.type = createTagKeyDto.type;
     tagKey.unit = createTagKeyDto.unit;
-    tagKey.scientificName = createTagKeyDto.scientificName;
     tagKey.space = space;
     tagKey.tagValues = [];
     if (entityManager) {
@@ -149,7 +168,6 @@ export class HnTagKeyService {
     tagKey.label = updateTagKeyDto.label;
     tagKey.type = updateTagKeyDto.type;
     tagKey.unit = updateTagKeyDto.unit;
-    tagKey.scientificName = updateTagKeyDto.scientificName;
     tagKey.space = space;
     return this.tagKeyRepository.save(tagKey);
   }
@@ -179,13 +197,21 @@ export class HnTagKeyService {
    * Update tag key additional infos specs
    * @param tagKey
    * @param additionalInfosSpecs
+   * @param entityManager
    */
   public async updateAdditionalInfosSpecs(
     tagKey: HnTagKey,
-    additionalInfosSpecs: HnTagKeyAdditionalInfosSpecs
-  ): Promise<HnTagKey> {
+    additionalInfosSpecs: HnTagKeyAdditionalInfosSpecs,
+    entityManager: EntityManager = null
+  ): Promise<HnTagKeyAdditionalInfosSpecs> {
     tagKey.additionalInfosSpecs = additionalInfosSpecs;
-    return this.tagKeyRepository.save(tagKey);
+    let savedTagKey: HnTagKey;
+    if (entityManager) {
+      savedTagKey = await entityManager.save(tagKey);
+    } else {
+      savedTagKey = await this.tagKeyRepository.save(tagKey);
+    }
+    return savedTagKey?.additionalInfosSpecs;
   }
 
   /**
@@ -215,8 +241,21 @@ export class HnTagKeyService {
   }
 
   /**
+   * Save tag key
+   * @param tagKey
+   * @param entityManager
+   */
+  public async saveTagKeyWithEntityManager(
+    tagKey: HnTagKey,
+    entityManager: EntityManager
+  ): Promise<HnTagKey> {
+    return entityManager.save(tagKey);
+  }
+
+  /**
    * Build the where clause with filters to get tag keys
    * @param spacesFilter
+   * @param technicalNameFilter
    * @param labelFilter
    * @param publicSelected
    * @param myTagKeysSelected
@@ -228,6 +267,7 @@ export class HnTagKeyService {
    */
   private buildFindWhereWithFilters(
     spacesFilter: string[],
+    technicalNameFilter: string,
     labelFilter: string,
     publicSelected: boolean,
     myTagKeysSelected: boolean,
@@ -351,6 +391,13 @@ export class HnTagKeyService {
           },
         },
       ];
+    }
+
+    if (technicalNameFilter && technicalNameFilter.length > 0) {
+      where = where.map((w) => {
+        w.technicalName = Like(`%${technicalNameFilter}%`);
+        return w;
+      });
     }
 
     if (labelFilter && labelFilter.length > 0) {

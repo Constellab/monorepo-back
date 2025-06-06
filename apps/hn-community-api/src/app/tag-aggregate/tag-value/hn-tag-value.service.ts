@@ -66,6 +66,17 @@ export class HnTagValueService {
   }
 
   /**
+   * Get tag values list by tag key technical name
+   * @param tagKeyId
+   */
+  async getAllTagValuesByTagKeyId(tagKeyId: string): Promise<HnTagValue[]> {
+    return this.tagValueRepository.find({
+      where: { tagKey: { id: tagKeyId } },
+      order: { deprecated: 'ASC' },
+    });
+  }
+
+  /**
    * Get tag values list by tag key id
    * @param tagKeyId
    * @param page
@@ -103,5 +114,30 @@ export class HnTagValueService {
 
   async checkTagHasValues(tagKeyId: string): Promise<boolean> {
     return this.tagValueRepository.exists({ where: { tagKey: { id: tagKeyId } } });
+  }
+
+  async saveTagValueWithEntityManager(
+    tagValue: HnTagValue,
+    entityManager: EntityManager
+  ): Promise<HnTagValue> {
+    return entityManager.save(tagValue);
+  }
+
+  async setAdditionalInfoToNull(
+    tagKeyId: string,
+    additionalInfoName: string,
+    entityManager: EntityManager
+  ): Promise<void> {
+    const tagValues = await this.tagValueRepository.findBy({ tagKey: { id: tagKeyId } });
+    for (const tagValue of tagValues) {
+      if (tagValue.tagKey.id !== tagKeyId) {
+        throw new Error('Tag value not found');
+      }
+      if (!tagValue.additionalInfos) {
+        tagValue.additionalInfos = {};
+      }
+      tagValue.additionalInfos[additionalInfoName] = null;
+      await entityManager.save(tagValue);
+    }
   }
 }

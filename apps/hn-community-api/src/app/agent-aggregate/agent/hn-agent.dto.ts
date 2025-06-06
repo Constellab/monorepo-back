@@ -1,7 +1,7 @@
 import { HnAgentVersionType } from '../agent-version/hn-agent-version.entity';
 import { HnAgent } from './hn-agent.entity';
 import { HnUserDto } from '../../users/hn-user.dto';
-import { HnSpaceDto } from '../../space-aggregate/space/hn-space.dto';
+import { HnSpaceDto, HnSpaceForLabDto } from '../../space-aggregate/space/hn-space.dto';
 import { HnSpace } from '../../space-aggregate/space/hn-space.entity';
 import { HnAgentCoAuthorDto } from '../agent-co-author/hn-agent-co-author.dto';
 import { BlEntityWithIdDTO } from '@monorepo/back-core-lib';
@@ -68,15 +68,10 @@ export class HnAgentVersionFileInput {
   style?: HnTypingStyle;
 }
 
-export interface HnAgentLabSpaceDto {
-  id: string;
-  name: string;
-}
-
 export class HnAgentForLabDto {
   id: string;
   title: string;
-  space?: HnAgentLabSpaceDto;
+  space?: HnSpaceForLabDto;
   created_at?: string;
   last_modified_at?: string;
   created_by?: HnUserDto;

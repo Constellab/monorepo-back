@@ -55,11 +55,8 @@ export class HnTagKey extends BlEntityWithId {
   @Column({ name: 'description', type: 'simple-json', nullable: true })
   description?: TeRichTextDTO;
 
-  @Column({ nullable: true })
-  scientificName?: string;
-
   @Column({ nullable: true, type: 'simple-json' })
-  additionalInfosSpecs?: HnTagKeyAdditionalInfosSpecs;
+  additionalInfosSpecs?: HnTagAdditionalInfoSpecs;
 
   @ManyToOne(() => HnSpace, { eager: true, onUpdate: 'CASCADE', onDelete: 'CASCADE' })
   space?: HnSpace;
@@ -90,12 +87,20 @@ export class HnTagKey extends BlEntityWithId {
   }
 }
 
-export type HnTagKeyAdditionalInfosSpecs = Record<string, HnTagKeyAdditionalInfoSpec>;
+export type HnTagKeyAdditionalInfosSpecs = Record<string, any>;
 
-export interface HnTagKeyAdditionalInfoSpec {
-  optional: boolean;
-}
-
-export interface HnTagKeyEditAdditionalInfoSpec extends HnTagKeyAdditionalInfoSpec {
+export interface HnTagKeyEditAdditionalInfoSpec {
   name: string;
 }
+
+export interface HnTagParamSpec {
+  type: string;
+  optional: boolean;
+  default_value?: any;
+  unit?: string;
+  human_name?: string;
+  short_description?: string;
+  visibility: 'protected' | 'public' | 'private';
+}
+
+export type HnTagAdditionalInfoSpecs = Record<string, HnTagParamSpec>;
