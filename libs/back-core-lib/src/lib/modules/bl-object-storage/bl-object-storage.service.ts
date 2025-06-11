@@ -219,7 +219,6 @@ export class BlObjectStorageService {
   ////////////////////////////////////////// BUCKET //////////////////////////////////////////
 
   public async createBucket(config: BlBucketConfig): Promise<void> {
-    console.log(config);
     const service = this.getService(config);
     return service.createBucket();
   }

@@ -11,9 +11,7 @@ export interface BlEventResponseError {
 }
 
 export class BlEventResponses {
-  constructor(public responses: BlEventResponse[]) {
-    console.log('responses', responses);
-  }
+  constructor(public responses: BlEventResponse[]) {}
 
   public hasError(): boolean {
     return this.responses.some((r) => r.status === 'error');

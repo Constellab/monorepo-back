@@ -1,4 +1,3 @@
-import { Injectable, Logger } from '@nestjs/common';
 import {
   AddressesClient,
   DisksClient,
@@ -8,6 +7,9 @@ import {
   RegionOperationsClient,
   ZoneOperationsClient,
 } from '@google-cloud/compute';
+import { Injectable, Logger } from '@nestjs/common';
+import { existsSync } from 'fs';
+import { Exception } from 'handlebars';
 import { CnCoreConfigService } from '../../../cn-core/modules/cn-core-config/cn-core-config.service';
 import { CnGcpHelper, CnGcpInstance, CnGcpVolume } from './cn-gcp.class';
 
@@ -322,6 +324,16 @@ export class CnGcpService {
   }
 
   private getInstanceClient(): InstancesClient {
+    // First, verify the credentials file exists
+    // we need to check if the credentials file exists,
+    // otherwise GCP throw an error that is not catchable and break the application
+    const credentialsPath = this.configService.getGcpCredentialsFilePath();
+
+    if (!credentialsPath || !existsSync(credentialsPath)) {
+      this.logger.error(`GCP credentials file not found at ${credentialsPath}`);
+      throw new Exception(`GCP credentials file not found.`);
+    }
+
     return new InstancesClient();
   }
 

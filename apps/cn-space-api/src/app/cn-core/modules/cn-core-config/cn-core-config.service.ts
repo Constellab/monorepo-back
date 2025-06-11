@@ -1,14 +1,14 @@
+import { BlMailConfig, BlObjectStorageCredentials, BlTransportModuleConfig } from '@monorepo/back-core-lib';
 import { Inject, Injectable, LogLevel } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { join } from 'path';
 import {
   CN_ENVIRONMENT_PROFILE_KEY,
   CN_ENVIRONMENT_PROFILE_PROD_VALUE,
   CnDatabaseConfig,
   CnEnvironmentProfile,
 } from '../../model/config/cn-config.class';
-import { BlMailConfig, BlObjectStorageCredentials, BlTransportModuleConfig } from '@monorepo/back-core-lib';
 import { CN_CORE_MODULE_CONFIG, CnCoreConfigModuleConfig } from './cn-core-module-config.class';
-import { join } from 'path';
 
 @Injectable()
 export class CnCoreConfigService {
@@ -265,6 +265,10 @@ export class CnCoreConfigService {
 
   public getGcpSshPrivateKeyFilePath(): string {
     return this.configService.get('GCP_SSH_PRIVATE_KEY_FILE_PATH');
+  }
+
+  public getGcpCredentialsFilePath(): string {
+    return this.configService.get('GOOGLE_APPLICATION_CREDENTIALS');
   }
 
   /////////////////////////////// LAB CONFIG ///////////////////////////////
