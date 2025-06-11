@@ -50,7 +50,7 @@
   "two_fa_code_expired": "Code expiré, veuillez en généré un nouveau",
   "lab_req_no_user_in_context": "Aucun utilisateur dans le context",
   "child_folder_end_data_after_parent": "La date de fin du dossier enfant doit être la même ou avant la date de fin du dossier parent",
-  "document_already_exist": "Un document avec le même nom existe déjà",
+  "document_already_exist": "Le document {name} existe déjà dans le dossier",
   "folder_bucket_not_found": "Le stockage pour ce dossier n'a pas été trouvé. Veuillez demander au responsable du dossier de configurer le stockage pour ce dossier (dans les paramètres)",
   "cant_manage_desktop_lab": "Vous ne pouvez pas effectuer cette action sur un data lab desktop",
   "lab_config_not_found": "Configuration du lab non trouvée. Pour un lab cloud, la configuration est créée au démarrage du lab. A-t-il été démarré au moins une fois ?",

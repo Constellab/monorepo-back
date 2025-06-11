@@ -5,25 +5,39 @@ import { Response } from 'express';
 import { CnHierarchyObjectTokenDecorator } from '../cn-hierarchy-object-token/cn-hierarchy-object-token-guard.decorator';
 import { CnHierarchyObject } from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
 import { CnDocumentAggregateService } from './cn-document-aggregate.service';
-import { CnDocumentPreviewDTO } from './cn-document-dto.class';
+import {
+  CnDocumentCheckSameNameRequest,
+  CnDocumentCheckSameNameResponse,
+  CnDocumentPreviewDTO,
+  CnDocumentUploadOverrideMode,
+} from './cn-document-dto.class';
 import { CnDocument } from './cn-document.entity';
 
 @Controller('documents')
 export class CnDocumentController {
   constructor(private documentAggregateService: CnDocumentAggregateService) {}
 
+  @Post('folder/:folderId/check-same-name')
+  public async checkDocumentsExistsInFolder(
+    @Param('folderId', new ParseUUIDPipe()) folderId: string,
+    @Body() body: CnDocumentCheckSameNameRequest
+  ): Promise<CnDocumentCheckSameNameResponse> {
+    return this.documentAggregateService.checkDocumentsExistsInFolder(folderId, body);
+  }
+
   @UseInterceptors(FileInterceptor('file'))
-  @Post('folder/:folderId')
+  @Post('folder/:folderId/upload/files/:overrideMode')
   async uploadDocument(
     @Param('folderId', new ParseUUIDPipe()) folderId: string,
-    @BlUploadedFile() file: BlFile
+    @BlUploadedFile() file: BlFile,
+    @Param('overrideMode') overrideMode: CnDocumentUploadOverrideMode
   ): Promise<CnHierarchyObject> {
-    return this.documentAggregateService.uploadDocument(folderId, file);
+    return this.documentAggregateService.uploadDocument(folderId, file, overrideMode);
   }
 
   // route to upload documents from a folder
   @UseInterceptors(FilesInterceptor('file', 1000, { preservePath: true }))
-  @Post('folder/:folderId/folder')
+  @Post('folder/:folderId/upload/folder')
   async uploadFolder(
     @Param('folderId', new ParseUUIDPipe()) folderId: string,
     @BlUploadedFiles() files: BlFile[]

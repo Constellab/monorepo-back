@@ -25,12 +25,16 @@ import { CnErrorText } from '../../cn-core/model/config/cn-error-text.class';
 import { CnCoreConfigService } from '../../cn-core/modules/cn-core-config/cn-core-config.service';
 import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
 import { CnFolderBucketService } from '../cn-folders/cn-folder-bucket.service';
-import { CnHierarchyObject } from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
+import {
+  CnHierarchyObject,
+  CnHierarchyObjectVisibility,
+} from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
 import { CnHierarchyObjectService } from '../cn-hierarchy-objects/cn-hierarchy-object.service';
 import {
   CnConstellabDocumentDTO,
   CnDocumentPreviewDTO,
   CnDocumentStorageType,
+  CnDocumentUploadOverrideMode,
   CnFolderStorageUsageDTO,
 } from './cn-document-dto.class';
 import { CnDocument, CnDocumentEntity, CnDocumentType, CnDocumentWithHierarchy } from './cn-document.entity';
@@ -39,6 +43,12 @@ import { CnDocumentEvent, cnDocumentEventName, CnDocumentEventType } from './cn-
 interface CnDocumentS3Tags {
   name: string;
   folder: string;
+}
+
+interface CnDocumentUploadOptions {
+  documentName?: string;
+  parentDocument?: CnDocument;
+  overrideMode?: CnDocumentUploadOverrideMode; // default to IGNORE
 }
 
 @Injectable()
@@ -73,8 +83,7 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
     parentFolder: CnHierarchyObject,
     documentType: CnDocumentType,
     entityId: string,
-    documentName?: string,
-    parentDocument?: CnDocument
+    options: CnDocumentUploadOptions = {}
   ): Promise<CnDocument> {
     const bucketsConfig = await this.folderBucketService.getAndCheckFolderBucketConfig(
       parentFolder.getRootFolderId()
@@ -85,15 +94,15 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
       this.checkIfStorageIsFull(file.size);
     }
 
+    let documentName = options.documentName;
+    // handle the override mode
     if (documentName) {
-      const existingDocument = await this.findDocumentByTypeAndNameAndEntity(
+      documentName = await this.handleDocumentOverride(
         documentType,
+        entityId,
         documentName,
-        entityId
+        options.overrideMode
       );
-      if (existingDocument) {
-        throw new BlBadRequestException(CnErrorText.DOCUMENT_ALREADY_EXIST);
-      }
     } else {
       documentName = this.objectStorageService.generateRandomFileNameFromExtension(
         BlFileHelper.getFileExtension(file.originalname)
@@ -112,7 +121,7 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
       // TODO TO IMPROVE
       bucketsConfig.getFirstBucketType(),
       parentFolder,
-      parentDocument
+      options.parentDocument
     );
 
     await this.objectStorageService.uploadObject(bucketsConfig.bucketConfigs, file, {
@@ -132,6 +141,75 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
     return document;
   }
 
+  /**
+   * Method to handle the override mode when uploading a document.
+   * If the document already exists, it will handle the override mode:
+   * - ERROR: throw an error if the document exists
+   * - REPLACE: delete the existing document and upload the new one
+   * - RENAME: rename the new document to avoid conflict (add '_1', '_2', etc. to the name)
+   * @param documentName the name of the new document to upload
+   * @param documentType the type of the document to upload
+   * @param overrideMode the override mode to use
+   * @returns the new document name if renamed, or the original name if not
+   */
+  private async handleDocumentOverride(
+    documentType: CnDocumentType,
+    entityId: string,
+    documentName: string,
+    overrideMode?: CnDocumentUploadOverrideMode
+  ): Promise<string> {
+    if (!overrideMode || overrideMode === CnDocumentUploadOverrideMode.IGNORE) return documentName;
+
+    const existingDocument = await this.repo.findOne({
+      where: {
+        type: documentType,
+        name: documentName,
+        entityId: entityId,
+        hierarchyRepresentation: {
+          visibility: CnHierarchyObjectVisibility.VISIBLE, // only consider visible documents
+        },
+      },
+    });
+
+    if (!existingDocument) return documentName;
+
+    // if the file exists, we need to handle the override mode
+    if (overrideMode === CnDocumentUploadOverrideMode.ERROR) {
+      throw new BlBadRequestException(CnErrorText.DOCUMENT_ALREADY_EXIST, {
+        detailArgs: { name: documentName },
+      });
+    } else if (overrideMode === CnDocumentUploadOverrideMode.REPLACE) {
+      // delete the existing document
+      await this.deleteDocument(existingDocument.id);
+    } else if (overrideMode === CnDocumentUploadOverrideMode.RENAME) {
+      let index = 1;
+      do {
+        const newDocumentName = BlFileHelper.addIndexToFileName(existingDocument.name, index);
+        const newDocument = await this.repo.findOne({
+          where: {
+            type: documentType,
+            name: newDocumentName,
+            entityId: entityId,
+            hierarchyRepresentation: {
+              visibility: CnHierarchyObjectVisibility.VISIBLE, // only consider visible documents
+            },
+          },
+        });
+        if (!newDocument) {
+          documentName = newDocumentName;
+          break;
+        }
+        index++;
+      } while (index < 20); // prevent infinite loop, should not happen
+      if (index >= 20) {
+        throw new BlBadRequestException(
+          'Cannot generate a unique document name, too many documents with same name'
+        );
+      }
+    }
+    return documentName;
+  }
+
   public async uploadImageDocument(
     file: BlFile,
     parentFolder: CnHierarchyObject,
@@ -144,14 +222,10 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
     if (!documentName) {
       documentName = this.objectStorageService.generateRandomFileNameFromExtension(imSize.type);
     }
-    const imageDoc = await this.uploadDocument(
-      file,
-      parentFolder,
-      documentType,
-      entityId,
+    const imageDoc = await this.uploadDocument(file, parentFolder, documentType, entityId, {
       documentName,
-      parentDocument
-    );
+      parentDocument,
+    });
 
     return {
       filename: imageDoc.name,
@@ -446,8 +520,10 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
       parentFolder,
       CnDocumentType.CONSTELLAB_DOCUMENT_CONTENT,
       document.id,
-      fileName,
-      document
+      {
+        documentName: fileName,
+        parentDocument: document,
+      }
     );
 
     return {
@@ -699,14 +775,10 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
     } else {
       throw new BlBadRequestException('Cannot copy a document with this type');
     }
-    const document = await this.uploadDocument(
-      file,
-      targetParentFolder,
-      sourceDocument.type,
-      entityId,
-      sourceDocument.name,
-      parentDocument
-    );
+    const document = await this.uploadDocument(file, targetParentFolder, sourceDocument.type, entityId, {
+      documentName: sourceDocument.name,
+      parentDocument,
+    });
 
     // copy the children document as well
     const children = await this.findChildrenDocuments(sourceDocument.id);
@@ -767,5 +839,21 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
       },
       relations: { hierarchyRepresentation: true },
     });
+  }
+
+  public async documentWithSameNameExists(
+    type: CnDocumentType,
+    names: string[],
+    entityId: string
+  ): Promise<boolean> {
+    const count = await this.repo.count({
+      where: {
+        type: type,
+        name: In(names),
+        entityId: entityId,
+        hierarchyRepresentation: { visibility: CnHierarchyObjectVisibility.VISIBLE },
+      },
+    });
+    return count > 0;
   }
 }

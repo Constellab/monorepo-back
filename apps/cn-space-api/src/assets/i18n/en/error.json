@@ -50,7 +50,7 @@
   "two_fa_code_expired": "Code expired, please generate a new one",
   "lab_req_no_user_in_context": "No user in the context",
   "child_folder_end_data_after_parent": "The end date of the child folder must be the same or before the end date of the parent folder",
-  "document_already_exist": "A document with the same name already exists",
+  "document_already_exist": "The document {name} already exists in the folder",
   "folder_bucket_not_found": "Storage for folder not found. Please ask the folder manager to configure the storage for this folder (in the settings)",
   "cant_manage_desktop_lab": "You can't perform this action on a desktop lab",
   "lab_config_not_found": "Lab config not found. For on cloud lab, the configuration is create on lab start. Was it started once ?",

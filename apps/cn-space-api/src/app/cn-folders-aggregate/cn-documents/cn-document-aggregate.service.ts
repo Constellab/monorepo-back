@@ -10,7 +10,12 @@ import { CnHierarchyObject, CnHierarchyObjectType } from '../cn-hierarchy-object
 import { CnHierarchyObjectService } from '../cn-hierarchy-objects/cn-hierarchy-object.service';
 import { CnNotesService } from '../cn-notes/cn-notes.service';
 import { CnFoldersSecurityService } from '../cn-security/cn-folders-security.service';
-import { CnDocumentPreviewDTO } from './cn-document-dto.class';
+import {
+  CnDocumentCheckSameNameRequest,
+  CnDocumentCheckSameNameResponse,
+  CnDocumentPreviewDTO,
+  CnDocumentUploadOverrideMode,
+} from './cn-document-dto.class';
 import { CnDocument, CnDocumentType } from './cn-document.entity';
 import { CnDocumentService } from './cn-document.service';
 
@@ -28,7 +33,11 @@ export class CnDocumentAggregateService {
     private noteService: CnNotesService
   ) {}
 
-  public async uploadDocument(parentFolderId: string, file: BlFile): Promise<CnHierarchyObject> {
+  public async uploadDocument(
+    parentFolderId: string,
+    file: BlFile,
+    overrideMode: CnDocumentUploadOverrideMode
+  ): Promise<CnHierarchyObject> {
     const folder = await this.securityService.getAndCheckAuthorizationForFindOne(parentFolderId);
 
     const doc = await this.documentService.uploadDocument(
@@ -36,12 +45,26 @@ export class CnDocumentAggregateService {
       folder,
       CnDocumentType.UPLOADED_DOCUMENT,
       folder.id,
-      file.originalname
+      { documentName: file.originalname, overrideMode: overrideMode }
     );
 
     this.eventService.emitFolderEvent('UPLOAD_FOLDER_DOCUMENT', folder, doc);
 
     return this.hierarchyObjectService.findByIdAndCheck(doc.id);
+  }
+
+  public async checkDocumentsExistsInFolder(
+    parentFolderId: string,
+    request: CnDocumentCheckSameNameRequest
+  ): Promise<CnDocumentCheckSameNameResponse> {
+    await this.securityService.getAndCheckAuthorizationForFindOne(parentFolderId);
+
+    const fileWithSameName = await this.documentService.documentWithSameNameExists(
+      CnDocumentType.UPLOADED_DOCUMENT,
+      request.names,
+      parentFolderId
+    );
+    return { folderHasFileWithSameName: fileWithSameName };
   }
 
   public async getUploadedDocument(documentId: string): Promise<BlFileResponse> {
@@ -164,7 +187,7 @@ export class CnDocumentAggregateService {
         currentParent,
         CnDocumentType.UPLOADED_DOCUMENT,
         currentParent.id,
-        fileName
+        { documentName: fileName, overrideMode: CnDocumentUploadOverrideMode.IGNORE }
       );
     }
 

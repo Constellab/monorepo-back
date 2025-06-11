@@ -266,14 +266,10 @@ export class CnNotesService extends BlAbstractService<CnNoteEntity> {
 
     // upload the image only if it does not exist
     if (!document) {
-      await this.documentService.uploadDocument(
-        file,
-        parentFolder,
-        CnDocumentType.NOTE_CONTENT,
-        noteId,
-        filename,
-        parentDocument
-      );
+      await this.documentService.uploadDocument(file, parentFolder, CnDocumentType.NOTE_CONTENT, noteId, {
+        documentName: filename,
+        parentDocument: parentDocument,
+      });
     }
   }
 

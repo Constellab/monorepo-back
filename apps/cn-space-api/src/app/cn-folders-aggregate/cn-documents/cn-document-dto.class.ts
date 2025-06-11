@@ -94,3 +94,18 @@ export class CnDocumentPreviewDTO {
     this.previewUrl = previewUrl;
   }
 }
+
+export enum CnDocumentUploadOverrideMode {
+  IGNORE = 'IGNORE', // ignore the new document if it already exists
+  ERROR = 'ERROR', // throw an error if the document already exists
+  REPLACE = 'REPLACE', // replace the existing document with the new one
+  RENAME = 'RENAME', // rename the new document with '_1' if it already exists
+}
+
+export interface CnDocumentCheckSameNameRequest {
+  names: string[];
+}
+
+export interface CnDocumentCheckSameNameResponse {
+  folderHasFileWithSameName: boolean;
+}
