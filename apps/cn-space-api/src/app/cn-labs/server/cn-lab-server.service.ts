@@ -1,6 +1,11 @@
+import { BlBadRequestException } from '@monorepo/back-core-lib';
 import { Injectable, Logger } from '@nestjs/common';
-import { CnCloudProviderOvhService } from './ovh/cn-cloud-provider-ovh.service';
-import { CnCloudProviderService } from './cn-cloud-provider.service';
+import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
+import { CnExternalLabApiService } from '../../cn-external-lab-api/cn-external-lab-api.service';
+import { CnLab } from '../cn-lab.entity';
+import { CnLabsService } from '../cn-labs.service';
+import { CnLabServerTaskStatus } from '../status/cn-lab-status.enum';
+import { CnLabVolume } from '../volume/cn-lab-volume-entity';
 import {
   CnCpCompleteInfo,
   CnCpCreateInstanceRequest,
@@ -11,14 +16,9 @@ import {
   CnCpStaticIpAddress,
   CnCpVolume,
 } from './cn-cloud-provider.class';
-import { CnLab } from '../cn-lab.entity';
-import { CnLabsService } from '../cn-labs.service';
-import { CnLabServerTaskStatus } from '../status/cn-lab-status.enum';
-import { BlBadRequestException } from '@monorepo/back-core-lib';
-import { CnExternalLabApiService } from '../../cn-external-lab-api/cn-external-lab-api.service';
 import { CnCloudProviderFactory } from './cn-cloud-provider.factory';
-import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
-import { CnLabVolume } from '../volume/cn-lab-volume-entity';
+import { CnCloudProviderService } from './cn-cloud-provider.service';
+import { CnCloudProviderOvhService } from './ovh/cn-cloud-provider-ovh.service';
 
 /**
  * Service to manage the lab server via the cloud provider
@@ -563,6 +563,9 @@ export class CnLabServerService {
   }
 
   public async getLabServerStatus(lab: CnLab): Promise<CnCpInstanceStatusObject> {
+    if (lab.serverInstanceId == null) {
+      throw new BlBadRequestException(`Lab has no server instance, it cannot be fetched`);
+    }
     const cloudProviderService = await this.cloudProviderFactory.getCloudProviderServiceFromLab(lab.id);
     const serverInstance = await cloudProviderService.getInstance(
       lab.serverInstanceId,
