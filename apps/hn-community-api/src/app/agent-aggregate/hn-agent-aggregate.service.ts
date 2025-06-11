@@ -229,7 +229,7 @@ export class HnAgentAggregateService {
     for (const spaceId of spacesFilter) {
       if (spaceId === 'public') publicSelected = true;
       else if (spaceId === 'my-agents') myAgentsSelected = true;
-      else await this.spaceAggregateService.assertCheckSpaceUser(spaceId, currentUser.id);
+      else await this.spaceAggregateService.assertCheckSpaceUser(spaceId, currentUser?.id);
     }
     let userSpacesIds: string[] = null;
     let coAuthorAgentsIds: string[] = [];

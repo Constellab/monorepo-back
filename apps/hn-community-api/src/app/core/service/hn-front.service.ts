@@ -104,6 +104,19 @@ export class HnFrontService {
     return `${this.getAppUrl(appId, appTitlePath)}/detail`;
   }
 
+  ////////////////////////////// TAGS ///////////////////////////////////////////
+  public getTagsUrl(): string {
+    return `${this.getBaseWebsiteURL()}/tags`;
+  }
+
+  public getTagUrl(tagTechnicalName: string): string {
+    return `${this.getTagsUrl()}/${tagTechnicalName}`;
+  }
+
+  public getTagInviteUrl(token: string): string {
+    return `${this.getTagsUrl()}/invite/${token}`;
+  }
+
   ///////////////////////////// USERS ///////////////////////////////////////////
   public getUserProfileUrl(userId: string): string {
     return `${this.getBaseWebsiteURL()}/profile/${userId}`;

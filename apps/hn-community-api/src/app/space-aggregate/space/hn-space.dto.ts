@@ -11,3 +11,8 @@ export class HnSpaceDto {
     this.photo = space.photo;
   }
 }
+
+export interface HnSpaceForLabDto {
+  id: string;
+  name: string;
+}
