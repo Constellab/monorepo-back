@@ -52,6 +52,13 @@ export class HnTagValueService {
     return this.tagValueRepository.save(tagValue);
   }
 
+  async updateTagValueWithEntityManager(
+    tagValue: HnTagValue,
+    entityManager: EntityManager
+  ): Promise<HnTagValue> {
+    return entityManager.save(tagValue, { listeners: false });
+  }
+
   /**
    * Get tag value by id
    * @param id

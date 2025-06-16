@@ -100,6 +100,7 @@ export interface HnTagParamSpec {
   unit?: string;
   human_name?: string;
   short_description?: string;
+  additional_info?: Record<string, any>;
   visibility: 'protected' | 'public' | 'private';
 }
 
