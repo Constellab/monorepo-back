@@ -10,9 +10,10 @@ import { lastValueFrom } from 'rxjs';
 import { HnUser } from '../users/hn-user.entity';
 
 export interface HnExternalCheckCredentialResponse {
-  status: 'OK' | '2FA_REQUIRED';
+  status: 'OK' | '2FA_REQUIRED' | 'ERROR';
   user?: HnUser;
   twoFAUrlCode?: string;
+  error?: any;
 }
 
 /**
@@ -31,12 +32,9 @@ export class HnSpaceAuthService {
         this.blExternalApiService.post(this.buildRoute('external/check-credentials'), credentials)
       );
     } catch (e: any) {
-      if (e.status >= 500 && e.status < 600) {
-        throw new BlUnauthorizedException('Space disconnected');
-      }
       return {
-        status: '2FA_REQUIRED',
-        user: null,
+        status: 'ERROR',
+        error: e,
       };
     }
   }

@@ -25,6 +25,11 @@ export class HnAuthService {
       ? await this.userService.getUserCredentialsResponse(credentials)
       : await this.spaceAuthService.checkUserCredential(credentials);
 
+    // if the user is not found, return an error
+    if (checkCredential.status === 'ERROR') {
+      throw checkCredential.error;
+    }
+
     // if there is no 2FA, the user can be logged in
     if (checkCredential.status === 'OK' && checkCredential.user) {
       let user: HnUser = await this.userService.findOne(checkCredential.user.id);
