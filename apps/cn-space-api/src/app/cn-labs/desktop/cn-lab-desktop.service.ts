@@ -22,7 +22,7 @@ export class CnLabDesktopService {
 
   private static readonly CONTAINER_PORT = 3080;
   private static readonly IMAGE = 'constellab/lab-manager:latest';
-  private static readonly CONTAINER_NAME = 'lab-manager';
+  private static readonly CONTAINER_NAME = 'lab_manager';
 
   constructor(
     private labManagerService: CnLabManagerService,
