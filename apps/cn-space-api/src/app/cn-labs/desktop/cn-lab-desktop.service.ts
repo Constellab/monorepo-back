@@ -21,7 +21,8 @@ export class CnLabDesktopService {
   private static readonly NETWORKS = ['gencovery-network-prod', 'gencovery-network-dev'];
 
   private static readonly CONTAINER_PORT = 3080;
-  private static readonly IMAGE = 'constellab/lab-manager:latest';
+  private static readonly LAB_MANAGER_IMAGE = 'constellab/lab-manager:latest';
+  private static readonly LAB_MANAGER_STANDALONE_FRONT_IMAGE = 'constellab/lab-manager-standalone:latest';
   private static readonly CONTAINER_NAME = 'lab_manager';
 
   constructor(
@@ -55,10 +56,12 @@ export class CnLabDesktopService {
   }
 
   public getUpdateAndRunLabManagerCommand(lab: CnLab): string {
-    const pullCommand = `docker pull ${CnLabDesktopService.IMAGE}`;
-    const deleteCommand = `docker rm -f ${CnLabDesktopService.CONTAINER_NAME}`;
-
-    return pullCommand + '\n' + deleteCommand + '\n' + this.getRunLabManagerCommand(lab);
+    return (
+      `docker pull ${CnLabDesktopService.LAB_MANAGER_IMAGE}\n` +
+      `docker pull ${CnLabDesktopService.LAB_MANAGER_STANDALONE_FRONT_IMAGE}\n` +
+      `docker rm -f ${CnLabDesktopService.CONTAINER_NAME}\n` +
+      this.getRunLabManagerCommand(lab)
+    );
   }
 
   private getRunLabManagerCommand(lab: CnLab): string {
