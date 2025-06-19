@@ -311,3 +311,6 @@ alter table folder_user add foreign key FK_folder_user_shared_by
 
 alter table folder drop foreign key FK_34673de22eda86531dd8ab2ce22;
 alter table folder drop column leaderId;
+
+########################### 2.9.0 ##########################
+-- Add LAB_MANAGER_STANDALONE_FRONT_VERSION=latest env variable

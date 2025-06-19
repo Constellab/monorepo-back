@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { CnLab, CnLabWithSpace } from '../cn-lab.entity';
-import { CnLabManagerService } from '../cn-lab-manager.service';
-import { CnLabManagerInitConfig } from '../../cn-external-lab-api/model/cn-lab-manager.class';
-import { CnLabDesktopGenerateConfig } from './cn-lab-desktop.class';
 import { CnCoreConfigService } from '../../cn-core/modules/cn-core-config/cn-core-config.service';
+import { CnLabManagerInitConfig } from '../../cn-external-lab-api/model/cn-lab-manager.class';
+import { CnLabManagerService } from '../cn-lab-manager.service';
+import { CnLab, CnLabWithSpace } from '../cn-lab.entity';
+import { CnLabDesktopGenerateConfig } from './cn-lab-desktop.class';
 
 @Injectable()
 export class CnLabDesktopService {
@@ -17,6 +17,8 @@ export class CnLabDesktopService {
     'lab-manager-prod-data': '/app/prod/data',
     'lab-manager-dev-lab': '/app/dev/lab',
   };
+
+  private static readonly NETWORKS = ['gencovery-network-prod', 'gencovery-network-dev'];
 
   private static readonly CONTAINER_PORT = 3080;
   private static readonly IMAGE = 'constellab/lab-manager:latest';
@@ -45,7 +47,11 @@ export class CnLabDesktopService {
       .map((volume) => `docker volume create ${volume}`)
       .join('\n');
 
-    return volumes + '\n' + this.getRunLabManagerCommand(lab);
+    const networks = CnLabDesktopService.NETWORKS.map(
+      (network) => `docker network create -d bridge ${network}`
+    ).join('\n');
+
+    return volumes + '\n' + networks + '\n' + this.getRunLabManagerCommand(lab);
   }
 
   public getUpdateAndRunLabManagerCommand(lab: CnLab): string {
@@ -71,6 +77,8 @@ export class CnLabDesktopService {
       ` -e DESKTOP_COMMUNITY_API_URL=${this.coreConfigService.getCommunityApiUrl()}` +
       ` -e DESKTOP_COMMUNITY_FRONT_URL=${this.coreConfigService.getCommunityFrontUrl()}` +
       ` -e VOLUME_PATH=/app/conf` +
+      ` -e LAB_MANAGER_STANDALONE_FRONT_VERSION=` +
+      this.coreConfigService.getLabManagerStandaloneFrontVersion() +
       volumesUsage +
       // mount the docker socket to be able to run docker command in the container
       ` -v /var/run/docker.sock:/var/run/docker.sock` +
