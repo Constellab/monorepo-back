@@ -120,7 +120,7 @@ export class HnTagKeyService {
       size,
       {
         where: where,
-        order: { createdAt: 'DESC' as any },
+        order: { deprecated: 'ASC' as any, createdAt: 'DESC' as any },
       },
       this.tagKeyRepository.manager,
       HnTagKey
@@ -234,10 +234,11 @@ export class HnTagKeyService {
   /**
    * Deprecate tag key
    * @param tagKey
+   * @param entityManager
    */
-  public async deprecateTagKey(tagKey: HnTagKey): Promise<HnTagKey> {
+  public async deprecateTagKey(tagKey: HnTagKey, entityManager: EntityManager): Promise<HnTagKey> {
     tagKey.deprecated = true;
-    return this.tagKeyRepository.save(tagKey);
+    return entityManager.save(tagKey);
   }
 
   /**

@@ -265,8 +265,18 @@ export class HnTagAggregateService {
 
   async deleteTagKey(tagKeyId: string): Promise<HnTagKey> {
     const tagKey = await this.getTagKeyAndCheckRights(tagKeyId);
-    if (tagKey.publishedAt) return this.tagKeyService.deprecateTagKey(tagKey);
+    if (tagKey.publishedAt) return this.deprecateTagKey(tagKey);
     return this.tagKeyService.deleteTagKey(tagKey);
+  }
+
+  async deprecateTagKey(tagKey: HnTagKey): Promise<HnTagKey> {
+    return this.dataSource.transaction(async (entityManager) => {
+      const tagValues = await this.tagValueService.getAllTagValuesByTagKeyId(tagKey.id);
+      for (const tagValue of tagValues) {
+        await this.tagValueService.deprecatedTagValueWithEntityManager(tagValue, entityManager);
+      }
+      return this.tagKeyService.deprecateTagKey(tagKey, entityManager);
+    });
   }
 
   //////////////////////////////// TAG VALUE ////////////////////////////////

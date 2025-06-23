@@ -119,6 +119,14 @@ export class HnTagValueService {
     return this.tagValueRepository.save(tagValue);
   }
 
+  async deprecatedTagValueWithEntityManager(
+    tagValue: HnTagValue,
+    entityManager: EntityManager
+  ): Promise<HnTagValue> {
+    tagValue.deprecated = true;
+    return entityManager.save(tagValue);
+  }
+
   async checkTagHasValues(tagKeyId: string): Promise<boolean> {
     return this.tagValueRepository.exists({ where: { tagKey: { id: tagKeyId } } });
   }

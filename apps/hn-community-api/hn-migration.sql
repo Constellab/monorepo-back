@@ -324,3 +324,23 @@ CREATE TABLE `tag_co_author_invite` (
                                       CONSTRAINT `FK_ece61b41b451dda3460fe660489` FOREIGN KEY (`tagKeyId`) REFERENCES `tag_key` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+# 1.8.1
+-- Fix story delete bug
+
+ALTER TABLE `like_story`
+DROP FOREIGN KEY `FK_26d6b630fdc9fc41e02f7da52e8`;
+
+ALTER TABLE `like_story`
+  ADD CONSTRAINT `FK_26d6b630fdc9fc41e02f7da52e8`
+    FOREIGN KEY (`entityId`) REFERENCES `story` (`id`)
+      ON DELETE CASCADE
+      ON UPDATE NO ACTION;
+
+ALTER TABLE `like_brick`
+DROP FOREIGN KEY `FK_0f838a8e0820433db7f7f3d886e`;
+
+ALTER TABLE `like_brick`
+  ADD CONSTRAINT `FK_0f838a8e0820433db7f7f3d886e`
+    FOREIGN KEY (`entityId`) REFERENCES `brick` (`id`)
+      ON DELETE CASCADE
+      ON UPDATE NO ACTION;
