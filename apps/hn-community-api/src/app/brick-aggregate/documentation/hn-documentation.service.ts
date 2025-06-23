@@ -8,16 +8,13 @@ import { TeRichText, TeRichTextAggregate } from '@monorepo/te-text-editor';
 import { HnNodeDTO } from '../folder/hn-folder.dto';
 import { HnFolder } from '../folder/hn-folder.entity';
 import { ClStringHelper } from '@monorepo/core-lib';
-import { HnDocumentationFileService } from '../documentation-file/hn-documentation-file.service';
-import { HnDocumentationFile } from '../documentation-file/hn-documentation-file.entity';
 import { HnCurrentUserHelper } from '../../core/utils/hn-current-user.helper';
 
 @Injectable()
 export class HnDocumentationService {
   constructor(
     @InjectRepository(HnDocumentation)
-    private documentationsRepository: Repository<HnDocumentation>,
-    private docFileService: HnDocumentationFileService
+    private documentationsRepository: Repository<HnDocumentation>
   ) {}
 
   async createMainDoc(mainFolder: HnFolder, entityManager: EntityManager): Promise<void> {
@@ -160,10 +157,6 @@ export class HnDocumentationService {
         },
       },
     });
-  }
-
-  async getDocFile(fileName: string): Promise<HnDocumentationFile> {
-    return this.docFileService.getDocumentationFileByFileName(fileName);
   }
 
   ///////////////////////////////////////// HISTORY /////////////////////////////////////////

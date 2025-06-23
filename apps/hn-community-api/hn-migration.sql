@@ -344,3 +344,5 @@ ALTER TABLE `like_brick`
     FOREIGN KEY (`entityId`) REFERENCES `brick` (`id`)
       ON DELETE CASCADE
       ON UPDATE NO ACTION;
+
+DROP TABLE IF EXISTS `story_file`, `documentation_file`;
