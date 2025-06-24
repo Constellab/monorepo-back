@@ -13,7 +13,6 @@ import { HnStoryAuthorInviteService } from '../story-author-invite/hn-story-auth
 import { HnCoreModule } from '../core/hn-core.module';
 import { HnFileStoryService } from '../file-aggregate/file-story/hn-file-story.service';
 import { HnFileStoryModule } from '../file-aggregate/file-story/hn-file-story.module';
-import { HnStoryFileModule } from '../story-file/hn-story-file.module';
 import { HnCoreConfigModule } from '../core/modules/core-config/hn-core-config.module';
 import { HnCommunityStoryListener } from './hn-story.listener';
 
@@ -27,7 +26,6 @@ import { HnCommunityStoryListener } from './hn-story.listener';
     HnUserModule,
     HnStoryAuthorInviteModule,
     HnFileStoryModule,
-    HnStoryFileModule,
     HnCoreConfigModule,
   ],
   exports: [TypeOrmModule, HnStoryService],

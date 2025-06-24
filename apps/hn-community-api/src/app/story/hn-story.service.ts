@@ -150,8 +150,10 @@ export class HnStoryService extends BlAbstractService<HnStory> {
     for (const storyCoAuthorsInvite of storyCoAuthorsInvites) {
       try {
         await entityManager.delete(HnStoryCoAuthorInvite, storyCoAuthorsInvite.id);
-      } catch (e) {
-        throw new BlBadRequestException('Error during the deletion of a story co-author invite');
+      } catch (e: any) {
+        throw new BlBadRequestException(
+          'Error during the deletion of a story co-author invite : ' + e?.message
+        );
       }
     }
   }
@@ -162,8 +164,8 @@ export class HnStoryService extends BlAbstractService<HnStory> {
     for (const storyCoAuthor of storyCoAuthors) {
       try {
         await entityManager.delete(HnStoryCoAuthor, storyCoAuthor.id);
-      } catch (e) {
-        throw new BlBadRequestException('Error during the deletion of a story co-author');
+      } catch (e: any) {
+        throw new BlBadRequestException('Error during the deletion of a story co-author : ' + e?.message);
       }
     }
   }
@@ -561,7 +563,7 @@ export class HnStoryService extends BlAbstractService<HnStory> {
   async updateLikes(storyId: string, numberOfLikes: number): Promise<void> {
     const story: HnStory = await this.getStory(storyId);
     story.likes = numberOfLikes;
-    await this.storyRepository.save(story);
+    await this.storyRepository.save(story, { listeners: false });
   }
 
   ////////////////////////////////////// COMMENTS ////////////////////////////////////////
@@ -569,7 +571,7 @@ export class HnStoryService extends BlAbstractService<HnStory> {
   async updateComments(storyId: string, numberOfComments: number): Promise<void> {
     const story: HnStory = await this.getStory(storyId);
     story.comments = numberOfComments;
-    await this.storyRepository.save(story);
+    await this.storyRepository.save(story, { listeners: false });
   }
 
   //////////////////////////////////// STORY FILES /////////////////////////////////////

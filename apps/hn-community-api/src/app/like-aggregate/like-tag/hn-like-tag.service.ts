@@ -1,0 +1,29 @@
+import { Injectable } from '@nestjs/common';
+import { HnAbstractLikeService } from '../like-core/hn-abstract-like.service';
+import { HnTagKey } from '../../tag-aggregate/tag-key/hn-tag-key.entity';
+import { HnTagKeyService } from '../../tag-aggregate/tag-key/hn-tag-key.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { HnLikeTag } from './hn-like-tag.entity';
+import { Repository } from 'typeorm';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+
+@Injectable()
+export class HnLikeTagService extends HnAbstractLikeService<HnTagKey> {
+  constructor(
+    private tagKeyService: HnTagKeyService,
+    @InjectRepository(HnLikeTag) likeTagRepository: Repository<HnLikeTag>,
+    eventEmitter: EventEmitter2
+  ) {
+    super(likeTagRepository, eventEmitter);
+  }
+
+  async getEntityAndCheckRightsById(entityId: string): Promise<HnTagKey> {
+    return this.tagKeyService.getTagKeyById(entityId);
+  }
+
+  createLike(entity: HnTagKey): HnLikeTag {
+    const tagLike: HnLikeTag = new HnLikeTag();
+    tagLike.entity = entity;
+    return tagLike;
+  }
+}

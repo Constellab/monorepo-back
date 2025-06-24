@@ -76,6 +76,24 @@ export class HnTagKeyService {
     });
   }
 
+  async updateLikes(tagKeyLike: string, numberOfLikes: number): Promise<void> {
+    const tagKey = await this.getTagKeyById(tagKeyLike);
+    if (!tagKey) {
+      throw new Error('Tag not found');
+    }
+    tagKey.likes = numberOfLikes;
+    await this.tagKeyRepository.save(tagKey, { listeners: false });
+  }
+
+  async updateComments(tagKeyId: string, numberOfComments: number): Promise<void> {
+    const tagKey = await this.getTagKeyById(tagKeyId);
+    if (!tagKey) {
+      throw new Error('Tag not found');
+    }
+    tagKey.comments = numberOfComments;
+    await this.tagKeyRepository.save(tagKey);
+  }
+
   /**
    * Get paginated tag keys with filters
    * @param spacesFilter
@@ -120,7 +138,7 @@ export class HnTagKeyService {
       size,
       {
         where: where,
-        order: { createdAt: 'DESC' as any },
+        order: { deprecated: 'ASC' as any, createdAt: 'DESC' as any },
       },
       this.tagKeyRepository.manager,
       HnTagKey
@@ -234,10 +252,11 @@ export class HnTagKeyService {
   /**
    * Deprecate tag key
    * @param tagKey
+   * @param entityManager
    */
-  public async deprecateTagKey(tagKey: HnTagKey): Promise<HnTagKey> {
+  public async deprecateTagKey(tagKey: HnTagKey, entityManager: EntityManager): Promise<HnTagKey> {
     tagKey.deprecated = true;
-    return this.tagKeyRepository.save(tagKey);
+    return entityManager.save(tagKey);
   }
 
   /**

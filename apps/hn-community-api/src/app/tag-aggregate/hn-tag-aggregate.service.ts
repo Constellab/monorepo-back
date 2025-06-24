@@ -196,9 +196,13 @@ export class HnTagAggregateService {
     const tagKey = await this.getTagKeyByTechnicalName(technicalName);
     const additionalInfosSpecs: HnTagKeyAdditionalInfosSpecs = tagKey.additionalInfosSpecs || {};
     if (additionalInfosSpecs[specName]) {
-      throw new Error(`Additional info spec ${specName} already exists`);
+      throw new Error(`Additional info spec '${specName}' already exists`);
     }
     additionalInfosSpecs[specName] = spec;
+    additionalInfosSpecs[specName]['visibility'] = 'public'; // Default visibility for additional info specs
+    if (!spec.optional && (await this.checkIfTagHasValues(tagKey))) {
+      throw new Error(`Additional info spec '${specName}'is not optional and the tag key has values`);
+    }
     return this.tagKeyService.updateAdditionalInfosSpecs(tagKey, additionalInfosSpecs);
   }
 
@@ -213,6 +217,7 @@ export class HnTagAggregateService {
       throw new Error(`Additional info spec ${specName} does not exist`);
     }
     additionalInfosSpecs[specName] = spec;
+    additionalInfosSpecs[specName]['visibility'] = 'public'; // Default visibility for additional info specs
     return this.tagKeyService.updateAdditionalInfosSpecs(tagKey, additionalInfosSpecs);
   }
 
@@ -232,6 +237,7 @@ export class HnTagAggregateService {
     }
     delete additionalInfosSpecs[oldName];
     additionalInfosSpecs[newName] = spec;
+    additionalInfosSpecs[newName]['visibility'] = 'public'; // Default visibility for additional info specs
     return this.tagKeyService.updateAdditionalInfosSpecs(tagKey, additionalInfosSpecs);
   }
 
@@ -259,8 +265,18 @@ export class HnTagAggregateService {
 
   async deleteTagKey(tagKeyId: string): Promise<HnTagKey> {
     const tagKey = await this.getTagKeyAndCheckRights(tagKeyId);
-    if (tagKey.publishedAt) return this.tagKeyService.deprecateTagKey(tagKey);
+    if (tagKey.publishedAt) return this.deprecateTagKey(tagKey);
     return this.tagKeyService.deleteTagKey(tagKey);
+  }
+
+  async deprecateTagKey(tagKey: HnTagKey): Promise<HnTagKey> {
+    return this.dataSource.transaction(async (entityManager) => {
+      const tagValues = await this.tagValueService.getAllTagValuesByTagKeyId(tagKey.id);
+      for (const tagValue of tagValues) {
+        await this.tagValueService.deprecatedTagValueWithEntityManager(tagValue, entityManager);
+      }
+      return this.tagKeyService.deprecateTagKey(tagKey, entityManager);
+    });
   }
 
   //////////////////////////////// TAG VALUE ////////////////////////////////

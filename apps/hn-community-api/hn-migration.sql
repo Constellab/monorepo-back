@@ -249,76 +249,100 @@ ADD COLUMN `title_path` varchar(255) DEFAULT NULL;
 -- Rename keys CENTRAL_API_URL to SPACE_API_URL and CENTRAL_API_KEY to SPACE_API_KEY
 
 # 1.8.0
+
 DROP TABLE IF EXISTS `tag_key`;
 CREATE TABLE `tag_key` (
-   `id` varchar(36) NOT NULL,
-   `technicalName` varchar(255) NOT NULL,
-   `label` varchar(255) NOT NULL,
-   `type` enum('STRING','INTEGER','FLOAT','BOOLEAN', 'DATETIME') NOT NULL,
-   `deprecated` tinyint(4) NOT NULL DEFAULT 0,
-   `createdAt` datetime DEFAULT NULL,
-   `lastModifiedAt` datetime DEFAULT NULL,
-   `publishedAt` datetime DEFAULT NULL,
-   `unit` varchar(255) DEFAULT NULL,
-   `description` text DEFAULT NULL,
-   `scientificName` varchar(255) DEFAULT NULL,
-   `additionalInfosSpecs` text DEFAULT NULL,
-   `createdById` varchar(36) DEFAULT NULL,
-   `lastModifiedById` varchar(36) DEFAULT NULL,
-   `spaceId` varchar(36) DEFAULT NULL,
-   PRIMARY KEY (`id`),
-   UNIQUE KEY `IDX_383c39ab37dfd85d5395a1858d` (`technicalName`),
-   KEY `FK_aab39dc0acffc09e6a199506fc6` (`createdById`),
-   KEY `FK_50abee9f56ae1bc33006065ef10` (`lastModifiedById`),
-   KEY `FK_9bcd532ef7f1bf88ba44dde9f81` (`spaceId`),
-   CONSTRAINT `FK_50abee9f56ae1bc33006065ef10` FOREIGN KEY (`lastModifiedById`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-   CONSTRAINT `FK_9bcd532ef7f1bf88ba44dde9f81` FOREIGN KEY (`spaceId`) REFERENCES `space` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-   CONSTRAINT `FK_aab39dc0acffc09e6a199506fc6` FOREIGN KEY (`createdById`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+                         `id` varchar(36) NOT NULL,
+                         `technicalName` varchar(255) NOT NULL,
+                         `label` varchar(255) NOT NULL,
+                         `type` enum('STRING','INTEGER','FLOAT','BOOLEAN','DATETIME') NOT NULL,
+                         `deprecated` tinyint(4) NOT NULL DEFAULT 0,
+                         `createdAt` datetime DEFAULT NULL,
+                         `lastModifiedAt` datetime DEFAULT NULL,
+                         `publishedAt` datetime DEFAULT NULL,
+                         `unit` varchar(255) DEFAULT NULL,
+                         `description` text DEFAULT NULL,
+                         `additionalInfosSpecs` text DEFAULT NULL,
+                         `createdById` varchar(36) DEFAULT NULL,
+                         `lastModifiedById` varchar(36) DEFAULT NULL,
+                         `spaceId` varchar(36) DEFAULT NULL,
+                         PRIMARY KEY (`id`),
+                         UNIQUE KEY `IDX_383c39ab37dfd85d5395a1858d` (`technicalName`),
+                         KEY `FK_aab39dc0acffc09e6a199506fc6` (`createdById`),
+                         KEY `FK_50abee9f56ae1bc33006065ef10` (`lastModifiedById`),
+                         KEY `FK_9bcd532ef7f1bf88ba44dde9f81` (`spaceId`),
+                         CONSTRAINT `FK_50abee9f56ae1bc33006065ef10` FOREIGN KEY (`lastModifiedById`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+                         CONSTRAINT `FK_9bcd532ef7f1bf88ba44dde9f81` FOREIGN KEY (`spaceId`) REFERENCES `space` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+                         CONSTRAINT `FK_aab39dc0acffc09e6a199506fc6` FOREIGN KEY (`createdById`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 
 DROP TABLE IF EXISTS `tag_value`;
 CREATE TABLE `tag_value` (
-   `id` varchar(36) NOT NULL,
-   `value` varchar(255) NOT NULL,
-   `deprecated` tinyint(4) NOT NULL,
-   `shortDescription` varchar(255) DEFAULT NULL,
-   `additionalInfos` text DEFAULT NULL,
-   `tagKeyId` varchar(36) DEFAULT NULL,
-   PRIMARY KEY (`id`),
-   UNIQUE KEY `IDX_1c45e2461f13df193431ecf7c4` (`value`),
-   KEY `FK_f35fd43511833656868b1694b4b` (`tagKeyId`),
-   CONSTRAINT `FK_f35fd43511833656868b1694b4b` FOREIGN KEY (`tagKeyId`) REFERENCES `tag_key` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+                           `id` varchar(36) NOT NULL,
+                           `value` varchar(255) NOT NULL,
+                           `deprecated` tinyint(4) NOT NULL,
+                           `shortDescription` varchar(255) DEFAULT NULL,
+                           `additionalInfos` text DEFAULT NULL,
+                           `tagKeyId` varchar(36) DEFAULT NULL,
+                           PRIMARY KEY (`id`),
+                           UNIQUE KEY `IDX_1c45e2461f13df193431ecf7c4` (`value`),
+                           KEY `FK_f35fd43511833656868b1694b4b` (`tagKeyId`),
+                           CONSTRAINT `FK_f35fd43511833656868b1694b4b` FOREIGN KEY (`tagKeyId`) REFERENCES `tag_key` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 DROP TABLE IF EXISTS `tag_co_author`;
 CREATE TABLE `tag_co_author` (
-   `id` varchar(36) NOT NULL,
-   `tagKeyId` varchar(36) DEFAULT NULL,
-   `userId` varchar(36) DEFAULT NULL,
-   PRIMARY KEY (`id`),
-   KEY `FK_054371d7acc567ab19e9c2a3644` (`tagKeyId`),
-   KEY `FK_cab144e29c322457d212979f52b` (`userId`),
-   CONSTRAINT `FK_054371d7acc567ab19e9c2a3644` FOREIGN KEY (`tagKeyId`) REFERENCES `tag_key` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-   CONSTRAINT `FK_cab144e29c322457d212979f52b` FOREIGN KEY (`userId`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+                               `id` varchar(36) NOT NULL,
+                               `tagKeyId` varchar(36) DEFAULT NULL,
+                               `userId` varchar(36) DEFAULT NULL,
+                               PRIMARY KEY (`id`),
+                               KEY `FK_054371d7acc567ab19e9c2a3644` (`tagKeyId`),
+                               KEY `FK_cab144e29c322457d212979f52b` (`userId`),
+                               CONSTRAINT `FK_054371d7acc567ab19e9c2a3644` FOREIGN KEY (`tagKeyId`) REFERENCES `tag_key` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+                               CONSTRAINT `FK_cab144e29c322457d212979f52b` FOREIGN KEY (`userId`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 
 DROP TABLE IF EXISTS `tag_co_author_invite`;
 CREATE TABLE `tag_co_author_invite` (
-  `id` varchar(36) NOT NULL,
-  `createdAt` datetime DEFAULT NULL,
-  `lastModifiedAt` datetime DEFAULT NULL,
-  `email` varchar(255) NOT NULL,
-  `status` enum('ACCEPTED','PENDING') NOT NULL DEFAULT 'PENDING',
-  `token` varchar(255) NOT NULL,
-  `createdById` varchar(36) DEFAULT NULL,
-  `lastModifiedById` varchar(36) DEFAULT NULL,
-  `tagKeyId` varchar(36) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `FK_23e34f94917db7c9ab5a4e3034d` (`createdById`),
-  KEY `FK_34a8d473273df25f0d10c0e5ef6` (`lastModifiedById`),
-  KEY `FK_ece61b41b451dda3460fe660489` (`tagKeyId`),
-  CONSTRAINT `FK_23e34f94917db7c9ab5a4e3034d` FOREIGN KEY (`createdById`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `FK_34a8d473273df25f0d10c0e5ef6` FOREIGN KEY (`lastModifiedById`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `FK_ece61b41b451dda3460fe660489` FOREIGN KEY (`tagKeyId`) REFERENCES `tag_key` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+                                      `id` varchar(36) NOT NULL,
+                                      `createdAt` datetime DEFAULT NULL,
+                                      `lastModifiedAt` datetime DEFAULT NULL,
+                                      `email` varchar(255) NOT NULL,
+                                      `status` enum('ACCEPTED','PENDING') NOT NULL DEFAULT 'PENDING',
+                                      `token` varchar(255) NOT NULL,
+                                      `createdById` varchar(36) DEFAULT NULL,
+                                      `lastModifiedById` varchar(36) DEFAULT NULL,
+                                      `tagKeyId` varchar(36) DEFAULT NULL,
+                                      PRIMARY KEY (`id`),
+                                      KEY `FK_23e34f94917db7c9ab5a4e3034d` (`createdById`),
+                                      KEY `FK_34a8d473273df25f0d10c0e5ef6` (`lastModifiedById`),
+                                      KEY `FK_ece61b41b451dda3460fe660489` (`tagKeyId`),
+                                      CONSTRAINT `FK_23e34f94917db7c9ab5a4e3034d` FOREIGN KEY (`createdById`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+                                      CONSTRAINT `FK_34a8d473273df25f0d10c0e5ef6` FOREIGN KEY (`lastModifiedById`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+                                      CONSTRAINT `FK_ece61b41b451dda3460fe660489` FOREIGN KEY (`tagKeyId`) REFERENCES `tag_key` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+# 1.8.1
+-- Fix story delete bug
+
+ALTER TABLE `like_story`
+DROP FOREIGN KEY `FK_26d6b630fdc9fc41e02f7da52e8`;
+
+ALTER TABLE `like_story`
+  ADD CONSTRAINT `FK_26d6b630fdc9fc41e02f7da52e8`
+    FOREIGN KEY (`entityId`) REFERENCES `story` (`id`)
+      ON DELETE CASCADE
+      ON UPDATE NO ACTION;
+
+ALTER TABLE `like_brick`
+DROP FOREIGN KEY `FK_0f838a8e0820433db7f7f3d886e`;
+
+ALTER TABLE `like_brick`
+  ADD CONSTRAINT `FK_0f838a8e0820433db7f7f3d886e`
+    FOREIGN KEY (`entityId`) REFERENCES `brick` (`id`)
+      ON DELETE CASCADE
+      ON UPDATE NO ACTION;
+
+DROP TABLE IF EXISTS `story_file`, `documentation_file`;

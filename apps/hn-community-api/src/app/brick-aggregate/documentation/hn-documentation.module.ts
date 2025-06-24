@@ -3,12 +3,10 @@ import { HnDocumentationService } from './hn-documentation.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { HnDocumentation } from './hn-documentation.entity';
 import { HnCoreModule } from '../../core/hn-core.module';
-import { HnDocumentationFileModule } from '../documentation-file/hn-documentation-file.module';
-import { HnDocumentationFileService } from '../documentation-file/hn-documentation-file.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([HnDocumentation]), HnCoreModule, HnDocumentationFileModule],
+  imports: [TypeOrmModule.forFeature([HnDocumentation]), HnCoreModule],
   exports: [TypeOrmModule, HnDocumentationService],
-  providers: [HnDocumentationService, HnDocumentationFileService],
+  providers: [HnDocumentationService],
 })
 export class HnDocumentationModule {}

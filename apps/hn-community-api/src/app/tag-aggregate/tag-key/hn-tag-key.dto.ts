@@ -10,6 +10,8 @@ export class HnTagKeyDto extends BlEntityWithIdDTO {
   label: string;
   type: HnTagKeyType;
   deprecated: boolean;
+  likes: number;
+  comments: number;
   publishedAt?: string;
   unit?: string;
   description?: TeRichTextDTO;
@@ -39,6 +41,8 @@ export class HnTagKeyDto extends BlEntityWithIdDTO {
     this.createdBy = tagKey.createdBy ? new HnUserDto(tagKey.createdBy) : null;
     this.lastModifiedAt = tagKey.lastModifiedAt?.toISO();
     this.lastModifiedBy = tagKey.lastModifiedBy ? new HnUserDto(tagKey.lastModifiedBy) : null;
+    this.likes = tagKey.likes ?? 0;
+    this.comments = tagKey.comments ?? 0;
   }
 }
 

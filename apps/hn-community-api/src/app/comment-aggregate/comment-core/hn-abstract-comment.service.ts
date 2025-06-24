@@ -93,6 +93,8 @@ export abstract class HnAbstractCommentService<T extends BlEntityWithId> {
         return HnEventType.AGENT_COMMENT;
       case HnEntityType.STORY:
         return HnEventType.STORY_COMMENT;
+      case HnEntityType.TAG:
+        return HnEventType.TAG_COMMENT;
       default:
         throw new Error('Unknown comment type');
     }

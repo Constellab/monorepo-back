@@ -9,13 +9,15 @@ import { HnAbstractCommentDto } from './comment-core/hn-abstract-comment.dto';
 import { TeRichText } from '@monorepo/te-text-editor';
 import { HnCommentAppService } from './comment-app/hn-comment-app.service';
 import { HnCommentEntity } from './comment-core/hn-comment.entity';
+import { HnCommentTagService } from './comment-tag/hn-comment-tag.service';
 
 @Injectable()
 export class HnCommentAggregateService {
   constructor(
     private readonly commentStoryService: HnCommentStoryService,
     private readonly commentAgentService: HnCommentAgentService,
-    private readonly commentAppService: HnCommentAppService
+    private readonly commentAppService: HnCommentAppService,
+    private readonly commentTagService: HnCommentTagService
   ) {}
 
   async getComments(
@@ -45,6 +47,8 @@ export class HnCommentAggregateService {
         return this.commentAgentService;
       case HnEntityType.APP:
         return this.commentAppService;
+      case HnEntityType.TAG:
+        return this.commentTagService; // Assuming you have a commentTagService similar to the others
       default:
         throw new Error('Unknown comment type');
     }

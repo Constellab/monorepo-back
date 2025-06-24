@@ -52,6 +52,13 @@ export class HnTagValueService {
     return this.tagValueRepository.save(tagValue);
   }
 
+  async updateTagValueWithEntityManager(
+    tagValue: HnTagValue,
+    entityManager: EntityManager
+  ): Promise<HnTagValue> {
+    return entityManager.save(tagValue, { listeners: false });
+  }
+
   /**
    * Get tag value by id
    * @param id
@@ -110,6 +117,14 @@ export class HnTagValueService {
     }
     tagValue.deprecated = true;
     return this.tagValueRepository.save(tagValue);
+  }
+
+  async deprecatedTagValueWithEntityManager(
+    tagValue: HnTagValue,
+    entityManager: EntityManager
+  ): Promise<HnTagValue> {
+    tagValue.deprecated = true;
+    return entityManager.save(tagValue);
   }
 
   async checkTagHasValues(tagKeyId: string): Promise<boolean> {

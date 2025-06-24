@@ -8,12 +8,12 @@ export class HnCommunityStoryListener {
   constructor(private storyService: HnStoryService) {}
 
   @OnEvent(HnEventType.STORY_COMMENT)
-  async handleAppCommentCreatedEvent(event: HnCommentEventData): Promise<void> {
+  async handleStoryCommentCreatedEvent(event: HnCommentEventData): Promise<void> {
     await this.storyService.updateComments(event.entityId, event.numberOfComments);
   }
 
   @OnEvent(HnEventType.STORY_LIKE)
-  async handleAppLikeCreatedEvent(event: HnLikeEventData): Promise<void> {
+  async handleStoryLikeCreatedEvent(event: HnLikeEventData): Promise<void> {
     await this.storyService.updateLikes(event.entityId, event.numberOfLikes);
   }
 }

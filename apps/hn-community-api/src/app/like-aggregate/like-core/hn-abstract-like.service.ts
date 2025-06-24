@@ -104,6 +104,8 @@ export abstract class HnAbstractLikeService<T extends BlEntityWithId> {
         return HnEventType.BRICK_LIKE;
       case HnEntityType.STORY:
         return HnEventType.STORY_LIKE;
+      case HnEntityType.TAG:
+        return HnEventType.TAG_LIKE;
       default:
         throw new Error('Unknown like type');
     }
