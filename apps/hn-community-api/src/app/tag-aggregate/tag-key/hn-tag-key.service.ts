@@ -76,6 +76,24 @@ export class HnTagKeyService {
     });
   }
 
+  async updateLikes(tagKeyLike: string, numberOfLikes: number): Promise<void> {
+    const tagKey = await this.getTagKeyById(tagKeyLike);
+    if (!tagKey) {
+      throw new Error('Tag not found');
+    }
+    tagKey.likes = numberOfLikes;
+    await this.tagKeyRepository.save(tagKey, { listeners: false });
+  }
+
+  async updateComments(tagKeyId: string, numberOfComments: number): Promise<void> {
+    const tagKey = await this.getTagKeyById(tagKeyId);
+    if (!tagKey) {
+      throw new Error('Tag not found');
+    }
+    tagKey.comments = numberOfComments;
+    await this.tagKeyRepository.save(tagKey);
+  }
+
   /**
    * Get paginated tag keys with filters
    * @param spacesFilter

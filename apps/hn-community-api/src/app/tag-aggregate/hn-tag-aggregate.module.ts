@@ -8,6 +8,7 @@ import { HnCoreModule } from '../core/hn-core.module';
 import { HnTagCoAuthorModule } from './tag-co-author/hn-tag-co-author.module';
 import { HnSpaceAggregateModule } from '../space-aggregate/hn-space-aggregate.module';
 import { HnUserModule } from '../users/hn-user.module';
+import { HnTagListener } from './hn-tag.listener';
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import { HnUserModule } from '../users/hn-user.module';
     HnUserModule,
   ],
   controllers: [HnTagAggregateController, HnTagAggregateLabController],
-  providers: [HnTagAggregateService],
+  providers: [HnTagAggregateService, HnTagListener],
   exports: [HnTagAggregateService],
 })
 export class HnTagAggregateModule {}

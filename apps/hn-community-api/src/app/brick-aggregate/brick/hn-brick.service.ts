@@ -116,7 +116,7 @@ export class HnBrickService extends BlAbstractService<HnBrick> {
   async updateLikes(brickId: string, numberOfLikes: number): Promise<void> {
     const brick = await this.bricksRepository.findOneBy({ id: brickId });
     brick.likes = numberOfLikes;
-    await this.bricksRepository.save(brick);
+    await this.bricksRepository.save(brick, { listeners: false });
   }
 
   async editBrick(brick: HnBrick, editedBrick: HnEditBrickDTO): Promise<HnBrick> {

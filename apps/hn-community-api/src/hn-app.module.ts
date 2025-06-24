@@ -97,6 +97,8 @@ import { HnTagKeyModule } from './app/tag-aggregate/tag-key/hn-tag-key.module';
 import { HnTagValueModule } from './app/tag-aggregate/tag-value/hn-tag-value.module';
 import { HnTagCoAuthorModule } from './app/tag-aggregate/tag-co-author/hn-tag-co-author.module';
 import { HnTagCoAuthorInviteModule } from './app/tag-aggregate/tag-co-author-invite/hn-tag-co-author-invite.module';
+import { HnLikeTagModule } from './app/like-aggregate/like-tag/hn-like-tag.module';
+import { HnCommentTagModule } from './app/comment-aggregate/comment-tag/hn-comment-tag.module';
 
 function typeOrmConfig(configService: HnCoreConfigService): TypeOrmModuleOptions {
   const dbConfig: HnDatabaseConfig = configService.getDatabaseConfig();
@@ -261,11 +263,13 @@ TeRichTextModifications.setBackTimeDifference();
     HnLikeAgentModule,
     HnLikeBrickModule,
     HnLikeAppModule,
+    HnLikeTagModule,
 
     HnCommentAggregateModule,
     HnCommentStoryModule,
     HnCommentAgentModule,
     HnCommentAppModule,
+    HnCommentTagModule,
 
     HnFileAggregateModule,
     HnFileStoryModule,

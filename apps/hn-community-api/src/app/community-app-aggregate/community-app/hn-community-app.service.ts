@@ -92,6 +92,6 @@ export class HnCommunityAppService {
   async updateLikes(appId: string, numberOfLikes: number): Promise<void> {
     const app = await this.findOneById(appId);
     app.likes = numberOfLikes;
-    await this.communityAppRepository.save(app);
+    await this.communityAppRepository.save(app, { listeners: false });
   }
 }

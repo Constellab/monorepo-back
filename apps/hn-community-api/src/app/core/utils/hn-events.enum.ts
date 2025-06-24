@@ -2,10 +2,12 @@ export enum HnEventType {
   APP_COMMENT = 'APP_COMMENT',
   AGENT_COMMENT = 'AGENT_COMMENT',
   STORY_COMMENT = 'STORY_COMMENT',
+  TAG_COMMENT = 'TAG_COMMENT',
   APP_LIKE = 'APP_LIKE',
   AGENT_LIKE = 'AGENT_LIKE',
   BRICK_LIKE = 'BRICK_LIKE',
   STORY_LIKE = 'STORY_LIKE',
+  TAG_LIKE = 'TAG_LIKE',
 }
 
 export interface HnCommentEventData {

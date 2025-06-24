@@ -469,6 +469,6 @@ export class HnAgentService {
   public async updateLikes(agentId: string, numberOfLikes: number): Promise<void> {
     const agent = await this.findOne(agentId);
     agent.likes = numberOfLikes;
-    await this.agentRepository.save(agent);
+    await this.agentRepository.save(agent, { listeners: false });
   }
 }

@@ -53,6 +53,8 @@ export class HnDocumentation extends HnBaseEntity {
     } else {
       this.completePath = path + '/';
     }
+    // Ensure no special characters
+    this.completePath = this.completePath.replace(/[^a-zA-Z0-9-_/]/g, '');
   }
 
   public getRichText(): TeRichText {

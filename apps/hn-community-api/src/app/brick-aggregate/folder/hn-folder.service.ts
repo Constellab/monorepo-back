@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, IsNull, Repository, TreeRepository } from 'typeorm';
 import { HnFolder } from './hn-folder.entity';
 import { HnDocumentation, HnDocumentationSearchDTO } from '../documentation/hn-documentation.entity';
-import { HnDocumentationService } from '../documentation/hn-documentation.service';
 import { HnBrickMajorVersion } from '../brick-major-version/hn-brick-major-version.entity';
 import { HnNode, HnNodeDTO } from './hn-folder.dto';
 import { BlBadRequestException } from '@monorepo/back-core-lib';

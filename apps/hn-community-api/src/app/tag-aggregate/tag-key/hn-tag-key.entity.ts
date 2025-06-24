@@ -70,6 +70,12 @@ export class HnTagKey extends BlEntityWithId {
   @OneToMany(() => HnTagValue, (tagValue) => tagValue.tagKey, { nullable: true, onDelete: 'CASCADE' })
   tagValues: HnTagValue[];
 
+  @Column({ default: 0 })
+  likes: number;
+
+  @Column({ default: 0 })
+  comments: number;
+
   @BeforeInsert()
   setCreatedByUser(): void {
     if (this.createdBy == null) {

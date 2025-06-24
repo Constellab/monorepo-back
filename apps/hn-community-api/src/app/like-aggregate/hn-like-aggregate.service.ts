@@ -7,6 +7,7 @@ import { BlEntityWithId } from '@monorepo/back-core-lib';
 import { HnAbstractLikeService } from './like-core/hn-abstract-like.service';
 import { HnEntityType } from '../core/model/entities/hn-entity-type.enum';
 import { HnLikeAppService } from './like-app/hn-like-app.service';
+import { HnLikeTagService } from './like-tag/hn-like-tag.service';
 
 @Injectable()
 export class HnLikeAggregateService {
@@ -14,7 +15,8 @@ export class HnLikeAggregateService {
     private readonly likeStoryService: HnLikeStoryService,
     private readonly likeAgentService: HnLikeAgentService,
     private readonly likeBrickService: HnLikeBrickService,
-    private readonly likeAppService: HnLikeAppService
+    private readonly likeAppService: HnLikeAppService,
+    private readonly likeTagService: HnLikeTagService
   ) {}
 
   async checkIfIsLiked(entityId: string, likeType: HnEntityType): Promise<boolean> {
@@ -46,6 +48,8 @@ export class HnLikeAggregateService {
         return this.likeBrickService;
       case HnEntityType.APP:
         return this.likeAppService;
+      case HnEntityType.TAG:
+        return this.likeTagService;
       default:
         throw new Error('Unknown like type');
     }
