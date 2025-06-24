@@ -346,3 +346,41 @@ ALTER TABLE `like_brick`
       ON UPDATE NO ACTION;
 
 DROP TABLE IF EXISTS `story_file`, `documentation_file`;
+
+ALTER TABLE `tag_key`
+  ADD COLUMN `likes` int(11) NOT NULL DEFAULT 0;
+
+ALTER TABLE `tag_key`
+  ADD COLUMN `comments` int(11) NOT NULL DEFAULT 0;
+
+DROP TABLE IF EXISTS `comment_tag`;
+CREATE TABLE `comment_tag` (
+                             `id` varchar(36) NOT NULL,
+                             `createdAt` datetime DEFAULT NULL,
+                             `lastModifiedAt` datetime DEFAULT NULL,
+                             `content` text NOT NULL,
+                             `createdById` varchar(36) DEFAULT NULL,
+                             `lastModifiedById` varchar(36) DEFAULT NULL,
+                             `entityId` varchar(36) DEFAULT NULL,
+                             PRIMARY KEY (`id`),
+                             KEY `FK_6f5b66a2b8cc5883e077040e943` (`createdById`),
+                             KEY `FK_cfa78d72368196db770f2352121` (`lastModifiedById`),
+                             KEY `FK_cbb5ade974832179fb0a73b9a64` (`entityId`),
+                             CONSTRAINT `FK_6f5b66a2b8cc5883e077040e943` FOREIGN KEY (`createdById`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+                             CONSTRAINT `FK_cbb5ade974832179fb0a73b9a64` FOREIGN KEY (`entityId`) REFERENCES `tag_key` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+                             CONSTRAINT `FK_cfa78d72368196db770f2352121` FOREIGN KEY (`lastModifiedById`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+DROP TABLE IF EXISTS `like_tag`;
+CREATE TABLE `like_tag` (
+                          `id` varchar(36) NOT NULL,
+                          `likedAt` datetime NOT NULL,
+                          `likedById` varchar(36) DEFAULT NULL,
+                          `entityId` varchar(36) DEFAULT NULL,
+                          PRIMARY KEY (`id`),
+                          KEY `FK_7c0ce0ac4aa0f1cd1626aa3dced` (`likedById`),
+                          KEY `FK_4a34296857ef7a85939d6adc48b` (`entityId`),
+                          CONSTRAINT `FK_4a34296857ef7a85939d6adc48b` FOREIGN KEY (`entityId`) REFERENCES `tag_key` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+                          CONSTRAINT `FK_7c0ce0ac4aa0f1cd1626aa3dced` FOREIGN KEY (`likedById`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
