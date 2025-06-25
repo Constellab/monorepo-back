@@ -1,10 +1,10 @@
+import { BlLuxonDateTimeColumn, BlNotUpdatable } from '@monorepo/back-core-lib';
+import { ClDateHelper } from '@monorepo/core-lib';
+import { Type } from 'class-transformer';
+import { DateTime } from 'luxon';
 import { BeforeInsert, Column, Entity, ManyToOne, PrimaryColumn, Relation } from 'typeorm';
 import { CnUser, CnUserEntity } from '../cn-users/cn-user.entity';
 import { CnSpace, CnSpaceEntity } from './cn-space.entity';
-import { Type } from 'class-transformer';
-import { BlLuxonDateTimeColumn, BlNotUpdatable } from '@monorepo/back-core-lib';
-import { DateTime } from 'luxon';
-import { ClDateHelper } from '@monorepo/core-lib';
 
 export enum CnSpaceUserRole {
   ADMIN = 'ADMIN',
@@ -12,7 +12,7 @@ export enum CnSpaceUserRole {
 }
 
 @Entity('space_user')
-export class CnSpaceUser {
+export class CnSpaceUserEntity {
   @PrimaryColumn({ type: 'varchar', length: 36 })
   userId: string;
 
@@ -53,3 +53,6 @@ export class CnSpaceUser {
     this.createdAt = ClDateHelper.getDate();
   }
 }
+
+export type CnSpaceUser = Omit<CnSpaceUserEntity, 'user' | 'space'>;
+export type CnSpaceUserWithUser = Omit<CnSpaceUserEntity, 'space'>;

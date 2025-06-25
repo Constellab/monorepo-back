@@ -57,7 +57,7 @@ export class CnFrontService {
     return `${CnFrontService.appRoute}/folder/resource/${resourceId}`;
   }
 
-  public static getLabUrl(labId: string): string {
+  public static getLabRoute(labId: string): string {
     return `${CnFrontService.appRoute}/labs/${labId}`;
   }
 
@@ -70,7 +70,7 @@ export class CnFrontService {
   }
 
   public getLabUrl(spaceDomain: string, labId: string): string {
-    return this.getSpaceWebsiteURL(spaceDomain) + '/' + CnFrontService.getLabUrl(labId);
+    return this.getSpaceWebsiteURL(spaceDomain) + '/' + CnFrontService.getLabRoute(labId);
   }
 
   ////////////////////////// PUBLIC ROUTES ////////////////////////////

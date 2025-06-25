@@ -314,3 +314,6 @@ alter table folder drop column leaderId;
 
 ########################### 2.9.0 ##########################
 -- Add LAB_MANAGER_STANDALONE_FRONT_VERSION=latest env variable
+
+alter table notification modify column `objectType` enum('USER','FOLDER','SCENARIO','NOTE','DOCUMENT','MESSAGE', 'RESOURCE', 'LAB') NOT NULL;
+alter table activity modify column `entityType` enum('FOLDER','SCENARIO','NOTE','DOCUMENT','RESOURCE', 'MESSAGE') NOT NULL;

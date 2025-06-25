@@ -1,15 +1,3 @@
-import { BeforeInsert, Column, Entity, ManyToMany, ManyToOne, OneToOne } from 'typeorm';
-import { Exclude } from 'class-transformer';
-import type { CnGroupSingleUser, CnGroupTeam } from '../cn-groups/cn-group.entity';
-import * as argon2 from 'argon2';
-import {
-  ClDateHelper,
-  clDefaultLang,
-  clDefaultTheme,
-  ClSupportedLanguage,
-  ClTheme,
-} from '@monorepo/core-lib';
-import { DateTime } from 'luxon';
 import {
   BlEntityWithId,
   BlLuxonDateTimeColumn,
@@ -17,7 +5,18 @@ import {
   BlUserCategory,
   BlUserStatus,
 } from '@monorepo/back-core-lib';
-import { CnSpaceUser } from '../cn-spaces/cn-space-user.entity';
+import {
+  ClDateHelper,
+  clDefaultLang,
+  clDefaultTheme,
+  ClSupportedLanguage,
+  ClTheme,
+} from '@monorepo/core-lib';
+import * as argon2 from 'argon2';
+import { Exclude } from 'class-transformer';
+import { DateTime } from 'luxon';
+import { BeforeInsert, Column, Entity, ManyToMany, ManyToOne, OneToOne } from 'typeorm';
+import type { CnGroupSingleUser, CnGroupTeam } from '../cn-groups/cn-group.entity';
 import { CnSpace, CnSpaceEntity } from '../cn-spaces/cn-space.entity';
 
 export enum CnUserLicense {
@@ -162,6 +161,4 @@ export interface CnUserTransportDto {
   company: string;
   biography: string;
   photo?: string;
-
-  spaceUsers?: CnSpaceUser[];
 }

@@ -1,16 +1,22 @@
-import { Injectable } from '@nestjs/common';
-import { CnSpaceService } from './cn-space.service';
-import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
-import { CnSpace, CnSpaceEntity, CnSpaceType } from './cn-space.entity';
-import { CnSpaceAggregateSecurity } from './cn-space-aggregate-security.service';
-import { ClPage } from '@monorepo/core-lib';
-import { CnUsersService } from '../cn-users/cn-users.service';
-import { CnSpaceUserService } from './cn-space-user.service';
-import { CnSpaceUser, CnSpaceUserRole } from './cn-space-user.entity';
-import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
 import { BlBadRequestException, BlFile, BlFileResponse, BlSearchParams } from '@monorepo/back-core-lib';
+import { ClPage } from '@monorepo/core-lib';
+import { Injectable } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { DataSource, EntityManager } from 'typeorm';
+import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
+import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
+import { CnFolderStorageUsageDTO } from '../cn-folders-aggregate/cn-documents/cn-document-dto.class';
+import { CnDocumentService } from '../cn-folders-aggregate/cn-documents/cn-document.service';
+import { CnBucket, CnBucketLocationDTO } from '../cn-object-storages/cn-buckets/cn-bucket.entity';
+import { CnObjectStoragesAggregateService } from '../cn-object-storages/cn-object-storages-aggregate.service';
+import { CnUserSpaceInfo } from '../cn-users/cn-user.dto';
+import { CnUser } from '../cn-users/cn-user.entity';
+import { CnUsersService } from '../cn-users/cn-users.service';
+import { CnSpaceAggregateSecurity } from './cn-space-aggregate-security.service';
 import { CnSpaceInvit } from './cn-space-invit.entity';
 import { CnSpaceInvitService } from './cn-space-invit.service';
+import { CnSpaceUserRole, CnSpaceUserWithUser } from './cn-space-user.entity';
+import { CnSpaceUserService } from './cn-space-user.service';
 import {
   CnCreateSpaceDTO,
   CnRequestNewLicensesDto,
@@ -20,16 +26,10 @@ import {
   CnSpaceStorage,
   CnSpaceUpdateStorageLocationDTO,
 } from './cn-space.dto';
-import { CnUser } from '../cn-users/cn-user.entity';
-import { DataSource, EntityManager } from 'typeorm';
-import { CnUserSpaceInfo } from '../cn-users/cn-user.dto';
-import { CnSpacesMailService } from './cn-spaces-mail.service';
-import { CnBucket, CnBucketLocationDTO } from '../cn-object-storages/cn-buckets/cn-bucket.entity';
-import { CnObjectStoragesAggregateService } from '../cn-object-storages/cn-object-storages-aggregate.service';
-import { CnDocumentService } from '../cn-folders-aggregate/cn-documents/cn-document.service';
-import { CnFolderStorageUsageDTO } from '../cn-folders-aggregate/cn-documents/cn-document-dto.class';
-import { EventEmitter2 } from '@nestjs/event-emitter';
+import { CnSpace, CnSpaceEntity, CnSpaceType } from './cn-space.entity';
 import { CnSpaceEvent, cnSpaceEventName } from './cn-space.event';
+import { CnSpaceService } from './cn-space.service';
+import { CnSpacesMailService } from './cn-spaces-mail.service';
 
 @Injectable()
 export class CnSpaceAggregateService {
@@ -271,7 +271,7 @@ export class CnSpaceAggregateService {
 
   /////////////////////////////////////// USERS ///////////////////////////////////////
 
-  public async getUsersOfSpace(id: string, page: number, size: number): Promise<ClPage<CnSpaceUser>> {
+  public async getUsersOfSpace(id: string, page: number, size: number): Promise<ClPage<CnSpaceUserWithUser>> {
     id = this.getSpaceId(id);
     await this.checkSpaceMember(id);
     return this.spaceUserService.findBySpace(id, page, size);
@@ -282,7 +282,7 @@ export class CnSpaceAggregateService {
     searchParams: BlSearchParams,
     page: number,
     size: number
-  ): Promise<ClPage<CnSpaceUser>> {
+  ): Promise<ClPage<CnSpaceUserWithUser>> {
     id = this.getSpaceId(id);
     await this.checkSpaceMember(id);
 
@@ -299,7 +299,7 @@ export class CnSpaceAggregateService {
     await this.checkSpaceMember(id);
 
     const result = await this.spaceUserService.smartSearchByName(id, name, page, size);
-    return result.map((spaceUser: CnSpaceUser) => spaceUser.user);
+    return result.map((spaceUser) => spaceUser.user);
   }
 
   public async sendAllSpaceUsersToQueue(): Promise<void> {
@@ -317,7 +317,7 @@ export class CnSpaceAggregateService {
   /**
    * Directly add a user to an space. Only accessible by G admins.
    */
-  public async addUserToSpace(spaceID: string, userId: string): Promise<CnSpaceUser> {
+  public async addUserToSpace(spaceID: string, userId: string): Promise<CnSpaceUserWithUser> {
     this.checkAdmin();
 
     spaceID = this.getSpaceId(spaceID);
@@ -574,8 +574,13 @@ export class CnSpaceAggregateService {
     return await this.spaceUserService.getUserPersonalSpaceAndCheck(userId);
   }
 
-  public getSpaceUserIfAccess(spaceId: string, userId: string): Promise<CnSpaceUser | null> {
+  public getSpaceUserIfAccess(spaceId: string, userId: string): Promise<CnSpaceUserWithUser | null> {
     return this.spaceUserService.findOneBySpaceIdAndUserId(spaceId, userId);
+  }
+
+  public async userHasAccessToSpace(spaceId: string, userId: string): Promise<boolean> {
+    const spaceUser = await this.getSpaceUserIfAccess(spaceId, userId);
+    return spaceUser !== null;
   }
 
   /////////////////////////////////////// SECURITY //////////////////////////////////

@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { CnResourcesService } from './cn-resources.service';
+import { DataSource } from 'typeorm';
+import { CnFolderEventService } from '../cn-folder.event';
+import { CnHierarchyObject } from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
+import { CnHierarchyObjectService } from '../cn-hierarchy-objects/cn-hierarchy-object.service';
+import { CnFoldersSecurityService } from '../cn-security/cn-folders-security.service';
 import { CnShareResourceRequestDTO } from './cn-resource.dto';
 import { CnResource, CnResourceWithLab } from './cn-resource.entity';
-import { CnFoldersSecurityService } from '../cn-security/cn-folders-security.service';
-import { DataSource } from 'typeorm';
-import { CnHierarchyObjectService } from '../cn-hierarchy-objects/cn-hierarchy-object.service';
-import { CnFolderEventService } from '../cn-folder.event';
+import { CnResourcesService } from './cn-resources.service';
 
 @Injectable()
 export class CnResourceAggregateService {
@@ -20,10 +21,11 @@ export class CnResourceAggregateService {
   public async shareResourceToFolder(
     parentFolderId: string,
     requestDTO: CnShareResourceRequestDTO
-  ): Promise<void> {
+  ): Promise<CnHierarchyObject> {
     const parentFolder = await this.securityService.getAndCheckAuthorizationForUpdate(parentFolderId);
 
-    await this.resourceService.saveResource(parentFolder, requestDTO);
+    const resource = await this.resourceService.saveResource(parentFolder, requestDTO);
+    return this.hierarchyObjectService.findByIdAndCheck(resource.id);
   }
 
   public async deleteResource(resourceId: string): Promise<boolean> {

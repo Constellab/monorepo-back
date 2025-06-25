@@ -1,28 +1,29 @@
+import { BlMailService } from '@monorepo/back-core-lib';
+import { TeMentionUser, TeRichText, TeRichTextMentionHelper } from '@monorepo/te-text-editor';
 import { Injectable, Logger } from '@nestjs/common';
-import { CnFolderUserService } from './cn-folder-user/cn-folder-user.service';
 import { OnEvent } from '@nestjs/event-emitter';
-import { CnActivityCreateDTO, CnActivityService } from '../cn-activity/cn-activity.service';
-import { CnFolderUser, CnRootFolderNotifOptions } from './cn-folder-user/cn-folder-user.entity';
 import { CnActivity, CnActivityEntityType, CnActivityType } from '../cn-activity/cn-activity.entity';
-import { CnNotificationService } from '../cn-notification/cn-notification.service';
+import { CnActivityCreateDTO, CnActivityService } from '../cn-activity/cn-activity.service';
+import { CnMailTemplate } from '../cn-core/model/config/cn-mail-template.class';
 import { CnFrontService } from '../cn-core/services/cn-front.service';
+import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
+import { CnNotificationType } from '../cn-notification/cn-notification.entity';
+import { CnNotificationService } from '../cn-notification/cn-notification.service';
+import { CnSpaceEvent, cnSpaceEventName } from '../cn-spaces/cn-space.event';
+import { CnUser } from '../cn-users/cn-user.entity';
+import { CnChatMessage, getFakeUserEveryoneMention } from './cn-chat/cn-chat-message.entity';
+import { CnDocument } from './cn-documents/cn-document.entity';
+import { CnFolderAggregateService } from './cn-folder-aggregate.service';
+import { CnFolderUser, CnRootFolderNotifOptions } from './cn-folder-user/cn-folder-user.entity';
+import { CnFolderUserService } from './cn-folder-user/cn-folder-user.service';
 import { CnFolderEvent, cnFolderEventName, CnFolderEventType } from './cn-folder.event';
 import { CnFolder } from './cn-folders/cn-folder.entity';
-import { CnUser } from '../cn-users/cn-user.entity';
-import { CnScenario } from './cn-scenarios/cn-scenario.entity';
-import { CnNote } from './cn-notes/cn-note.entity';
-import { CnChatMessage, getFakeUserEveryoneMention } from './cn-chat/cn-chat-message.entity';
-import { BlMailService } from '@monorepo/back-core-lib';
-import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
-import { CnMailTemplate } from '../cn-core/model/config/cn-mail-template.class';
-import { CnDocument } from './cn-documents/cn-document.entity';
-import { CnHierarchyObjectService } from './cn-hierarchy-objects/cn-hierarchy-object.service';
-import { CnHierarchyObject } from './cn-hierarchy-objects/cn-hierarchy-object.entity';
-import { CnHierarchyRepresentation } from './cn-hierarchy-objects/cn-hierarchy-representation';
-import { CnSpaceEvent, cnSpaceEventName } from '../cn-spaces/cn-space.event';
-import { CnFolderAggregateService } from './cn-folder-aggregate.service';
-import { TeMentionUser, TeRichText, TeRichTextMentionHelper } from '@monorepo/te-text-editor';
 import { CnHierarchyObjectTagAggregateService } from './cn-hierarchy-object-tags/cn-hierarchy-object-tag-aggregate.service';
+import { CnHierarchyObject } from './cn-hierarchy-objects/cn-hierarchy-object.entity';
+import { CnHierarchyObjectService } from './cn-hierarchy-objects/cn-hierarchy-object.service';
+import { CnHierarchyRepresentation } from './cn-hierarchy-objects/cn-hierarchy-representation';
+import { CnNote } from './cn-notes/cn-note.entity';
+import { CnScenario } from './cn-scenarios/cn-scenario.entity';
 
 export interface CnNotifInfo {
   link: string;
@@ -136,6 +137,9 @@ export class CnFolderListener {
     const notifMode = this.getNotifMode(folderUser, entityType);
     if (notifMode === CnRootFolderNotifOptions.NONE) return;
 
+    const notificationType = this.fromActivityEntityType(entityType);
+    if (!notificationType) return;
+
     // notif
     if (
       notifMode === CnRootFolderNotifOptions.NOTIF_AND_EMAIL ||
@@ -146,7 +150,7 @@ export class CnFolderListener {
         link: appRoute,
         spaceId: spaceId,
         createdBy: activityUser,
-        objectType: entityType,
+        objectType: notificationType,
         text: text,
         text2: parentFolder.name,
         objectId: entityId,
@@ -227,7 +231,9 @@ export class CnFolderListener {
         title: `{{user.name}} has created sub folder ${folder.name} under folder ${parentFolder.name}`,
         entityName: folder.name,
       },
-      notif: { link: CnFrontService.getFolderRoute(folder.id) },
+      notif: {
+        link: CnFrontService.getFolderRoute(folder.id),
+      },
     };
   }
 
@@ -564,7 +570,9 @@ export class CnFolderListener {
    * @private
    */
   private async handleMessageDeleted(activity: CnActivity, message: CnChatMessage): Promise<void> {
-    await this.notificationService.deleteNotificationByObject(activity.entityType, message.id);
+    const notificationType = this.fromActivityEntityType(activity.entityType);
+    if (!notificationType) return;
+    await this.notificationService.deleteNotificationByObject(notificationType, message.id);
   }
 
   private getNotifMode(folderUser: CnFolderUser, entityType: CnActivityEntityType): CnRootFolderNotifOptions {
@@ -582,6 +590,19 @@ export class CnFolderListener {
       default:
         return CnRootFolderNotifOptions.NONE;
     }
+  }
+
+  /**
+   * Converts CnActivityEntityType to CnNotificationType if the value exists in both enums
+   * @param activityType - The activity entity type to convert
+   * @returns The matching notification type or null if no match
+   */
+  private fromActivityEntityType(activityType: CnActivityEntityType): CnNotificationType | null {
+    // Check if the activity type exists in the notification type enum
+    if (Object.values(CnNotificationType).includes(activityType as any)) {
+      return activityType as unknown as CnNotificationType;
+    }
+    return null;
   }
 
   /**

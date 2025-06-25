@@ -1,21 +1,21 @@
-import { Injectable } from '@nestjs/common';
-import { CnHierarchyObjectService } from '../cn-hierarchy-objects/cn-hierarchy-object.service';
-import { CnFoldersSecurityService } from '../cn-security/cn-folders-security.service';
-import { CnFolderEventService } from '../cn-folder.event';
-import { DataSource } from 'typeorm';
-import { CnNotesService } from './cn-notes.service';
-import { CnNote, CnNoteWithDocument, CnNoteWithLab } from './cn-note.entity';
-import { TeRichText, TeRichTextBlockModificationWithUser } from '@monorepo/te-text-editor';
-import { CnCreateNoteWithConfigDto } from './cn-note.dto';
 import { BlBadRequestException, BlFile, BlFileResponse } from '@monorepo/back-core-lib';
-import { CnScenario } from '../cn-scenarios/cn-scenario.entity';
-import { CnHierarchyObject } from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
-import { CnScenariosService } from '../cn-scenarios/cn-scenarios.service';
-import { CnDocumentService } from '../cn-documents/cn-document.service';
-import { CnUsersService } from '../../cn-users/cn-users.service';
+import { TeRichText, TeRichTextBlockModificationWithUser } from '@monorepo/te-text-editor';
+import { Injectable } from '@nestjs/common';
+import { DataSource } from 'typeorm';
 import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
 import { CnExternalLabSyncedObjectDTO } from '../../cn-external-lab-api/model/cn-external-lab-api.class';
 import { CnLabMinimumDTO } from '../../cn-labs/cn-lab.dto';
+import { CnUsersService } from '../../cn-users/cn-users.service';
+import { CnDocumentService } from '../cn-documents/cn-document.service';
+import { CnFolderEventService } from '../cn-folder.event';
+import { CnHierarchyObject } from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
+import { CnHierarchyObjectService } from '../cn-hierarchy-objects/cn-hierarchy-object.service';
+import { CnScenario } from '../cn-scenarios/cn-scenario.entity';
+import { CnScenariosService } from '../cn-scenarios/cn-scenarios.service';
+import { CnFoldersSecurityService } from '../cn-security/cn-folders-security.service';
+import { CnCreateNoteWithConfigDto } from './cn-note.dto';
+import { CnNote, CnNoteWithDocument, CnNoteWithLab } from './cn-note.entity';
+import { CnNotesService } from './cn-notes.service';
 
 @Injectable()
 export class CnNoteAggregateService {
@@ -45,7 +45,7 @@ export class CnNoteAggregateService {
     createNoteDto: CnCreateNoteWithConfigDto,
     parentFolderId: string,
     files: BlFile[]
-  ): Promise<void> {
+  ): Promise<CnHierarchyObject> {
     const parentFolder = await this.securityService.getAndCheckAuthorizationForUpdate(parentFolderId);
 
     // get and check all scenario
@@ -74,6 +74,8 @@ export class CnNoteAggregateService {
     } else {
       this.eventService.emitFolderEvent('UPDATE_NOTE', parentFolder, noteResult.note);
     }
+
+    return this.hierarchyObjectService.findByIdAndCheck(noteResult.note.id);
   }
 
   async deleteNote(noteId: string): Promise<boolean> {

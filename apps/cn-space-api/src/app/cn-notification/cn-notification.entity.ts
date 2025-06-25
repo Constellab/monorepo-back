@@ -1,11 +1,21 @@
-import { BeforeInsert, Column, Entity, ManyToOne } from 'typeorm';
 import { BlEntityWithId, BlLuxonDateTimeColumn, BlNotification } from '@monorepo/back-core-lib';
-import { Exclude, Type } from 'class-transformer';
-import { CnUser, CnUserEntity } from '../cn-users/cn-user.entity';
-import { CnSpace, CnSpaceEntity } from '../cn-spaces/cn-space.entity';
 import { ClDateHelper } from '@monorepo/core-lib';
+import { Exclude, Type } from 'class-transformer';
 import { DateTime } from 'luxon';
-import { CnActivityEntityType } from '../cn-activity/cn-activity.entity';
+import { BeforeInsert, Column, Entity, ManyToOne } from 'typeorm';
+import { CnSpace, CnSpaceEntity } from '../cn-spaces/cn-space.entity';
+import { CnUser, CnUserEntity } from '../cn-users/cn-user.entity';
+
+export enum CnNotificationType {
+  USER = 'USER',
+  FOLDER = 'FOLDER',
+  SCENARIO = 'SCENARIO',
+  NOTE = 'NOTE',
+  DOCUMENT = 'DOCUMENT',
+  RESOURCE = 'RESOURCE',
+  MESSAGE = 'MESSAGE',
+  LAB = 'LAB', // notification triggered from a lab
+}
 
 @Entity('notification')
 export class CnNotification extends BlEntityWithId implements BlNotification {
@@ -25,8 +35,8 @@ export class CnNotification extends BlEntityWithId implements BlNotification {
   @Column()
   objectId: string;
 
-  @Column({ type: 'enum', enum: CnActivityEntityType, update: false })
-  objectType: CnActivityEntityType;
+  @Column({ type: 'enum', enum: CnNotificationType, update: false })
+  objectType: CnNotificationType;
 
   @Column()
   text: string;
@@ -71,7 +81,7 @@ export class CnNotification extends BlEntityWithId implements BlNotification {
 
 export interface CnNotificationCreateDTO {
   createdBy: CnUser;
-  objectType: CnActivityEntityType;
+  objectType: CnNotificationType;
   objectId: string;
   user: CnUser;
   text: string;

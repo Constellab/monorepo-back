@@ -1,13 +1,3 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { CnUser, CnUserEntity, CnUserLicense } from '../cn-user.entity';
-import { CnMailTemplate } from '../../cn-core/model/config/cn-mail-template.class';
-import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, EntityManager, Repository } from 'typeorm';
-import { CnCoreConfigService } from '../../cn-core/modules/cn-core-config/cn-core-config.service';
-import { CnUsersService } from '../cn-users.service';
-import { CnErrorText } from '../../cn-core/model/config/cn-error-text.class';
-import { TokenExpiredError } from 'jsonwebtoken';
-import { hash } from 'argon2';
 import {
   BlAbstractPaginatedService,
   BlBadRequestException,
@@ -19,17 +9,27 @@ import {
   BlUserCategory,
   BlUserStatus,
 } from '@monorepo/back-core-lib';
-import { CnUserTokenPayload } from '../../cn-core/model/config/cn-config.class';
-import { CnFrontService } from '../../cn-core/services/cn-front.service';
-import { CnSpaceAggregateService } from '../../cn-spaces/cn-space-aggregate.service';
-import { CnGroupsService } from '../../cn-groups/cn-groups.service';
-import { CnNotificationService } from '../../cn-notification/cn-notification.service';
-import { CnCreateUserDto, CnUserUpdateLicenseDTO } from '../cn-user.dto';
-import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
-import { CnActivityEntityType } from '../../cn-activity/cn-activity.entity';
-import { CnSupportService } from '../../cn-support/cn-support.service';
+import { Injectable, Logger } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { InjectRepository } from '@nestjs/typeorm';
+import { hash } from 'argon2';
+import { TokenExpiredError } from 'jsonwebtoken';
+import { DataSource, EntityManager, Repository } from 'typeorm';
+import { CnUserTokenPayload } from '../../cn-core/model/config/cn-config.class';
+import { CnErrorText } from '../../cn-core/model/config/cn-error-text.class';
+import { CnMailTemplate } from '../../cn-core/model/config/cn-mail-template.class';
+import { CnCoreConfigService } from '../../cn-core/modules/cn-core-config/cn-core-config.service';
+import { CnFrontService } from '../../cn-core/services/cn-front.service';
+import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
+import { CnGroupsService } from '../../cn-groups/cn-groups.service';
+import { CnNotificationType } from '../../cn-notification/cn-notification.entity';
+import { CnNotificationService } from '../../cn-notification/cn-notification.service';
+import { CnSpaceAggregateService } from '../../cn-spaces/cn-space-aggregate.service';
+import { CnSupportService } from '../../cn-support/cn-support.service';
+import { CnCreateUserDto, CnUserUpdateLicenseDTO } from '../cn-user.dto';
+import { CnUser, CnUserEntity, CnUserLicense } from '../cn-user.entity';
 import { CnUserEvent, cnUserEventName, CnUserEventType } from '../cn-user.event';
+import { CnUsersService } from '../cn-users.service';
 
 /**
  * Service to handle users' account (signup, mail validation, password forgotten, reset password...)
@@ -355,7 +355,7 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
       if (adminUser == null) continue;
       await this.notificationService.createNotification({
         createdBy: user,
-        objectType: CnActivityEntityType.USER,
+        objectType: CnNotificationType.USER,
         objectId: user.id,
         user: adminUser,
         text: `New user : ${user.firstname} ${user.lastname}`,

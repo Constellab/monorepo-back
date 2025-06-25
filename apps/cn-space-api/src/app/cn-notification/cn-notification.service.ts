@@ -1,12 +1,11 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { CnNotification, CnNotificationCreateDTO } from './cn-notification.entity';
-import { DeleteResult, In, IsNull, Not, Raw, Repository } from 'typeorm';
 import { BlAbstractService } from '@monorepo/back-core-lib';
 import { ClPage } from '@monorepo/core-lib';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { DeleteResult, In, IsNull, Not, Raw, Repository } from 'typeorm';
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
 import { CnNotificationCountBySpace } from './cn-notification.dto';
-import { CnActivityEntityType } from '../cn-activity/cn-activity.entity';
+import { CnNotification, CnNotificationCreateDTO, CnNotificationType } from './cn-notification.entity';
 
 @Injectable()
 export class CnNotificationService extends BlAbstractService<CnNotification> {
@@ -115,10 +114,7 @@ export class CnNotificationService extends BlAbstractService<CnNotification> {
     return notReadBySpace;
   }
 
-  public deleteNotificationByObject(
-    objectType: CnActivityEntityType,
-    objectId: string
-  ): Promise<DeleteResult> {
+  public deleteNotificationByObject(objectType: CnNotificationType, objectId: string): Promise<DeleteResult> {
     return this.notificationRepository.delete({ objectType, objectId });
   }
 

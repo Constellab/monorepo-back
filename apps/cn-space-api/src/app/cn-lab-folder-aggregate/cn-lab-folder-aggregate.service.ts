@@ -9,10 +9,7 @@ import { CnExternalLabObjectService } from '../cn-external-lab-api/cn-external-l
 import { CnExternalLabShareService } from '../cn-external-lab-api/cn-external-lab-share.service';
 import { CnExternalLabSyncedObjectDTO } from '../cn-external-lab-api/model/cn-external-lab-api.class';
 import { CnFolderAggregateService } from '../cn-folders-aggregate/cn-folder-aggregate.service';
-import {
-  CnHierarchyObject,
-  CnHierarchyObjectWithChildren,
-} from '../cn-folders-aggregate/cn-hierarchy-objects/cn-hierarchy-object.entity';
+import { CnHierarchyObjectWithChildren } from '../cn-folders-aggregate/cn-hierarchy-objects/cn-hierarchy-object.entity';
 import { CnNoteAggregateService } from '../cn-folders-aggregate/cn-notes/cn-note-aggregate.service';
 import { CnResourceAggregateService } from '../cn-folders-aggregate/cn-resources/cn-resource-aggregate.service';
 import { CnResourceAccessDTO } from '../cn-folders-aggregate/cn-resources/cn-resource.dto';
@@ -145,27 +142,6 @@ export class CnLabFolderAggregateService {
     }
   }
 
-  public async getCurrentLabFolders(): Promise<CnHierarchyObject[]> {
-    const labFolders = await this.labFolderService.findByLabId(
-      CnCurrentUserHelper.getAndCheckCurrentLab().id
-    );
-    const folders = labFolders.map((labFolder) => labFolder.rootFolder);
-    return this.folderAggregateService.getFolderTrees(folders);
-  }
-
-  public async getCurrentLabRootFolderById(folderId: string): Promise<CnHierarchyObject> {
-    const folder = await this.folderAggregateService.getFolderHierarchyObject(folderId);
-    const labFolder = await this.labFolderService.findByRootFolderIdAndLabId(
-      folder.getRootFolderId(),
-      CnCurrentUserHelper.getAndCheckCurrentLab().id
-    );
-    if (labFolder == null) {
-      throw new BlBadRequestException(CnErrorText.FOLDER_NOT_SHARED_WITH_LAB);
-    }
-
-    return this.folderAggregateService.getFolderTree(labFolder.rootFolderId);
-  }
-
   public async findLabFolderByFolderId(rootFolderId: string): Promise<CnLabFolderWithLab[]> {
     return this.labFolderService.findByRootFolderId(rootFolderId);
   }
@@ -279,5 +255,36 @@ export class CnLabFolderAggregateService {
 
   public async getAndCheckAuthorizationToFindLabById(id: string): Promise<CnLab> {
     return this.labAggregateService.getAndCheckAuthorizationToFindById(id);
+  }
+
+  //////////////////////////////////////// CURRENT LAB ///////////////////////////////////
+
+  public async getCurrentLabFolders(): Promise<CnHierarchyObjectWithChildren[]> {
+    const labFolders = await this.labFolderService.findByLabId(
+      CnCurrentUserHelper.getAndCheckCurrentLab().id
+    );
+    const folders = labFolders.map((labFolder) => labFolder.rootFolder);
+    return this.folderAggregateService.getFolderTrees(folders);
+  }
+
+  public async getCurrentLabRootFolderById(folderId: string): Promise<CnHierarchyObjectWithChildren> {
+    const folder = await this.folderAggregateService.getFolderHierarchyObject(folderId);
+    const labFolder = await this.labFolderService.findByRootFolderIdAndLabId(
+      folder.getRootFolderId(),
+      CnCurrentUserHelper.getAndCheckCurrentLab().id
+    );
+    if (labFolder == null) {
+      throw new BlBadRequestException(CnErrorText.FOLDER_NOT_SHARED_WITH_LAB);
+    }
+
+    return this.folderAggregateService.getFolderTree(labFolder.rootFolderId);
+  }
+
+  public async shareFolderWithCurrentLab(rootFolderId: string): Promise<CnHierarchyObjectWithChildren> {
+    const lab = CnCurrentUserHelper.getAndCheckCurrentLab();
+
+    await this.addRootFolderToLabInsecure(lab, rootFolderId);
+
+    return this.folderAggregateService.getFolderTree(rootFolderId);
   }
 }

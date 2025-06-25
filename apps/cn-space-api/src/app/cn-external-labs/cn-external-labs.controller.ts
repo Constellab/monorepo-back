@@ -44,10 +44,7 @@ import {
   CnFolderDtoHelper,
   CnLabFolderDTO,
 } from '../cn-folders-aggregate/cn-hierarchy-objects/cn-hierarchy-object.dto';
-import {
-  CnHierarchyObject,
-  CnHierarchyObjectEntity,
-} from '../cn-folders-aggregate/cn-hierarchy-objects/cn-hierarchy-object.entity';
+import { CnHierarchyObject } from '../cn-folders-aggregate/cn-hierarchy-objects/cn-hierarchy-object.entity';
 import { CnNoteAggregateService } from '../cn-folders-aggregate/cn-notes/cn-note-aggregate.service';
 import { CnCreateNoteWithConfigDto } from '../cn-folders-aggregate/cn-notes/cn-note.dto';
 import { CnResourceAggregateService } from '../cn-folders-aggregate/cn-resources/cn-resource-aggregate.service';
@@ -59,6 +56,8 @@ import { CnLabAggregateService } from '../cn-labs/cn-lab-aggregate.service';
 import { CnLabStartDTO } from '../cn-labs/cn-lab.dto';
 import { CnLabSendMailDto, CnLabSendMailToMailsDto } from '../cn-labs/mail/cn-lab-mail.dto';
 import { CnLabMailService } from '../cn-labs/mail/cn-lab-mail.service';
+import { CnLabNotificationCreateDTO } from '../cn-labs/notification/cn-lab-notification.dto';
+import { CnLabNotificationService } from '../cn-labs/notification/cn-lab-notification.service';
 import {
   CnExternalLabTagsDTO,
   CnRichTextCompareRequestDTO,
@@ -79,7 +78,8 @@ export class CnExternalLabsController {
     private resourceAggregateService: CnResourceAggregateService,
     private scenarioAggregateService: CnScenarioAggregateService,
     private noteAggregateService: CnNoteAggregateService,
-    private labMailService: CnLabMailService
+    private labMailService: CnLabMailService,
+    private labNotificationService: CnLabNotificationService
   ) {}
 
   // route called on the lab start
@@ -120,7 +120,7 @@ export class CnExternalLabsController {
   saveScenario(
     @Param('parentFolderId', new ParseUUIDPipe()) parentFolderId: string,
     @Body(new BlParsePipe(CnCreateLabScenarioDto)) createLabScenarioDto: CnCreateLabScenarioDto
-  ): Promise<void> {
+  ): Promise<CnHierarchyObject> {
     return this.scenarioAggregateService.createLabScenario(parentFolderId, createLabScenarioDto);
   }
 
@@ -152,7 +152,7 @@ export class CnExternalLabsController {
     @Param('parentFolderId', new ParseUUIDPipe()) parentFolderId: string,
     @Body() body: { body: string },
     @BlUploadedFiles() files: BlFile[] = []
-  ): Promise<void> {
+  ): Promise<CnHierarchyObject> {
     const createNoteDto: CnCreateNoteWithConfigDto = ClCoreJsonConvert.deserializeObject(
       JSON.parse(body.body),
       CnCreateNoteWithConfigDto
@@ -186,7 +186,7 @@ export class CnExternalLabsController {
   saveResource(
     @Param('parentFolderId', new ParseUUIDPipe()) parentFolderId: string,
     @Body() body: CnShareResourceRequestDTO
-  ): Promise<void> {
+  ): Promise<CnHierarchyObject> {
     return this.resourceAggregateService.shareResourceToFolder(parentFolderId, body);
   }
 
@@ -198,7 +198,7 @@ export class CnExternalLabsController {
   @Get(['folder/all-trees'])
   async getAllFolderTrees(): Promise<CnLabFolderDTO[]> {
     const folders = await this.labFolderAggregateService.getCurrentLabFolders();
-    return CnFolderDtoHelper.convertToFolderTreeDtoList(folders as CnHierarchyObjectEntity[]);
+    return CnFolderDtoHelper.convertToFolderTreeDtoList(folders);
   }
 
   @CnLabAllowDev()
@@ -206,7 +206,7 @@ export class CnExternalLabsController {
   @Get(['folder/:id/root-tree'])
   async getRootFolder(@Param('id', new ParseUUIDPipe()) folderId: string): Promise<CnLabFolderDTO> {
     const folder = await this.labFolderAggregateService.getCurrentLabRootFolderById(folderId);
-    return CnFolderDtoHelper.convertToLabFolderDto(folder as CnHierarchyObjectEntity);
+    return CnFolderDtoHelper.convertToLabFolderDto(folder);
   }
 
   @CnLabAllowDev()
@@ -262,12 +262,19 @@ export class CnExternalLabsController {
 
   @CnLabAllowDev()
   @Put(['folder/:id/share/:groupId/role/:role', 'folder/:id/share/:groupId'])
-  async shareFolder(
+  async shareFolderToGroup(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Param('groupId', new ParseUUIDPipe()) groupId: string,
     @Param('role', new BlParseEnumPipe(CnRootFolderUserRole)) role?: CnRootFolderUserRole
   ): Promise<void> {
     await this.folderAggregateService.shareFolder(id, groupId, role ?? CnRootFolderUserRole.USER);
+  }
+
+  @CnLabAllowDev()
+  @Put(['folder/:id/lab/current'])
+  async shareFolderWithCurrentLab(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabFolderDTO> {
+    const folder = await this.labFolderAggregateService.shareFolderWithCurrentLab(id);
+    return CnFolderDtoHelper.convertToLabFolderDto(folder);
   }
 
   @CnLabAllowDev()
@@ -346,13 +353,21 @@ export class CnExternalLabsController {
    * Route to send an email from the lab
    * @param body
    */
+  @CnLabAllowDev()
   @Post('send-mail')
   sendMail(@Body() body: CnLabSendMailDto): Promise<void> {
     return this.labMailService.sendMailFromLab(CnCurrentUserHelper.getAndCheckCurrentLab(), body);
   }
 
+  @CnLabAllowDev()
   @Post('send-mail-to-mails')
   sendMailToMails(@Body() body: CnLabSendMailToMailsDto): Promise<void> {
     return this.labMailService.sendMailToMailsFromLab(CnCurrentUserHelper.getAndCheckCurrentLab(), body);
+  }
+
+  @CnLabAllowDev()
+  @Post('send-notification')
+  sendNotification(@Body() notification: CnLabNotificationCreateDTO): Promise<void> {
+    return this.labNotificationService.sendNotificationFromCurrentLab(notification);
   }
 }

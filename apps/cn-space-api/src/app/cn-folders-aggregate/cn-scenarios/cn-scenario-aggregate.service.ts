@@ -5,6 +5,7 @@ import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper'
 import { CnExternalLabSyncedObjectDTO } from '../../cn-external-lab-api/model/cn-external-lab-api.class';
 import { CnLabConfig } from '../../cn-lab-configs/cn-lab-config.entity';
 import { CnFolderEventService } from '../cn-folder.event';
+import { CnHierarchyObject } from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
 import { CnHierarchyObjectService } from '../cn-hierarchy-objects/cn-hierarchy-object.service';
 import { CnNotesService } from '../cn-notes/cn-notes.service';
 import { CnFoldersSecurityService } from '../cn-security/cn-folders-security.service';
@@ -39,7 +40,7 @@ export class CnScenarioAggregateService {
   async createLabScenario(
     parentFolderId: string,
     createLabScenarioDto: CnCreateLabScenarioDto
-  ): Promise<void> {
+  ): Promise<CnHierarchyObject> {
     // check that the user can get the folder
     const parentFolder = await this.securityService.getAndCheckAuthorizationForUpdate(parentFolderId);
 
@@ -50,6 +51,8 @@ export class CnScenarioAggregateService {
     } else {
       this.eventService.emitFolderEvent('UPDATE_SCENARIO', parentFolder, result.scenario);
     }
+
+    return this.hierarchyObjectService.findByIdAndCheck(result.scenario.id);
   }
 
   async deleteScenario(scenarioId: string): Promise<boolean> {

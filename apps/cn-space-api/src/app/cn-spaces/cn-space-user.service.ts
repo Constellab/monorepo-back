@@ -1,11 +1,3 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { CnSpaceUser, CnSpaceUserRole } from './cn-space-user.entity';
-import { EntityManager, Repository } from 'typeorm';
-import { CnUser } from '../cn-users/cn-user.entity';
-import { CnSpace, CnSpaceEntity, CnSpaceType } from './cn-space.entity';
-import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
-import { ClHelpService, ClPage } from '@monorepo/core-lib';
 import {
   BlAbstractPaginatedService,
   BlBadRequestException,
@@ -14,17 +6,25 @@ import {
   blTransportSpaceSpaceUserQueue,
   BlTransportSpaceUserPattern,
 } from '@monorepo/back-core-lib';
-import { CnSpaceUserSearch } from './cn-space-user-search.class';
-import { Queue } from 'bullmq';
+import { ClHelpService, ClPage } from '@monorepo/core-lib';
 import { InjectQueue } from '@nestjs/bullmq';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Queue } from 'bullmq';
+import { EntityManager, Repository } from 'typeorm';
+import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
+import { CnUser } from '../cn-users/cn-user.entity';
+import { CnSpaceUserSearch } from './cn-space-user-search.class';
+import { CnSpaceUser, CnSpaceUserEntity, CnSpaceUserRole, CnSpaceUserWithUser } from './cn-space-user.entity';
+import { CnSpace, CnSpaceEntity, CnSpaceType } from './cn-space.entity';
 
 @Injectable()
-export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> {
+export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUserEntity> {
   constructor(
-    @InjectRepository(CnSpaceUser) private repository: Repository<CnSpaceUser>,
+    @InjectRepository(CnSpaceUserEntity) private repository: Repository<CnSpaceUserEntity>,
     @InjectQueue(blTransportSpaceSpaceUserQueue) private queue: Queue
   ) {
-    super(repository, CnSpaceUser);
+    super(repository, CnSpaceUserEntity);
   }
 
   public async userIsSpaceMember(spaceId: string, userId: string): Promise<boolean> {
@@ -52,7 +52,7 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> 
     role: CnSpaceUserRole,
     addedBy: CnUser,
     entityManager?: EntityManager
-  ): Promise<CnSpaceUser> {
+  ): Promise<CnSpaceUserEntity> {
     if (await this.userIsSpaceMember(space.id, user.id)) {
       throw new BlBadRequestException(CnErrorText.USER_ALREADY_IN_SPACE);
     }
@@ -66,7 +66,7 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> 
       await this.checkPersonalSpaceUserLimit(space.id);
     }
 
-    const spaceUser = new CnSpaceUser();
+    const spaceUser = new CnSpaceUserEntity();
     spaceUser.user = user;
     spaceUser.space = space;
     spaceUser.role = role;
@@ -160,11 +160,17 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> 
   }
 
   ///////////////////////////////// FIND  /////////////////////////////////////////
-  public async findOneBySpaceIdAndUserId(spaceId: string, userId: string): Promise<CnSpaceUser | null> {
-    return this.repository.findOne({ where: { userId, spaceId: spaceId } });
+  public async findOneBySpaceIdAndUserId(
+    spaceId: string,
+    userId: string
+  ): Promise<CnSpaceUserWithUser | null> {
+    return this.repository.findOne({ where: { userId, spaceId: spaceId }, relations: { user: true } });
   }
 
-  public async findOneBySpaceIdAndUserEmail(spaceId: string, email: string): Promise<CnSpaceUser | null> {
+  public async findOneBySpaceIdAndUserEmail(
+    spaceId: string,
+    email: string
+  ): Promise<CnSpaceUserWithUser | null> {
     return this.repository.findOne({
       where: {
         spaceId: spaceId,
@@ -174,7 +180,11 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> 
     });
   }
 
-  public async findBySpace(spaceId: string, page: number, size: number): Promise<ClPage<CnSpaceUser>> {
+  public async findBySpace(
+    spaceId: string,
+    page: number,
+    size: number
+  ): Promise<ClPage<CnSpaceUserWithUser>> {
     return await this.findPaginated(page, size, {
       where: { spaceId: spaceId },
       relations: { user: true },
@@ -186,8 +196,8 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> 
     searchParams: BlSearchParams,
     page: number,
     size: number
-  ): Promise<ClPage<CnSpaceUser>> {
-    const searchBuilder = new BlSearchBuilder<CnSpaceUser>();
+  ): Promise<ClPage<CnSpaceUserWithUser>> {
+    const searchBuilder = new BlSearchBuilder<CnSpaceUserWithUser>();
     searchBuilder.addSearchParams(searchParams);
     searchBuilder.mergeWhereOptions({ spaceId: spaceId });
     searchBuilder.setRelations({ user: true });
@@ -238,7 +248,7 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> 
     name: string,
     page: number,
     size: number
-  ): Promise<ClPage<CnSpaceUser>> {
+  ): Promise<ClPage<CnSpaceUserWithUser>> {
     if (ClHelpService.isNullOrEmpty(name)) {
       return this.findBySpace(spaceId, page, size);
     }
@@ -266,8 +276,8 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> 
     });
   }
 
-  public sendSpaceUserToTransport(spaceUser: CnSpaceUser): void {
-    const sU: Partial<CnSpaceUser> = {
+  public sendSpaceUserToTransport(spaceUser: CnSpaceUserEntity): void {
+    const sU: Partial<CnSpaceUserEntity> = {
       userId: spaceUser.userId,
       spaceId: spaceUser.spaceId,
       role: spaceUser.role,
@@ -281,7 +291,7 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUser> 
   }
 
   public sendActionOnSpaceUserToTransport(
-    spaceUser: Partial<CnSpaceUser>,
+    spaceUser: Partial<CnSpaceUserEntity>,
     spaceUserAction: BlTransportSpaceUserPattern
   ): void {
     this.queue.add(spaceUserAction, spaceUser);

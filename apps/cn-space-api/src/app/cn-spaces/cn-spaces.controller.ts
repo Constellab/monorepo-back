@@ -1,4 +1,14 @@
 import {
+  BlFile,
+  BlParsePipe,
+  BlPublic,
+  BlResponseHelper,
+  BlSearchParams,
+  BlUploadedFile,
+  BlUserCategory,
+} from '@monorepo/back-core-lib';
+import { ClPage } from '@monorepo/core-lib';
+import {
   Body,
   Controller,
   Delete,
@@ -13,23 +23,14 @@ import {
   Res,
   UseInterceptors,
 } from '@nestjs/common';
-import { CnSpace } from './cn-space.entity';
-import { ClPage } from '@monorepo/core-lib';
-import { CnSpaceAggregateService } from './cn-space-aggregate.service';
-import {
-  BlFile,
-  BlParsePipe,
-  BlPublic,
-  BlResponseHelper,
-  BlSearchParams,
-  BlUploadedFile,
-  BlUserCategory,
-} from '@monorepo/back-core-lib';
-import { CnSpaceUser, CnSpaceUserRole } from './cn-space-user.entity';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
 import { CnUserCategories } from '../cn-core/decorators/cn-user-category.decorator';
+import { CnFolderStorageUsageDTO } from '../cn-folders-aggregate/cn-documents/cn-document-dto.class';
 import { CnUserSpaceInfo } from '../cn-users/cn-user.dto';
+import { CnUser } from '../cn-users/cn-user.entity';
+import { CnSpaceAggregateService } from './cn-space-aggregate.service';
+import { CnSpaceUserRole, CnSpaceUserWithUser } from './cn-space-user.entity';
 import {
   CnCreateSpaceDTO,
   CnRequestNewLicensesDto,
@@ -37,8 +38,7 @@ import {
   CnSpaceStorage,
   CnSpaceUpdateStorageLocationDTO,
 } from './cn-space.dto';
-import { CnUser } from '../cn-users/cn-user.entity';
-import { CnFolderStorageUsageDTO } from '../cn-folders-aggregate/cn-documents/cn-document-dto.class';
+import { CnSpace } from './cn-space.entity';
 
 @Controller('spaces')
 export class CnSpacesController {
@@ -169,7 +169,7 @@ export class CnSpacesController {
     @Body(new BlParsePipe(BlSearchParams)) searchParams: BlSearchParams,
     @Query('page', new ParseIntPipe()) page: number,
     @Query('size', new ParseIntPipe()) size: number
-  ): Promise<ClPage<CnSpaceUser>> {
+  ): Promise<ClPage<CnSpaceUserWithUser>> {
     return this.spaceAggregateService.searchUserInSpace(id, searchParams, page, size);
   }
 
@@ -188,7 +188,7 @@ export class CnSpacesController {
   public async addUserToSpace(
     @Param('id') id: string,
     @Param('userId', new ParseUUIDPipe()) userId: string
-  ): Promise<CnSpaceUser> {
+  ): Promise<CnSpaceUserWithUser> {
     return this.spaceAggregateService.addUserToSpace(id, userId);
   }
 
@@ -230,7 +230,7 @@ export class CnSpacesController {
     @Param('id') id: string,
     @Query('page', new ParseIntPipe()) page: number,
     @Query('size', new ParseIntPipe()) size: number
-  ): Promise<ClPage<CnSpaceUser>> {
+  ): Promise<ClPage<CnSpaceUserWithUser>> {
     return this.spaceAggregateService.getUsersOfSpace(id, page, size);
   }
 
