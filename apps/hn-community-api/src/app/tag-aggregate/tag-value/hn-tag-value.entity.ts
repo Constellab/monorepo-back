@@ -1,10 +1,11 @@
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { Column, Entity, ManyToOne, Unique } from 'typeorm';
 import { BlEntityWithId } from '@monorepo/back-core-lib';
 import { HnTagKey } from '../tag-key/hn-tag-key.entity';
 
+@Unique(['value', 'tagKey'])
 @Entity('tag_value')
 export class HnTagValue extends BlEntityWithId {
-  @Column({ unique: true, update: false })
+  @Column({ update: false })
   value: string;
 
   @Column()

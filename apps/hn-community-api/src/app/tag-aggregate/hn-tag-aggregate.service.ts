@@ -201,7 +201,8 @@ export class HnTagAggregateService {
     additionalInfosSpecs[specName] = spec;
     additionalInfosSpecs[specName]['visibility'] = 'public'; // Default visibility for additional info specs
     if (!spec.optional && (await this.checkIfTagHasValues(tagKey))) {
-      throw new Error(`Additional info spec '${specName}'is not optional and the tag key has values`);
+      throw new Error(`There are already tag values for this tag,
+       you cannot add a required additional info spec`);
     }
     return this.tagKeyService.updateAdditionalInfosSpecs(tagKey, additionalInfosSpecs);
   }
