@@ -286,7 +286,7 @@ CREATE TABLE `tag_value` (
                            `additionalInfos` text DEFAULT NULL,
                            `tagKeyId` varchar(36) DEFAULT NULL,
                            PRIMARY KEY (`id`),
-                           UNIQUE KEY `IDX_1c45e2461f13df193431ecf7c4` (`value`),
+                           UNIQUE KEY `IDX_dbd6ae60f89f1825b06d3c3d0e` (`value`,`tagKeyId`),
                            KEY `FK_f35fd43511833656868b1694b4b` (`tagKeyId`),
                            CONSTRAINT `FK_f35fd43511833656868b1694b4b` FOREIGN KEY (`tagKeyId`) REFERENCES `tag_key` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
