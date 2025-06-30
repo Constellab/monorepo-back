@@ -157,6 +157,7 @@ export class HnDifyService {
     content: string,
     options: HnDifyCreateDocumentOptionsDto
   ): HnDifyDocument {
+    title = ClStringHelper.toIdForUrl(title);
     return {
       data: {
         indexing_technique: options?.indexingTechnique ?? 'high_quality',
