@@ -1,8 +1,13 @@
-import { CnLabGuard, CnLabRobotAuthentication } from '../cn-core/decorators/cn-lab-guard.decorator';
+import {
+  CnLabAllowDev,
+  CnLabGuard,
+  CnLabRobotAuthentication,
+} from '../cn-core/decorators/cn-lab-guard.decorator';
 import { Controller, Get } from '@nestjs/common';
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
 
 @CnLabGuard()
+@CnLabAllowDev()
 @Controller('external-community-labs')
 export class CnExternalCommunityLabsController {
   /**
