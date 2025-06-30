@@ -37,21 +37,21 @@ export class HnDifyService {
       this.externalApiService.get(this.difyApiUrl, null, {
         headers: this.getDifyHeaders(),
       })
-    ).catch((error) => {
+    ).catch(() => {
       throw new BlBadRequestException('Error while getting knowledge base list');
     });
   }
 
-  async createDocuments(
-    knowledgeBaseId: string,
-    entityType: HnEntityType,
-    entityId: string = null,
-    options: HnDifyCreateDocumentOptionsDto = null
-  ): Promise<boolean> {
-    if (entityType === HnEntityType.BRICK && entityId)
-      return await this.createBricksDocDocuments(knowledgeBaseId, entityId, options);
-    else if (entityType == HnEntityType.STORY)
-      return await this.createStoriesDocuments(knowledgeBaseId, options);
+  async createDocuments(dto: HnDifyCreateDocumentDto): Promise<boolean> {
+    if (dto.entityType === HnEntityType.BRICK && dto.entityId) {
+      return await this.createBricksDocDocuments(dto.knowledgeBaseId, dto.entityId, dto.options);
+    } else if (dto.entityType === HnEntityType.STORY) {
+      return await this.createStoriesDocuments(dto.knowledgeBaseId, dto.options);
+    } else if (dto.entityType === HnEntityType.DOC) {
+      const document = await this.createDocumentationDocument(dto);
+      await this.sendDocumentToDify(document, dto.knowledgeBaseId);
+      return true;
+    }
     return false;
   }
 
@@ -94,12 +94,6 @@ export class HnDifyService {
   async createDocument(dto: HnDifyCreateDocumentDto): Promise<any> {
     let document: HnDifyDocument;
     switch (dto.entityType) {
-      case HnEntityType.AGENT:
-        document = await this.createAgentDocument(dto);
-        break;
-      case HnEntityType.APP:
-        document = await this.createAppDocument(dto);
-        break;
       case HnEntityType.DOC:
         document = await this.createDocumentationDocument(dto);
         break;
@@ -112,13 +106,13 @@ export class HnDifyService {
     return this.sendDocumentToDify(document, dto.knowledgeBaseId);
   }
 
-  async createAgentDocument(dto: HnDifyCreateDocumentDto): Promise<HnDifyDocument> {
-    return null;
-  }
-
-  async createAppDocument(dto: HnDifyCreateDocumentDto): Promise<HnDifyDocument> {
-    return null;
-  }
+  // async createAgentDocument(dto: HnDifyCreateDocumentDto): Promise<HnDifyDocument> {
+  //   return null;
+  // }
+  //
+  // async createAppDocument(dto: HnDifyCreateDocumentDto): Promise<HnDifyDocument> {
+  //   return null;
+  // }
 
   async createDocumentationDocument(dto: HnDifyCreateDocumentDto): Promise<HnDifyDocument> {
     const documentation = await this.documentationService.findById(dto.entityId);
@@ -175,7 +169,7 @@ export class HnDifyService {
         },
         doc_language: 'English',
         process_rule: {
-          mode: 'automatic',
+          mode: 'custom',
           rules: {
             pre_processing_rules: [
               { id: 'remove_extra_spaces', enabled: false },

@@ -64,6 +64,7 @@ import {
   TeRichTextBlockModificationWithUser,
 } from '@monorepo/te-text-editor';
 import { HnMarkdownFile, HnZipHelper } from '../core/utils/hn-zip.helper';
+import { HnMarkdownHelper } from '../core/utils/hn-markdown.helper';
 
 @Injectable()
 export class HnBrickAggregateService {
@@ -1268,6 +1269,35 @@ export class HnBrickAggregateService {
       } as HnMarkdownFile);
     }
 
-    return HnZipHelper.markdownsToZipFile(docsMarkDowns, 'docs');
+    return HnZipHelper.markdownsToZipFile(
+      docsMarkDowns,
+      ClStringHelper.getCleanUrlPath(brickMajorVersion.brick.name)
+    );
+  }
+
+  public async downloadDocMarkdown(docId: string): Promise<BlFileResponse> {
+    const doc: HnDocumentation = await this.documentationService.findById(docId);
+    if (doc == null) {
+      throw new BlBadRequestException(HnErrorText.DOCUMENTATION_NOT_FOUND, {
+        detailArgs: { id: docId },
+      });
+    }
+
+    const docUrl = this.frontService.getBrickDocUrl(
+      doc.folder.brickMajorVersion.brick.name,
+      doc.folder.brickMajorVersion.getStrVersion(),
+      doc.id,
+      doc.completePath
+    );
+
+    let docContentMarkdown = `# ${doc.title}\n\n`;
+    docContentMarkdown += doc
+      .getRichText()
+      .toMarkdown(`${this.configService.getApiUrl()}documentation/${doc.id}/image`, docUrl);
+
+    return HnMarkdownHelper.createMarkdownResponse(
+      ClStringHelper.getCleanUrlPath(doc.title) + '.md',
+      docContentMarkdown
+    );
   }
 }

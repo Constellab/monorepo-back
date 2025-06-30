@@ -7,11 +7,12 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
+  Res,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { HnDocumentation, HnDocumentationDTO } from './documentation/hn-documentation.entity';
-import { BlFile, BlParsePipe, BlPublic, BlUploadedFile } from '@monorepo/back-core-lib';
+import { BlFile, BlParsePipe, BlPublic, BlResponseHelper, BlUploadedFile } from '@monorepo/back-core-lib';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { HnNodeDTO } from './folder/hn-folder.dto';
 import { HnIsAdminGuard } from '../core/guards/hn-is-admin.guard';
@@ -30,6 +31,7 @@ import {
   TeRichTextDTO,
   TeRichTextPipe,
 } from '@monorepo/te-text-editor';
+import { Response } from 'express';
 
 @Controller('documentation')
 @UseGuards(HnIsAdminGuard)
@@ -139,5 +141,18 @@ export class HnDocumentationController extends HnAbstractFileController<HnDocume
     @Param('docId', new ParseUUIDPipe()) docId: string
   ): Promise<HnUploadFileResponseDto> {
     return this.brickAggregateService.saveFile(file, docId);
+  }
+
+  ///////////////////////////////////// OTHER METHODS //////////////////////////////////////
+  @Get('download-doc-markdown/:docId')
+  async downloadDocMarkdown(
+    @Param('docId', new ParseUUIDPipe()) docId: string,
+    @Res() res: Response
+  ): Promise<any> {
+    const md = await this.brickAggregateService.downloadDocMarkdown(docId);
+    res.set({
+      'Content-Disposition': `attachment; filename="${md.name}"`,
+    });
+    BlResponseHelper.setFileResponse(res, md);
   }
 }

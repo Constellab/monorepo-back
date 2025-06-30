@@ -21,7 +21,13 @@ export class HnDifyController {
     @Param('entityId') entityId: string = null,
     @Body() options: HnDifyCreateDocumentOptionsDto
   ): Promise<boolean> {
-    return await this.difyService.createDocuments(knowledgeBaseId, entityType, entityId, options);
+    const dto: HnDifyCreateDocumentDto = {
+      entityType: entityType,
+      entityId: entityId,
+      knowledgeBaseId: knowledgeBaseId,
+      options: options,
+    };
+    return await this.difyService.createDocuments(dto);
   }
 
   @Post()

@@ -14,7 +14,7 @@ export class HnZipHelper {
     fileName: string
   ): Promise<BlFileResponse> {
     const zip = new JSZip();
-    markdowns.forEach((markdown, index) => {
+    markdowns.forEach((markdown) => {
       zip.file(`${ClStringHelper.getCleanUrlPath(markdown.name)}.md`, markdown.content);
     });
     const zipContent = await zip.generateAsync({ type: 'nodebuffer' });
@@ -26,5 +26,15 @@ export class HnZipHelper {
       contentType: 'application/zip',
       contentLength: zipContent.length,
     } as BlFileResponse;
+  }
+
+  public static async markdownStringToMarkdownFile(
+    markdownString: string,
+    fileName: string
+  ): Promise<HnMarkdownFile> {
+    return {
+      name: ClStringHelper.getCleanUrlPath(fileName),
+      content: markdownString,
+    } as HnMarkdownFile;
   }
 }
