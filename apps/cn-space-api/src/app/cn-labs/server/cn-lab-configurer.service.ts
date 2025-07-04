@@ -192,16 +192,16 @@ export class CnLabConfigurerService {
     }
   }
 
-  private async callDockerComposeRestart(labSshService: CnLabSshService, labId: string): Promise<void> {
-    // execute docker compose restart
-    await this.labService.updateServerTask(labId, `Restarting lab manager`, CnLabServerTaskStatus.RUNNING);
+  private async callDockerComposeDown(labSshService: CnLabSshService, labId: string): Promise<void> {
+    // execute docker compose down
+    await this.labService.updateServerTask(labId, `Stopping lab manager`, CnLabServerTaskStatus.RUNNING);
     try {
       await labSshService.execSshCommand([
         `cd ${CnLabSshService.LAB_CONFIGURER_FOLDER}`,
-        'docker-compose restart',
+        'docker-compose down',
       ]);
     } catch (e) {
-      throw new Error(`Error while restarting lab manager. Error : ${e}`);
+      throw new Error(`Error while stopping lab manager. Error : ${e}`);
     }
   }
 
@@ -286,8 +286,10 @@ export class CnLabConfigurerService {
       // Execute init.sh
       await this.callInitScript(labSshService, lab);
 
-      // execute docker compose restart
-      await this.callDockerComposeRestart(labSshService, lab.id);
+      // execute docker compose down
+      await this.callDockerComposeDown(labSshService, lab.id);
+      // execute docker compose up
+      await this.callDockerComposeUp(labSshService, lab.id);
     } catch (e) {
       const error = `Error while migrating to DNS Challenge. Error : ${e}`;
       await this.labService.updateServerTask(lab.id, error, CnLabServerTaskStatus.ERROR);
