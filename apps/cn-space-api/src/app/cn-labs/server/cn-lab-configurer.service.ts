@@ -159,7 +159,7 @@ export class CnLabConfigurerService {
 
   private async callInitScript(labSshService: CnLabSshService, lab: CnLab): Promise<void> {
     const challengeRoute =
-      `${this.coreConfigService.getApiUrl()}/external-labs-manager/lab/dns/present` +
+      `${this.coreConfigService.getApiUrl()}/external-labs-manager/lab/dns` +
       `?${cnExternalLabQueryParamKeyHeader}=${lab.labManagerApiKey}`;
     const variables = [
       `--virtual-host="${lab.virtualHost}"`,
@@ -293,5 +293,11 @@ export class CnLabConfigurerService {
       await this.labService.updateServerTask(lab.id, error, CnLabServerTaskStatus.ERROR);
       throw new BlBadRequestException(error);
     }
+
+    await this.labService.updateServerTask(
+      lab.id,
+      `Migrating to DNS Challenge Success`,
+      CnLabServerTaskStatus.SUCCESS
+    );
   }
 }
