@@ -2,6 +2,7 @@ import { BlBadRequestException } from '@monorepo/back-core-lib';
 import { Injectable, Logger } from '@nestjs/common';
 import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
 import { CnExternalLabApiService } from '../../cn-external-lab-api/cn-external-lab-api.service';
+import { CnLabManagerCreateDnsChallenge } from '../../cn-external-lab-api/model/cn-lab-manager.class';
 import { CnLab } from '../cn-lab.entity';
 import { CnLabsService } from '../cn-labs.service';
 import { CnLabServerTaskStatus } from '../status/cn-lab-status.enum';
@@ -74,7 +75,7 @@ export class CnLabServerService {
 
     promises.push(
       this.ovhCloudProviderService
-        .getLabDomainRecord(lab.getMainDomain(), lab.getSubDomainName())
+        .getLabDomainHostRecord(lab.getMainDomain(), lab.getSubDomainName())
         .then((domainRecord) => (info.domainRecord = domainRecord))
         .catch((err) => this.logger.error(err))
     );
@@ -386,7 +387,7 @@ export class CnLabServerService {
     );
     this.logger.log(`Creating domain record for lab ${lab.id} with subdomain ${subDomainName}`);
     try {
-      await this.ovhCloudProviderService.createDomainForLab(ipv4, mainDomain, subDomainName);
+      await this.ovhCloudProviderService.createLabDomainHostRecord(ipv4, mainDomain, subDomainName);
     } catch (e) {
       throw new Error(`Error while creating domain record for lab. Error: ${e}`);
     }
@@ -459,7 +460,10 @@ export class CnLabServerService {
     // check if the domain record already exists
     if (domainExists) {
       this.logger.log(`Deleting domain record ${lab.virtualHost} for lab ${lab.id}`);
-      await this.ovhCloudProviderService.deleteDomainRecord(lab.getMainDomain(), lab.getSubDomainName());
+      await this.ovhCloudProviderService.deleteLabDomainHostRecord(
+        lab.getMainDomain(),
+        lab.getSubDomainName()
+      );
       await this.labService.updatePartial(lab.id, { dnsConfigured: false });
       this.logger.log(`Domain record ${lab.virtualHost} deleted for lab ${lab.id}`);
     } else {
@@ -572,5 +576,19 @@ export class CnLabServerService {
       lab.region.technicalName
     );
     return serverInstance.status;
+  }
+
+  ///////////////////////////////// DNS CHALLENGE /////////////////////////////////
+
+  public async generateDnsChallengeForLab(lab: CnLab, data: CnLabManagerCreateDnsChallenge): Promise<void> {
+    return this.ovhCloudProviderService.createDnsChallengeForLab(
+      lab.getMainDomain(),
+      lab.getSubDomainName(),
+      data.value
+    );
+  }
+
+  public async cleanupDnsChallenge(lab: CnLab): Promise<void> {
+    return this.ovhCloudProviderService.deleteDnsChallengeForLab(lab.getMainDomain(), lab.getSubDomainName());
   }
 }

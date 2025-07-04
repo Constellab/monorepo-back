@@ -104,7 +104,6 @@ export class CnLabManagerStatus {
   };
 }
 
-
 export interface CnLabManagerErrorLogs {
   mainErrors: string[];
   logs: string;
@@ -113,7 +112,6 @@ export interface CnLabManagerErrorLogs {
 export interface CnLabManagerDockerLogs {
   logs: string;
 }
-
 
 ////////////////////////// BACKUP //////////////////////////
 export interface CnLabManagerBackupInfoDTO {
@@ -159,4 +157,10 @@ export interface CnLabManagerAdminerInfo {
   gwsCoreProd: CnLabManagerAdminerDbInfo;
   gwsCoreDev: CnLabManagerAdminerDbInfo;
   gwsBiota: CnLabManagerAdminerDbInfo;
+}
+
+//////////////////////// DNS CHALLENGE ////////////////////////
+export interface CnLabManagerCreateDnsChallenge {
+  fqdn: string;
+  value: string;
 }

@@ -1,5 +1,10 @@
-import { CnCloudProviderService } from '../cn-cloud-provider.service';
-import { CnOvhService } from './cn-ovh.service';
+import { BlBadRequestException } from '@monorepo/back-core-lib';
+import { Injectable, Logger } from '@nestjs/common';
+import { CnCloudProviderName } from '../../../cn-cloud-providers/cn-cloud-provider.entity';
+import { CnCoreConfigService } from '../../../cn-core/modules/cn-core-config/cn-core-config.service';
+import { CnCommandService } from '../../../cn-core/services/cn-command.service';
+import { CnLab, CnLabBillingMode } from '../../cn-lab.entity';
+import { CnLabVolumeType } from '../../volume/cn-lab-volume-entity';
 import {
   CnCpCreateInstanceRequest,
   CnCpCreateVolumeRequest,
@@ -10,8 +15,9 @@ import {
   CnCpVolume,
   CnCpVolumeStatus,
 } from '../cn-cloud-provider.class';
-import { Injectable, Logger } from '@nestjs/common';
+import { CnCloudProviderService } from '../cn-cloud-provider.service';
 import {
+  CnDomainFieldType,
   CnOvhCreateDomainRecordRequest,
   CnOvhCreateInstanceRequest,
   CnOvhCreateVolumeRequest,
@@ -20,12 +26,7 @@ import {
   CnOvhInstanceStatus,
   CnOvhVolume,
 } from './cn-ovh.class';
-import { CnCoreConfigService } from '../../../cn-core/modules/cn-core-config/cn-core-config.service';
-import { CnCloudProviderName } from '../../../cn-cloud-providers/cn-cloud-provider.entity';
-import { CnLab, CnLabBillingMode } from '../../cn-lab.entity';
-import { BlBadRequestException } from '@monorepo/back-core-lib';
-import { CnCommandService } from '../../../cn-core/services/cn-command.service';
-import { CnLabVolumeType } from '../../volume/cn-lab-volume-entity';
+import { CnOvhService } from './cn-ovh.service';
 
 @Injectable()
 export class CnCloudProviderOvhService extends CnCloudProviderService {
@@ -35,6 +36,10 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
 
   private static MOUNT_FILE = 'mount_ovh.sh';
   private static MOUNT_DISK_NAME = 'sdb';
+  private static DNS_HOST_RECORD: CnDomainFieldType = 'A';
+  private static DNS_CHALLENGE_RECORD: CnDomainFieldType = 'TXT';
+  private static DNS_CHALLENGE_PREFIX = '_acme-challenge';
+  private static DNS_CHALLENGE_TTL = 60; // 1 minute
 
   constructor(
     private ovhService: CnOvhService,
@@ -277,11 +282,15 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
     return ipAddress ? ipAddress.ip : null;
   }
 
-  /////////////////////////////// DNS ///////////////////////////////
-  public async createDomainForLab(ipv4: string, mainDomain: string, subDomainName: string): Promise<any> {
+  /////////////////////////////// LAB DNS ///////////////////////////////
+  public async createLabDomainHostRecord(
+    ipv4: string,
+    mainDomain: string,
+    subDomainName: string
+  ): Promise<any> {
     const request: CnOvhCreateDomainRecordRequest = {
-      fieldType: 'A',
-      subDomain: '*.' + subDomainName,
+      fieldType: CnCloudProviderOvhService.DNS_HOST_RECORD,
+      subDomain: this.getSubDomainRecordName(subDomainName),
       target: ipv4,
     };
 
@@ -289,17 +298,21 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
   }
 
   public async labDomainRecordExists(mainDomain: string, subDomainName: string): Promise<boolean> {
-    return this.ovhService.domainRecordExist(mainDomain, '*.' + subDomainName, 'A');
+    return this.ovhService.domainRecordExist(
+      mainDomain,
+      this.getSubDomainRecordName(subDomainName),
+      CnCloudProviderOvhService.DNS_HOST_RECORD
+    );
   }
 
-  public async getLabDomainRecord(
+  public async getLabDomainHostRecord(
     mainDomain: string,
     subDomainName: string
   ): Promise<CnOvhDomainRecord | null> {
     const recordIds: number[] = await this.ovhService.getDomainRecordIdBySubDomain(
       mainDomain,
-      '*.' + subDomainName,
-      'A'
+      this.getSubDomainRecordName(subDomainName),
+      CnCloudProviderOvhService.DNS_HOST_RECORD
     );
 
     if (recordIds.length === 0) {
@@ -309,11 +322,53 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
     return this.ovhService.getDomainRecord(mainDomain, recordIds[0]);
   }
 
-  public async deleteDomainRecord(mainDomain: string, subDomainName: string): Promise<void> {
+  public async deleteLabDomainHostRecord(mainDomain: string, subDomainName: string): Promise<void> {
+    return this.deleteDomainRecord(
+      mainDomain,
+      this.getSubDomainRecordName(subDomainName),
+      CnCloudProviderOvhService.DNS_HOST_RECORD
+    );
+  }
+
+  private getSubDomainRecordName(subDomainName: string): string {
+    return '*.' + subDomainName;
+  }
+
+  /////////////////////////////// DNS CHALLENGE ///////////////////////////////
+  public async createDnsChallengeForLab(
+    mainDomain: string,
+    subDomainName: string,
+    challengeTxt: string
+  ): Promise<void> {
+    const challengeSubdomain = `${CnCloudProviderOvhService.DNS_CHALLENGE_PREFIX}.${subDomainName}`;
+    await this.ovhService.createDomainRecord(mainDomain, {
+      subDomain: challengeSubdomain,
+      fieldType: CnCloudProviderOvhService.DNS_CHALLENGE_RECORD,
+      ttl: CnCloudProviderOvhService.DNS_CHALLENGE_TTL,
+      target: challengeTxt,
+    });
+  }
+
+  public async deleteDnsChallengeForLab(mainDomain: string, subDomainName: string): Promise<void> {
+    const challengeSubdomain = `${CnCloudProviderOvhService.DNS_CHALLENGE_PREFIX}.${subDomainName}`;
+    await this.deleteDomainRecord(
+      mainDomain,
+      challengeSubdomain,
+      CnCloudProviderOvhService.DNS_CHALLENGE_RECORD
+    );
+  }
+
+  /////////////////////////////// GENERIC DNS ///////////////////////////////
+
+  private async deleteDomainRecord(
+    mainDomain: string,
+    subDomainName: string,
+    fieldType: CnDomainFieldType
+  ): Promise<void> {
     const recordIds: number[] = await this.ovhService.getDomainRecordIdBySubDomain(
       mainDomain,
-      '*.' + subDomainName,
-      'A'
+      subDomainName,
+      fieldType
     );
 
     for (const recordId of recordIds) {

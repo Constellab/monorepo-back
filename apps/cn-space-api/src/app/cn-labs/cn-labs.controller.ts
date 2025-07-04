@@ -1,4 +1,12 @@
 import {
+  BlDtoHelper,
+  BlParseEnumPipe,
+  BlParsePipe,
+  BlResponseHelper,
+  BlSearchParams,
+} from '@monorepo/back-core-lib';
+import { ClPage, ClPageI } from '@monorepo/core-lib';
+import {
   Body,
   Controller,
   Delete,
@@ -12,17 +20,24 @@ import {
   Res,
   StreamableFile,
 } from '@nestjs/common';
-import { CnLabEntity } from './cn-lab.entity';
-import { CnLabAggregateService } from './cn-lab-aggregate.service';
-import { CnLabStatusHistory } from './status/cn-lab-status-history.entity';
+import { Response } from 'express';
 import {
-  BlDtoHelper,
-  BlParseEnumPipe,
-  BlParsePipe,
-  BlResponseHelper,
-  BlSearchParams,
-} from '@monorepo/back-core-lib';
-import { ClPage, ClPageI } from '@monorepo/core-lib';
+  CnLabManagerAdminerInfo,
+  CnLabManagerComposeUpOptions,
+  CnLabManagerContainerSize,
+  CnLabManagerDockerLogs,
+  CnLabManagerDockerPs,
+  CnLabManagerDockerPsFull,
+  CnLabManagerErrorLogs,
+  CnLabManagerRestoreBackupConfigDTO,
+  CnManagerLabComposeRestartOptions,
+  CnManagerLabPullBiotaOptions,
+} from '../cn-external-lab-api/model/cn-lab-manager.class';
+import { CnLabConfig } from '../cn-lab-configs/cn-lab-config.entity';
+import { CnUser } from '../cn-users/cn-user.entity';
+import { CnLabBackupHistory } from './backup/cn-lab-backup-history.entity';
+import { CnLabBackupStatusDTO, CnLabCheckBackupSizeDTO } from './backup/cn-lab-backup.dto';
+import { CnLabAggregateService } from './cn-lab-aggregate.service';
 import {
   CnLabAdminDto,
   CnLabCloudCreateDTO,
@@ -39,35 +54,20 @@ import {
   CnRequestLab,
   CnStopLabRequestDTO,
 } from './cn-lab.dto';
-import {
-  CnLabManagerAdminerInfo,
-  CnLabManagerComposeUpOptions,
-  CnLabManagerContainerSize,
-  CnLabManagerDockerLogs,
-  CnLabManagerDockerPs,
-  CnLabManagerDockerPsFull,
-  CnLabManagerErrorLogs,
-  CnLabManagerRestoreBackupConfigDTO,
-  CnManagerLabComposeRestartOptions,
-  CnManagerLabPullBiotaOptions,
-} from '../cn-external-lab-api/model/cn-lab-manager.class';
-import { CnLabConfig } from '../cn-lab-configs/cn-lab-config.entity';
-import { CnLabUserRole, CnLabUserWithUser } from './user/cn-lab-user.entity';
-import { CnCpCompleteInfo } from './server/cn-cloud-provider.class';
-import { CnLabGreenOption } from './green-option/cn-lab-green-option.entity';
-import { CnLabGreenOptionFormDto } from './green-option/cn-lab-green-option.dto';
-import { CnLabStatsRequestDTO } from './stats/cn-lab-stats.dto';
-import { CnLabFreeCreateDto, CnLabFreeGetDto, CnLabFreeUpdateDto } from './lab-free/cn-lab-free.dto';
-import { CnLabFreeAggregateService } from './lab-free/cn-lab-free-aggregate.service';
-import { CnLabBackupHistory } from './backup/cn-lab-backup-history.entity';
-import { CnLabBackupStatusDTO, CnLabCheckBackupSizeDTO } from './backup/cn-lab-backup.dto';
-import { CnLabUpdateVolumeDTO } from './volume/cn-lab-volume.dto';
-import { CnLabVolume } from './volume/cn-lab-volume-entity';
-import { CnLabStatsStorageResponseDTO } from './stats/cn-lab-storage-stats.dto';
-import { CnLabStatsRunningResponseDTO } from './stats/cn-lab-running-stats.dto';
-import { CnUser } from '../cn-users/cn-user.entity';
-import { Response } from 'express';
+import { CnLabEntity } from './cn-lab.entity';
 import { CnLabDesktopGenerateConfig } from './desktop/cn-lab-desktop.class';
+import { CnLabGreenOptionFormDto } from './green-option/cn-lab-green-option.dto';
+import { CnLabGreenOption } from './green-option/cn-lab-green-option.entity';
+import { CnLabFreeAggregateService } from './lab-free/cn-lab-free-aggregate.service';
+import { CnLabFreeCreateDto, CnLabFreeGetDto, CnLabFreeUpdateDto } from './lab-free/cn-lab-free.dto';
+import { CnCpCompleteInfo } from './server/cn-cloud-provider.class';
+import { CnLabStatsRunningResponseDTO } from './stats/cn-lab-running-stats.dto';
+import { CnLabStatsRequestDTO } from './stats/cn-lab-stats.dto';
+import { CnLabStatsStorageResponseDTO } from './stats/cn-lab-storage-stats.dto';
+import { CnLabStatusHistory } from './status/cn-lab-status-history.entity';
+import { CnLabUserRole, CnLabUserWithUser } from './user/cn-lab-user.entity';
+import { CnLabVolume } from './volume/cn-lab-volume-entity';
+import { CnLabUpdateVolumeDTO } from './volume/cn-lab-volume.dto';
 
 @Controller('labs')
 export class CnLabsController {
@@ -186,6 +186,11 @@ export class CnLabsController {
   @Put(':id/lab-configurer/migrate')
   public migrateToGithub(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabStatusDTO> {
     return this.aggregateService.migrateToGithub(id);
+  }
+
+  @Put(':id/lab-configurer/migrate-dns-challenge')
+  public migrateToDnsChallenge(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabStatusDTO> {
+    return this.aggregateService.migrateToDnsChallenge(id);
   }
 
   @Put(':id/lab-configurer/destroy-containers')

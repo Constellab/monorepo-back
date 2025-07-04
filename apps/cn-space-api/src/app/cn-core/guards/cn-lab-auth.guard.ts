@@ -1,25 +1,26 @@
+import { blIsDecoratedWithPublic, BlUnauthorizedException } from '@monorepo/back-core-lib';
 import { CanActivate, ExecutionContext, Injectable, Logger } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { CnLabsService } from '../../cn-labs/cn-labs.service';
 import { Request } from 'express';
 import { CnLabWithSpace } from '../../cn-labs/cn-lab.entity';
-import { CnUsersService } from '../../cn-users/cn-users.service';
-import { CnCoreConfigService } from '../modules/cn-core-config/cn-core-config.service';
+import { CnLabsService } from '../../cn-labs/cn-labs.service';
+import { CnLabUserService } from '../../cn-labs/user/cn-lab-user.service';
+import { CnSpaceUserRole } from '../../cn-spaces/cn-space-user.entity';
+import { CnSpaceUserService } from '../../cn-spaces/cn-space-user.service';
+import { CnUserSpaceInfo } from '../../cn-users/cn-user.dto';
 import { CnUser } from '../../cn-users/cn-user.entity';
-import { CnErrorText } from '../model/config/cn-error-text.class';
+import { CnUsersService } from '../../cn-users/cn-users.service';
+import { cnIsAllowedDev, cnIsLabRobotAuth } from '../decorators/cn-lab-guard.decorator';
 import {
   cnExternalLabApiKeyHeader,
   cnExternalLabApiKeySchema,
   cnExternalLabApiTokenHeader,
   cnExternalLabManagerVersionHeader,
+  cnExternalLabQueryParamKeyHeader,
   cnExternalLabUserHeader,
 } from '../model/config/cn-config.class';
-import { CnSpaceUserService } from '../../cn-spaces/cn-space-user.service';
-import { CnSpaceUserRole } from '../../cn-spaces/cn-space-user.entity';
-import { cnIsAllowedDev, cnIsLabRobotAuth } from '../decorators/cn-lab-guard.decorator';
-import { blIsDecoratedWithPublic, BlUnauthorizedException } from '@monorepo/back-core-lib';
-import { CnLabUserService } from '../../cn-labs/user/cn-lab-user.service';
-import { CnUserSpaceInfo } from '../../cn-users/cn-user.dto';
+import { CnErrorText } from '../model/config/cn-error-text.class';
+import { CnCoreConfigService } from '../modules/cn-core-config/cn-core-config.service';
 import {
   CnAuthContext,
   CnAuthContextLab,
@@ -184,9 +185,19 @@ export abstract class CnLabAuthGuardBase implements CanActivate {
     return { user: user, role: CnSpaceUserRole.ADMIN };
   }
 
-  private getLabApiKeyFromRequest(request: Request): string {
+  private getLabApiKeyFromRequest(request: Request): string | null {
     // get the api-key from header without the 'API-KEY'
-    return request.header(cnExternalLabApiKeyHeader)?.replace(`${cnExternalLabApiKeySchema} `, '') ?? null;
+    const authorization = request.header(cnExternalLabApiKeyHeader);
+    if (authorization != null) {
+      return authorization.replace(`${cnExternalLabApiKeySchema} `, '');
+    }
+
+    const queryAuthorization = request.query[cnExternalLabQueryParamKeyHeader];
+    if (queryAuthorization != null) {
+      return queryAuthorization.toString();
+    }
+
+    return null;
   }
 
   private getLabUserIdFromRequest(request: Request): string | null {

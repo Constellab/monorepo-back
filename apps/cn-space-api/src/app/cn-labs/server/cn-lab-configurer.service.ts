@@ -1,13 +1,14 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { CnLab } from '../cn-lab.entity';
-import { CnExecCommandMode } from '../../cn-core/services/cn-command.service';
-import { CnLabsService } from '../cn-labs.service';
-import { CnCoreConfigService } from '../../cn-core/modules/cn-core-config/cn-core-config.service';
-import { CnLabManagerService } from '../cn-lab-manager.service';
-import { CnLabSshService } from './cn-lab-ssh.service';
-import { CnCloudProviderFactory } from './cn-cloud-provider.factory';
-import { CnLabServerTaskStatus } from '../status/cn-lab-status.enum';
 import { BlBadRequestException } from '@monorepo/back-core-lib';
+import { Injectable, Logger } from '@nestjs/common';
+import { cnExternalLabQueryParamKeyHeader } from '../../cn-core/model/config/cn-config.class';
+import { CnCoreConfigService } from '../../cn-core/modules/cn-core-config/cn-core-config.service';
+import { CnExecCommandMode } from '../../cn-core/services/cn-command.service';
+import { CnLabManagerService } from '../cn-lab-manager.service';
+import { CnLab } from '../cn-lab.entity';
+import { CnLabsService } from '../cn-labs.service';
+import { CnLabServerTaskStatus } from '../status/cn-lab-status.enum';
+import { CnCloudProviderFactory } from './cn-cloud-provider.factory';
+import { CnLabSshService } from './cn-lab-ssh.service';
 
 /**
  * Service to configure the lab server.
@@ -16,6 +17,9 @@ import { BlBadRequestException } from '@monorepo/back-core-lib';
 @Injectable()
 export class CnLabConfigurerService {
   private readonly logger = new Logger(CnLabConfigurerService.name);
+
+  private static DNS_CHALLENGE_ENABLED_VALUE = 'true';
+  private static DNS_CHALLENGE_PROVIDER_VALUE = 'httpreq';
 
   constructor(
     private labService: CnLabsService,
@@ -154,11 +158,17 @@ export class CnLabConfigurerService {
   }
 
   private async callInitScript(labSshService: CnLabSshService, lab: CnLab): Promise<void> {
+    const challengeRoute =
+      `${this.coreConfigService.getApiUrl()}/external-labs-manager/lab/dns/present` +
+      `?${cnExternalLabQueryParamKeyHeader}=${lab.labManagerApiKey}`;
     const variables = [
       `--virtual-host="${lab.virtualHost}"`,
       `--environment-profile="${this.coreConfigService.isProduction() ? 'prod' : 'pre-prod'}"`,
       `--lab-manager-api-key="${lab.labManagerApiKey}"`,
       `--lab-manager-version="${this.coreConfigService.getLabManagerRecommendedVersion()}"`,
+      `--dns-challenge-enabled="${CnLabConfigurerService.DNS_CHALLENGE_ENABLED_VALUE}"`,
+      `--dns-challenge-provider="${CnLabConfigurerService.DNS_CHALLENGE_PROVIDER_VALUE}"`,
+      `--dns-challenge-route="${challengeRoute}"`,
     ];
 
     this.logger.log(`Run init.sh file for lab ${lab.id}`);
@@ -179,6 +189,19 @@ export class CnLabConfigurerService {
       ]);
     } catch (e) {
       throw new Error(`Error while starting lab manager. Error : ${e}`);
+    }
+  }
+
+  private async callDockerComposeRestart(labSshService: CnLabSshService, labId: string): Promise<void> {
+    // execute docker compose restart
+    await this.labService.updateServerTask(labId, `Restarting lab manager`, CnLabServerTaskStatus.RUNNING);
+    try {
+      await labSshService.execSshCommand([
+        `cd ${CnLabSshService.LAB_CONFIGURER_FOLDER}`,
+        'docker-compose restart',
+      ]);
+    } catch (e) {
+      throw new Error(`Error while restarting lab manager. Error : ${e}`);
     }
   }
 
@@ -244,5 +267,31 @@ export class CnLabConfigurerService {
     await this.configureServer(lab);
 
     await this.labService.updateServerTask(lab.id, `Migrate Success`, CnLabServerTaskStatus.SUCCESS);
+  }
+
+  public async migrateToDnsChallenge(lab: CnLab): Promise<void> {
+    const labSshService = await this.cloudProviderFactory.getSshLabService(lab);
+
+    // execute docker compose down
+    await this.labService.updateServerTask(
+      lab.id,
+      `Migrating to DNS Challenge`,
+      CnLabServerTaskStatus.RUNNING
+    );
+
+    try {
+      // get lab configurer repository
+      await this.refreshLabConfigurerRepo(labSshService, lab.id);
+
+      // Execute init.sh
+      await this.callInitScript(labSshService, lab);
+
+      // execute docker compose restart
+      await this.callDockerComposeRestart(labSshService, lab.id);
+    } catch (e) {
+      const error = `Error while migrating to DNS Challenge. Error : ${e}`;
+      await this.labService.updateServerTask(lab.id, error, CnLabServerTaskStatus.ERROR);
+      throw new BlBadRequestException(error);
+    }
   }
 }

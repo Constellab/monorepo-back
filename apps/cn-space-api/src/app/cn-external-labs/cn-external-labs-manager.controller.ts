@@ -1,12 +1,14 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
-import { CnLabAggregateService } from '../cn-labs/cn-lab-aggregate.service';
-import { CnLabManagerGuard } from '../cn-core/decorators/cn-lab-manager-guard.decorator';
-import { CnLabRobotAuthentication } from '../cn-core/decorators/cn-lab-guard.decorator';
 import { BlBucketType, BlParsePipe, BlPublic } from '@monorepo/back-core-lib';
-import { CnLabManagerBackupInfoDTO } from '../cn-external-lab-api/model/cn-lab-manager.class';
-import { CnLabBackupsHistory } from '../cn-labs/backup/cn-lab-backup.dto';
+import { Body, Controller, Get, Post } from '@nestjs/common';
+import { CnLabRobotAuthentication } from '../cn-core/decorators/cn-lab-guard.decorator';
+import { CnLabManagerGuard } from '../cn-core/decorators/cn-lab-manager-guard.decorator';
+import {
+  CnLabManagerBackupInfoDTO,
+  CnLabManagerCreateDnsChallenge,
+} from '../cn-external-lab-api/model/cn-lab-manager.class';
 import { CnLabBackupHistory } from '../cn-labs/backup/cn-lab-backup-history.entity';
-
+import { CnLabBackupsHistory } from '../cn-labs/backup/cn-lab-backup.dto';
+import { CnLabAggregateService } from '../cn-labs/cn-lab-aggregate.service';
 /**
  * Specific controller for route called by the lab manager. These routes are not called by a user
  */
@@ -55,5 +57,27 @@ export class CnExternalLabsManagerController {
   @Get('desktop/update-lab-manager-command')
   getUpdateLabManagerCommand(): { command: string } {
     return { command: this.labAggregator.getDesktopUpdateLabManagerCommand() };
+  }
+
+  // Route for the DNS challenge to generate wildcard certificate
+  // for the lab. This is called by the traefik service of the lab
+  @CnLabRobotAuthentication()
+  @Post('lab/dns/present')
+  async present(@Body() body: CnLabManagerCreateDnsChallenge): Promise<any> {
+    await this.labAggregator.createDnsChallenge(body);
+    return {
+      success: true,
+      message: 'DNS record created successfully',
+    };
+  }
+
+  @CnLabRobotAuthentication()
+  @Post('lab/dns/cleanup')
+  async deleteDnsChallenge(): Promise<any> {
+    await this.labAggregator.deleteDnsChallenge();
+    return {
+      success: true,
+      message: 'DNS record deleted successfully',
+    };
   }
 }

@@ -1,12 +1,13 @@
+import { BlReflectorHelper } from '@monorepo/back-core-lib';
 import { ExecutionContext, SetMetadata, UseGuards } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { BlReflectorHelper } from '@monorepo/back-core-lib';
 import { CnLabManagerAuthGuard } from '../guards/cn-lab-auth.guard';
 
 const cnLabManagerAuthMetadata = 'labManagerAuth';
 
 /**
  * @LabManagerGuard decorator for method or class to make a route authenticated with
+ * Handle by CnLabManagerAuthGuard class
  * the lab manager token. It is used for routes called by the lab manager.
  *
  * The {@link CnLabManagerAuthGuard} check this decorator
