@@ -145,7 +145,7 @@ export class HnCoreConfigService {
         res = 'https://constellab.community';
         break;
       case 'preprod':
-        res = 'https://hub-pre-prod.gencovery.com';
+        res = 'https://community-pre-prod.gencovery.com';
         break;
       case 'dev':
         res = 'http://localhost:4200';

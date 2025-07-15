@@ -44,7 +44,7 @@ export class HnCommunityAppEntity extends HnBaseEntity {
 
     const urlWithoutHttp: string = appUrl.replace('http://', '').replace('https://', '');
     const urlFragment: string[] = urlWithoutHttp.split('/');
-    return urlFragment.length > 0 && urlFragment[0].endsWith('.constellab.app');
+    return urlFragment.length > 0 && urlFragment[0].split('?')[0].endsWith('.constellab.app');
   }
 }
 
