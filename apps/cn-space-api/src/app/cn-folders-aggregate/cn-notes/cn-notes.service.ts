@@ -224,14 +224,27 @@ export class CnNotesService extends BlAbstractService<CnNoteEntity> {
 
     // manage the file and image of the note
     await this.uploadNoteFiles(files, note.id, noteDocument, parentFolder);
-    // manage views of the note
-    await this.uploadNoteViews(
-      richTextAggregate.richText,
-      createNoteDto.resource_views,
-      note.id,
-      noteDocument,
-      parentFolder
-    );
+
+    // TODO : old view management, to remove once all labs are on v 0.16.0
+    if (createNoteDto.resource_views) {
+      // manage views of the note
+      await this.uploadNoteViews(
+        richTextAggregate.richText,
+        createNoteDto.resource_views,
+        note.id,
+        noteDocument,
+        parentFolder
+      );
+    } else {
+      // manage views of the note
+      await this.uploadNoteViewsFromFiles(
+        richTextAggregate.richText,
+        files,
+        note.id,
+        noteDocument,
+        parentFolder
+      );
+    }
 
     return note;
   }
@@ -302,6 +315,37 @@ export class CnNotesService extends BlAbstractService<CnNoteEntity> {
         viewData,
         parentDocument
       );
+    }
+  }
+
+  /**
+   * Method to load the resource view of the note and store them in the object storage
+   */
+  private async uploadNoteViewsFromFiles(
+    richText: TeRichText,
+    files: BlFile[],
+    noteId: string,
+    parentDocument: CnDocument,
+    parentFolder: CnHierarchyObject
+  ): Promise<void> {
+    if (!files) return;
+
+    const views = [...richText.getResourceViewsBlocks(), ...richText.getFileViewsBlocks()];
+    for (const specialOp of views) {
+      const viewBlockData = specialOp.data;
+
+      // find the file associated to the view
+      const file = files.find((f) => f.originalname === viewBlockData.id + '.json');
+      if (!file) continue; // skip if no file found for the view
+      // const viewData = file.buffer.toString();
+
+      // if (!viewData) continue;
+
+      const docName = `${viewBlockData.id}.json`;
+      await this.documentService.uploadDocument(file, parentFolder, CnDocumentType.NOTE_CONTENT, noteId, {
+        documentName: docName,
+        parentDocument: parentDocument,
+      });
     }
   }
 
