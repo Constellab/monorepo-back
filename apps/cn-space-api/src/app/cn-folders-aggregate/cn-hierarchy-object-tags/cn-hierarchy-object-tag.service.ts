@@ -23,7 +23,7 @@ export class CnHierarchyObjectTagService extends BlAbstractService<CnHierarchyOb
   ): Promise<CnHierarchyObjectTag> {
     const entityTag = new CnHierarchyObjectTagEntity();
     this.checkTag(tag.key);
-    this.checkTag(tag.value);
+    // this.checkTag(tag.value);  no need to check value anymore BUT check if it's necessary to check the id ?
     entityTag.key = tag.key;
     entityTag.value = tag.value;
     entityTag.hierarchyObject = hierarchyObject;
