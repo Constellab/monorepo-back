@@ -11,6 +11,5 @@
       "source.organizeImports": "explicit"
     }
   },
-  "prettier.configPath": ".prettierrc",
-  "nxConsole.generateAiAgentRules": true
+  "prettier.configPath": ".prettierrc"
 }

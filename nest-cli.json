@@ -4,7 +4,6 @@
   "sourceRoot": "apps/cn-space-api/src",
   "compilerOptions": {
     "deleteOutDir": true,
-    "webpack": true,
     "tsConfigPath": "apps/cn-space-api/tsconfig.app.json"
   },
   "projects": {

@@ -2,7 +2,7 @@
 # https://blog.logrocket.com/containerized-development-nestjs-docker/
 
 # Build step
-FROM node:20-alpine3.20 as  builder
+FROM node:22-alpine3.22 AS builder
 WORKDIR /app
 
 # Copy package and package-lock.json file for modules installation
@@ -14,10 +14,12 @@ RUN npm ci
 # copy the rest of the app
 COPY . .
 
+RUN npx nest --version
+RUN npm run version
 RUN npm run cn-space-api:build
 
 ## Second Stage : Setup command to run your app using lightweight node image
-FROM node:20-alpine3.20
+FROM node:22-alpine3.22
 WORKDIR /app
 
 # Set UTC timezone for the docker

@@ -1,5 +1,5 @@
 # Build step
-FROM node:20-alpine3.20 as builder
+FROM node:22-alpine3.22 as builder
 WORKDIR /app
 
 # Copy package and package-lock.json file for modules installation
@@ -14,7 +14,7 @@ COPY . .
 RUN npm run hn-community-api:build
 
 ## Second Stage : Setup command to run your app using lightweight node image
-FROM node:20-alpine3.20
+FROM node:22-alpine3.22
 WORKDIR /app
 
 # Set UTC timezone for the docker

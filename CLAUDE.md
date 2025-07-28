@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a Nx-managed monorepo containing NestJS backend applications for Gencovery's platform. The repository follows domain-driven design principles with modular architecture and consistent naming conventions.
+This is a monorepo containing NestJS backend applications for Gencovery's platform. The repository follows domain-driven design principles with modular architecture and consistent naming conventions.
 
 ### Applications
 
@@ -23,8 +23,8 @@ This is a Nx-managed monorepo containing NestJS backend applications for Gencove
 
 ```bash
 # Build specific application
-nx build cn-space-api
-nx build hn-community-api
+nest build cn-space-api
+nest build hn-community-api
 
 # Build using npm scripts
 npm run cn-space-api:build
@@ -35,8 +35,8 @@ npm run hn-community-api:build
 
 ```bash
 # Serve applications in development
-nx serve cn-space-api
-nx serve hn-community-api
+nest serve cn-space-api
+nest serve hn-community-api
 
 # Alternative NestJS watch mode
 npm run cn-space-api:serve-nest
@@ -124,7 +124,7 @@ Both applications follow a similar modular structure:
 
 ## Development Workflow
 
-1. **Starting Development**: Use `nx serve <app-name>` or npm scripts for watch mode
+1. **Starting Development**: Use `nest serve <app-name>` or npm scripts for watch mode
 2. **Adding Features**: Follow the existing module structure and naming conventions
 3. **Database Changes**: Use TypeORM migrations (synchronize disabled in production)
 4. **Environment Setup**: Configure `.env` files in `environments/` directories
@@ -132,7 +132,6 @@ Both applications follow a similar modular structure:
 
 ## Build Configuration
 
-- **Nx workspace**: Uses Nx 20.8.1 with webpack for builds
 - **TypeScript**: Configured with multiple tsconfig files for different build targets
 - **Webpack**: Custom webpack configuration in each app directory
 - **Assets**: Templates, i18n files, and static resources in `assets/` directories
