@@ -14,8 +14,6 @@ RUN npm ci
 # copy the rest of the app
 COPY . .
 
-RUN npx nest --version
-RUN npm run version
 RUN npm run cn-space-api:build
 
 ## Second Stage : Setup command to run your app using lightweight node image
@@ -37,5 +35,5 @@ RUN npm ci --only=production --ignore-scripts
 # copy dist
 COPY --from=builder /app/dist/apps/cn-space-api ./dist
 
-CMD ["node", "dist/main"]
+CMD ["node", "dist/apps/cn-space-api/main"]
 
