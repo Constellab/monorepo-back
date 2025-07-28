@@ -1,4 +1,5 @@
-import { Injectable, LogLevel } from '@nestjs/common';
+import { BlMailConfig, BlObjectStorageCredentials, BlTransportModuleConfig } from '@monorepo/back-core-lib';
+import { Injectable, Logger, LogLevel } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
   HN_BUCKET_AGENTS_BACKUP_KEY,
@@ -16,11 +17,11 @@ import {
   HN_ENVIRONMENT_PROFILE_PROD_VALUE,
   HnEnvironmentProfile,
 } from '../../model/config/hn-config.class';
-import { BlMailConfig, BlObjectStorageCredentials, BlTransportModuleConfig } from '@monorepo/back-core-lib';
 import { HnDatabaseConfig } from '../../model/config/hn-database-config.class';
 
 @Injectable()
 export class HnCoreConfigService {
+  private logger = new Logger(HnCoreConfigService.name);
   constructor(protected configService: ConfigService) {}
 
   public getEnvironmentProfile(): HnEnvironmentProfile {
@@ -191,7 +192,7 @@ export class HnCoreConfigService {
     try {
       return parseInt(this.configService.get(configName), 10);
     } catch (error) {
-      console.error('Error while parsing config ' + configName + ' to number');
+      this.logger.error('Error while parsing config ' + configName + ' to number');
       throw error;
     }
   }
@@ -216,7 +217,7 @@ export class HnCoreConfigService {
   //   try {
   //     return parseInt(this.configService.get(configName), 10);
   //   } catch (error) {
-  //     console.error('Error while parsing config ' + configName + ' to number');
+  //     this.logger.error('Error while parsing config ' + configName + ' to number');
   //     throw error;
   //   }
   // }

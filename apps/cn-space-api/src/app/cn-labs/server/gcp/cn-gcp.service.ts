@@ -250,7 +250,7 @@ export class CnGcpService {
 
     const metadata = project.commonInstanceMetadata?.items;
     if (!metadata) {
-      console.log('No common instance metadata found for the project.');
+      this.logger.error('No common instance metadata found for the project.');
       return null;
     }
 

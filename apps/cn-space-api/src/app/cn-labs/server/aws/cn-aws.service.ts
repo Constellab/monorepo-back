@@ -1,8 +1,10 @@
 import { EC2Client, StartInstancesCommand, StartInstancesCommandOutput } from '@aws-sdk/client-ec2';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 
 @Injectable()
 export class CnAwsService {
+  private logger = new Logger(CnAwsService.name);
+
   constructor(
     private region: string,
     private accessKeyId: string,
@@ -15,7 +17,7 @@ export class CnAwsService {
     try {
       return await this.getEc2Client().send(command);
     } catch (error) {
-      console.error('Error starting instance', error);
+      this.logger.error('Error starting instance', error);
       throw error;
     }
   }
@@ -26,7 +28,7 @@ export class CnAwsService {
     try {
       return await this.getEc2Client().send(command);
     } catch (error) {
-      console.error('Error stopping instance', error);
+      this.logger.error('Error stopping instance', error);
       throw error;
     }
   }

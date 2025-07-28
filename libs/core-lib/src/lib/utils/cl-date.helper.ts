@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import { DateTime } from 'luxon';
 import { ClHelpService } from './cl-help.service';
 
@@ -25,6 +26,8 @@ export class ClDateHelper {
   public static readonly ONE_WEEK = ClDateHelper.ONE_DAY * 7;
   // considering one year is 365 days
   public static readonly ONE_YEAR = ClDateHelper.ONE_DAY * 365;
+
+  private static logger = new Logger(ClDateHelper.name);
 
   constructor() {}
 
@@ -66,12 +69,12 @@ export class ClDateHelper {
     }
 
     if (typeof date !== 'string') {
-      console.error(`[ClDateHelper][DeserializeDate] The date ${date} has a wrong format`);
+      this.logger.error(`[ClDateHelper][DeserializeDate] The date ${date} has a wrong format`);
       return null;
     }
 
     if (date.length < 10) {
-      console.error(`[ClDateHelper][DeserializeDate] The date ${date} is too short`);
+      this.logger.error(`[ClDateHelper][DeserializeDate] The date ${date} is too short`);
       return null;
     }
 
@@ -87,7 +90,7 @@ export class ClDateHelper {
     }
 
     if (!(date instanceof DateTime)) {
-      console.error(`[ClDateHelper][SerializeDate] The date ${date} is not a DateTime`);
+      this.logger.error(`[ClDateHelper][SerializeDate] The date ${date} is not a DateTime`);
       return null;
     }
 
@@ -103,7 +106,7 @@ export class ClDateHelper {
     }
 
     if (typeof date !== 'string') {
-      console.error(`[ClDateHelper][DeserializeDateTime] The date ${date} has a wrong format`);
+      this.logger.error(`[ClDateHelper][DeserializeDateTime] The date ${date} has a wrong format`);
       return null;
     }
 
@@ -119,7 +122,7 @@ export class ClDateHelper {
     }
 
     if (!(date instanceof DateTime)) {
-      console.error(`[ClDateHelper][SerializeDate] The date ${date} is not a DateTime`);
+      this.logger.error(`[ClDateHelper][SerializeDate] The date ${date} is not a DateTime`);
       return null;
     }
 

@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
 import { ClDeserializationRef } from '@monorepo/core-lib';
+import { Injectable, Logger } from '@nestjs/common';
 
 @Injectable()
 export class BlExternalApiErrorService {
+  private logger = new Logger(BlExternalApiErrorService.name);
   /**
    * Handle an error during deserialization of the API response
    * @param error deserialization error
@@ -13,8 +14,8 @@ export class BlExternalApiErrorService {
     const errorMessage = `Error while deserializing object of type ${classReference.name}}`;
 
     // console logs
-    console.error(errorMessage);
-    console.error(error);
+    this.logger.error(errorMessage);
+    this.logger.error(error);
 
     // throw the exception
     // noinspection UnnecessaryLocalVariableJS

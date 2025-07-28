@@ -1,18 +1,19 @@
+import { ClCoreJsonConvert, ClDeserializationRef, ClPageI } from '@monorepo/core-lib';
+import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger } from '@nestjs/common';
+import { AxiosError, AxiosResponse } from 'axios';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
+import { BlExternalApiErrorService } from './bl-external-api-error.service';
 import {
   BlExternalApiError,
   BlExternalApiHttpOption,
   BlExternalApiHttpOptionObserve,
 } from './bl-external-api.class';
-import { ClCoreJsonConvert, ClDeserializationRef, ClPageI } from '@monorepo/core-lib';
-import { BlExternalApiErrorService } from './bl-external-api-error.service';
-import { AxiosError, AxiosResponse } from 'axios';
-import { HttpService } from '@nestjs/axios';
 
 @Injectable()
 export class BlExternalApiService {
+  private logger = new Logger(BlExternalApiService.name);
   constructor(
     private httpService: HttpService,
     private errorService: BlExternalApiErrorService
@@ -160,7 +161,7 @@ export class BlExternalApiService {
         objects: ClCoreJsonConvert.deserialize(json.data, classReference),
       };
     } else {
-      console.error('Response object not paginated');
+      this.logger.error('Response object not paginated');
       throw 'Response object not paginated';
     }
   }
@@ -193,9 +194,9 @@ export class BlExternalApiService {
     // log if log error is not set to false (default is true)
     if (logError !== false) {
       if (apiError.message) {
-        Logger.error(`[BLApiService] Error during call to route '${route}' : ${apiError.message}`);
+        this.logger.error(`[BLApiService] Error during call to route '${route}' : ${apiError.message}`);
       } else {
-        Logger.error(`[BLApiService] Error during call to route '${route}'`);
+        this.logger.error(`[BLApiService] Error during call to route '${route}'`);
       }
     }
     return throwError(() => apiError);

@@ -1,5 +1,5 @@
 import { BlMailConfig, BlObjectStorageCredentials, BlTransportModuleConfig } from '@monorepo/back-core-lib';
-import { Inject, Injectable, LogLevel } from '@nestjs/common';
+import { Inject, Injectable, Logger, LogLevel } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { join } from 'path';
 import {
@@ -13,6 +13,8 @@ import { CN_CORE_MODULE_CONFIG, CnCoreConfigModuleConfig } from './cn-core-modul
 @Injectable()
 export class CnCoreConfigService {
   private readonly assets = 'assets';
+
+  private logger = new Logger(CnCoreConfigService.name);
 
   constructor(
     protected configService: ConfigService,
@@ -137,7 +139,7 @@ export class CnCoreConfigService {
     try {
       return parseInt(this.configService.get(configName), 10);
     } catch (error) {
-      console.error('Error while parsing config ' + configName + ' to number');
+      this.logger.error('Error while parsing config ' + configName + ' to number');
       throw error;
     }
   }

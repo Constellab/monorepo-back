@@ -1,4 +1,3 @@
-import { Injectable } from '@nestjs/common';
 import {
   BlBadRequestException,
   BlExternalApiError,
@@ -6,12 +5,15 @@ import {
   BlExternalApiService,
 } from '@monorepo/back-core-lib';
 import { ClDeserializationRef } from '@monorepo/core-lib';
+import { Injectable, Logger } from '@nestjs/common';
 import { catchError, lastValueFrom, Observable, throwError } from 'rxjs';
 import {
   CnExternalApiInfo,
   cnExternalLabApiKeyHeader,
   cnExternalLabApiKeySchema,
 } from '../cn-core/model/config/cn-config.class';
+import { CnLabConfigFile } from '../cn-lab-configs/cn-lab-config-file.class';
+import { CnLabBackupsHistory } from '../cn-labs/backup/cn-lab-backup.dto';
 import {
   CnLabManagerAdminerInfo,
   CnLabManagerBackupInfoDTO,
@@ -25,8 +27,6 @@ import {
   CnManagerLabComposeRestartOptions,
   CnManagerLabPullBiotaOptions,
 } from './model/cn-lab-manager.class';
-import { CnLabConfigFile } from '../cn-lab-configs/cn-lab-config-file.class';
-import { CnLabBackupsHistory } from '../cn-labs/backup/cn-lab-backup.dto';
 
 /**
  * Service to call the api of the lab manager
@@ -35,6 +35,8 @@ import { CnLabBackupsHistory } from '../cn-labs/backup/cn-lab-backup.dto';
 export class CnExternalLabManagerApiService {
   private baseLabRoute: string = 'lab';
   private baseBackupRoute: string = 'backup';
+
+  private logger = new Logger(CnExternalLabManagerApiService.name);
 
   constructor(private apiService: BlExternalApiService) {}
 
@@ -184,7 +186,7 @@ export class CnExternalLabManagerApiService {
     return await lastValueFrom(
       this.post(apiInfo, `${this.baseBackupRoute}/prod/MANUAL`, createBackup, CnLabBackupsHistory)
     ).catch((error) => {
-      console.error(error);
+      this.logger.error(error);
       throw error;
     });
   }
