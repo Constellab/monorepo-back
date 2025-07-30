@@ -269,9 +269,23 @@ export class CnLabAggregateService {
   async delete(id: string): Promise<void> {
     const lab = await this.getAndCheckAuthorizationToUpdateAdmin(id);
 
-    await this.dataSource.transaction(async (entityManager) => {
+    await this.deleteLabNotSecure(lab);
+  }
+
+  async deleteDesktopLab(id: string): Promise<void> {
+    const lab = await this.getAndCheckAuthorizationToManageLab(id, false);
+
+    if (!lab.isDesktop()) {
+      throw new BlBadRequestException('Can only delete desktop labs');
+    }
+
+    await this.deleteLabNotSecure(lab);
+  }
+
+  private deleteLabNotSecure(lab: CnLab): Promise<void> {
+    return this.dataSource.transaction(async (entityManager) => {
       await this.backupService.deleteBackupOptions(lab, entityManager);
-      await this.labsService.deleteById(id, entityManager);
+      await this.labsService.deleteById(lab.id, entityManager);
     });
   }
 
@@ -446,7 +460,7 @@ export class CnLabAggregateService {
 
     return Promise.all(promises).then(async ([labManagerStatus, glabStatus]) => {
       // if the lab is marked as stopped but the glab is accessible for refresh status
-      if (lab.isHttpAccessible() && glabStatus && lab.currentStatus.status === 'SERVER_STOPPED') {
+      if (lab.isHttpAccessible() && glabStatus && lab.currentStatus.status === CnLabStatus.SERVER_STOPPED) {
         lab = await this.refreshLabStatus(lab.id);
       }
 
