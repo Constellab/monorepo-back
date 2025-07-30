@@ -1,11 +1,12 @@
+import { BlBadRequestException } from '@monorepo/back-core-lib';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CnLabUser, CnLabUserEntity, CnLabUserRole, CnLabUserWithUser } from './cn-lab-user.entity';
 import { EntityManager, Repository } from 'typeorm';
 import { CnErrorText } from '../../cn-core/model/config/cn-error-text.class';
-import { CnLab, CnLabEntity } from '../cn-lab.entity';
 import { CnUser } from '../../cn-users/cn-user.entity';
-import { BlBadRequestException } from '@monorepo/back-core-lib';
+import { CnLab, CnLabEntity } from '../cn-lab.entity';
+import { CnLabStatus } from '../status/cn-lab-status.enum';
+import { CnLabUser, CnLabUserEntity, CnLabUserRole, CnLabUserWithUser } from './cn-lab-user.entity';
 
 @Injectable()
 export class CnLabUserService {
@@ -39,7 +40,11 @@ export class CnLabUserService {
     }
 
     // if the role was changed from admin to user, check that there is at least one admin
-    if (labUser.role === CnLabUserRole.OWNER && role === CnLabUserRole.USER) {
+    if (
+      lab.currentStatus.status !== CnLabStatus.NO_SERVER &&
+      labUser.role === CnLabUserRole.OWNER &&
+      role !== CnLabUserRole.OWNER
+    ) {
       await this.checkLabAdminsCount(lab);
     }
 
@@ -54,7 +59,8 @@ export class CnLabUserService {
     }
 
     // check that there is at least one admin
-    if (labUser.role === CnLabUserRole.OWNER) {
+    // if the lab exists (status is not NO_SERVER)
+    if (lab.currentStatus.status !== CnLabStatus.NO_SERVER && labUser.role === CnLabUserRole.OWNER) {
       await this.checkLabAdminsCount(lab);
     }
 
