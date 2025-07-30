@@ -205,6 +205,10 @@ export class CnLabAggregateService {
   ): Promise<CnLabEntity> {
     const labDb: CnLabEntity = await this.labsService.createLab(lab, entityManager);
 
+    if (labDb.isDesktop()) {
+      return labDb;
+    }
+
     if (lab.isCloud()) {
       if (!volumeSize || volumeSize <= 0) {
         throw new BlBadRequestException('Volume size is required for a cloud lab');
