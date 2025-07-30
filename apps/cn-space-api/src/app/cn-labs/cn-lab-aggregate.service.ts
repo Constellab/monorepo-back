@@ -261,6 +261,8 @@ export class CnLabAggregateService {
     lab.serverVolumeId = updateLab.serverVolumeId;
     lab.serverIpAddressId = updateLab.serverIpAddressId;
     lab.desktopPlatform = updateLab.desktopPlatform;
+    lab.gwsCoreProdDbPassword = updateLab.gwsCoreProdDbPassword;
+    lab.gwsCoreDevDbPassword = updateLab.gwsCoreDevDbPassword;
     return lab;
   }
 

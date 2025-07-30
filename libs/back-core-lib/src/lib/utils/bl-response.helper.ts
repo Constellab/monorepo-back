@@ -56,7 +56,8 @@ export class BlResponseHelper {
 
     if (file.name) {
       const disposition = mode === 'download' ? 'attachment' : 'inline';
-      response.setHeader('Content-Disposition', `${disposition}; filename="${file.name}"`);
+      const encodedFilename = encodeURIComponent(file.name);
+      response.setHeader('Content-Disposition', `${disposition}; filename*=UTF-8''${encodedFilename}`);
     }
 
     file.file.pipe(response);
@@ -69,7 +70,8 @@ export class BlResponseHelper {
     contentType: string
   ): void {
     response.setHeader('Content-Type', contentType);
-    response.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+    const encodedFilename = encodeURIComponent(fileName);
+    response.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodedFilename}`);
     response.send(content);
   }
 
