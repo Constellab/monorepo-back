@@ -126,8 +126,8 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
 
     await this.objectStorageService.uploadObject(bucketsConfig.bucketConfigs, file, {
       filename: document.filename,
-      tags: this.getTags(document.name, parentFolder.id),
-    } as any);
+      tags: this.getTags(document.name, parentFolder.id) as any,
+    });
 
     try {
       document = await this.save(document);
@@ -376,8 +376,8 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
 
     await this.objectStorageService.uploadJson(bucketsConfig.bucketConfigs, content, {
       filename: document.filename,
-      tags: this.getTags(document.name, parentFolder.id),
-    } as any);
+      tags: this.getTags(document.name, parentFolder.id) as any,
+    });
 
     try {
       const objectInfo = await this.objectStorageService.getObjectInfo(
@@ -546,7 +546,7 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
 
   public async getSpaceCloudStorageSize(spaceId: string): Promise<number> {
     // calculate with sql sum query, join parentFolder table with document.folderId = folder.id
-    const result = await this.repository.manager.query(
+    const result: { totalSize: number }[] = await this.repository.manager.query(
       `
         SELECT SUM(size) as totalSize
         FROM document
