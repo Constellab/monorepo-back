@@ -75,7 +75,8 @@ export class ClStringHelper {
 
   /**
    * Return all the indexes of the search str in str
-   * From: https://stackoverflow.com/questions/3410464/how-to-find-indices-of-all-occurrences-of-one-string-in-another-in-javascript
+   * From: https://stackoverflow.com/questions/3410464/how-to-find-indices-
+   * of-all-occurrences-of-one-string-in-another-in-javascript
    * @param searchStr sub string to search in str
    * @param str
    * @param caseSensitive
@@ -178,5 +179,24 @@ export class ClStringHelper {
       str = (str as any).toString();
     }
     return this.toKebabCase(this.toIdForUrl(this.removeAccentFromString(str)));
+  }
+
+  /**
+   * Remove non-visible characters from a string
+   * This includes control characters, zero-width characters, and other non-printable characters
+   * Regular spaces and line breaks are preserved
+   * @param str string to clean
+   */
+  public static removeNonVisibleCharacters(str: string): string {
+    if (str == null) return null;
+
+    // Remove control characters (except tab, line feed, carriage return)
+    // and zero-width characters, but preserve regular spaces and line breaks
+    const regex = new RegExp(
+      // eslint-disable-next-line no-control-regex
+      '[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F-\u009F\u200B-\u200D\u2060\uFEFF]',
+      'g'
+    );
+    return str.replace(regex, '');
   }
 }

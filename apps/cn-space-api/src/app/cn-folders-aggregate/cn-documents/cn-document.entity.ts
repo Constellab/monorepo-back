@@ -1,5 +1,5 @@
 import { BlBucketType, BlFileHelper, BlLuxonDateTimeColumn, BlNotUpdatable } from '@monorepo/back-core-lib';
-import { ClDateHelper } from '@monorepo/core-lib';
+import { ClDateHelper, ClStringHelper } from '@monorepo/core-lib';
 import { Exclude, Expose } from 'class-transformer';
 import { DateTime } from 'luxon';
 import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne } from 'typeorm';
@@ -176,7 +176,7 @@ export class CnDocumentEntity extends CnHierarchyRepresentation {
     parentDocument?: CnDocument
   ): CnDocumentEntity {
     const document = new CnDocumentEntity();
-    document.name = name;
+    document.name = ClStringHelper.removeNonVisibleCharacters(name);
     document.filename = filename;
     document.size = size;
     document.mimeType = mimeType;
