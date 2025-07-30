@@ -268,7 +268,7 @@ export class CnLabsController {
     @Query('page', ParseIntPipe) page: number,
     @Query('size', ParseIntPipe) size: number
   ): Promise<ClPageI<CnUser>> {
-    return this.aggregateService.getUsersOfStatusHistory(id, page, size) as any;
+    return this.aggregateService.getUsersOfStatusHistory(id, page, size);
   }
 
   /**
@@ -737,7 +737,12 @@ export class CnLabsController {
     return new CnLabDto(lab);
   }
 
-  /////////////////////////// ADMIN ROUTE //////////////////////////////²²²
+  @Delete(':id/desktop')
+  async deleteDesktopLab(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
+    await this.aggregateService.deleteDesktopLab(id);
+  }
+
+  /////////////////////////// ADMIN ROUTE //////////////////////////////
   @Post('admin')
   async createAdmin(
     @Body(new BlParsePipe(CnLabCreateAdminDTO)) createLab: CnLabCreateAdminDTO

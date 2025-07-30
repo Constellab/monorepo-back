@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "command": "npm run cn-space-api:serve-nest",
+      "command": "npm run cn-space-api:serve",
       "name": "Serve space",
       "request": "launch",
       "type": "node-terminal"
