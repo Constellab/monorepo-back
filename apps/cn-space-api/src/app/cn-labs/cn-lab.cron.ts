@@ -31,7 +31,7 @@ export class CnLabCron {
   // statuses that are considered as half temp
   // if there stay
   private readonly SERVER_HALF_TEMP_STATUSES = [CnLabStatus.SERVER_RUNNING, CnLabStatus.SERVER_CONFIGURED];
-  private readonly SERVER_HALF_TEMP_STATUS_MAX_DURATION = 1; // minutes
+  private readonly SERVER_HALF_TEMP_STATUS_MAX_DURATION = 30; // 30 minutes
 
   constructor(
     private labServerService: CnLabServerService,
@@ -99,8 +99,8 @@ export class CnLabCron {
             `Lab ${lab.id} is in status ${lab.currentStatus.status} for more than` +
               ` ${this.SERVER_HALF_TEMP_STATUS_MAX_DURATION} minutes, stopping it`
           );
-          this.labAggregateService
-            .stopInstance(lab.id, { backupLabBefore: false })
+          this.labServerService
+            .stopLab(lab)
             .catch((error) =>
               this.labService.markInstanceAsError(
                 lab.id,
