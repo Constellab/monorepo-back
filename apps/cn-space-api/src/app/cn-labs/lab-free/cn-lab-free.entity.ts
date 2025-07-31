@@ -1,15 +1,15 @@
-import { CnBaseEntity } from '../../cn-core/model/entities/cn-base.entity';
 import { BlLuxonDateTimeColumn, BlNotUpdatable } from '@monorepo/back-core-lib';
-import { DateTime } from 'luxon';
-import { Exclude, Type } from 'class-transformer';
-import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
-import { Column, Entity, ManyToOne } from 'typeorm';
-import { CnLabBillingMode, CnLabDomain, CnLabEntity } from '../cn-lab.entity';
 import { ClDateHelper } from '@monorepo/core-lib';
-import { CnCloudProviderName } from '../../cn-cloud-providers/cn-cloud-provider.entity';
+import { Exclude, Type } from 'class-transformer';
+import { DateTime } from 'luxon';
+import { Column, Entity, ManyToOne } from 'typeorm';
 import { CnBrickGWS } from '../../cn-bricks/cn-brick.dto';
-import { CnLabVolumeType } from '../volume/cn-lab-volume-entity';
+import { CnCloudProviderName } from '../../cn-cloud-providers/cn-cloud-provider.entity';
+import { CnBaseEntity } from '../../cn-core/model/entities/cn-base.entity';
+import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
+import { CnLabBillingMode, CnLabDomain, CnLabEntity } from '../cn-lab.entity';
 import { CnLabGreenOptionType } from '../green-option/cn-lab-green-option.entity';
+import { CnLabVolumeType } from '../volume/cn-lab-volume-entity';
 
 /**
  * Entity to store the free lab info for a lab for a user
@@ -17,9 +17,9 @@ import { CnLabGreenOptionType } from '../green-option/cn-lab-green-option.entity
 @Entity('lab_free')
 export class CnLabFree extends CnBaseEntity {
   // SERVER INFO
-  public static readonly CLOUD_PROVIDER: CnCloudProviderName = 'AZURE';
-  public static readonly CLOUD_PROVIDER_REGION = 'northeurope';
-  public static readonly CLOUD_PROVIDER_INSTANCE_TYPE = 'Standard_D2s_v5';
+  public static readonly CLOUD_PROVIDER: CnCloudProviderName = 'GCP';
+  public static readonly CLOUD_PROVIDER_REGION = 'europe-west1-b';
+  public static readonly CLOUD_PROVIDER_INSTANCE_TYPE = 'e2-standard-2';
   public static readonly NB_CPUS = 2;
   public static readonly RAM_SIZE = 8;
   public static readonly VOLUME_SIZE = 100;
