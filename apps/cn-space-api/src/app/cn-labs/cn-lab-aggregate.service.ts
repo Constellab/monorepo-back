@@ -3,6 +3,7 @@ import {
   BlCredentials,
   BlExternalApiError,
   BlSearchParams,
+  BlTranslateService,
   BlUnauthorizedException,
 } from '@monorepo/back-core-lib';
 import { ClDateHelper, ClPage, ClPageI, ClStringHelper } from '@monorepo/core-lib';
@@ -48,6 +49,7 @@ import {
 } from './backup/cn-lab-backup.dto';
 import { CnLabManagerService } from './cn-lab-manager.service';
 import {
+  CnLabBusyStatusDTO,
   CnLabCloudCreateDTO,
   CnLabCodelabDTO,
   CnLabConfigDTO,
@@ -123,7 +125,8 @@ export class CnLabAggregateService {
     private labVolumeService: CnLabVolumeService,
     private labStatusHistoryService: CnLabStatusHistoryService,
     private labStatsAggregateService: CnLabStatsAggregateService,
-    private labDesktopService: CnLabDesktopService
+    private labDesktopService: CnLabDesktopService,
+    private translateService: BlTranslateService
   ) {}
 
   /**
@@ -465,7 +468,7 @@ export class CnLabAggregateService {
     ];
 
     return Promise.all(promises).then(async ([labManagerStatus, glabStatus]) => {
-      // if the lab is marked as stopped but the glab is accessible for refresh status
+      // if the lab is marked as stopped but the glab is accessible force refresh status
       if (lab.isHttpAccessible() && glabStatus && lab.currentStatus.status === CnLabStatus.SERVER_STOPPED) {
         lab = await this.refreshLabStatus(lab.id);
       }
@@ -482,6 +485,96 @@ export class CnLabAggregateService {
       labStatus.serverTaskDatetime = lab.serverTaskDatetime;
       return labStatus;
     });
+  }
+
+  /**
+   * Get the busy status of the lab
+   * Lab is considered busy if an action on server or lab manager is running
+   */
+  public async getLabBusyStatus(id: string): Promise<CnLabBusyStatusDTO> {
+    let lab: CnLab = await this.getAndCheckAuthorizationToFindById(id);
+
+    if (lab.serverTaskIsRunning()) {
+      let mainText: string;
+      if (lab.currentStatus.status === CnLabStatus.SERVER_STARTING) {
+        mainText = await this.translateService.translateIfExists('message.lab_busy_server_starting');
+      } else if (lab.currentStatus.status === CnLabStatus.SERVER_STOPPING) {
+        mainText = await this.translateService.translateIfExists('message.lab_busy_lab_stopping');
+      } else {
+        mainText = await this.translateService.translateIfExists('message.lab_busy_task_running');
+      }
+
+      return new CnLabBusyStatusDTO(lab, true, {
+        mainText,
+        subText: lab.serverTaskText,
+        datetime: lab.serverTaskDatetime,
+      });
+    }
+
+    // if the lab is stopping, we return a busy status
+    if (lab.currentStatus.status === CnLabStatus.SERVER_STOPPING) {
+      return new CnLabBusyStatusDTO(lab, true, {
+        mainText: await this.translateService.translateIfExists('message.lab_busy_lab_stopping'),
+      });
+    }
+
+    if (lab.currentStatus.status === CnLabStatus.SERVER_STARTING) {
+      return new CnLabBusyStatusDTO(lab, true, {
+        mainText: await this.translateService.translateIfExists('message.lab_busy_server_starting'),
+      });
+    }
+
+    if (lab.isHttpAccessible()) {
+      const labIsRunning = await this.externalLabApiService.healthCheck(lab.getGlabSpaceApiInfo());
+      // if the lab is marked as stopped but the glab is accessible force refresh status
+      if (labIsRunning) {
+        if (!lab.isRunning()) {
+          lab = await this.refreshLabStatus(lab.id);
+        }
+        return new CnLabBusyStatusDTO(lab, false);
+      }
+    }
+
+    // if there is not running task and the lab is running or stopped, there is no busy status
+    if (lab.serverIsStopped()) {
+      return new CnLabBusyStatusDTO(lab, false);
+    }
+
+    if (lab.currentStatus.status === CnLabStatus.SERVER_RUNNING) {
+      return new CnLabBusyStatusDTO(lab, true, {
+        mainText: await this.translateService.translateIfExists('message.lab_busy_manager_starting'),
+      });
+    }
+
+    // case of the lab starting without a task running
+    // we need to check the lab manager status
+    try {
+      const labManagerStatus = await this.labManagerService.getLabStatus(lab);
+
+      if (labManagerStatus.labStatus === 'STARTING') {
+        return new CnLabBusyStatusDTO(lab, true, {
+          mainText: await this.translateService.translateIfExists('message.lab_busy_lab_starting'),
+          progress: labManagerStatus.glabStatus?.startProgress,
+        });
+      }
+
+      if (labManagerStatus.currentTask?.status === 'RUNNING') {
+        let subText = labManagerStatus.currentTask.name;
+        if (labManagerStatus.currentTask?.info) {
+          subText += ' ' + labManagerStatus.currentTask?.info;
+        }
+        return new CnLabBusyStatusDTO(lab, true, {
+          mainText: await this.translateService.translateIfExists('message.lab_busy_manager_task_running'),
+          subText,
+        });
+      }
+    } catch {
+      return new CnLabBusyStatusDTO(lab, true, {
+        mainText: await this.translateService.translateIfExists('message.lab_busy_starting_wait'),
+      });
+    }
+
+    return new CnLabBusyStatusDTO(lab, false);
   }
 
   public async getLabStatusHistory(

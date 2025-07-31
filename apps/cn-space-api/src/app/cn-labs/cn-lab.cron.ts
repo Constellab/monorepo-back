@@ -3,7 +3,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { DateTime } from 'luxon';
 import { CnExternalLabApiService } from '../cn-external-lab-api/cn-external-lab-api.service';
-import { CnLabBackupsHistory } from './backup/cn-lab-backup.dto';
+import { CnLabBackupsHistory, CnLabBackupStatus } from './backup/cn-lab-backup.dto';
 import { CnLabAggregateService } from './cn-lab-aggregate.service';
 import { CnLabManagerService } from './cn-lab-manager.service';
 import { CnLab } from './cn-lab.entity';
@@ -101,7 +101,7 @@ export class CnLabCron {
           .catch((): null => null);
 
         // if a backup is in progress, we do nothing
-        if (backup == null || backup.backups.some((b) => b.status === 'IN_PROGRESS')) {
+        if (backup == null || backup.backups.some((b) => b.status === CnLabBackupStatus.IN_PROGRESS)) {
           continue;
         }
 

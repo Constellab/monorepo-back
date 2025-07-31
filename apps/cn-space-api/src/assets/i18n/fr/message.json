@@ -1,0 +1,9 @@
+{
+  "lab_busy_server_starting": "Le serveur démarre",
+  "lab_busy_lab_stopping": "Le data lab s'arrête",
+  "lab_busy_lab_starting": "Le data lab démarre, cela peut prendre quelques minutes",
+  "lab_busy_task_running": "Une tâche du data lab est en cours",
+  "lab_busy_manager_starting": "Le gestionnaire du data lab démarre",
+  "lab_busy_manager_task_running": "Une tâche du gestionnaire du data lab est en cours",
+  "lab_busy_starting_wait": "Le data lab démarre, cela peut prendre quelques minutes."
+}

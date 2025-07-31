@@ -80,6 +80,7 @@ export class CnLabDesktopService {
       ` -e DESKTOP_COMMUNITY_API_URL=${this.coreConfigService.getCommunityApiUrl()}` +
       ` -e DESKTOP_COMMUNITY_FRONT_URL=${this.coreConfigService.getCommunityFrontUrl()}` +
       ` -e VOLUME_PATH=/app/conf` +
+      ` -e LAB_AUTO_START=true` +
       ` -e LAB_MANAGER_STANDALONE_FRONT_VERSION=` +
       this.coreConfigService.getLabManagerStandaloneFrontVersion() +
       volumesUsage +

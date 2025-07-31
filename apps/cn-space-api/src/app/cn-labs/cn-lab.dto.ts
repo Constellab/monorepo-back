@@ -202,6 +202,43 @@ export class CnLabStatusDTO {
   serverTaskDatetime: DateTime;
 }
 
+export class CnLabBusyStatusDTO {
+  id: string;
+  isBusy: boolean;
+  labStatus: CnLabStatus;
+  mainText?: string;
+  subText?: string;
+  progress?: {
+    percent: number;
+    message: string;
+  };
+
+  @ClLuxonDateTimeTransform()
+  datetime?: DateTime;
+
+  constructor(
+    lab: CnLab,
+    isBusy: boolean,
+    detail?: {
+      mainText?: string;
+      subText?: string;
+      progress?: {
+        percent: number;
+        message: string;
+      };
+      datetime?: DateTime;
+    }
+  ) {
+    this.id = lab.id;
+    this.isBusy = isBusy;
+    this.labStatus = lab.currentStatus.status;
+    this.mainText = detail?.mainText;
+    this.subText = detail?.subText;
+    this.progress = detail?.progress;
+    this.datetime = detail?.datetime;
+  }
+}
+
 /**
  * Object used when a user wants to create a lab
  * He provides free text
