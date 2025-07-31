@@ -17,6 +17,7 @@ export enum CnMailTemplate {
   // mail for the support
   support_lab_start_error = 'cn-support-lab-start-error',
   support_lab_backup_error = 'cn-support-lab-backup-error',
+  support_lab_temp_status_limit_reached = 'cn-support-lab-temp-status-limit-reached',
 
   // Mail send by the lab
   scenario_finished = 'cn-scenario-finished',

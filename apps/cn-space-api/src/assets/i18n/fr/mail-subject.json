@@ -12,5 +12,6 @@
   "cn-generic": "Constellab - Notification",
   "cn-lab-started": "Constellab - Votre lab est prêt",
   "cn-support-lab-start-error": "[SUPPORT] Constellab - Erreur lors du démarrage d'un lab",
-  "cn-support-lab-backup-error": "[SUPPORT] Constellab - Erreur lors du backup d'un lab"
+  "cn-support-lab-backup-error": "[SUPPORT] Constellab - Erreur lors du backup d'un lab",
+  "cn-support-lab-temp-status-limit-reached": "[SUPPORT] Constellab - Limite de temps de statut temporaire du lab atteinte"
 }

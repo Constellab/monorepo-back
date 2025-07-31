@@ -17,6 +17,7 @@ import {
 import { CnLabGreenOptionService } from './green-option/cn-lab-green-option.service';
 import { CnLabFree } from './lab-free/cn-lab-free.entity';
 import { CnLabFreeService } from './lab-free/cn-lab-free.service';
+import { CnLabMailService } from './mail/cn-lab-mail.service';
 import { CnLabServerService } from './server/cn-lab-server.service';
 import { CnLabStatus } from './status/cn-lab-status.enum';
 
@@ -27,6 +28,11 @@ import { CnLabStatus } from './status/cn-lab-status.enum';
 export class CnLabCron {
   private readonly logger = new Logger(CnLabCron.name);
 
+  // statuses that are considered as half temp
+  // if there stay
+  private readonly SERVER_HALF_TEMP_STATUSES = [CnLabStatus.SERVER_RUNNING, CnLabStatus.SERVER_CONFIGURED];
+  private readonly SERVER_HALF_TEMP_STATUS_MAX_DURATION = 1; // minutes
+
   constructor(
     private labServerService: CnLabServerService,
     private labService: CnLabsService,
@@ -34,7 +40,8 @@ export class CnLabCron {
     private labManagerService: CnLabManagerService,
     private externalLabApiService: CnExternalLabApiService,
     private labAggregateService: CnLabAggregateService,
-    private labFreeService: CnLabFreeService
+    private labFreeService: CnLabFreeService,
+    private labMailService: CnLabMailService
   ) {}
 
   /**
@@ -74,10 +81,32 @@ export class CnLabCron {
     const labs = await this.labService.getLabsWithTempStatus();
 
     for (const lab of labs) {
-      // for status SERVER_RUNNING and SERVER_CONFIGURED,
-      // that are considered as half temp, we stop checking after 30 minutes
-      if ([CnLabStatus.SERVER_RUNNING, CnLabStatus.SERVER_CONFIGURED].includes(lab.currentStatus.status)) {
-        if (lab.currentStatus.createdAt.diffNow('minutes').minutes > 30) {
+      // If the status of the lab is temp for more than 30 minutes,
+      // we send a mail to the support and stop the lab if it is in a half temp status
+      if (
+        Math.abs(lab.currentStatus.createdAt.diffNow('minutes').minutes) >
+        this.SERVER_HALF_TEMP_STATUS_MAX_DURATION
+      ) {
+        this.labMailService.sendLabTempStatusLimitReachedMail(lab).catch((error) => {
+          this.logger.error(
+            `Error sending lab temp status limit reached mail for lab ${lab.id}: ${error.message}`
+          );
+        });
+        // for status SERVER_RUNNING and SERVER_CONFIGURED,
+        // that are considered as half temp, we stop checking after 30 minutes
+        if (this.SERVER_HALF_TEMP_STATUSES.includes(lab.currentStatus.status)) {
+          this.logger.warn(
+            `Lab ${lab.id} is in status ${lab.currentStatus.status} for more than` +
+              ` ${this.SERVER_HALF_TEMP_STATUS_MAX_DURATION} minutes, stopping it`
+          );
+          this.labAggregateService
+            .stopInstance(lab.id, { backupLabBefore: false })
+            .catch((error) =>
+              this.labService.markInstanceAsError(
+                lab.id,
+                `Error when stopping the lab after temp status limit reach: ${error}`
+              )
+            );
           continue;
         }
       }

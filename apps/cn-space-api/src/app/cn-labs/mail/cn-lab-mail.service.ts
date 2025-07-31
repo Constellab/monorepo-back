@@ -1,18 +1,18 @@
-import { Injectable } from '@nestjs/common';
-import { CnLab } from '../cn-lab.entity';
-import { CnLabMailTemplate, CnLabSendMailDto, CnLabSendMailToMailsDto } from './cn-lab-mail.dto';
 import { BlMailService, BlSendMailDTO } from '@monorepo/back-core-lib';
-import { CnMailTemplate } from '../../cn-core/model/config/cn-mail-template.class';
-import { CnUsersService } from '../../cn-users/cn-users.service';
-import { CnCoreConfigService } from '../../cn-core/modules/cn-core-config/cn-core-config.service';
-import { CnRequestLab } from '../cn-lab.dto';
-import { CnSpace } from '../../cn-spaces/cn-space.entity';
-import { CnUser } from '../../cn-users/cn-user.entity';
 import { ClSupportedLanguage } from '@monorepo/core-lib';
+import { Injectable } from '@nestjs/common';
+import { CnMailTemplate } from '../../cn-core/model/config/cn-mail-template.class';
+import { CnCoreConfigService } from '../../cn-core/modules/cn-core-config/cn-core-config.service';
 import { CnFrontService } from '../../cn-core/services/cn-front.service';
+import { CnSpace } from '../../cn-spaces/cn-space.entity';
 import { CnSpaceService } from '../../cn-spaces/cn-space.service';
-import { CnLabUserService } from '../user/cn-lab-user.service';
 import { CnSupportService } from '../../cn-support/cn-support.service';
+import { CnUser } from '../../cn-users/cn-user.entity';
+import { CnUsersService } from '../../cn-users/cn-users.service';
+import { CnRequestLab } from '../cn-lab.dto';
+import { CnLab } from '../cn-lab.entity';
+import { CnLabUserService } from '../user/cn-lab-user.service';
+import { CnLabMailTemplate, CnLabSendMailDto, CnLabSendMailToMailsDto } from './cn-lab-mail.dto';
 
 /**
  * Service to send mail from the lab
@@ -141,6 +141,21 @@ export class CnLabMailService {
       space: {
         name: space.name,
       },
+      labUrl: labUrl,
+    });
+  }
+
+  public async sendLabTempStatusLimitReachedMail(lab: CnLab): Promise<void> {
+    const space = await this.spaceService.findByIdAndCheck(lab.spaceId);
+    const labUrl = this.frontService.getLabUrl(space.domain, lab.id);
+    await this.supportService.sendMailToSupport(CnMailTemplate.support_lab_temp_status_limit_reached, {
+      lab: {
+        name: lab.name,
+      },
+      space: {
+        name: space.name,
+      },
+      status: lab.currentStatus.status,
       labUrl: labUrl,
     });
   }
