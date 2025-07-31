@@ -40,6 +40,7 @@ import { CnLabBackupStatusDTO, CnLabCheckBackupSizeDTO } from './backup/cn-lab-b
 import { CnLabAggregateService } from './cn-lab-aggregate.service';
 import {
   CnLabAdminDto,
+  CnLabBusyStatusDTO,
   CnLabCloudCreateDTO,
   CnLabCodelabDTO,
   CnLabConfigDTO,
@@ -247,6 +248,11 @@ export class CnLabsController {
   @Get(':id/status')
   getStatus(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabStatusDTO> {
     return this.aggregateService.getLabStatus(id);
+  }
+
+  @Get(':id/status/busy')
+  getBusyStatus(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabBusyStatusDTO> {
+    return this.aggregateService.getLabBusyStatus(id);
   }
 
   /**

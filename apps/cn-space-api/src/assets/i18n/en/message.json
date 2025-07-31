@@ -1,0 +1,9 @@
+{
+  "lab_busy_server_starting": "Server is starting",
+  "lab_busy_lab_stopping": "Lab is stopping",
+  "lab_busy_lab_starting": "Lab is starting, this may take a few minutes",
+  "lab_busy_task_running": "Lab task is running",
+  "lab_busy_manager_starting": "Lab manager is starting",
+  "lab_busy_manager_task_running": "Lab manager task is running",
+  "lab_busy_starting_wait": "The lab is starting, this may take a few minutes."
+}

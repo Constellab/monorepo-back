@@ -24,6 +24,7 @@ import {
   CnLabManagerErrorLogs,
   CnLabManagerInitConfig,
   CnLabManagerRestoreBackupDTO,
+  CnLabManagerStatus,
   CnManagerLabComposeRestartOptions,
   CnManagerLabPullBiotaOptions,
 } from './model/cn-lab-manager.class';
@@ -51,7 +52,7 @@ export class CnExternalLabManagerApiService {
       .catch(() => false);
   }
 
-  public async getStatus(apiInfo: CnExternalApiInfo): Promise<any> {
+  public async getStatus(apiInfo: CnExternalApiInfo): Promise<CnLabManagerStatus> {
     return lastValueFrom(this.get(apiInfo, `${this.baseLabRoute}/status`));
   }
 
