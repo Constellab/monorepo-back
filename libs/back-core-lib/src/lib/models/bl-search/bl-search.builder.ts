@@ -1,9 +1,4 @@
-import {
-  BlSearchFilterCriteria,
-  BlSearchOperatorStr,
-  BlSearchParams,
-  BlSearchSortCriteria,
-} from './bl-search.class';
+import { ClHelpService } from '@monorepo/core-lib';
 import {
   Between,
   In,
@@ -15,11 +10,17 @@ import {
   MoreThanOrEqual,
   Not,
 } from 'typeorm';
-import { FindOptionsOrder, FindOptionsOrderValue } from 'typeorm/find-options/FindOptionsOrder';
 import { FindOneOptions } from 'typeorm/find-options/FindOneOptions';
-import { FindOptionsWhere } from 'typeorm/find-options/FindOptionsWhere';
+import { FindOptionsOrder, FindOptionsOrderValue } from 'typeorm/find-options/FindOptionsOrder';
 import { FindOptionsRelations } from 'typeorm/find-options/FindOptionsRelations';
-import { ClHelpService } from '@monorepo/core-lib';
+import { FindOptionsWhere } from 'typeorm/find-options/FindOptionsWhere';
+
+import {
+  BlSearchFilterCriteria,
+  BlSearchOperatorStr,
+  BlSearchParams,
+  BlSearchSortCriteria,
+} from './bl-search.class';
 
 export class BlSearchBuilder<T> {
   private whereOptions: FindOptionsWhere<T> = {};

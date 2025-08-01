@@ -1,5 +1,6 @@
-import { HnUserDto } from '../../../users/hn-user.dto';
 import { BlEntityWithIdDTO } from '@monorepo/back-core-lib';
+
+import { HnUserDto } from '../../../users/hn-user.dto';
 import { HnBaseEntity } from './hn-base.entity';
 
 export abstract class HnBaseDto extends BlEntityWithIdDTO {

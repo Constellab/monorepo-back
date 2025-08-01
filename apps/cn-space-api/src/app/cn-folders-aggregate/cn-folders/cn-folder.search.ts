@@ -1,5 +1,6 @@
 import { BlSearchBuilder, BlSearchParams } from '@monorepo/back-core-lib';
 import { IsNull } from 'typeorm';
+
 import { CnFolderEntity } from './cn-folder.entity';
 
 /**

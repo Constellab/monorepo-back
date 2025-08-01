@@ -1,6 +1,7 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
-import { BlRequestContext } from './bl-request-context';
 import { NextFunction, Request, Response } from 'express';
+
+import { BlRequestContext } from './bl-request-context';
 
 /**
  * This is needed to side-step Nest.js, which doesn't support getting

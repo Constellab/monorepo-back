@@ -1,11 +1,12 @@
+import { BlAbstractService, BlBadRequestException, BlVersion } from '@monorepo/back-core-lib';
 import { Injectable } from '@nestjs/common';
-import { CnBrick, CnBrickVisibility } from './cn-brick.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOptionsWhere, IsNull, Repository } from 'typeorm';
-import { CnBrickVersion, CnVersionType } from './cn-brick-version.entity';
-import { CnBrickSaveDTO } from './cn-brick.dto';
-import { BlAbstractService, BlBadRequestException, BlVersion } from '@monorepo/back-core-lib';
+
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
+import { CnBrickSaveDTO } from './cn-brick.dto';
+import { CnBrick, CnBrickVisibility } from './cn-brick.entity';
+import { CnBrickVersion, CnVersionType } from './cn-brick-version.entity';
 
 @Injectable()
 export class CnBricksService extends BlAbstractService<CnBrick> {
@@ -75,7 +76,6 @@ export class CnBricksService extends BlAbstractService<CnBrick> {
     const brickVersion = await this.getBrickVersion(name, version);
 
     if (brickVersion == null) {
-      // eslint-disable-next-line max-len
       throw new BlBadRequestException(
         `The version '${version.toString()}' does not exist on brick '${name}'. Please register the version on the hub.`
       );

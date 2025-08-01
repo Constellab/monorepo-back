@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
 import { HnAgentVersion } from './hn-agent-version.entity';
 import { HnAgentVersionService } from './hn-agent-version.service';
 

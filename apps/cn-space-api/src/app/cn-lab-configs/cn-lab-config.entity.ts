@@ -1,6 +1,7 @@
-import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
-import { CnBrickVersion } from '../cn-bricks/cn-brick-version.entity';
 import { BlEntityWithId } from '@monorepo/back-core-lib';
+import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
+
+import { CnBrickVersion } from '../cn-bricks/cn-brick-version.entity';
 import { CnLabConfigDTO } from '../cn-labs/cn-lab.dto';
 
 /**

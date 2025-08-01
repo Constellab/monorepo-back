@@ -21,6 +21,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, In, IsNull, Repository } from 'typeorm';
+
 import { CnErrorText } from '../../cn-core/model/config/cn-error-text.class';
 import { CnCoreConfigService } from '../../cn-core/modules/cn-core-config/cn-core-config.service';
 import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
@@ -30,6 +31,8 @@ import {
   CnHierarchyObjectVisibility,
 } from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
 import { CnHierarchyObjectService } from '../cn-hierarchy-objects/cn-hierarchy-object.service';
+import { CnDocument, CnDocumentEntity, CnDocumentType, CnDocumentWithHierarchy } from './cn-document.entity';
+import { CnDocumentEvent, cnDocumentEventName, CnDocumentEventType } from './cn-document.event';
 import {
   CnConstellabDocumentDTO,
   CnDocumentPreviewDTO,
@@ -37,8 +40,6 @@ import {
   CnDocumentUploadOverrideMode,
   CnFolderStorageUsageDTO,
 } from './cn-document-dto.class';
-import { CnDocument, CnDocumentEntity, CnDocumentType, CnDocumentWithHierarchy } from './cn-document.entity';
-import { CnDocumentEvent, cnDocumentEventName, CnDocumentEventType } from './cn-document.event';
 
 interface CnDocumentS3Tags {
   name: string;

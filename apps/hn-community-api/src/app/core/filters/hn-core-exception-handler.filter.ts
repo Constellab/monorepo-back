@@ -1,9 +1,10 @@
-import { Catch, Logger } from '@nestjs/common';
-import { HnCoreConfigService } from '../modules/core-config/hn-core-config.service';
-import { Request } from 'express';
-import { HnCurrentUserHelper } from '../utils/hn-current-user.helper';
 import { BlCoreExceptionHandlerFilter, BlTranslateService } from '@monorepo/back-core-lib';
+import { Catch, Logger } from '@nestjs/common';
+import { Request } from 'express';
+
 import { HnErrorText } from '../model/config/hn-error-text.class';
+import { HnCoreConfigService } from '../modules/core-config/hn-core-config.service';
+import { HnCurrentUserHelper } from '../utils/hn-current-user.helper';
 
 /**
  * Class to catch all exception and translate it if possible
@@ -27,7 +28,7 @@ export class HnCoreExceptionHandlerFilter extends BlCoreExceptionHandlerFilter {
       ? `Error during request ${request.url} | Method ${request.method} | `
       : 'Error without request';
     const userString = HnCurrentUserHelper.getCurrentUser()?.getUserInfo() ?? 'No user';
-    // eslint-disable-next-line max-len
+
     this.logger.error(
       `${requestString} | User : ${userString} | InstanceId ${instanceId} | Error : ${error.message}`
     );

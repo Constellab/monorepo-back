@@ -1,8 +1,9 @@
-import { Column, Entity, ManyToOne, OneToMany, Tree, TreeChildren, TreeParent } from 'typeorm';
-import { HnDocumentation } from '../documentation/hn-documentation.entity';
-import { HnBaseEntity } from '../../core/model/entities/hn-base.entity';
 import { BlNotUpdatable } from '@monorepo/back-core-lib';
+import { Column, Entity, ManyToOne, OneToMany, Tree, TreeChildren, TreeParent } from 'typeorm';
+
+import { HnBaseEntity } from '../../core/model/entities/hn-base.entity';
 import { HnBrickMajorVersion } from '../brick-major-version/hn-brick-major-version.entity';
+import { HnDocumentation } from '../documentation/hn-documentation.entity';
 
 @Entity('folder')
 @Tree('materialized-path')

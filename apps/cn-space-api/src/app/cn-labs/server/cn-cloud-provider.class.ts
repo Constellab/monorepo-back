@@ -1,6 +1,6 @@
-import { CnOvhDomainRecord } from './ovh/cn-ovh.class';
 import { CnLabBillingMode } from '../cn-lab.entity';
 import { CnLabVolumeType } from '../volume/cn-lab-volume-entity';
+import { CnOvhDomainRecord } from './ovh/cn-ovh.class';
 
 export interface CnCpCreateInstanceRequest {
   name: string;

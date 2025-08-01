@@ -1,14 +1,15 @@
+import { blTransportCommunityBrickQueue } from '@monorepo/back-core-lib';
+import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
-import { HnBrickVersionService } from './hn-brick-version.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { HnBrickVersion } from './hn-brick-version.entity';
+
 import { HnBrickVersionReferenceModule } from '../../brick-version-reference/hn-brick-version-reference.module';
 import { HnBrickVersionReferenceService } from '../../brick-version-reference/hn-brick-version-reference.service';
-import { HnUserService } from '../../users/hn-user.service';
-import { HnUserModule } from '../../users/hn-user.module';
 import { HnCoreModule } from '../../core/hn-core.module';
-import { BullModule } from '@nestjs/bullmq';
-import { blTransportCommunityBrickQueue } from '@monorepo/back-core-lib';
+import { HnUserModule } from '../../users/hn-user.module';
+import { HnUserService } from '../../users/hn-user.service';
+import { HnBrickVersion } from './hn-brick-version.entity';
+import { HnBrickVersionService } from './hn-brick-version.service';
 
 @Module({
   imports: [

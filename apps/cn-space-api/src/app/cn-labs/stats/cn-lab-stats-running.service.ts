@@ -1,12 +1,12 @@
-import { CnLabStatusHistory } from '../status/cn-lab-status-history.entity';
-import { cnLabRunningStatuses } from '../status/cn-lab-status.enum';
-import { CnLabStatsRequestDTO } from './cn-lab-stats.dto';
 import { CnServerPrices } from '../../cn-servers-info/server-price/cn-server-price.dto';
+import { cnLabRunningStatuses } from '../status/cn-lab-status.enum';
+import { CnLabStatusHistory } from '../status/cn-lab-status-history.entity';
 import {
   CnLabStatsRunningBillingDTO,
   CnLabStatsRunningResponseDTO,
   CnLabStatsRunningStatusDTO,
 } from './cn-lab-running-stats.dto';
+import { CnLabStatsRequestDTO } from './cn-lab-stats.dto';
 
 export class CnLabStatsRunningService {
   constructor(

@@ -1,7 +1,8 @@
 import { BlEntityWithIdDTO } from '@monorepo/back-core-lib';
-import { HnAbstractFileEntity, HnFileType } from './hn-abstract-file.entity';
-import { HnUserDto } from '../../users/hn-user.dto';
 import { TeBlockFileUploadResponse } from '@monorepo/te-text-editor';
+
+import { HnUserDto } from '../../users/hn-user.dto';
+import { HnAbstractFileEntity, HnFileType } from './hn-abstract-file.entity';
 
 export class HnUploadFileResponseDto extends BlEntityWithIdDTO implements TeBlockFileUploadResponse {
   name: string;

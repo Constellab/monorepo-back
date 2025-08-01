@@ -1,9 +1,10 @@
-import { HnStory, HnStoryStatus } from './hn-story.entity';
-import { HnStoryCoAuthorDto } from '../story-author/hn-story-author.dto';
-import { HnUserDto } from '../users/hn-user.dto';
-import { HnTopic } from '../topic/hn-topic.entity';
 import { BlEntityWithIdDTO } from '@monorepo/back-core-lib';
 import { TeRichTextDTO } from '@monorepo/te-text-editor';
+
+import { HnStoryCoAuthorDto } from '../story-author/hn-story-author.dto';
+import { HnTopic } from '../topic/hn-topic.entity';
+import { HnUserDto } from '../users/hn-user.dto';
+import { HnStory, HnStoryStatus } from './hn-story.entity';
 
 export class HnCreateStoryDto {
   title: string;

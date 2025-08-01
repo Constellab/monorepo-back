@@ -1,7 +1,7 @@
 import { TeRichText, TeRichTextDTO } from './te-rich-text.class';
+import { TeRichTextAggregate } from './te-rich-text-aggregate.class';
 import { TeRichTextBlockModificationsDTO } from './te-rich-text-block-modification.dto';
 import { TeRichTextModifications } from './te-rich-text-modifications.class';
-import { TeRichTextAggregate } from './te-rich-text-aggregate.class';
 
 /**
  * Class that contains method to simply comparaison and undo of rich text without migrating the content

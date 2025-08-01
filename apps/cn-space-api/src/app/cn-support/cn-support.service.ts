@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
 import { BlBadRequestException, BlMailService } from '@monorepo/back-core-lib';
-import { CnCoreConfigService } from '../cn-core/modules/cn-core-config/cn-core-config.service';
 import { ClSupportedLanguage } from '@monorepo/core-lib';
+import { Injectable } from '@nestjs/common';
+
 import { CnMailTemplate } from '../cn-core/model/config/cn-mail-template.class';
+import { CnCoreConfigService } from '../cn-core/modules/cn-core-config/cn-core-config.service';
 
 @Injectable()
 export class CnSupportService {

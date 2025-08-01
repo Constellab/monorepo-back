@@ -1,4 +1,8 @@
+import { BlBadRequestException } from '@monorepo/back-core-lib';
 import { Injectable, Logger } from '@nestjs/common';
+
+import { CnCoreConfigService } from '../cn-core/modules/cn-core-config/cn-core-config.service';
+import { CnExternalLabManagerApiService } from '../cn-external-lab-api/cn-external-lab-manager-api.service';
 import {
   CnLabManagerAdminerInfo,
   CnLabManagerBackupInfoDTO,
@@ -14,14 +18,11 @@ import {
   CnManagerLabComposeRestartOptions,
   CnManagerLabPullBiotaOptions,
 } from '../cn-external-lab-api/model/cn-lab-manager.class';
-import { CnExternalLabManagerApiService } from '../cn-external-lab-api/cn-external-lab-manager-api.service';
-import { CnLab } from './cn-lab.entity';
-import { CnLabConfigDTO } from './cn-lab.dto';
-import { CnCoreConfigService } from '../cn-core/modules/cn-core-config/cn-core-config.service';
-import { BlBadRequestException } from '@monorepo/back-core-lib';
 import { CnLabConfigFile } from '../cn-lab-configs/cn-lab-config-file.class';
 import { CnLabConfigsService } from '../cn-lab-configs/cn-lab-configs.service';
 import { CnLabBackupsHistory } from './backup/cn-lab-backup.dto';
+import { CnLabConfigDTO } from './cn-lab.dto';
+import { CnLab } from './cn-lab.entity';
 
 /**
  * Service to call the api of the lab manager

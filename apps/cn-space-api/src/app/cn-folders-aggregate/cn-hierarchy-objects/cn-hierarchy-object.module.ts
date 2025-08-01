@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
 import { CnCoreModule } from '../../cn-core/cn-core.module';
 import { CnHierarchyObjectEntity } from './cn-hierarchy-object.entity';
 import { CnHierarchyObjectService } from './cn-hierarchy-object.service';

@@ -1,13 +1,14 @@
-import { HnAgentVersionType } from '../agent-version/hn-agent-version.entity';
-import { HnAgent } from './hn-agent.entity';
-import { HnUserDto } from '../../users/hn-user.dto';
+import { BlEntityWithIdDTO } from '@monorepo/back-core-lib';
+import { TeRichTextDTO } from '@monorepo/te-text-editor';
+
+import { HnTypingStyle } from '../../brick-aggregate/brick/hn-brick.dto';
 import { HnSpaceDto, HnSpaceForLabDto } from '../../space-aggregate/space/hn-space.dto';
 import { HnSpace } from '../../space-aggregate/space/hn-space.entity';
+import { HnUserDto } from '../../users/hn-user.dto';
 import { HnAgentCoAuthorDto } from '../agent-co-author/hn-agent-co-author.dto';
-import { BlEntityWithIdDTO } from '@monorepo/back-core-lib';
 import { HnAgentVersionDto } from '../agent-version/hn-agent-version.dto';
-import { HnTypingStyle } from '../../brick-aggregate/brick/hn-brick.dto';
-import { TeRichTextDTO } from '@monorepo/te-text-editor';
+import { HnAgentVersionType } from '../agent-version/hn-agent-version.entity';
+import { HnAgent } from './hn-agent.entity';
 
 export class HnAgentDto extends BlEntityWithIdDTO {
   title: string;

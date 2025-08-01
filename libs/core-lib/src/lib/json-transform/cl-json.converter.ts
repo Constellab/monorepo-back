@@ -1,11 +1,12 @@
-import { ClHelpService } from '../utils/cl-help.service';
 import {
   ClassTransformOptions,
   instanceToPlain,
   plainToInstance,
   TransformationType,
 } from 'class-transformer';
+
 import { ClClassReference } from '../model/cl-class-reference.class';
+import { ClHelpService } from '../utils/cl-help.service';
 
 /**
  * File for the json to class converter

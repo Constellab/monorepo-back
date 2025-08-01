@@ -3,20 +3,16 @@ import { ClPage } from '@monorepo/core-lib';
 import { Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { DataSource, EntityManager } from 'typeorm';
+
 import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
-import { CnFolderStorageUsageDTO } from '../cn-folders-aggregate/cn-documents/cn-document-dto.class';
 import { CnDocumentService } from '../cn-folders-aggregate/cn-documents/cn-document.service';
+import { CnFolderStorageUsageDTO } from '../cn-folders-aggregate/cn-documents/cn-document-dto.class';
 import { CnBucket, CnBucketLocationDTO } from '../cn-object-storages/cn-buckets/cn-bucket.entity';
 import { CnObjectStoragesAggregateService } from '../cn-object-storages/cn-object-storages-aggregate.service';
 import { CnUserSpaceInfo } from '../cn-users/cn-user.dto';
 import { CnUser } from '../cn-users/cn-user.entity';
 import { CnUsersService } from '../cn-users/cn-users.service';
-import { CnSpaceAggregateSecurity } from './cn-space-aggregate-security.service';
-import { CnSpaceInvit } from './cn-space-invit.entity';
-import { CnSpaceInvitService } from './cn-space-invit.service';
-import { CnSpaceUserRole, CnSpaceUserWithUser } from './cn-space-user.entity';
-import { CnSpaceUserService } from './cn-space-user.service';
 import {
   CnCreateSpaceDTO,
   CnRequestNewLicensesDto,
@@ -29,6 +25,11 @@ import {
 import { CnSpace, CnSpaceEntity, CnSpaceType } from './cn-space.entity';
 import { CnSpaceEvent, cnSpaceEventName } from './cn-space.event';
 import { CnSpaceService } from './cn-space.service';
+import { CnSpaceAggregateSecurity } from './cn-space-aggregate-security.service';
+import { CnSpaceInvit } from './cn-space-invit.entity';
+import { CnSpaceInvitService } from './cn-space-invit.service';
+import { CnSpaceUserRole, CnSpaceUserWithUser } from './cn-space-user.entity';
+import { CnSpaceUserService } from './cn-space-user.service';
 import { CnSpacesMailService } from './cn-spaces-mail.service';
 
 @Injectable()

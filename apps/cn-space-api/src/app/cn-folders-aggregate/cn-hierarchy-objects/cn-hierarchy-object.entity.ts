@@ -1,3 +1,6 @@
+import { BlEntityWithId, BlLuxonDateTimeColumn, BlNotUpdatable } from '@monorepo/back-core-lib';
+import { Exclude, Expose, Type } from 'class-transformer';
+import { DateTime } from 'luxon';
 import {
   BeforeInsert,
   Column,
@@ -9,18 +12,16 @@ import {
   TreeChildren,
   TreeParent,
 } from 'typeorm';
-import { BlEntityWithId, BlLuxonDateTimeColumn, BlNotUpdatable } from '@monorepo/back-core-lib';
-import { Exclude, Expose, Type } from 'class-transformer';
-import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
-import { DateTime } from 'luxon';
-import { CnSpace, CnSpaceEntity } from '../../cn-spaces/cn-space.entity';
-import { CnFolderUserEntity } from '../cn-folder-user/cn-folder-user.entity';
-import { CnHierarchyObjectInfo } from './cn-hierarchy-object.dto';
-import { CnTypeStyle } from '../../cn-core/model/config/cn-type-style.class';
-import { CnHierarchyObjectTagEntity } from '../cn-hierarchy-object-tags/cn-hierarchy-object-tag.entity';
-import { CnTag } from '../cn-hierarchy-object-tags/cn-hierarchy-object-tag.dto';
+
 import { CnActivityEntityType } from '../../cn-activity/cn-activity.entity';
+import { CnTypeStyle } from '../../cn-core/model/config/cn-type-style.class';
 import { CnFrontService } from '../../cn-core/services/cn-front.service';
+import { CnSpace, CnSpaceEntity } from '../../cn-spaces/cn-space.entity';
+import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
+import { CnFolderUserEntity } from '../cn-folder-user/cn-folder-user.entity';
+import { CnTag } from '../cn-hierarchy-object-tags/cn-hierarchy-object-tag.dto';
+import { CnHierarchyObjectTagEntity } from '../cn-hierarchy-object-tags/cn-hierarchy-object-tag.entity';
+import { CnHierarchyObjectInfo } from './cn-hierarchy-object.dto';
 
 export enum CnHierarchyObjectType {
   FOLDER = 'FOLDER',

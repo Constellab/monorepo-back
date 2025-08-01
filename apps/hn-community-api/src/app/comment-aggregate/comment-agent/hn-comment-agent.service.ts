@@ -1,12 +1,13 @@
+import { TeRichText } from '@monorepo/te-text-editor';
 import { Injectable } from '@nestjs/common';
-import { HnAbstractCommentService } from '../comment-core/hn-abstract-comment.service';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { HnCommentAgent } from './hn-comment-agent.entity';
-import { HnAgentAggregateService } from '../../agent-aggregate/hn-agent-aggregate.service';
+
 import { HnAgent } from '../../agent-aggregate/agent/hn-agent.entity';
-import { EventEmitter2 } from '@nestjs/event-emitter';
-import { TeRichText } from '@monorepo/te-text-editor';
+import { HnAgentAggregateService } from '../../agent-aggregate/hn-agent-aggregate.service';
+import { HnAbstractCommentService } from '../comment-core/hn-abstract-comment.service';
+import { HnCommentAgent } from './hn-comment-agent.entity';
 
 @Injectable()
 export class HnCommentAgentService extends HnAbstractCommentService<HnAgent> {

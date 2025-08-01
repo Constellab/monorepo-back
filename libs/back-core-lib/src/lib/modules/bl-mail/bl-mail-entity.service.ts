@@ -1,11 +1,12 @@
+import { ClPage } from '@monorepo/core-lib';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BlMailEntity } from './bl-mail.entity';
-import { BlAbstractService } from '../../services/bl-abstract.service';
 import { Repository } from 'typeorm';
-import { BlSearchParams } from '../../models/bl-search/bl-search.class';
-import { ClPage } from '@monorepo/core-lib';
+
 import { BlSearchBuilder } from '../../models/bl-search/bl-search.builder';
+import { BlSearchParams } from '../../models/bl-search/bl-search.class';
+import { BlAbstractService } from '../../services/bl-abstract.service';
+import { BlMailEntity } from './bl-mail.entity';
 
 @Injectable()
 export class BlMailEntityService extends BlAbstractService<BlMailEntity> {

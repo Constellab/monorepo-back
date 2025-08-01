@@ -1,4 +1,5 @@
 import { BlEntityWithIdDTO } from '@monorepo/back-core-lib';
+
 import { HnUserDto } from '../../users/hn-user.dto';
 import { HnCommunityAppUser } from './hn-community-app-user.entity';
 

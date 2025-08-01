@@ -1,6 +1,6 @@
+import { BlUserCategory } from '@monorepo/back-core-lib';
 import { SetMetadata } from '@nestjs/common';
 import { CustomDecorator } from '@nestjs/common/decorators/core/set-metadata.decorator';
-import { BlUserCategory } from '@monorepo/back-core-lib';
 
 export const cnUserCategoriesMetadata = 'userCategories';
 

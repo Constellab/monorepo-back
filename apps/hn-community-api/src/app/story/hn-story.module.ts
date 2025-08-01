@@ -1,20 +1,21 @@
 import { Module } from '@nestjs/common';
-import { HnStoryService } from './hn-story.service';
-import { HnStoryController } from './hn-story.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { HnStory } from './hn-story.entity';
-import { HnTopicService } from '../topic/hn-topic.service';
-import { HnTopicModule } from '../topic/hn-topic.module';
-import { HnUserModule } from '../users/hn-user.module';
+
+import { HnCoreModule } from '../core/hn-core.module';
+import { HnCoreConfigModule } from '../core/modules/core-config/hn-core-config.module';
+import { HnFileStoryModule } from '../file-aggregate/file-story/hn-file-story.module';
+import { HnFileStoryService } from '../file-aggregate/file-story/hn-file-story.service';
 import { HnStoryAuthorModule } from '../story-author/hn-story-author.module';
 import { HnStoryAuthorService } from '../story-author/hn-story-author.service';
 import { HnStoryAuthorInviteModule } from '../story-author-invite/hn-story-author-invite.module';
 import { HnStoryAuthorInviteService } from '../story-author-invite/hn-story-author-invite.service';
-import { HnCoreModule } from '../core/hn-core.module';
-import { HnFileStoryService } from '../file-aggregate/file-story/hn-file-story.service';
-import { HnFileStoryModule } from '../file-aggregate/file-story/hn-file-story.module';
-import { HnCoreConfigModule } from '../core/modules/core-config/hn-core-config.module';
+import { HnTopicModule } from '../topic/hn-topic.module';
+import { HnTopicService } from '../topic/hn-topic.service';
+import { HnUserModule } from '../users/hn-user.module';
+import { HnStoryController } from './hn-story.controller';
+import { HnStory } from './hn-story.entity';
 import { HnCommunityStoryListener } from './hn-story.listener';
+import { HnStoryService } from './hn-story.service';
 
 @Module({
   imports: [

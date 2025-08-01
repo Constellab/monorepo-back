@@ -1,3 +1,6 @@
+import { ClStringHelper } from '@monorepo/core-lib';
+import { NodeHtmlMarkdown } from 'node-html-markdown';
+
 import {
   TeBlockData,
   TeBlockFigureData,
@@ -6,8 +9,6 @@ import {
   TeBlockListItem,
   TeBlockListType,
 } from './te-block.class';
-import { ClStringHelper } from '@monorepo/core-lib';
-import { NodeHtmlMarkdown } from 'node-html-markdown';
 
 export class TeMarkdown {
   // This class is used to convert string with html tags to markdown
@@ -57,7 +58,7 @@ export class TeMarkdown {
 
   // This class is used to convert code block data to markdown
   public static getCodeBlockMarkdown(codeBlockData: TeBlockData): string {
-    let codeBlock = '```';
+    const codeBlock = '```';
     return `> ${codeBlock}${codeBlockData.code}${codeBlock}`;
   }
 

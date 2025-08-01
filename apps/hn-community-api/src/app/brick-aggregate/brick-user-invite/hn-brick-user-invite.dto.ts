@@ -1,5 +1,5 @@
-import { HnBaseDto } from '../../core/model/entities/hn-base.dto';
 import { HnInviteStatus } from '../../core/model/config/hn-invite-status.enum';
+import { HnBaseDto } from '../../core/model/entities/hn-base.dto';
 import { HnBrickDto } from '../brick/hn-brick.dto';
 import { HnBrickUserInvite } from './hn-brick-user-invite.entity';
 

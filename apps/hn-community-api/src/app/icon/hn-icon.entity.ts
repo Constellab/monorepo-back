@@ -1,5 +1,6 @@
 import { BlEntityWithId } from '@monorepo/back-core-lib';
 import { Column, Entity } from 'typeorm';
+
 import { HnIconCreateDto } from './hn-icon.dto';
 
 export enum HnIconType {

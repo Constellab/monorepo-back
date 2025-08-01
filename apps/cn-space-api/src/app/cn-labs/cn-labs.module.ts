@@ -1,6 +1,7 @@
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
 import { CnAuthModule } from '../cn-auth/cn-auth.module';
 import { CnBricksModule } from '../cn-bricks/cn-bricks.module';
 import { CnCloudProvidersModule } from '../cn-cloud-providers/cn-cloud-providers.module';
@@ -19,26 +20,26 @@ import { CnSpacesModule } from '../cn-spaces/cn-spaces.module';
 import { CnSupportModule } from '../cn-support/cn-support.module';
 import { CnUsersModule } from '../cn-users/cn-users.module';
 import { CnLabBackupAggregateService } from './backup/cn-lab-backup-aggregate.service';
-import { CnLabBackupHistoryDetail } from './backup/cn-lab-backup-history-detail.entity';
 import { CnLabBackupHistoryEntity } from './backup/cn-lab-backup-history.entity';
 import { CnLabBackupHistoryService } from './backup/cn-lab-backup-history.service';
+import { CnLabBackupHistoryDetail } from './backup/cn-lab-backup-history-detail.entity';
 import { CnLabBackupOption } from './backup/cn-lab-backup-option.entity';
 import { CnLabBackupOptionService } from './backup/cn-lab-backup-option.service';
-import { CnLabAggregateService } from './cn-lab-aggregate.service';
-import { CnLabFactoryService } from './cn-lab-factory.service';
-import { CnLabManagerService } from './cn-lab-manager.service';
 import { CnLabCron } from './cn-lab.cron';
 import { CnLabEntity } from './cn-lab.entity';
 import { CnLabListener } from './cn-lab.listener';
+import { CnLabAggregateService } from './cn-lab-aggregate.service';
+import { CnLabFactoryService } from './cn-lab-factory.service';
+import { CnLabManagerService } from './cn-lab-manager.service';
 import { CnLabsController } from './cn-labs.controller';
 import { CnLabsSecurity } from './cn-labs.security';
 import { CnLabsService } from './cn-labs.service';
 import { CnLabDesktopService } from './desktop/cn-lab-desktop.service';
 import { CnLabGreenOption } from './green-option/cn-lab-green-option.entity';
 import { CnLabGreenOptionService } from './green-option/cn-lab-green-option.service';
-import { CnLabFreeAggregateService } from './lab-free/cn-lab-free-aggregate.service';
 import { CnLabFree } from './lab-free/cn-lab-free.entity';
 import { CnLabFreeService } from './lab-free/cn-lab-free.service';
+import { CnLabFreeAggregateService } from './lab-free/cn-lab-free-aggregate.service';
 import { CnLabMailService } from './mail/cn-lab-mail.service';
 import { CnLabNotificationService } from './notification/cn-lab-notification.service';
 import { CnAzureService } from './server/azure/cn-azure.service';
@@ -56,8 +57,8 @@ import { CnLabStatusHistory } from './status/cn-lab-status-history.entity';
 import { CnLabStatusHistoryService } from './status/cn-lab-status-history.service';
 import { CnLabUserEntity } from './user/cn-lab-user.entity';
 import { CnLabUserService } from './user/cn-lab-user.service';
-import { CnLabVolumeEntity } from './volume/cn-lab-volume-entity';
 import { CnLabVolumeService } from './volume/cn-lab-volume.service';
+import { CnLabVolumeEntity } from './volume/cn-lab-volume-entity';
 
 @Module({
   imports: [

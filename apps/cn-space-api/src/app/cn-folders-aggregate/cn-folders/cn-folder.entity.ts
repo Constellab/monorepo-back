@@ -4,6 +4,7 @@ import { TeRichTextInput } from '@monorepo/te-text-editor';
 import { Exclude } from 'class-transformer';
 import { DateTime } from 'luxon';
 import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne } from 'typeorm';
+
 import { CnTypeStyle } from '../../cn-core/model/config/cn-type-style.class';
 import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
 import { CnBucket } from '../../cn-object-storages/cn-buckets/cn-bucket.entity';

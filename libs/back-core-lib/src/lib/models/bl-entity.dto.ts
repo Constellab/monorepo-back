@@ -1,7 +1,8 @@
 import { ClLuxonDateTimeTransform } from '@monorepo/core-lib';
 import { DateTime } from 'luxon';
-import { BlUser } from './bl-user/bl-user.class';
+
 import { BlEntityWithId } from './bl-entity-with-id.entity';
+import { BlUser } from './bl-user/bl-user.class';
 
 export class BlEntityWithIdDto {
   id: string;

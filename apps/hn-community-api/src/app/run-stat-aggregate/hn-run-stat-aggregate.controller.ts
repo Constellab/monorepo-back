@@ -1,11 +1,12 @@
+import { BlPublic } from '@monorepo/back-core-lib';
 import { Controller, Get, Param, Put } from '@nestjs/common';
+
+import { IsAdmin } from '../core/decorators/hn-is-admin.decorator';
 import { HnRunStatAgService } from './hn-run-stat-ag.service';
 import {
   HnRunStatAggregate,
   HnRunStatAggregateObjectType,
 } from './run-stat-aggregate/hn-run-stat-aggregate.entity';
-import { BlPublic } from '@monorepo/back-core-lib';
-import { IsAdmin } from '../core/decorators/hn-is-admin.decorator';
 
 @Controller('run-stat-aggregate')
 export class HnRunStatAggregateController {

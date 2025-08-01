@@ -1,5 +1,6 @@
-import { HnGeneratedDocTypingEntity } from '../core/model/entities/hn-generated-doc-typing.entity';
 import { Column, Entity, Unique } from 'typeorm';
+
+import { HnGeneratedDocTypingEntity } from '../core/model/entities/hn-generated-doc-typing.entity';
 
 @Unique(['uniqueName', 'technicalFolder'])
 @Entity('protocol')

@@ -1,7 +1,20 @@
+import { BlBadRequestException, BlSearchParams } from '@monorepo/back-core-lib';
+import { ClPage, ClPageI } from '@monorepo/core-lib';
 import { Injectable } from '@nestjs/common';
-import { CnHierarchyObjectService } from './cn-hierarchy-object.service';
-import { CnFoldersSecurityService } from '../cn-security/cn-folders-security.service';
+
+import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
+import { CnDocumentAggregateService } from '../cn-documents/cn-document-aggregate.service';
 import { CnFolderEventMoveObjectToFolderData, CnFolderEventService } from '../cn-folder.event';
+import { CnFolderAggregateService } from '../cn-folder-aggregate.service';
+import { CnRootFolderUserRole } from '../cn-folder-user/cn-folder-user.entity';
+import { CnAvailableTags, CnTag } from '../cn-hierarchy-object-tags/cn-hierarchy-object-tag.dto';
+import { CnHierarchyObjectTag } from '../cn-hierarchy-object-tags/cn-hierarchy-object-tag.entity';
+import { CnHierarchyObjectTagAggregateService } from '../cn-hierarchy-object-tags/cn-hierarchy-object-tag-aggregate.service';
+import { CnNoteAggregateService } from '../cn-notes/cn-note-aggregate.service';
+import { CnResourceAggregateService } from '../cn-resources/cn-resource-aggregate.service';
+import { CnScenarioAggregateService } from '../cn-scenarios/cn-scenario-aggregate.service';
+import { CnFoldersSecurityService } from '../cn-security/cn-folders-security.service';
+import { CnHierarchyObjectFindOneDTO } from './cn-hierarchy-object.dto';
 import {
   CnHierarchyObject,
   CnHierarchyObjectType,
@@ -9,19 +22,7 @@ import {
   CnHierarchyObjectWithChildren,
   CnHierarchyObjectWithParent,
 } from './cn-hierarchy-object.entity';
-import { BlBadRequestException, BlSearchParams } from '@monorepo/back-core-lib';
-import { CnHierarchyObjectTagAggregateService } from '../cn-hierarchy-object-tags/cn-hierarchy-object-tag-aggregate.service';
-import { CnHierarchyObjectTag } from '../cn-hierarchy-object-tags/cn-hierarchy-object-tag.entity';
-import { CnAvailableTags, CnTag } from '../cn-hierarchy-object-tags/cn-hierarchy-object-tag.dto';
-import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
-import { ClPage, ClPageI } from '@monorepo/core-lib';
-import { CnResourceAggregateService } from '../cn-resources/cn-resource-aggregate.service';
-import { CnScenarioAggregateService } from '../cn-scenarios/cn-scenario-aggregate.service';
-import { CnNoteAggregateService } from '../cn-notes/cn-note-aggregate.service';
-import { CnDocumentAggregateService } from '../cn-documents/cn-document-aggregate.service';
-import { CnFolderAggregateService } from '../cn-folder-aggregate.service';
-import { CnHierarchyObjectFindOneDTO } from './cn-hierarchy-object.dto';
-import { CnRootFolderUserRole } from '../cn-folder-user/cn-folder-user.entity';
+import { CnHierarchyObjectService } from './cn-hierarchy-object.service';
 
 @Injectable()
 export class CnHierarchyObjectAggregateService {

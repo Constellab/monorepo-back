@@ -1,4 +1,5 @@
 import { BlEntityWithId } from '@monorepo/back-core-lib';
+
 import { HnTechnicalFolderDto } from '../../../technical-folder/hn-technical-folder.dto';
 
 export abstract class HnGeneratedDocDto extends BlEntityWithId {

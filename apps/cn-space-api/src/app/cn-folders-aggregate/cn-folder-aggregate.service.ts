@@ -1,18 +1,3 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { CnFoldersService } from './cn-folders/cn-folders.service';
-import { CnFoldersSecurityService } from './cn-security/cn-folders-security.service';
-import { CnFolder, CnFolderEntity, CnFolderWithHierarchy } from './cn-folders/cn-folder.entity';
-import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
-import { ClHelpService, ClPage, ClPageI } from '@monorepo/core-lib';
-import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
-import {
-  CnFolderStorageLocationDTO,
-  CnGetFolderDescriptionDTO,
-  CnSaveFolderDTO,
-} from './cn-folders/cn-folder.dto';
-import { CnUser } from '../cn-users/cn-user.entity';
-import { getFakeUserEveryoneMention } from './cn-chat/cn-chat-message.entity';
-import { CnChatMessageService } from './cn-chat/cn-chat-message.service';
 import {
   BlBadRequestException,
   BlFile,
@@ -20,23 +5,42 @@ import {
   BlSearchBuilder,
   BlSearchParams,
 } from '@monorepo/back-core-lib';
+import { ClHelpService, ClPage, ClPageI } from '@monorepo/core-lib';
+import { TeBlockFigureUploadedResponse, TeRichText } from '@monorepo/te-text-editor';
+import { Injectable, Logger } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { DataSource, In } from 'typeorm';
-import { CnFolderBucketService } from './cn-folders/cn-folder-bucket.service';
-import { CnFolderUserService } from './cn-folder-user/cn-folder-user.service';
+
+import { CnActivity, CnActivityEntityType } from '../cn-activity/cn-activity.entity';
+import { CnActivityService } from '../cn-activity/cn-activity.service';
+import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
+import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
+import { CnBucketLocationDTO } from '../cn-object-storages/cn-buckets/cn-bucket.entity';
+import { CnSpaceAggregateService } from '../cn-spaces/cn-space-aggregate.service';
+import { CnUser } from '../cn-users/cn-user.entity';
 import { CnUsersService } from '../cn-users/cn-users.service';
+import { getFakeUserEveryoneMention } from './cn-chat/cn-chat-message.entity';
+import { CnChatMessageService } from './cn-chat/cn-chat-message.service';
+import { CnDocumentType } from './cn-documents/cn-document.entity';
+import { CnDocumentService } from './cn-documents/cn-document.service';
+import { CnFolderStorageUsageDTO } from './cn-documents/cn-document-dto.class';
+import { CnFolderEventService, cnRemoveFolderFromAllLabsEventName } from './cn-folder.event';
+import { CnFolderUserConfigDTO } from './cn-folder-user/cn-folder-user.dto';
 import {
   CnFolderUser,
   CnFolderUserWithSharedBy,
   CnRootFolderUserRole,
 } from './cn-folder-user/cn-folder-user.entity';
-import { CnFolderEventService, cnRemoveFolderFromAllLabsEventName } from './cn-folder.event';
-import { EventEmitter2 } from '@nestjs/event-emitter';
-import { CnActivity, CnActivityEntityType } from '../cn-activity/cn-activity.entity';
-import { CnActivityService } from '../cn-activity/cn-activity.service';
-import { CnBucketLocationDTO } from '../cn-object-storages/cn-buckets/cn-bucket.entity';
-import { CnDocumentService } from './cn-documents/cn-document.service';
-import { CnDocumentType } from './cn-documents/cn-document.entity';
-import { CnFolderStorageUsageDTO } from './cn-documents/cn-document-dto.class';
+import { CnFolderUserService } from './cn-folder-user/cn-folder-user.service';
+import {
+  CnFolderStorageLocationDTO,
+  CnGetFolderDescriptionDTO,
+  CnSaveFolderDTO,
+} from './cn-folders/cn-folder.dto';
+import { CnFolder, CnFolderEntity, CnFolderWithHierarchy } from './cn-folders/cn-folder.entity';
+import { CnFolderBucketService } from './cn-folders/cn-folder-bucket.service';
+import { CnFoldersService } from './cn-folders/cn-folders.service';
+import { CnHierarchyObjectTagAggregateService } from './cn-hierarchy-object-tags/cn-hierarchy-object-tag-aggregate.service';
 import {
   CnHierarchyObject,
   CnHierarchyObjectEntity,
@@ -45,10 +49,7 @@ import {
   CnHierarchyObjectWithChildren,
 } from './cn-hierarchy-objects/cn-hierarchy-object.entity';
 import { CnHierarchyObjectService } from './cn-hierarchy-objects/cn-hierarchy-object.service';
-import { TeBlockFigureUploadedResponse, TeRichText } from '@monorepo/te-text-editor';
-import { CnHierarchyObjectTagAggregateService } from './cn-hierarchy-object-tags/cn-hierarchy-object-tag-aggregate.service';
-import { CnSpaceAggregateService } from '../cn-spaces/cn-space-aggregate.service';
-import { CnFolderUserConfigDTO } from './cn-folder-user/cn-folder-user.dto';
+import { CnFoldersSecurityService } from './cn-security/cn-folders-security.service';
 
 @Injectable()
 export class CnFolderAggregateService {
@@ -207,7 +208,7 @@ export class CnFolderAggregateService {
     dbFolder.startingDate = entity.startingDate;
     dbFolder.endingDate = entity.endingDate;
 
-    const newFolder = await this.foldersService.update(dbFolder as CnFolderEntity);
+    const newFolder = await this.foldersService.update(dbFolder);
     this.folderEventService.emitFolderEvent('UPDATE_FOLDER', null, newFolder);
     return this.foldersService.findByIdAndCheckWithFolder(newFolder.id);
   }
@@ -218,7 +219,7 @@ export class CnFolderAggregateService {
 
     dbFolder.name = name;
 
-    const newFolder = await this.foldersService.update(dbFolder as CnFolderEntity);
+    const newFolder = await this.foldersService.update(dbFolder);
     this.folderEventService.emitFolderEvent('UPDATE_FOLDER', null, newFolder);
     return this.foldersService.findByIdAndCheckWithFolder(newFolder.id);
   }

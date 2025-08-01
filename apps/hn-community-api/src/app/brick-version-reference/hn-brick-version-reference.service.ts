@@ -1,8 +1,9 @@
+import { BlAbstractService } from '@monorepo/back-core-lib';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { HnBrickVersionReference } from './hn-brick-version-reference.entity';
 import { EntityManager, Repository } from 'typeorm';
-import { BlAbstractService } from '@monorepo/back-core-lib';
+
+import { HnBrickVersionReference } from './hn-brick-version-reference.entity';
 
 @Injectable()
 export class HnBrickVersionReferenceService extends BlAbstractService<HnBrickVersionReference> {

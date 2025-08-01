@@ -1,6 +1,7 @@
-import { Controller, Get } from '@nestjs/common';
-import { HnTaskService } from './hn-task.service';
 import { BlPublic } from '@monorepo/back-core-lib';
+import { Controller, Get } from '@nestjs/common';
+
+import { HnTaskService } from './hn-task.service';
 
 @Controller('task')
 export class HnTaskController {

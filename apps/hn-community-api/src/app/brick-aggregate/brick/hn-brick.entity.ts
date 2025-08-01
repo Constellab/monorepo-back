@@ -1,12 +1,13 @@
-import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne, OneToMany, Unique } from 'typeorm';
 import { BlEntityWithId, BlLuxonDateTimeColumn, BlNotUpdatable } from '@monorepo/back-core-lib';
-import { HnBrickUser } from '../brick-user/hn-brick-user.entity';
-import { DateTime } from 'luxon';
-import { Type } from 'class-transformer';
-import { HnUser } from '../../users/hn-user.entity';
-import { HnCurrentUserHelper } from '../../core/utils/hn-current-user.helper';
 import { ClDateHelper } from '@monorepo/core-lib';
+import { Type } from 'class-transformer';
+import { DateTime } from 'luxon';
+import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne, OneToMany, Unique } from 'typeorm';
+
+import { HnCurrentUserHelper } from '../../core/utils/hn-current-user.helper';
 import { HnSpace } from '../../space-aggregate/space/hn-space.entity';
+import { HnUser } from '../../users/hn-user.entity';
+import { HnBrickUser } from '../brick-user/hn-brick-user.entity';
 import { HnCreateBrickDTO } from './hn-brick.dto';
 
 export enum HnBrickVisibility {

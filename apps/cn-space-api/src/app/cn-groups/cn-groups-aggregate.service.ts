@@ -1,16 +1,17 @@
-import { Injectable } from '@nestjs/common';
-import { CnGroup, CnGroupSingleUser, CnGroupTeam, CnUserGroup } from './cn-group.entity';
-import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
-import { CnUser } from '../cn-users/cn-user.entity';
-import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
-import { DeleteResult } from 'typeorm';
+import { BlSearchParams, BlUnauthorizedException } from '@monorepo/back-core-lib';
 import { ClHelpService, ClPageI } from '@monorepo/core-lib';
-import { CnUserTeamService } from './cn-user-team.service';
+import { Injectable } from '@nestjs/common';
+import { DeleteResult } from 'typeorm';
+
+import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
+import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
 import { CnSpaceUserService } from '../cn-spaces/cn-space-user.service';
+import { CnUser } from '../cn-users/cn-user.entity';
+import { CnGroup, CnGroupSingleUser, CnGroupTeam, CnUserGroup } from './cn-group.entity';
+import { CnGroupType } from './cn-group-type.enum';
 import { CnGroupsSecurity } from './cn-groups.security';
 import { CnGroupsService } from './cn-groups.service';
-import { BlSearchParams, BlUnauthorizedException } from '@monorepo/back-core-lib';
-import { CnGroupType } from './cn-group-type.enum';
+import { CnUserTeamService } from './cn-user-team.service';
 
 @Injectable()
 export class CnGroupsAggregateService {

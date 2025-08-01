@@ -1,13 +1,14 @@
+import { BlBucketConfig, BlBucketType, BlObjectStorageService } from '@monorepo/back-core-lib';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { HnAbstractFileService } from '../file-core/hn-abstract-file.service';
-import { BlBucketConfig, BlBucketType, BlObjectStorageService } from '@monorepo/back-core-lib';
-import { HnCoreConfigService } from '../../core/modules/core-config/hn-core-config.service';
-import { HnFileDocumentation } from './hn-file-documentation.entity';
+
 import { HnDocumentation } from '../../brick-aggregate/documentation/hn-documentation.entity';
+import { HnCoreConfigService } from '../../core/modules/core-config/hn-core-config.service';
 import { HnAbstractFileEntityDTO } from '../file-core/hn-abstract-file.dto';
 import { HnFileType } from '../file-core/hn-abstract-file.entity';
+import { HnAbstractFileService } from '../file-core/hn-abstract-file.service';
+import { HnFileDocumentation } from './hn-file-documentation.entity';
 
 @Injectable()
 export class HnFileDocumentationService extends HnAbstractFileService<HnDocumentation> {

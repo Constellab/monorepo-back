@@ -1,5 +1,6 @@
-import { HnBrickMajorVersion } from '../brick-aggregate/brick-major-version/hn-brick-major-version.entity';
 import { Entity, ManyToOne } from 'typeorm';
+
+import { HnBrickMajorVersion } from '../brick-aggregate/brick-major-version/hn-brick-major-version.entity';
 import { HnBaseEntity } from '../core/model/entities/hn-base.entity';
 
 @Entity('technical_folder')

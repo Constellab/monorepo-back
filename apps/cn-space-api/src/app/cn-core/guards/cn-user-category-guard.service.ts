@@ -1,8 +1,9 @@
+import { BlReflectorHelper, BlUserCategory } from '@monorepo/back-core-lib';
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+
 import { CnUser } from '../../cn-users/cn-user.entity';
 import { cnUserCategoriesMetadata } from '../decorators/cn-user-category.decorator';
-import { BlReflectorHelper, BlUserCategory } from '@monorepo/back-core-lib';
 
 /**
  * Guard that work with the decorator @UserCategories to guard route based

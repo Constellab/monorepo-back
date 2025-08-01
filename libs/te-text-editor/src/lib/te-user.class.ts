@@ -1,4 +1,3 @@
-
 export interface TeUser {
   id: string;
   alias: string;

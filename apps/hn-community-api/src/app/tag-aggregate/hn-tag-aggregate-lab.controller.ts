@@ -1,9 +1,10 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, Query } from '@nestjs/common';
-import { HnTagAggregateService } from './hn-tag-aggregate.service';
 import { ClPage } from '@monorepo/core-lib';
+import { Body, Controller, Get, Param, ParseIntPipe, Post, Query } from '@nestjs/common';
+
+import { HnLabGuard } from '../core/decorators/hn-lab-auth-guard.decorator';
+import { HnTagAggregateService } from './hn-tag-aggregate.service';
 import { HnTagKeyForLabDto } from './tag-key/hn-tag-key.dto';
 import { HnTagKey } from './tag-key/hn-tag-key.entity';
-import { HnLabGuard } from '../core/decorators/hn-lab-auth-guard.decorator';
 import { HnTagValueForLabDto } from './tag-value/hn-tag-value.dto';
 import { HnTagValue } from './tag-value/hn-tag-value.entity';
 

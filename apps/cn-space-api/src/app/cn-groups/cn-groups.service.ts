@@ -1,19 +1,20 @@
-import { Injectable } from '@nestjs/common';
-import { CnGroup, CnGroupSingleUser, CnGroupTeam, CnUserGroup } from './cn-group.entity';
-import { InjectRepository } from '@nestjs/typeorm';
-import { EntityManager, FindOneOptions, In, Like, Repository } from 'typeorm';
 import {
   BlAbstractService,
   BlBadRequestException,
   BlSearchBuilder,
   BlSearchParams,
 } from '@monorepo/back-core-lib';
-import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
-import { CnGroupType } from './cn-group-type.enum';
 import { ClHelpService, ClPageI } from '@monorepo/core-lib';
-import { CnUser } from '../cn-users/cn-user.entity';
-import { FindOptionsWhere } from 'typeorm/find-options/FindOptionsWhere';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { EntityManager, FindOneOptions, In, Like, Repository } from 'typeorm';
 import { FindOptionsRelations } from 'typeorm/find-options/FindOptionsRelations';
+import { FindOptionsWhere } from 'typeorm/find-options/FindOptionsWhere';
+
+import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
+import { CnUser } from '../cn-users/cn-user.entity';
+import { CnGroup, CnGroupSingleUser, CnGroupTeam, CnUserGroup } from './cn-group.entity';
+import { CnGroupType } from './cn-group-type.enum';
 
 @Injectable()
 export class CnGroupsService extends BlAbstractService<CnGroup> {

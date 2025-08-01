@@ -1,6 +1,6 @@
 import { PipeTransform } from '@nestjs/common';
-import { TeRichText, TeRichTextInput } from './lib';
 
+import { TeRichText, TeRichTextInput } from './lib';
 
 export class TeRichTextPipe implements PipeTransform {
   constructor() {}

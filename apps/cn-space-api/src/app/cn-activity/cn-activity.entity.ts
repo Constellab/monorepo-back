@@ -2,6 +2,7 @@ import { BlEntityWithId, BlLuxonDateTimeColumn, BlNotUpdatable } from '@monorepo
 import { Exclude, Expose, Type } from 'class-transformer';
 import { DateTime } from 'luxon';
 import { Column, Entity, ManyToOne, Relation } from 'typeorm';
+
 import { CnSpace, CnSpaceEntity } from '../cn-spaces/cn-space.entity';
 import { CnUser, CnUserEntity } from '../cn-users/cn-user.entity';
 

@@ -1,11 +1,12 @@
-import { Controller, Get, Param, ParseIntPipe, Put, Query, UseGuards } from '@nestjs/common';
-import { ClPage } from '@monorepo/core-lib';
-import { HnReferenceDTO } from './brick-version/hn-brick-version.entity';
 import { BlPublic } from '@monorepo/back-core-lib';
+import { ClPage } from '@monorepo/core-lib';
+import { Controller, Get, Param, ParseIntPipe, Put, Query, UseGuards } from '@nestjs/common';
+
 import { IsAdmin } from '../core/decorators/hn-is-admin.decorator';
 import { HnIsAdminGuard } from '../core/guards/hn-is-admin.guard';
-import { HnBrickAggregateService } from './hn-brick-aggregate.service';
 import { HnBrickVersionDto } from './brick-version/hn-brick-version.dto';
+import { HnReferenceDTO } from './brick-version/hn-brick-version.entity';
+import { HnBrickAggregateService } from './hn-brick-aggregate.service';
 
 @Controller('brick-version')
 @UseGuards(HnIsAdminGuard)

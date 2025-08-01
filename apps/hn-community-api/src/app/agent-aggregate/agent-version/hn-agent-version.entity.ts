@@ -1,11 +1,12 @@
-import { BeforeInsert, Column, Entity, ManyToOne, Unique } from 'typeorm';
 import { BlEntityWithId, BlLuxonDateTimeColumn, BlNotUpdatable } from '@monorepo/back-core-lib';
-import { HnAgent } from '../agent/hn-agent.entity';
-import { DateTime } from 'luxon';
 import { ClDateHelper } from '@monorepo/core-lib';
-import { HnAgentVersionFileInput } from '../agent/hn-agent.dto';
-import { HnTypingStyle } from '../../brick-aggregate/brick/hn-brick.dto';
 import { TeRichText, TeRichTextDTO } from '@monorepo/te-text-editor';
+import { DateTime } from 'luxon';
+import { BeforeInsert, Column, Entity, ManyToOne, Unique } from 'typeorm';
+
+import { HnTypingStyle } from '../../brick-aggregate/brick/hn-brick.dto';
+import { HnAgentVersionFileInput } from '../agent/hn-agent.dto';
+import { HnAgent } from '../agent/hn-agent.entity';
 
 export enum HnAgentVersionState {
   PUBLISHED = 'PUBLISHED',

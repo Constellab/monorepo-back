@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
 import { HnAgentVersionBrickDependencies } from './hn-agent-version-brick-dependencies.entity';
 import { HnAgentVersionBrickDependenciesService } from './hn-agent-version-brick-dependencies.service';
 

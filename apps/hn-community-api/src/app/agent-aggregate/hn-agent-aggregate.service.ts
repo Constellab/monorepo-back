@@ -1,7 +1,26 @@
+import {
+  BlBadRequestException,
+  BlFile,
+  BlNotFoundException,
+  BlUnauthorizedException,
+} from '@monorepo/back-core-lib';
+import { ClPage, ClStringHelper } from '@monorepo/core-lib';
+import { TeBlockFigureUploadedResponse, TeRichText } from '@monorepo/te-text-editor';
 import { Injectable } from '@nestjs/common';
-import { HnAgentService } from './agent/hn-agent.service';
-import { HnAgentVersionService } from './agent-version/hn-agent-version.service';
-import { HnAgentVersion, HnAgentVersionState } from './agent-version/hn-agent-version.entity';
+import { DataSource } from 'typeorm';
+
+import { HnBrickVersion } from '../brick-aggregate/brick-version/hn-brick-version.entity';
+import { HnBrickAggregateService } from '../brick-aggregate/hn-brick-aggregate.service';
+import { HnInviteStatus } from '../core/model/config/hn-invite-status.enum';
+import { HnSiteMapEnumChangefreq, HnSitemapItemBase } from '../core/model/config/hn-site-map.class';
+import { HnFrontService } from '../core/service/hn-front.service';
+import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
+import { HnFileAgentService } from '../file-aggregate/file-agent/hn-file-agent.service';
+import { HnUploadFileResponseDto } from '../file-aggregate/file-core/hn-abstract-file.dto';
+import { HnSpaceAggregateService } from '../space-aggregate/hn-space-aggregate.service';
+import { HnSpaceDto } from '../space-aggregate/space/hn-space.dto';
+import { HnUser } from '../users/hn-user.entity';
+import { HnUserService } from '../users/hn-user.service';
 import {
   HaCreateAgentVersionFromLabResponseDto,
   HnAgentDto,
@@ -11,35 +30,17 @@ import {
   HnAgentVersionForLabDto,
   HnCreateAgentDto,
 } from './agent/hn-agent.dto';
-import { HnSpaceAggregateService } from '../space-aggregate/hn-space-aggregate.service';
 import { HnAgent } from './agent/hn-agent.entity';
-import { DataSource } from 'typeorm';
-import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
-import { ClPage, ClStringHelper } from '@monorepo/core-lib';
-import {
-  BlBadRequestException,
-  BlFile,
-  BlNotFoundException,
-  BlUnauthorizedException,
-} from '@monorepo/back-core-lib';
-import { HnBrickAggregateService } from '../brick-aggregate/hn-brick-aggregate.service';
-import { HnBrickVersion } from '../brick-aggregate/brick-version/hn-brick-version.entity';
-import { HnAgentVersionBrickDependenciesService } from './agent-version-brick-dependencies/hn-agent-version-brick-dependencies.service';
-import { HnAgentVersionBrickDependencies } from './agent-version-brick-dependencies/hn-agent-version-brick-dependencies.entity';
-import { HnUser } from '../users/hn-user.entity';
-import { HnUserService } from '../users/hn-user.service';
+import { HnAgentService } from './agent/hn-agent.service';
+import { HnAgentCoAuthor } from './agent-co-author/hn-agent-co-author.entity';
 import { HnAgentCoAuthorService } from './agent-co-author/hn-agent-co-author.service';
 import { HnAgentCoAuthorInvite } from './agent-co-author-invite/hn-agent-co-author-invite.entity';
-import { HnInviteStatus } from '../core/model/config/hn-invite-status.enum';
-import { HnAgentCoAuthor } from './agent-co-author/hn-agent-co-author.entity';
-import { HnSiteMapEnumChangefreq, HnSitemapItemBase } from '../core/model/config/hn-site-map.class';
-import { HnFrontService } from '../core/service/hn-front.service';
 import { HnAgentVersionDto } from './agent-version/hn-agent-version.dto';
-import { HnSpaceDto } from '../space-aggregate/space/hn-space.dto';
-import { HnUploadFileResponseDto } from '../file-aggregate/file-core/hn-abstract-file.dto';
-import { HnFileAgentService } from '../file-aggregate/file-agent/hn-file-agent.service';
+import { HnAgentVersion, HnAgentVersionState } from './agent-version/hn-agent-version.entity';
+import { HnAgentVersionService } from './agent-version/hn-agent-version.service';
 import { HnAgentVersionMigrator } from './agent-version/hn-agent-version-migrator.class';
-import { TeBlockFigureUploadedResponse, TeRichText } from '@monorepo/te-text-editor';
+import { HnAgentVersionBrickDependencies } from './agent-version-brick-dependencies/hn-agent-version-brick-dependencies.entity';
+import { HnAgentVersionBrickDependenciesService } from './agent-version-brick-dependencies/hn-agent-version-brick-dependencies.service';
 
 @Injectable()
 export class HnAgentAggregateService {

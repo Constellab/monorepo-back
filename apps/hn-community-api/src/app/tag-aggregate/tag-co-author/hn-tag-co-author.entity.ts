@@ -1,7 +1,8 @@
-import { Entity, ManyToOne } from 'typeorm';
-import { HnTagKey } from '../tag-key/hn-tag-key.entity';
-import { HnUser } from '../../users/hn-user.entity';
 import { BlEntityWithId } from '@monorepo/back-core-lib';
+import { Entity, ManyToOne } from 'typeorm';
+
+import { HnUser } from '../../users/hn-user.entity';
+import { HnTagKey } from '../tag-key/hn-tag-key.entity';
 
 @Entity('tag_co_author')
 export class HnTagCoAuthor extends BlEntityWithId {

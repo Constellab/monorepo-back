@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
-import { HnLikeStoryService } from './hn-like-story.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { HnLikeStory } from './hn-like-story.entity';
+
 import { HnStoryModule } from '../../story/hn-story.module';
+import { HnLikeStory } from './hn-like-story.entity';
+import { HnLikeStoryService } from './hn-like-story.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([HnLikeStory]), HnStoryModule],

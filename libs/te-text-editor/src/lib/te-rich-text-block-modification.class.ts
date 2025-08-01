@@ -1,6 +1,7 @@
 import { ClStringHelper } from '@monorepo/core-lib';
 import { diffChars } from 'diff';
 import { DateTime } from 'luxon';
+
 import { TeBlockData, TeBlockType } from './te-block.class';
 import { TeRichTextBlockModificationDTO } from './te-rich-text-block-modification.dto';
 

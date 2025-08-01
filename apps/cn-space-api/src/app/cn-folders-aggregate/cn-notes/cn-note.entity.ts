@@ -1,15 +1,16 @@
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne } from 'typeorm';
-import { CnScenario, CnScenarioEntity } from '../cn-scenarios/cn-scenario.entity';
-import { Type } from 'class-transformer';
-import { CnLabConfig } from '../../cn-lab-configs/cn-lab-config.entity';
-import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
 import { BlLuxonDateTimeColumn, BlNotUpdatable } from '@monorepo/back-core-lib';
+import { Type } from 'class-transformer';
 import { DateTime } from 'luxon';
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne } from 'typeorm';
+
+import { CnLabConfig } from '../../cn-lab-configs/cn-lab-config.entity';
 import { CnLab, CnLabEntity } from '../../cn-labs/cn-lab.entity';
+import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
 import { CnDocument, CnDocumentEntity } from '../cn-documents/cn-document.entity';
-import { CnHierarchyRepresentation } from '../cn-hierarchy-objects/cn-hierarchy-representation';
 import { CnHierarchyObjectInfo } from '../cn-hierarchy-objects/cn-hierarchy-object.dto';
 import { CnHierarchyObjectType } from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
+import { CnHierarchyRepresentation } from '../cn-hierarchy-objects/cn-hierarchy-representation';
+import { CnScenario, CnScenarioEntity } from '../cn-scenarios/cn-scenario.entity';
 
 @Entity('note')
 export class CnNoteEntity extends CnHierarchyRepresentation {

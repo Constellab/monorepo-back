@@ -1,17 +1,18 @@
+import { BlBucketConfig, BlBucketType, BlObjectStorageService } from '@monorepo/back-core-lib';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { HnAbstractFileService } from '../file-core/hn-abstract-file.service';
-import { BlBucketConfig, BlBucketType, BlObjectStorageService } from '@monorepo/back-core-lib';
-import { HnCoreConfigService } from '../../core/modules/core-config/hn-core-config.service';
-import { HnFileApp } from './hn-file-app.entity';
+
 import { HnCommunityApp } from '../../community-app-aggregate/community-app/hn-community-app.entity';
+import { HnCoreConfigService } from '../../core/modules/core-config/hn-core-config.service';
+import { HnAbstractFileService } from '../file-core/hn-abstract-file.service';
+import { HnFileApp } from './hn-file-app.entity';
 
 @Injectable()
 export class HnFileAppService extends HnAbstractFileService<HnCommunityApp> {
   constructor(
     @InjectRepository(HnFileApp) fileAppRepository: Repository<HnFileApp>,
-                                 objectStorageService: BlObjectStorageService,
+    objectStorageService: BlObjectStorageService,
     private configService: HnCoreConfigService
   ) {
     super(fileAppRepository, objectStorageService);

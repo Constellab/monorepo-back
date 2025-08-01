@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
-import { CnUser } from '../cn-users/cn-user.entity';
 import { BlUnauthorizedException } from '@monorepo/back-core-lib';
+import { Injectable } from '@nestjs/common';
+
+import { CnUser } from '../cn-users/cn-user.entity';
 
 @Injectable()
 export class CnCloudProviderSecurity {

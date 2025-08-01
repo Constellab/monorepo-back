@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
 import { BlAbstractService, BlBadRequestException } from '@monorepo/back-core-lib';
-import { CnCloudProviderRegion, CnCloudProviderRegionType } from './cn-cloud-provider-region.entity';
+import { ClPage } from '@monorepo/core-lib';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, In, Repository } from 'typeorm';
-import { ClPage } from '@monorepo/core-lib';
+
 import { CnCloudProviderName } from '../cn-cloud-provider.entity';
+import { CnCloudProviderRegion, CnCloudProviderRegionType } from './cn-cloud-provider-region.entity';
 
 @Injectable()
 export class CnCloudProviderRegionService extends BlAbstractService<CnCloudProviderRegion> {
@@ -46,7 +47,6 @@ export class CnCloudProviderRegionService extends BlAbstractService<CnCloudProvi
       region.type
     );
     if (existingRegion && existingRegion.id !== region.id) {
-      // eslint-disable-next-line max-len
       throw new BlBadRequestException(
         `There is already a ${region.type} region ${region.technicalName} ` +
           `for the cloud provider ${region.cloudProvider.name}`

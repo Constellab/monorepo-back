@@ -1,5 +1,7 @@
-import { Body, Controller, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, Query } from '@nestjs/common';
 import { BlParsePipe } from '@monorepo/back-core-lib';
+import { ClPage } from '@monorepo/core-lib';
+import { Body, Controller, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, Query } from '@nestjs/common';
+
 import { HnLabGuard } from '../core/decorators/hn-lab-auth-guard.decorator';
 import {
   HaCreateAgentVersionFromLabResponseDto,
@@ -10,7 +12,6 @@ import {
 } from './agent/hn-agent.dto';
 import { HnAgentVersionMigrator } from './agent-version/hn-agent-version-migrator.class';
 import { HnAgentAggregateService } from './hn-agent-aggregate.service';
-import { ClPage } from '@monorepo/core-lib';
 
 @HnLabGuard()
 @Controller('agent/for-lab')

@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+
 import { CnSpaceService } from './cn-space.service';
 
 describe('CnSpaceService', () => {

@@ -1,22 +1,23 @@
-import { Injectable } from '@nestjs/common';
-import { CnBucketsService } from './cn-buckets/cn-buckets.service';
-import { CnBucketCredentialsService } from './cn-bucket-credential/cn-bucket-credentials.service';
-import { CnObjectStoragesSecurity } from './cn-object-storages.security';
-import { CnBucketCredentials } from './cn-bucket-credential/cn-bucket-credential.entity';
-import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
-import { ClPage } from '@monorepo/core-lib';
-import { CnBucket, CnBucketContentType } from './cn-buckets/cn-bucket.entity';
 import {
   BlBadRequestException,
   BlCredentials,
   BlSearchParams,
   BlUnauthorizedException,
 } from '@monorepo/back-core-lib';
+import { ClPage } from '@monorepo/core-lib';
+import { Injectable } from '@nestjs/common';
+
 import { CnAuthService } from '../cn-auth/cn-auth.service';
-import { CnBucketCredentialsFull } from './cn-object-storage.dto';
-import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
 import { CnCloudProviderAggregateService } from '../cn-cloud-providers/cn-cloud-provider-aggregate.service';
 import { CnCloudProviderRegion } from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
+import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
+import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
+import { CnBucketCredentials } from './cn-bucket-credential/cn-bucket-credential.entity';
+import { CnBucketCredentialsService } from './cn-bucket-credential/cn-bucket-credentials.service';
+import { CnBucket, CnBucketContentType } from './cn-buckets/cn-bucket.entity';
+import { CnBucketsService } from './cn-buckets/cn-buckets.service';
+import { CnBucketCredentialsFull } from './cn-object-storage.dto';
+import { CnObjectStoragesSecurity } from './cn-object-storages.security';
 
 @Injectable()
 export class CnObjectStoragesAggregateService {
@@ -100,7 +101,6 @@ export class CnObjectStoragesAggregateService {
     const bucket = await this.bucketService.findByContentTypeAndRegion(CnBucketContentType.FOLDER, region.id);
 
     if (bucket == null) {
-      // eslint-disable-next-line max-len
       throw new BlBadRequestException(
         `No bucket found for content type ${CnBucketContentType.FOLDER} and region ${region.technicalName}`
       );

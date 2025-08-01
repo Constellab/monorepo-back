@@ -1,3 +1,6 @@
+import { BlParsePipe, BlPublic } from '@monorepo/back-core-lib';
+import { ClPage } from '@monorepo/core-lib';
+import { TeRichTextDTO } from '@monorepo/te-text-editor';
 import {
   Body,
   Controller,
@@ -10,12 +13,10 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
+
 import { HnTagAggregateService } from './hn-tag-aggregate.service';
 import { HnCreateTagKeyDto, HnTagKeyDto } from './tag-key/hn-tag-key.dto';
-import { BlParsePipe, BlPublic } from '@monorepo/back-core-lib';
-import { ClPage } from '@monorepo/core-lib';
 import { HnTagKey, HnTagKeyAdditionalInfosSpecs, HnTagParamSpec } from './tag-key/hn-tag-key.entity';
-import { TeRichTextDTO } from '@monorepo/te-text-editor';
 import { HnEditTagValueDto, HnTagValueDto } from './tag-value/hn-tag-value.dto';
 
 @Controller('tag')

@@ -1,8 +1,9 @@
+import { BlBadRequestException, BlExternalApiService } from '@monorepo/back-core-lib';
 import { Injectable, Logger } from '@nestjs/common';
+import { lastValueFrom } from 'rxjs';
+
 import { CnCoreConfigService } from '../cn-core/modules/cn-core-config/cn-core-config.service';
 import { CnYoutubeVideo } from './cn-settings.dto';
-import { BlBadRequestException, BlExternalApiService } from '@monorepo/back-core-lib';
-import { lastValueFrom } from 'rxjs';
 
 @Injectable()
 export class CnYoutubeService {

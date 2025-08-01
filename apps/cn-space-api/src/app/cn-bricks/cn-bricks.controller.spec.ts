@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+
 import { CnBricksController } from './cn-bricks.controller';
 
 describe('BricksController', () => {

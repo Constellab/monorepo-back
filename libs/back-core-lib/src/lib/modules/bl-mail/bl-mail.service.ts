@@ -1,12 +1,13 @@
 import { ClHelpService, ClSupportedLanguage } from '@monorepo/core-lib';
-import { BlUser } from '../../models/bl-user/bl-user.class';
-import { Queue } from 'bullmq';
 import { Inject, Logger } from '@nestjs/common';
-import { BlMailSenderService } from './bl-mail-sender.service';
-import { BlMailQueue } from './bl-mail.class';
-import { BlMailEntityService } from './bl-mail-entity.service';
-import { BlMailEntity, BlMailStatus } from './bl-mail.entity';
+import { Queue } from 'bullmq';
 import { Exception } from 'handlebars';
+
+import { BlUser } from '../../models/bl-user/bl-user.class';
+import { BlMailQueue } from './bl-mail.class';
+import { BlMailEntity, BlMailStatus } from './bl-mail.entity';
+import { BlMailEntityService } from './bl-mail-entity.service';
+import { BlMailSenderService } from './bl-mail-sender.service';
 
 export interface BlSendMailDTO {
   templateName: string;

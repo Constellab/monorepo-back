@@ -1,5 +1,6 @@
-import { Entity, ManyToOne } from 'typeorm';
 import { BlEntityWithId } from '@monorepo/back-core-lib';
+import { Entity, ManyToOne } from 'typeorm';
+
 import { HnStory } from '../story/hn-story.entity';
 import { HnUser } from '../users/hn-user.entity';
 

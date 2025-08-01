@@ -1,12 +1,13 @@
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { BlNotUpdatable } from '@monorepo/back-core-lib';
 import { Type } from 'class-transformer';
+import { Column, Entity, ManyToOne } from 'typeorm';
+
 import { CnMessage, CnNewMessageDTO } from '../../cn-core/model/entities/cn-message.entity';
 import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
 import {
   CnHierarchyObject,
   CnHierarchyObjectEntity,
 } from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
-import { BlNotUpdatable } from '@monorepo/back-core-lib';
 
 /**
  * special user for mentioning everyone

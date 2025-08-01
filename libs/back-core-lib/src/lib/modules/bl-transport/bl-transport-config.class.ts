@@ -1,5 +1,5 @@
-import { ModuleMetadata } from '@nestjs/common/interfaces';
 import { SharedBullAsyncConfiguration } from '@nestjs/bullmq';
+import { ModuleMetadata } from '@nestjs/common/interfaces';
 import * as Bull from 'bullmq';
 
 export interface BlTransportModuleConfig {

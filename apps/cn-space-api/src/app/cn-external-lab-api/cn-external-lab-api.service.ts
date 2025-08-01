@@ -1,15 +1,16 @@
+import { BlExternalApiHttpOption, BlExternalApiService } from '@monorepo/back-core-lib';
+import { ClDeserializationRef } from '@monorepo/core-lib';
 import { Injectable } from '@nestjs/common';
 import { lastValueFrom, Observable } from 'rxjs';
-import { ClDeserializationRef } from '@monorepo/core-lib';
-import { BlExternalApiHttpOption, BlExternalApiService } from '@monorepo/back-core-lib';
+
 import {
   CnExternalApiInfo,
   cnExternalLabApiKeyHeader,
   cnExternalLabApiKeySchema,
   cnExternalLabUserHeader,
 } from '../cn-core/model/config/cn-config.class';
-import { CnLabGlobalActivity } from './model/cn-external-lab-api.class';
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
+import { CnLabGlobalActivity } from './model/cn-external-lab-api.class';
 
 /**
  * Service to call the api of a lab

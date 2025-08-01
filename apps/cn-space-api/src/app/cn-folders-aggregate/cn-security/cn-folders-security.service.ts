@@ -1,14 +1,15 @@
-import { Injectable } from '@nestjs/common';
 import { BlUnauthorizedException } from '@monorepo/back-core-lib';
+import { Injectable } from '@nestjs/common';
+
+import { CnErrorText } from '../../cn-core/model/config/cn-error-text.class';
+import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
+import { CnRootFolderUserRole, CnRootFolderUserRoleObj } from '../cn-folder-user/cn-folder-user.entity';
 import { CnFolderUserService } from '../cn-folder-user/cn-folder-user.service';
 import { CnHierarchyObject } from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
 import { CnHierarchyObjectService } from '../cn-hierarchy-objects/cn-hierarchy-object.service';
-import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
+import { CnFoldersSecurityHierarchyObjectToken } from './cn-folders-security-hierarchy-object-token';
 import { CnFoldersSecurityLabAccessToken } from './cn-folders-security-lab-access-token';
 import { CnFoldersSecurityUser } from './cn-folders-security-user';
-import { CnFoldersSecurityHierarchyObjectToken } from './cn-folders-security-hierarchy-object-token';
-import { CnRootFolderUserRole, CnRootFolderUserRoleObj } from '../cn-folder-user/cn-folder-user.entity';
-import { CnErrorText } from '../../cn-core/model/config/cn-error-text.class';
 
 export interface CnFoldersAggregateSecurityI {
   getRoleForObject(hierarchyObject: CnHierarchyObject): Promise<CnRootFolderUserRole>;

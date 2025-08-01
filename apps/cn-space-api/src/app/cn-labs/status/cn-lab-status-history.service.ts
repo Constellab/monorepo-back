@@ -1,9 +1,10 @@
+import { BlAbstractPaginatedService, BlSearchBuilder, BlSearchParams } from '@monorepo/back-core-lib';
+import { ClPageI } from '@monorepo/core-lib';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+
 import { CnLabStatusHistory } from './cn-lab-status-history.entity';
-import { ClPageI } from '@monorepo/core-lib';
-import { BlAbstractPaginatedService, BlSearchBuilder, BlSearchParams } from '@monorepo/back-core-lib';
 
 @Injectable()
 export class CnLabStatusHistoryService extends BlAbstractPaginatedService<CnLabStatusHistory> {

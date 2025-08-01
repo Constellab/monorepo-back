@@ -1,7 +1,8 @@
 import { BlAbstractPaginatedService, BlUser, BlUserSearch } from '@monorepo/back-core-lib';
-import { CnFolderUserEntity } from './cn-folder-user.entity';
-import { FindOptionsRelations } from 'typeorm/find-options/FindOptionsRelations';
 import { FindOptionsOrder, FindOptionsWhere } from 'typeorm';
+import { FindOptionsRelations } from 'typeorm/find-options/FindOptionsRelations';
+
+import { CnFolderUserEntity } from './cn-folder-user.entity';
 
 export class CnFolderUserSearch extends BlUserSearch<CnFolderUserEntity> {
   constructor(

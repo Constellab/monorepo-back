@@ -1,6 +1,7 @@
 import { BlBadRequestException } from '@monorepo/back-core-lib';
 import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
+
 import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
 import { CnExternalLabSyncedObjectDTO } from '../../cn-external-lab-api/model/cn-external-lab-api.class';
 import { CnLabConfig } from '../../cn-lab-configs/cn-lab-config.entity';
@@ -9,9 +10,9 @@ import { CnHierarchyObject } from '../cn-hierarchy-objects/cn-hierarchy-object.e
 import { CnHierarchyObjectService } from '../cn-hierarchy-objects/cn-hierarchy-object.service';
 import { CnNotesService } from '../cn-notes/cn-notes.service';
 import { CnFoldersSecurityService } from '../cn-security/cn-folders-security.service';
-import { CnScenarioProtocol } from './cn-scenario-protocol.class';
 import { CnCreateLabScenarioDto } from './cn-scenario.dto';
 import { CnScenario, CnScenarioWithLab } from './cn-scenario.entity';
+import { CnScenarioProtocol } from './cn-scenario-protocol.class';
 import { CnScenariosService } from './cn-scenarios.service';
 
 @Injectable()

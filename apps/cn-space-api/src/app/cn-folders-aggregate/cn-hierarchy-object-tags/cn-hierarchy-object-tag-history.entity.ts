@@ -1,6 +1,7 @@
-import { Column, Entity, ManyToOne } from 'typeorm';
-import { CnBaseEntity } from '../../cn-core/model/entities/cn-base.entity';
 import { BlNotUpdatable } from '@monorepo/back-core-lib';
+import { Column, Entity, ManyToOne } from 'typeorm';
+
+import { CnBaseEntity } from '../../cn-core/model/entities/cn-base.entity';
 import {
   CnHierarchyObject,
   CnHierarchyObjectEntity,

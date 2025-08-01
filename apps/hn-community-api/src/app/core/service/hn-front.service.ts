@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+
 import { HnCoreConfigService } from '../modules/core-config/hn-core-config.service';
 
 /**

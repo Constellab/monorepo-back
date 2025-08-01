@@ -1,4 +1,5 @@
 import { Column, Entity, Unique } from 'typeorm';
+
 import { HnGeneratedDocEntity } from '../core/model/entities/hn-generated-doc-typing.entity';
 
 @Unique(['uniqueName', 'technicalFolder'])

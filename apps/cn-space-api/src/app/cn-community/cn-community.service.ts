@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
-import { CnCommunityBrickDto, CnCommunityBrickVersionDTO } from './dto/cn-community-brick.dto';
-import { CnCoreConfigService } from '../cn-core/modules/cn-core-config/cn-core-config.service';
-import { lastValueFrom } from 'rxjs';
-import { ClPage } from '@monorepo/core-lib';
-import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
 import { BlExternalApiService } from '@monorepo/back-core-lib';
+import { ClPage } from '@monorepo/core-lib';
+import { Injectable } from '@nestjs/common';
+import { lastValueFrom } from 'rxjs';
+
+import { CnCoreConfigService } from '../cn-core/modules/cn-core-config/cn-core-config.service';
+import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
+import { CnCommunityBrickDto, CnCommunityBrickVersionDTO } from './dto/cn-community-brick.dto';
 
 @Injectable()
 export class CnCommunityService {

@@ -1,6 +1,11 @@
-import { Logger } from '@nestjs/common';
-import { CnCommandService, CnExecCommandMode, CnExecOptions } from '../../cn-core/services/cn-command.service';
 import { BlBadRequestException } from '@monorepo/back-core-lib';
+import { Logger } from '@nestjs/common';
+
+import {
+  CnCommandService,
+  CnExecCommandMode,
+  CnExecOptions,
+} from '../../cn-core/services/cn-command.service';
 
 /**
  * Service to execute ssh command to the lab server
@@ -17,8 +22,7 @@ export class CnLabSshService {
     private readonly labVirtualHost: string,
     private readonly labId: string,
     private readonly sshKeyFilePath: string
-  ) {
-  }
+  ) {}
 
   public execSshCommand(
     commands: string[],
@@ -71,7 +75,6 @@ export class CnLabSshService {
         successCount = 0;
       }
 
-      // eslint-disable-next-line max-len
       this.logger.log(
         `Waiting for server to be available for lab ${this.labId}. Attempt ${count + 1} of ${countLimit}. ` +
           `Success ${successCount} of ${consecutiveRequiredSuccess}`

@@ -1,9 +1,10 @@
-import { CnHierarchyObject } from './cn-hierarchy-objects/cn-hierarchy-object.entity';
-import { CnSpace } from '../cn-spaces/cn-space.entity';
-import { CnUser } from '../cn-users/cn-user.entity';
 import { Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
+import { CnSpace } from '../cn-spaces/cn-space.entity';
+import { CnUser } from '../cn-users/cn-user.entity';
+import { CnHierarchyObject } from './cn-hierarchy-objects/cn-hierarchy-object.entity';
 
 export const cnFolderEventName = 'cn-folder-event';
 

@@ -1,9 +1,10 @@
-import { Column, Entity, Index, ManyToOne, OneToMany } from 'typeorm';
-import { HnBaseEntity } from '../../core/model/entities/hn-base.entity';
-import { HnSpace } from '../../space-aggregate/space/hn-space.entity';
 import { ClStringHelper } from '@monorepo/core-lib';
 import { TeRichTextDTO } from '@monorepo/te-text-editor';
+import { Column, Entity, Index, ManyToOne, OneToMany } from 'typeorm';
+
+import { HnBaseEntity } from '../../core/model/entities/hn-base.entity';
 import { HnFileApp } from '../../file-aggregate/file-app/hn-file-app.entity';
+import { HnSpace } from '../../space-aggregate/space/hn-space.entity';
 import { HnCommunityAppUser } from '../community-app-user/hn-community-app-user.entity';
 
 @Entity('app')

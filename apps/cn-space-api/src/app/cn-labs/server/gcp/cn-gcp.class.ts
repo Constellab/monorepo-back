@@ -1,3 +1,9 @@
+import { protos } from '@google-cloud/compute';
+import { google } from '@google-cloud/compute/build/protos/protos';
+import { Logger } from '@nestjs/common';
+
+import { CnLabBillingMode } from '../../cn-lab.entity';
+import { CnLabVolumeType } from '../../volume/cn-lab-volume-entity';
 import {
   CnCpInstance,
   CnCpInstanceStatus,
@@ -5,11 +11,6 @@ import {
   CnCpVolume,
   CnCpVolumeStatus,
 } from '../cn-cloud-provider.class';
-import { Logger } from '@nestjs/common';
-import { CnLabBillingMode } from '../../cn-lab.entity';
-import { google } from '@google-cloud/compute/build/protos/protos';
-import { CnLabVolumeType } from '../../volume/cn-lab-volume-entity';
-import { protos } from '@google-cloud/compute';
 
 export class CnGcpHelper {
   /**

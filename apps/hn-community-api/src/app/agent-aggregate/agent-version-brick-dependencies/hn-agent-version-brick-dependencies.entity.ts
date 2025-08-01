@@ -1,6 +1,7 @@
 import { Entity, ManyToOne, PrimaryColumn } from 'typeorm';
-import { HnAgentVersion } from '../agent-version/hn-agent-version.entity';
+
 import { HnBrickVersion } from '../../brick-aggregate/brick-version/hn-brick-version.entity';
+import { HnAgentVersion } from '../agent-version/hn-agent-version.entity';
 
 @Entity('agent_version_brick_dependencies')
 export class HnAgentVersionBrickDependencies {

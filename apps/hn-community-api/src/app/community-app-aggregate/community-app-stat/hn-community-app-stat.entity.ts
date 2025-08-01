@@ -1,7 +1,8 @@
-import { BeforeInsert, Column, Entity, ManyToOne } from 'typeorm';
 import { BlEntityWithId, BlLuxonDateTimeColumn } from '@monorepo/back-core-lib';
-import { DateTime } from 'luxon';
 import { ClDateHelper } from '@monorepo/core-lib';
+import { DateTime } from 'luxon';
+import { BeforeInsert, Column, Entity, ManyToOne } from 'typeorm';
+
 import { HnUser } from '../../users/hn-user.entity';
 
 @Entity('app_stat')

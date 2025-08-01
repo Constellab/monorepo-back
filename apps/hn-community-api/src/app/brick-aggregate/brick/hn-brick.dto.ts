@@ -1,10 +1,11 @@
-import { HnReferenceDTO, HnRepoType, HnVersionType } from '../brick-version/hn-brick-version.entity';
-import { HnVersionState } from '../brick-major-version/hn-brick-major-version.entity';
-import { HnBrick, HnBrickVisibility } from './hn-brick.entity';
 import { BlEntityWithIdDTO, BlVersion } from '@monorepo/back-core-lib';
+
+import { HnSpaceDto } from '../../space-aggregate/space/hn-space.dto';
 import { HnSpace } from '../../space-aggregate/space/hn-space.entity';
 import { HnUserDto } from '../../users/hn-user.dto';
-import { HnSpaceDto } from '../../space-aggregate/space/hn-space.dto';
+import { HnVersionState } from '../brick-major-version/hn-brick-major-version.entity';
+import { HnReferenceDTO, HnRepoType, HnVersionType } from '../brick-version/hn-brick-version.entity';
+import { HnBrick, HnBrickVisibility } from './hn-brick.entity';
 
 export class HnBrickDto extends BlEntityWithIdDTO {
   name: string;

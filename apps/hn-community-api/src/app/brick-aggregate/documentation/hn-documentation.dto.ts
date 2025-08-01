@@ -1,6 +1,7 @@
+import { TeRichTextDTO } from '@monorepo/te-text-editor';
+
 import { HnBaseDto } from '../../core/model/entities/hn-base.dto';
 import { HnDocumentation } from './hn-documentation.entity';
-import { TeRichTextDTO } from '@monorepo/te-text-editor';
 
 export class HnDocumentationDto extends HnBaseDto {
   title: string;

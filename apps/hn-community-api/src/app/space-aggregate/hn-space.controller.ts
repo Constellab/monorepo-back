@@ -1,8 +1,9 @@
-import { Controller, Get, Param, ParseUUIDPipe } from '@nestjs/common';
-import { HnSpaceAggregateService } from './hn-space-aggregate.service';
 import { BlPublic } from '@monorepo/back-core-lib';
-import { HnSpaceDto } from './space/hn-space.dto';
+import { Controller, Get, Param, ParseUUIDPipe } from '@nestjs/common';
+
 import { HnLabGuard } from '../core/decorators/hn-lab-auth-guard.decorator';
+import { HnSpaceAggregateService } from './hn-space-aggregate.service';
+import { HnSpaceDto } from './space/hn-space.dto';
 
 @Controller('space')
 export class HnSpaceController {

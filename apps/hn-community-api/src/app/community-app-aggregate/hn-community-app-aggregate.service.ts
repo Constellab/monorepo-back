@@ -1,13 +1,3 @@
-import { Injectable } from '@nestjs/common';
-import { HnCommunityAppService } from './community-app/hn-community-app.service';
-import { HnCommunityAppStatService } from './community-app-stat/hn-community-app-stat.service';
-import { HnCommunityAppStatLabDto } from './community-app-stat/hn-community-app-stat.dto';
-import { DataSource, FindOptionsWhere, In, IsNull, Like } from 'typeorm';
-import { HnUser } from '../users/hn-user.entity';
-import { HnCommunityAppEditDto } from './community-app/hn-community-app.dto';
-import { HnCommunityApp, HnCommunityAppEntity } from './community-app/hn-community-app.entity';
-import { ClPage } from '@monorepo/core-lib';
-import { HnSpace } from '../space-aggregate/space/hn-space.entity';
 import {
   BlBadRequestException,
   BlFile,
@@ -16,19 +6,30 @@ import {
   BlObjectStorageService,
   BlUnauthorizedException,
 } from '@monorepo/back-core-lib';
-import { HnFileAppService } from '../file-aggregate/file-app/hn-file-app.service';
+import { ClPage } from '@monorepo/core-lib';
 import {
   TeBlockFigureUploadedResponse,
   TeBlockFileUploadResponse,
   TeRichTextDTO,
 } from '@monorepo/te-text-editor';
-import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
-import { HnSpaceAggregateService } from '../space-aggregate/hn-space-aggregate.service';
-import { HnCommunityAppUserService } from './community-app-user/hn-community-app-user.service';
-import { HnCommunityAppUser } from './community-app-user/hn-community-app-user.entity';
+import { Injectable } from '@nestjs/common';
+import { DataSource, FindOptionsWhere, In, IsNull, Like } from 'typeorm';
+
 import { HnSiteMapEnumChangefreq, HnSitemapItemBase } from '../core/model/config/hn-site-map.class';
 import { HnFrontService } from '../core/service/hn-front.service';
+import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
+import { HnFileAppService } from '../file-aggregate/file-app/hn-file-app.service';
+import { HnSpaceAggregateService } from '../space-aggregate/hn-space-aggregate.service';
+import { HnSpace } from '../space-aggregate/space/hn-space.entity';
+import { HnUser } from '../users/hn-user.entity';
 import { HnUserService } from '../users/hn-user.service';
+import { HnCommunityAppEditDto } from './community-app/hn-community-app.dto';
+import { HnCommunityApp, HnCommunityAppEntity } from './community-app/hn-community-app.entity';
+import { HnCommunityAppService } from './community-app/hn-community-app.service';
+import { HnCommunityAppStatLabDto } from './community-app-stat/hn-community-app-stat.dto';
+import { HnCommunityAppStatService } from './community-app-stat/hn-community-app-stat.service';
+import { HnCommunityAppUser } from './community-app-user/hn-community-app-user.entity';
+import { HnCommunityAppUserService } from './community-app-user/hn-community-app-user.service';
 
 @Injectable()
 export class HnCommunityAppAggregateService {

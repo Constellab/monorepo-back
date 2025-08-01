@@ -8,7 +8,7 @@
   "eslint.format.enable": true,
   "[typescript]": {
     "editor.codeActionsOnSave": {
-      "source.organizeImports": "explicit"
+      "source.organizeImports": "always"
     }
   },
   "prettier.configPath": ".prettierrc"

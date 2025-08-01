@@ -1,3 +1,10 @@
+import { BlFile, BlParsePipe, BlPublic, BlResponseHelper, BlUploadedFile } from '@monorepo/back-core-lib';
+import { ClPage } from '@monorepo/core-lib';
+import {
+  TeBlockFigureUploadedResponse,
+  TeBlockFileUploadResponse,
+  TeRichTextDTO,
+} from '@monorepo/te-text-editor';
 import {
   Body,
   Controller,
@@ -12,21 +19,15 @@ import {
   Res,
   UseInterceptors,
 } from '@nestjs/common';
-import { HnCommunityAppAggregateService } from './hn-community-app-aggregate.service';
-import { BlFile, BlParsePipe, BlPublic, BlResponseHelper, BlUploadedFile } from '@monorepo/back-core-lib';
-import { ClPage } from '@monorepo/core-lib';
-import { Response } from 'express';
-import { HnCommunityAppDto, HnCommunityAppEditDto } from './community-app/hn-community-app.dto';
-import { HnAbstractFileController } from '../file-aggregate/file-core/hn-abstract-file.controller';
-import { HnCommunityApp } from './community-app/hn-community-app.entity';
-import { HnFileAppService } from '../file-aggregate/file-app/hn-file-app.service';
-import {
-  TeBlockFigureUploadedResponse,
-  TeBlockFileUploadResponse,
-  TeRichTextDTO,
-} from '@monorepo/te-text-editor';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { Response } from 'express';
+
 import { HnSitemapItemBase } from '../core/model/config/hn-site-map.class';
+import { HnFileAppService } from '../file-aggregate/file-app/hn-file-app.service';
+import { HnAbstractFileController } from '../file-aggregate/file-core/hn-abstract-file.controller';
+import { HnCommunityAppDto, HnCommunityAppEditDto } from './community-app/hn-community-app.dto';
+import { HnCommunityApp } from './community-app/hn-community-app.entity';
+import { HnCommunityAppAggregateService } from './hn-community-app-aggregate.service';
 
 @Controller('app')
 export class HnCommunityAppController extends HnAbstractFileController<HnCommunityApp> {

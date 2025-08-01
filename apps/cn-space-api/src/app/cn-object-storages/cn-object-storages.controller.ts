@@ -1,3 +1,5 @@
+import { BlCredentials, BlParsePipe, BlSearchParams } from '@monorepo/back-core-lib';
+import { ClPage, ClPageI } from '@monorepo/core-lib';
 import {
   Body,
   Controller,
@@ -10,12 +12,11 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { CnObjectStoragesAggregateService } from './cn-object-storages-aggregate.service';
-import { CnBucket } from './cn-buckets/cn-bucket.entity';
-import { ClPage, ClPageI } from '@monorepo/core-lib';
+
 import { CnBucketCredentials } from './cn-bucket-credential/cn-bucket-credential.entity';
+import { CnBucket } from './cn-buckets/cn-bucket.entity';
 import { CnBucketCredentialsFull } from './cn-object-storage.dto';
-import { BlCredentials, BlParsePipe, BlSearchParams } from '@monorepo/back-core-lib';
+import { CnObjectStoragesAggregateService } from './cn-object-storages-aggregate.service';
 
 @Controller('object-storages')
 export class CnObjectStoragesController {

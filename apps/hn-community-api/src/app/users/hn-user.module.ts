@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
-import { HnUserService } from './hn-user.service';
-import { HnUserController } from './hn-user.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { HnUser } from './hn-user.entity';
+
 import { HnCoreModule } from '../core/hn-core.module';
+import { HnUserController } from './hn-user.controller';
+import { HnUser } from './hn-user.entity';
 import { HnUserProcessor } from './hn-user.processor';
+import { HnUserService } from './hn-user.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([HnUser]), HnCoreModule],

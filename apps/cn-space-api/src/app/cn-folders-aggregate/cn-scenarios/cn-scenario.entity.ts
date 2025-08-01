@@ -1,17 +1,18 @@
-import { Column, Entity, ManyToMany, ManyToOne } from 'typeorm';
-import { Exclude, Type } from 'class-transformer';
-import { CnLab, CnLabEntity } from '../../cn-labs/cn-lab.entity';
 import { BlLuxonDateTimeColumn, BlNotUpdatable } from '@monorepo/back-core-lib';
-import { CnNote, CnNoteEntity } from '../cn-notes/cn-note.entity';
-import { CnScenarioStatus } from './cn-scenario-status.enum';
-import { CnLabConfig } from '../../cn-lab-configs/cn-lab-config.entity';
-import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
+import { TeRichTextInput } from '@monorepo/te-text-editor';
+import { Exclude, Type } from 'class-transformer';
 import { DateTime } from 'luxon';
-import { CnHierarchyRepresentation } from '../cn-hierarchy-objects/cn-hierarchy-representation';
+import { Column, Entity, ManyToMany, ManyToOne } from 'typeorm';
+
+import { CnLabConfig } from '../../cn-lab-configs/cn-lab-config.entity';
+import { CnLab, CnLabEntity } from '../../cn-labs/cn-lab.entity';
+import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
 import { CnHierarchyObjectInfo } from '../cn-hierarchy-objects/cn-hierarchy-object.dto';
 import { CnHierarchyObjectType } from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
-import { TeRichTextInput } from '@monorepo/te-text-editor';
+import { CnHierarchyRepresentation } from '../cn-hierarchy-objects/cn-hierarchy-representation';
+import { CnNote, CnNoteEntity } from '../cn-notes/cn-note.entity';
 import { CnScenarioProtocol } from './cn-scenario-protocol.class';
+import { CnScenarioStatus } from './cn-scenario-status.enum';
 
 /**
  * A scenario is executed in a lab to produce notes

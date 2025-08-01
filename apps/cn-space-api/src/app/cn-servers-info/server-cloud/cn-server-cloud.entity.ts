@@ -1,8 +1,9 @@
 import { Column, Entity, ManyToOne, Unique } from 'typeorm';
-import { CnDiskType } from './cn-disk-type.enum';
+
 import { CnCloudProvider } from '../../cn-cloud-providers/cn-cloud-provider.entity';
 import { CnBaseEntity } from '../../cn-core/model/entities/cn-base.entity';
 import { CnServerStandard } from '../server-standard/cn-server-standard.entity';
+import { CnDiskType } from './cn-disk-type.enum';
 
 /**
  * Contains the servers available for the cloud providers

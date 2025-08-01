@@ -1,16 +1,17 @@
+import { BlEntityWithId, BlLuxonDateTimeColumn } from '@monorepo/back-core-lib';
+import { ClDateHelper } from '@monorepo/core-lib';
+import { TeRichText, TeRichTextDTO } from '@monorepo/te-text-editor';
+import { Type } from 'class-transformer';
+import { DateTime } from 'luxon';
 import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne, OneToMany } from 'typeorm';
-import { HnCreateAgentDto } from './hn-agent.dto';
+
+import { HnTypingStyle } from '../../brick-aggregate/brick/hn-brick.dto';
+import { HnCurrentUserHelper } from '../../core/utils/hn-current-user.helper';
+import { HnFileAgent } from '../../file-aggregate/file-agent/hn-file-agent.entity';
 import { HnSpace } from '../../space-aggregate/space/hn-space.entity';
 import { HnUser } from '../../users/hn-user.entity';
-import { BlEntityWithId, BlLuxonDateTimeColumn } from '@monorepo/back-core-lib';
-import { DateTime } from 'luxon';
-import { Type } from 'class-transformer';
-import { HnCurrentUserHelper } from '../../core/utils/hn-current-user.helper';
-import { ClDateHelper } from '@monorepo/core-lib';
 import { HnAgentCoAuthor } from '../agent-co-author/hn-agent-co-author.entity';
-import { HnFileAgent } from '../../file-aggregate/file-agent/hn-file-agent.entity';
-import { HnTypingStyle } from '../../brick-aggregate/brick/hn-brick.dto';
-import { TeRichText, TeRichTextDTO } from '@monorepo/te-text-editor';
+import { HnCreateAgentDto } from './hn-agent.dto';
 
 @Entity('agent')
 export class HnAgent extends BlEntityWithId {

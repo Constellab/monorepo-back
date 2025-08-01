@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
+import { lastValueFrom } from 'rxjs';
+
+import { CnExternalApiInfo } from '../cn-core/model/config/cn-config.class';
 import { CnExternalLabApiService } from './cn-external-lab-api.service';
 import {
   CnExternalLabShareGenerateTokenResponse,
   CnExternalLabUser,
 } from './model/cn-external-lab-api.class';
-import { CnExternalApiInfo } from '../cn-core/model/config/cn-config.class';
-import { lastValueFrom } from 'rxjs';
 
 /**
  * Service to call route for share object in the lab

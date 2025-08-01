@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { HnRunStatAggregate, HnRunStatAggregateObjectType } from './hn-run-stat-aggregate.entity';
 import { EntityManager, Repository } from 'typeorm';
-import { HnRunStat } from '../run-stat/hn-run-stat.entity';
+
 import { HnBrick } from '../../brick-aggregate/brick/hn-brick.entity';
+import { HnRunStat } from '../run-stat/hn-run-stat.entity';
+import { HnRunStatAggregate, HnRunStatAggregateObjectType } from './hn-run-stat-aggregate.entity';
 
 @Injectable()
 export class HnRunStatAggregateService {

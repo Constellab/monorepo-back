@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+
 import { HnBrickVersionReferenceService } from './hn-brick-version-reference.service';
 
 describe('DnBrickMajorVersionService', () => {

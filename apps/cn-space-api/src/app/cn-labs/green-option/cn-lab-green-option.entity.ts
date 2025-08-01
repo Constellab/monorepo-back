@@ -1,7 +1,8 @@
-import { Column, Entity, ManyToOne } from 'typeorm';
-import { CnBaseEntity } from '../../cn-core/model/entities/cn-base.entity';
 import { BlNotUpdatable } from '@monorepo/back-core-lib';
 import { Type } from 'class-transformer';
+import { Column, Entity, ManyToOne } from 'typeorm';
+
+import { CnBaseEntity } from '../../cn-core/model/entities/cn-base.entity';
 import { CnLabEntity } from '../cn-lab.entity';
 
 export enum CnLabGreenOptionType {

@@ -1,20 +1,21 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { HnUser, HnUserConstellabDTO } from './hn-user.entity';
 import {
   BlBadRequestException,
   BlCredentials,
   BlUnauthorizedException,
   BlUserService,
 } from '@monorepo/back-core-lib';
-import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
-import { HnExternalCheckCredentialResponse } from '../auth/hn-space-auth.service';
 import { ClSupportedLanguage, ClTheme } from '@monorepo/core-lib';
-import { HnUserDetailDto, HnUserEditDetailDto } from './hn-user.dto';
 import { TeUser } from '@monorepo/te-text-editor';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+
+import { HnExternalCheckCredentialResponse } from '../auth/hn-space-auth.service';
 import { HnSiteMapEnumChangefreq, HnSitemapItemBase } from '../core/model/config/hn-site-map.class';
 import { HnFrontService } from '../core/service/hn-front.service';
+import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
+import { HnUserDetailDto, HnUserEditDetailDto } from './hn-user.dto';
+import { HnUser, HnUserConstellabDTO } from './hn-user.entity';
 
 @Injectable()
 export class HnUserService implements BlUserService {

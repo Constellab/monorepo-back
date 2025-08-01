@@ -1,6 +1,7 @@
-import { Column, Entity, JoinColumn, ManyToOne, Unique } from 'typeorm';
-import { HnBrickVersion } from '../brick-aggregate/brick-version/hn-brick-version.entity';
 import { BlEntityWithId } from '@monorepo/back-core-lib';
+import { Column, Entity, JoinColumn, ManyToOne, Unique } from 'typeorm';
+
+import { HnBrickVersion } from '../brick-aggregate/brick-version/hn-brick-version.entity';
 
 export enum HnBrickVersionRefState {
   DIRECT = 'DIRECT',

@@ -36,6 +36,7 @@ import { WinstonModule, WinstonModuleOptions } from 'nest-winston';
 import { AcceptLanguageResolver, CookieResolver, I18nJsonLoader, I18nModule } from 'nestjs-i18n';
 import { I18nAbstractLoaderOptions } from 'nestjs-i18n/dist/loaders/i18n.abstract.loader';
 import { join } from 'path';
+
 import { AppService } from './app.service';
 import { CnActivityModule } from './app/cn-activity/cn-activity.module';
 import { CnAuthModule } from './app/cn-auth/cn-auth.module';

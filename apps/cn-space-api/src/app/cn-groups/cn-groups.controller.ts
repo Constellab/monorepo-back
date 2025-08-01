@@ -1,3 +1,5 @@
+import { BlParsePipe, BlSearchParams } from '@monorepo/back-core-lib';
+import { ClPageI } from '@monorepo/core-lib';
 import {
   Body,
   Controller,
@@ -10,10 +12,9 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
+
 import { CnGroup, CnGroupTeam, CnUserGroup } from './cn-group.entity';
-import { ClPageI } from '@monorepo/core-lib';
 import { CnGroupsAggregateService } from './cn-groups-aggregate.service';
-import { BlParsePipe, BlSearchParams } from '@monorepo/back-core-lib';
 
 @Controller('groups')
 export class CnGroupsController {

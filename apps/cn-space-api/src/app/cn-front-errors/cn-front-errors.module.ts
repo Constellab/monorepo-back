@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { CnFrontError } from './cn-front-error.entity';
+
 import { CnCoreModule } from '../cn-core/cn-core.module';
+import { CnFrontError } from './cn-front-error.entity';
 import { CnFrontErrorsController } from './cn-front-errors.controller';
 import { CnFrontErrorsService } from './cn-front-errors.service';
 

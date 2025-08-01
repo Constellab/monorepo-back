@@ -1,12 +1,13 @@
+import { BlBadRequestException, BlUnauthorizedException } from '@monorepo/back-core-lib';
 import { Injectable } from '@nestjs/common';
+
+import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
+import { HnUserService } from '../users/hn-user.service';
+import { HnSpaceDto } from './space/hn-space.dto';
+import { HnSpace } from './space/hn-space.entity';
+import { HnSpaceService } from './space/hn-space.service';
 import { HnSpaceUser } from './space-user/hn-space-user.entity';
 import { HnSpaceUserService } from './space-user/hn-space-user.service';
-import { HnSpaceService } from './space/hn-space.service';
-import { HnUserService } from '../users/hn-user.service';
-import { BlBadRequestException, BlUnauthorizedException } from '@monorepo/back-core-lib';
-import { HnSpace } from './space/hn-space.entity';
-import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
-import { HnSpaceDto } from './space/hn-space.dto';
 
 @Injectable()
 export class HnSpaceAggregateService {

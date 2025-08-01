@@ -1,7 +1,8 @@
-import { Controller, Get } from '@nestjs/common';
-import { HnTopicService } from './hn-topic.service';
-import { HnTopic } from './hn-topic.entity';
 import { BlPublic } from '@monorepo/back-core-lib';
+import { Controller, Get } from '@nestjs/common';
+
+import { HnTopic } from './hn-topic.entity';
+import { HnTopicService } from './hn-topic.service';
 
 @Controller('topic')
 export class HnTopicController {

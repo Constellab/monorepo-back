@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { CnUserAccountsService } from './cn-user-accounts.service';
 import { OnEvent } from '@nestjs/event-emitter';
+
 import { CnAuthEvent, cnAuthEventName } from '../../cn-auth/cn-auth-event.class';
+import { CnUserAccountsService } from './cn-user-accounts.service';
 
 @Injectable()
 export class CnUserAccountListener {

@@ -1,5 +1,6 @@
-import { CnBaseEntity } from '../../cn-core/model/entities/cn-base.entity';
 import { Column, Entity } from 'typeorm';
+
+import { CnBaseEntity } from '../../cn-core/model/entities/cn-base.entity';
 
 /**
  * Abstraction for the server of cloud providers

@@ -1,15 +1,16 @@
+import { BlMailService } from '@monorepo/back-core-lib';
+import { ClStringHelper, ClSupportedLanguage } from '@monorepo/core-lib';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { HnAgentCoAuthorInvite } from './hn-agent-co-author-invite.entity';
-import { HnAgent } from '../agent/hn-agent.entity';
-import { ClStringHelper, ClSupportedLanguage } from '@monorepo/core-lib';
-import { HnUser } from '../../users/hn-user.entity';
-import { HnMailTemplate } from '../../core/model/config/hn-mail-template.class';
+
 import { HnInviteStatus } from '../../core/model/config/hn-invite-status.enum';
-import { HnUserService } from '../../users/hn-user.service';
+import { HnMailTemplate } from '../../core/model/config/hn-mail-template.class';
 import { HnFrontService } from '../../core/service/hn-front.service';
-import { BlMailService } from '@monorepo/back-core-lib';
+import { HnUser } from '../../users/hn-user.entity';
+import { HnUserService } from '../../users/hn-user.service';
+import { HnAgent } from '../agent/hn-agent.entity';
+import { HnAgentCoAuthorInvite } from './hn-agent-co-author-invite.entity';
 
 @Injectable()
 export class HnAgentCoAuthorInviteService {

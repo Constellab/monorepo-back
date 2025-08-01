@@ -1,6 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
-import { CnCountryService } from './cn-country.service';
+
 import { CnCountry } from './cn-country.entity';
+import { CnCountryService } from './cn-country.service';
 
 @Controller('country')
 export class CnCountryController {

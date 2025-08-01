@@ -1,12 +1,13 @@
-import { Injectable } from '@nestjs/common';
 import {
   BlCredentials,
   BlCredentials2Fa,
   BlExternalApiService,
   BlUnauthorizedException,
 } from '@monorepo/back-core-lib';
-import { HnCoreConfigService } from '../core/modules/core-config/hn-core-config.service';
+import { Injectable } from '@nestjs/common';
 import { lastValueFrom } from 'rxjs';
+
+import { HnCoreConfigService } from '../core/modules/core-config/hn-core-config.service';
 import { HnUser } from '../users/hn-user.entity';
 
 export interface HnExternalCheckCredentialResponse {

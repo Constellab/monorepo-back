@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { HnAgentCoAuthor } from './hn-agent-co-author.entity';
+
+import { HnAgent } from '../agent/hn-agent.entity';
 import { HnAgentCoAuthorInvite } from '../agent-co-author-invite/hn-agent-co-author-invite.entity';
 import { HnAgentCoAuthorInviteService } from '../agent-co-author-invite/hn-agent-co-author-invite.service';
-import { HnAgent } from '../agent/hn-agent.entity';
+import { HnAgentCoAuthor } from './hn-agent-co-author.entity';
 
 @Injectable()
 export class HnAgentCoAuthorService {

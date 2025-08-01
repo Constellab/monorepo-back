@@ -1,11 +1,12 @@
-import { HnCommentEntity } from './hn-comment.entity';
-import { Repository } from 'typeorm';
 import { BlAbstractPaginatedService, BlEntityWithId } from '@monorepo/back-core-lib';
 import { ClPage } from '@monorepo/core-lib';
 import { TeRichText } from '@monorepo/te-text-editor';
-import { HnEntityType } from '../../core/model/entities/hn-entity-type.enum';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { Repository } from 'typeorm';
+
+import { HnEntityType } from '../../core/model/entities/hn-entity-type.enum';
 import { HnCommentEventData, HnEventType } from '../../core/utils/hn-events.enum';
+import { HnCommentEntity } from './hn-comment.entity';
 
 export abstract class HnAbstractCommentService<T extends BlEntityWithId> {
   repository: Repository<HnCommentEntity<BlEntityWithId>>;

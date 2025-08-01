@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
+
 import { CnDocumentEvent, cnDocumentEventName } from '../cn-folders-aggregate/cn-documents/cn-document.event';
 import { CnSpaceAggregateService } from './cn-space-aggregate.service';
 

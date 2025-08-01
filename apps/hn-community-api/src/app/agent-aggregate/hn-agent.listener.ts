@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
+
 import { HnCommentEventData, HnEventType, HnLikeEventData } from '../core/utils/hn-events.enum';
 import { HnAgentService } from './agent/hn-agent.service';
 

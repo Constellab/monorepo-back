@@ -1,10 +1,11 @@
-import { CnLabConfigDto } from '../../cn-lab-configs/cn-lab-config.dto';
+import { ClLuxonDateTimeTransform } from '@monorepo/core-lib';
+import { TeRichTextBlockModificationsDTO, TeRichTextInput } from '@monorepo/te-text-editor';
 import { Type } from 'class-transformer';
 import { DateTime } from 'luxon';
+
+import { CnLabConfigDto } from '../../cn-lab-configs/cn-lab-config.dto';
 import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
-import { ClLuxonDateTimeTransform } from '@monorepo/core-lib';
 import { CnNote } from './cn-note.entity';
-import { TeRichTextBlockModificationsDTO, TeRichTextInput } from '@monorepo/te-text-editor';
 
 export class CnSaveNoteDto {
   id: string;

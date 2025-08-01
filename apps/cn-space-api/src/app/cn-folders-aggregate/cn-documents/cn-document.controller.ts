@@ -2,8 +2,10 @@ import { BlFile, BlPublic, BlResponseHelper, BlUploadedFile, BlUploadedFiles } f
 import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Put, Res, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
+
 import { CnHierarchyObjectTokenDecorator } from '../cn-hierarchy-object-token/cn-hierarchy-object-token-guard.decorator';
 import { CnHierarchyObject } from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
+import { CnDocument } from './cn-document.entity';
 import { CnDocumentAggregateService } from './cn-document-aggregate.service';
 import {
   CnDocumentCheckSameNameRequest,
@@ -11,7 +13,6 @@ import {
   CnDocumentPreviewDTO,
   CnDocumentUploadOverrideMode,
 } from './cn-document-dto.class';
-import { CnDocument } from './cn-document.entity';
 
 @Controller('documents')
 export class CnDocumentController {
@@ -66,7 +67,7 @@ export class CnDocumentController {
   @Get(':documentId/download/:filename(*)')
   public async downloadDocument(
     @Param('documentId') documentId: string,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
     @Param('filename') _: string,
     @Res() response: Response
   ): Promise<void> {

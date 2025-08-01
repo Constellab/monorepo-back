@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+
 import { CnBricksService } from './cn-bricks.service';
 
 describe('BricksService', () => {

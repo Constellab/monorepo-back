@@ -1,8 +1,9 @@
-import { BeforeInsert, BeforeUpdate, Column, Entity } from 'typeorm';
-import { BlEntityWithId } from '../../models/bl-entity-with-id.entity';
 import { ClDateHelper } from '@monorepo/core-lib';
-import { BlLuxonDateTimeColumn } from '../../decorators/bl-luxon-column.decorator';
 import { DateTime } from 'luxon';
+import { BeforeInsert, BeforeUpdate, Column, Entity } from 'typeorm';
+
+import { BlLuxonDateTimeColumn } from '../../decorators/bl-luxon-column.decorator';
+import { BlEntityWithId } from '../../models/bl-entity-with-id.entity';
 
 export enum BlMailStatus {
   PENDING = 'PENDING',

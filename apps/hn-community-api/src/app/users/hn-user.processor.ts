@@ -1,9 +1,10 @@
-import { Injectable, Logger } from '@nestjs/common';
 import { blTransportSpaceUserQueue } from '@monorepo/back-core-lib';
 import { Processor, WorkerHost } from '@nestjs/bullmq';
+import { Injectable, Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
-import { HnUserService } from './hn-user.service';
+
 import { HnUserConstellabDTO } from './hn-user.entity';
+import { HnUserService } from './hn-user.service';
 
 @Processor(blTransportSpaceUserQueue)
 @Injectable()

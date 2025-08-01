@@ -1,12 +1,13 @@
+import { BlBadRequestException, BlMailService } from '@monorepo/back-core-lib';
+import { ClDateHelper, ClStringHelper } from '@monorepo/core-lib';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, EntityManager, Repository } from 'typeorm';
-import { CnUser2FA } from './cn-user-2-f-a.entity';
-import { CnUser } from '../../cn-users/cn-user.entity';
-import { ClDateHelper, ClStringHelper } from '@monorepo/core-lib';
+
 import { CnErrorText } from '../../cn-core/model/config/cn-error-text.class';
-import { BlBadRequestException, BlMailService } from '@monorepo/back-core-lib';
 import { CnMailTemplate } from '../../cn-core/model/config/cn-mail-template.class';
+import { CnUser } from '../../cn-users/cn-user.entity';
+import { CnUser2FA } from './cn-user-2-f-a.entity';
 
 @Injectable()
 export class CnUser2FAService {

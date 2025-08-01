@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
-import { CnExternalLabApiService } from './cn-external-lab-api.service';
-import { CnLabGlabApiInfo } from '../cn-labs/cn-lab.dto';
-import { lastValueFrom } from 'rxjs';
 import { BlVersion } from '@monorepo/back-core-lib';
+import { Injectable } from '@nestjs/common';
+import { lastValueFrom } from 'rxjs';
+
+import { CnLabGlabApiInfo } from '../cn-labs/cn-lab.dto';
+import { CnExternalLabApiService } from './cn-external-lab-api.service';
 import { CnExternalLabSyncedObjectDTO } from './model/cn-external-lab-api.class';
 
 @Injectable()

@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
-import { HnTopicService } from './hn-topic.service';
-import { HnTopicController } from './hn-topic.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
+import { HnTopicController } from './hn-topic.controller';
 import { HnTopic } from './hn-topic.entity';
+import { HnTopicService } from './hn-topic.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([HnTopic])],

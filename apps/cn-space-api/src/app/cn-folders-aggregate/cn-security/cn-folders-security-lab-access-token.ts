@@ -1,8 +1,9 @@
-import { CnFoldersAggregateSecurityI } from './cn-folders-security.service';
-import { CnHierarchyObject } from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
 import { BlUnauthorizedException } from '@monorepo/back-core-lib';
+
 import { CnAuthContextLabToken } from '../../cn-core/utils/cn-auth-context.class';
 import { CnRootFolderUserRole } from '../cn-folder-user/cn-folder-user.entity';
+import { CnHierarchyObject } from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
+import { CnFoldersAggregateSecurityI } from './cn-folders-security.service';
 
 /**
  * Security for the folders aggregate service when call is made

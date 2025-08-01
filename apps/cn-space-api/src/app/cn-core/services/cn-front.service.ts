@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+
 import { CnCoreConfigService } from '../modules/cn-core-config/cn-core-config.service';
 
 /**

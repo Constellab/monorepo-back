@@ -1,5 +1,6 @@
-import { Column, Entity, ManyToOne } from 'typeorm';
 import { BlEntityWithId } from '@monorepo/back-core-lib';
+import { Column, Entity, ManyToOne } from 'typeorm';
+
 import { CnCountry } from '../cn-country/cn-country.entity';
 
 @Entity('city')

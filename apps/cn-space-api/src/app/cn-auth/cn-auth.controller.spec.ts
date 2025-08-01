@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+
 import { CnAuthController } from './cn-auth.controller';
 
 describe('AuthController', () => {

@@ -1,9 +1,10 @@
-import { CnLabFree } from './cn-lab-free.entity';
-import { DateTime } from 'luxon';
 import { ClLuxonDateTimeTransform } from '@monorepo/core-lib';
 import { Type } from 'class-transformer';
-import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
+import { DateTime } from 'luxon';
+
 import { CnSpace, CnSpaceEntity } from '../../cn-spaces/cn-space.entity';
+import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
+import { CnLabFree } from './cn-lab-free.entity';
 
 export type CnLabFreeStatus = 'NOT_USED' | 'IN_PROGRESS' | 'EXPIRED' | 'EXPIRED_AND_DELETED';
 

@@ -1,9 +1,3 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { CnUser, CnUserEditDTO, CnUserEntity, CnUserTransportDto } from './cn-user.entity';
-import { In, Repository } from 'typeorm';
-import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
-import { clLangIsSupported, ClPage, ClSupportedLanguage, ClTheme } from '@monorepo/core-lib';
 import {
   BlAbstractService,
   BlBadRequestException,
@@ -19,12 +13,19 @@ import {
   BlUnauthorizedException,
   BlUserService,
 } from '@monorepo/back-core-lib';
-import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
-import { CnCoreConfigService } from '../cn-core/modules/cn-core-config/cn-core-config.service';
-import { CnUserSearch } from './cn-user-search.class';
-import { InjectQueue } from '@nestjs/bullmq';
-import { Queue } from 'bullmq';
+import { clLangIsSupported, ClPage, ClSupportedLanguage, ClTheme } from '@monorepo/core-lib';
 import { TeUser } from '@monorepo/te-text-editor';
+import { InjectQueue } from '@nestjs/bullmq';
+import { Injectable, OnModuleInit } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Queue } from 'bullmq';
+import { In, Repository } from 'typeorm';
+
+import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
+import { CnCoreConfigService } from '../cn-core/modules/cn-core-config/cn-core-config.service';
+import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
+import { CnUser, CnUserEditDTO, CnUserEntity, CnUserTransportDto } from './cn-user.entity';
+import { CnUserSearch } from './cn-user-search.class';
 
 @Injectable()
 export class CnUsersService extends BlAbstractService<CnUser> implements BlUserService, OnModuleInit {

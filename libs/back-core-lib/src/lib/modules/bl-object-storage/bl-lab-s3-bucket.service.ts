@@ -1,11 +1,12 @@
 import { Logger } from '@nestjs/common';
-import { BlFileResponse, BlObject, BlS3BucketConfig } from './bl-object-storage.class';
 import { lastValueFrom } from 'rxjs';
-import { BlS3BucketService } from './bl-s3-bucket.service';
-import { BlLabS3ServerNotAvailableException } from './bl-object-storage.exception';
-import { BlExternalApiService } from '../bl-external-api/bl-external-api.service';
-import { BlObjectStorageInterface } from './bl-object-storage.interface';
+
 import { BlBadRequestException } from '../../exceptions/bl-bad-request.exception';
+import { BlExternalApiService } from '../bl-external-api/bl-external-api.service';
+import { BlFileResponse, BlObject, BlS3BucketConfig } from './bl-object-storage.class';
+import { BlLabS3ServerNotAvailableException } from './bl-object-storage.exception';
+import { BlObjectStorageInterface } from './bl-object-storage.interface';
+import { BlS3BucketService } from './bl-s3-bucket.service';
 
 /**
  * Service to communicate with an S3 server of a lab (datahub).

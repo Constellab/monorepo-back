@@ -1,4 +1,16 @@
 import {
+  BlFile,
+  BlFileResponse,
+  BlParsePipe,
+  BlPublic,
+  BlResponseHelper,
+  BlSearchParams,
+  BlUnauthorizedException,
+  BlUploadedFile,
+} from '@monorepo/back-core-lib';
+import { ClPage } from '@monorepo/core-lib';
+import { TeBlockFigureUploadedResponse } from '@monorepo/te-text-editor';
+import {
   Body,
   Controller,
   Delete,
@@ -14,20 +26,15 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import {
-  BlFile,
-  BlFileResponse,
-  BlParsePipe,
-  BlPublic,
-  BlResponseHelper,
-  BlSearchParams,
-  BlUnauthorizedException,
-  BlUploadedFile,
-} from '@monorepo/back-core-lib';
-import { HnBrick } from './brick/hn-brick.entity';
-import { HnNewVersionDTO } from './brick-version/hn-brick-version.entity';
-import { HnDocumentationSearchDTO } from './documentation/hn-documentation.entity';
-import { HnNode } from './folder/hn-folder.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { Request, Response } from 'express';
+
+import { IsAdmin } from '../core/decorators/hn-is-admin.decorator';
+import { HnIsAdminGuard } from '../core/guards/hn-is-admin.guard';
+import { HnSitemapItemBase } from '../core/model/config/hn-site-map.class';
+import { HnGeneratedDocDto } from '../core/model/entities/hn-generated-doc.dto';
+import { HnCoreConfigService } from '../core/modules/core-config/hn-core-config.service';
+import { HnUserDto } from '../users/hn-user.dto';
 import {
   HnBrickDto,
   HnBrickVersionDownloadDTO,
@@ -37,20 +44,14 @@ import {
   HnIsActualBrickAndNewVersionDTO,
   HnTechnicalDocInputDTO,
 } from './brick/hn-brick.dto';
-import { HnIsAdminGuard } from '../core/guards/hn-is-admin.guard';
-import { Request, Response } from 'express';
-import { HnBrickAggregateService } from './hn-brick-aggregate.service';
-import { HnSitemapItemBase } from '../core/model/config/hn-site-map.class';
-import { ClPage } from '@monorepo/core-lib';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { HnDocumentationDto } from './documentation/hn-documentation.dto';
-import { HnGeneratedDocDto } from '../core/model/entities/hn-generated-doc.dto';
-import { HnBrickVersionDto } from './brick-version/hn-brick-version.dto';
+import { HnBrick } from './brick/hn-brick.entity';
 import { HnBrickUserInviteDto } from './brick-user-invite/hn-brick-user-invite.dto';
-import { HnUserDto } from '../users/hn-user.dto';
-import { HnCoreConfigService } from '../core/modules/core-config/hn-core-config.service';
-import { TeBlockFigureUploadedResponse } from '@monorepo/te-text-editor';
-import { IsAdmin } from '../core/decorators/hn-is-admin.decorator';
+import { HnBrickVersionDto } from './brick-version/hn-brick-version.dto';
+import { HnNewVersionDTO } from './brick-version/hn-brick-version.entity';
+import { HnDocumentationDto } from './documentation/hn-documentation.dto';
+import { HnDocumentationSearchDTO } from './documentation/hn-documentation.entity';
+import { HnNode } from './folder/hn-folder.dto';
+import { HnBrickAggregateService } from './hn-brick-aggregate.service';
 
 @Controller('brick')
 @UseGuards(HnIsAdminGuard)
@@ -295,7 +296,7 @@ export class HnBrickController {
   @Post('is-actual-brick-and-new-version')
   async isActualBrickAndNewVersion(
     @Body(new BlParsePipe(HnIsActualBrickAndNewVersionDTO))
-      content: HnIsActualBrickAndNewVersionDTO
+    content: HnIsActualBrickAndNewVersionDTO
   ): Promise<[boolean, boolean]> {
     return this.brickAggregateService.isActualBrickAndNewVersion(content);
   }

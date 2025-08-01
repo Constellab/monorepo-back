@@ -1,15 +1,17 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
-import { join } from 'path';
-import SMTPTransport from 'nodemailer/lib/smtp-transport';
-import { ClSupportedLanguage } from '@monorepo/core-lib';
-import { BL_MAIL_CONFIG_PROVIDER, BlMailModuleConfig, BlMailQueue } from './bl-mail.class';
-import { BlTranslateService } from '../bl-translate/bl-translate.service';
-import * as nodemailer from 'nodemailer';
 import * as fs from 'node:fs';
+
+import { ClSupportedLanguage } from '@monorepo/core-lib';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import * as handlebars from 'handlebars';
 import { Exception } from 'handlebars';
-import { BlMailEntityService } from './bl-mail-entity.service';
+import * as nodemailer from 'nodemailer';
+import SMTPTransport from 'nodemailer/lib/smtp-transport';
+import { join } from 'path';
+
+import { BlTranslateService } from '../bl-translate/bl-translate.service';
+import { BL_MAIL_CONFIG_PROVIDER, BlMailModuleConfig, BlMailQueue } from './bl-mail.class';
 import { BlMailEntity, BlMailStatus } from './bl-mail.entity';
+import { BlMailEntityService } from './bl-mail-entity.service';
 
 /**
  * Service to send mail using .hbs template in assets/template

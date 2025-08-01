@@ -1,6 +1,7 @@
 import { BlRequestContextHelper, BlUnauthorizedException } from '@monorepo/back-core-lib';
-import { HnUser } from '../../users/hn-user.entity';
 import { Request } from 'express';
+
+import { HnUser } from '../../users/hn-user.entity';
 
 /**
  * Main auth when the user make a request

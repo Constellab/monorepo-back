@@ -1,14 +1,18 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { CnLabBackupHistoryService } from './cn-lab-backup-history.service';
-import { CnLabBackupOptionService } from './cn-lab-backup-option.service';
-import { DataSource, EntityManager } from 'typeorm';
-import { CnLab } from '../cn-lab.entity';
-import { CnCloudProviderRegion } from '../../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
-import { CnLabBackupOption } from './cn-lab-backup-option.entity';
-import { CnLabBackupHistory } from './cn-lab-backup-history.entity';
 import { BlBadRequestException, BlObjectStorageService } from '@monorepo/back-core-lib';
 import { ClPageI } from '@monorepo/core-lib';
+import { Injectable, Logger } from '@nestjs/common';
+import { DataSource, EntityManager } from 'typeorm';
+
+import { CnCloudProviderRegion } from '../../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
+import {
+  CnLabManagerBackupInfoDTO,
+  CnLabManagerRestoreBackupConfigDTO,
+  CnLabManagerRestoreBackupDTO,
+} from '../../cn-external-lab-api/model/cn-lab-manager.class';
+import { CnBucket } from '../../cn-object-storages/cn-buckets/cn-bucket.entity';
+import { CnLab } from '../cn-lab.entity';
 import { CnLabManagerService } from '../cn-lab-manager.service';
+import { CnLabMailService } from '../mail/cn-lab-mail.service';
 import {
   CnLabBackupFrequency,
   CnLabBackupsHistory,
@@ -17,13 +21,10 @@ import {
   CnLabCheckBackupSizeDTO,
   CnSaveBackupHistoryDTO,
 } from './cn-lab-backup.dto';
-import { CnBucket } from '../../cn-object-storages/cn-buckets/cn-bucket.entity';
-import {
-  CnLabManagerBackupInfoDTO,
-  CnLabManagerRestoreBackupConfigDTO,
-  CnLabManagerRestoreBackupDTO,
-} from '../../cn-external-lab-api/model/cn-lab-manager.class';
-import { CnLabMailService } from '../mail/cn-lab-mail.service';
+import { CnLabBackupHistory } from './cn-lab-backup-history.entity';
+import { CnLabBackupHistoryService } from './cn-lab-backup-history.service';
+import { CnLabBackupOption } from './cn-lab-backup-option.entity';
+import { CnLabBackupOptionService } from './cn-lab-backup-option.service';
 
 @Injectable()
 export class CnLabBackupAggregateService {
@@ -280,7 +281,7 @@ export class CnLabBackupAggregateService {
       Logger.error(
         `Error while deleting the backup file in bucket ${bucket.id} for lab ${lab.id}. Error ${e}`
       );
-      // eslint-disable-next-line max-len
+
       throw new BlBadRequestException(
         `Error while deleting the backup file for region ${bucket.region.name} and frequency ${frequency}.`
       );

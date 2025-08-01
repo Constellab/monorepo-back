@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { HnBrickUser } from './hn-brick-user.entity';
 import { Repository } from 'typeorm';
-import { HnBrick } from '../brick/hn-brick.entity';
+
 import { HnUser } from '../../users/hn-user.entity';
+import { HnBrick } from '../brick/hn-brick.entity';
+import { HnBrickUser } from './hn-brick-user.entity';
 
 @Injectable()
 export class HnBrickUserService {

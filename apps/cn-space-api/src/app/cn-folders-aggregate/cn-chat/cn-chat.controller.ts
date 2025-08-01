@@ -1,3 +1,6 @@
+import { BlDtoHelper, BlFile, BlParsePipe, BlResponseHelper, BlUploadedFile } from '@monorepo/back-core-lib';
+import { ClPage } from '@monorepo/core-lib';
+import { TeBlockFigureUploadedResponse } from '@monorepo/te-text-editor';
 import {
   Body,
   Controller,
@@ -13,16 +16,14 @@ import {
   Res,
   UseInterceptors,
 } from '@nestjs/common';
-import { CnFolder } from '../cn-folders/cn-folder.entity';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { BlDtoHelper, BlFile, BlParsePipe, BlResponseHelper, BlUploadedFile } from '@monorepo/back-core-lib';
-import { TeBlockFigureUploadedResponse } from '@monorepo/te-text-editor';
 import { Response } from 'express';
+
 import { CnNewMessageDTO } from '../../cn-core/model/entities/cn-message.entity';
-import { CnChatMessageDto } from './cn-chat-message.dto';
-import { ClPage } from '@monorepo/core-lib';
 import { CnChatFolderDTO } from '../cn-folders/cn-folder.dto';
+import { CnFolder } from '../cn-folders/cn-folder.entity';
 import { CnChatAggregateService } from './cn-chat-aggregate.service';
+import { CnChatMessageDto } from './cn-chat-message.dto';
 
 @Controller('chat')
 export class CnChatController {

@@ -1,12 +1,13 @@
+import { BlBadRequestException } from '@monorepo/back-core-lib';
+import { ClStringHelper } from '@monorepo/core-lib';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, IsNull, Repository, TreeRepository } from 'typeorm';
-import { HnFolder } from './hn-folder.entity';
-import { HnDocumentation, HnDocumentationSearchDTO } from '../documentation/hn-documentation.entity';
+
 import { HnBrickMajorVersion } from '../brick-major-version/hn-brick-major-version.entity';
+import { HnDocumentation, HnDocumentationSearchDTO } from '../documentation/hn-documentation.entity';
 import { HnNode, HnNodeDTO } from './hn-folder.dto';
-import { BlBadRequestException } from '@monorepo/back-core-lib';
-import { ClStringHelper } from '@monorepo/core-lib';
+import { HnFolder } from './hn-folder.entity';
 
 @Injectable()
 export class HnFolderService {

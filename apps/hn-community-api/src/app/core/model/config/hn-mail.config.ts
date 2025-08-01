@@ -1,5 +1,3 @@
-import { Injectable } from '@nestjs/common';
-import { InjectQueue, Processor } from '@nestjs/bullmq';
 import {
   BlCurrentUserIsAdmin,
   BlMailModuleAsyncOptions,
@@ -8,8 +6,11 @@ import {
   BlMailService,
   blTransportCommunityMailQueue,
 } from '@monorepo/back-core-lib';
+import { InjectQueue, Processor } from '@nestjs/bullmq';
+import { Injectable } from '@nestjs/common';
 import { Queue } from 'bullmq';
 import { join } from 'path';
+
 import { HnCoreModule } from '../../hn-core.module';
 import { HnCoreConfigService } from '../../modules/core-config/hn-core-config.service';
 import { HnCurrentUserHelper } from '../../utils/hn-current-user.helper';

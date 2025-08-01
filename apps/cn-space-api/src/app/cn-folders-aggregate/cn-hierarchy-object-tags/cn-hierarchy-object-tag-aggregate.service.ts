@@ -1,14 +1,15 @@
-import { Injectable } from '@nestjs/common';
-import { CnHierarchyObjectTagService } from './cn-hierarchy-object-tag.service';
-import { CnHierarchyObjectTagHistoryService } from './cn-hierarchy-object-tag-history.service';
-import { CnHierarchyObjectTag } from './cn-hierarchy-object-tag.entity';
-import { CnHierarchyObject } from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
-import { DataSource, EntityManager } from 'typeorm';
-import { CnHierarchyObjectTagHistoryType } from './cn-hierarchy-object-tag-history.entity';
-import { CnAvailableTags, CnTag, CnTagList } from './cn-hierarchy-object-tag.dto';
 import { BlBadRequestException } from '@monorepo/back-core-lib';
 import { ClPage } from '@monorepo/core-lib';
+import { Injectable } from '@nestjs/common';
+import { DataSource, EntityManager } from 'typeorm';
+
 import { CnFolderEventService } from '../cn-folder.event';
+import { CnHierarchyObject } from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
+import { CnAvailableTags, CnTag, CnTagList } from './cn-hierarchy-object-tag.dto';
+import { CnHierarchyObjectTag } from './cn-hierarchy-object-tag.entity';
+import { CnHierarchyObjectTagService } from './cn-hierarchy-object-tag.service';
+import { CnHierarchyObjectTagHistoryType } from './cn-hierarchy-object-tag-history.entity';
+import { CnHierarchyObjectTagHistoryService } from './cn-hierarchy-object-tag-history.service';
 
 @Injectable()
 export class CnHierarchyObjectTagAggregateService {

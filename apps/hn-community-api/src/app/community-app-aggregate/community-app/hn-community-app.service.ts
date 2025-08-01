@@ -1,12 +1,13 @@
+import { BlAbstractPaginatedService } from '@monorepo/back-core-lib';
+import { ClPage } from '@monorepo/core-lib';
+import { TeRichTextDTO } from '@monorepo/te-text-editor';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { HnCommunityApp, HnCommunityAppEntity } from './hn-community-app.entity';
 import { EntityManager, FindOptionsWhere, Repository } from 'typeorm';
-import { ClPage } from '@monorepo/core-lib';
-import { BlAbstractPaginatedService } from '@monorepo/back-core-lib';
-import { HnCommunityAppEditDto } from './hn-community-app.dto';
+
 import { HnSpace } from '../../space-aggregate/space/hn-space.entity';
-import { TeRichTextDTO } from '@monorepo/te-text-editor';
+import { HnCommunityAppEditDto } from './hn-community-app.dto';
+import { HnCommunityApp, HnCommunityAppEntity } from './hn-community-app.entity';
 
 @Injectable()
 export class HnCommunityAppService {

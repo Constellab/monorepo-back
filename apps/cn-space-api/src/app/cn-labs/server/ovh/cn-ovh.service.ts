@@ -1,3 +1,8 @@
+import { BlBadRequestException } from '@monorepo/back-core-lib';
+import { Injectable, Logger } from '@nestjs/common';
+
+import { CnCoreConfigService } from '../../../cn-core/modules/cn-core-config/cn-core-config.service';
+import { cnServerUbuntuUser } from '../cn-cloud-provider.class';
 import {
   CnDomainFieldType,
   CnOvhAttachVolumeRequest,
@@ -10,12 +15,7 @@ import {
   CnOvhInstance,
   CnOvhVolume,
 } from './cn-ovh.class';
-import { CnCoreConfigService } from '../../../cn-core/modules/cn-core-config/cn-core-config.service';
-import { Injectable, Logger } from '@nestjs/common';
-import { BlBadRequestException } from '@monorepo/back-core-lib';
-import { cnServerUbuntuUser } from '../cn-cloud-provider.class';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const ovh = require('ovh');
 
 interface CnOvh {

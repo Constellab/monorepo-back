@@ -1,10 +1,11 @@
 import { Controller, Get, Param, ParseUUIDPipe } from '@nestjs/common';
+
 import { CnLabConfig } from '../../cn-lab-configs/cn-lab-config.entity';
 import { CnHierarchyObjectTokenDecorator } from '../cn-hierarchy-object-token/cn-hierarchy-object-token-guard.decorator';
-import { CnScenarioAggregateService } from './cn-scenario-aggregate.service';
-import { CnScenarioProtocol } from './cn-scenario-protocol.class';
 import { CnScenarioDto } from './cn-scenario.dto';
 import { CnScenario } from './cn-scenario.entity';
+import { CnScenarioAggregateService } from './cn-scenario-aggregate.service';
+import { CnScenarioProtocol } from './cn-scenario-protocol.class';
 
 @Controller('scenarios')
 export class CnScenariosController {

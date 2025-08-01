@@ -1,8 +1,9 @@
-import { Controller, Get } from '@nestjs/common';
-import { CnLabConfig } from './cn-lab-config.entity';
-import { CnUserCategories } from '../cn-core/decorators/cn-user-category.decorator';
-import { CnLabConfigsService } from './cn-lab-configs.service';
 import { BlUserCategory } from '@monorepo/back-core-lib';
+import { Controller, Get } from '@nestjs/common';
+
+import { CnUserCategories } from '../cn-core/decorators/cn-user-category.decorator';
+import { CnLabConfig } from './cn-lab-config.entity';
+import { CnLabConfigsService } from './cn-lab-configs.service';
 
 @Controller('lab-configs')
 export class CnLabConfigsController {

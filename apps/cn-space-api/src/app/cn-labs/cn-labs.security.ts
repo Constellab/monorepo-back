@@ -1,10 +1,11 @@
+import { BlUnauthorizedException } from '@monorepo/back-core-lib';
 import { Injectable } from '@nestjs/common';
+
+import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
 import { CnUserSpaceInfo } from '../cn-users/cn-user.dto';
 import { CnLab } from './cn-lab.entity';
-import { CnLabUserService } from './user/cn-lab-user.service';
 import { CnLabUserRole } from './user/cn-lab-user.entity';
-import { BlUnauthorizedException } from '@monorepo/back-core-lib';
-import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
+import { CnLabUserService } from './user/cn-lab-user.service';
 
 @Injectable()
 export class CnLabsSecurity {

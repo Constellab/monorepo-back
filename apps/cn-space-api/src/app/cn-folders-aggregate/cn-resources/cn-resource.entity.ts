@@ -1,11 +1,12 @@
-import { Column, Entity, ManyToOne } from 'typeorm';
-import { CnHierarchyRepresentation } from '../cn-hierarchy-objects/cn-hierarchy-representation';
 import { BlNotUpdatable } from '@monorepo/back-core-lib';
+import { Type } from 'class-transformer';
+import { Column, Entity, ManyToOne } from 'typeorm';
+
+import { CnTypeStyle } from '../../cn-core/model/config/cn-type-style.class';
+import { CnLab, CnLabEntity } from '../../cn-labs/cn-lab.entity';
 import { CnHierarchyObjectInfo } from '../cn-hierarchy-objects/cn-hierarchy-object.dto';
 import { CnHierarchyObjectType } from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
-import { Type } from 'class-transformer';
-import { CnLab, CnLabEntity } from '../../cn-labs/cn-lab.entity';
-import { CnTypeStyle } from '../../cn-core/model/config/cn-type-style.class';
+import { CnHierarchyRepresentation } from '../cn-hierarchy-objects/cn-hierarchy-representation';
 
 @Entity('resource')
 export class CnResourceEntity extends CnHierarchyRepresentation {

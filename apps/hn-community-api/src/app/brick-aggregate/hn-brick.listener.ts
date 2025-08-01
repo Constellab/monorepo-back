@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
+
 import { HnEventType, HnLikeEventData } from '../core/utils/hn-events.enum';
 import { HnBrickService } from './brick/hn-brick.service';
 

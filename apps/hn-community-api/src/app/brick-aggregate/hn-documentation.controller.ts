@@ -1,3 +1,11 @@
+import { BlFile, BlParsePipe, BlPublic, BlResponseHelper, BlUploadedFile } from '@monorepo/back-core-lib';
+import {
+  TeBlockFigureUploadedResponse,
+  TeRichText,
+  TeRichTextBlockModificationWithUser,
+  TeRichTextDTO,
+  TeRichTextPipe,
+} from '@monorepo/te-text-editor';
 import {
   Body,
   Controller,
@@ -11,27 +19,20 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { HnDocumentation, HnDocumentationDTO } from './documentation/hn-documentation.entity';
-import { BlFile, BlParsePipe, BlPublic, BlResponseHelper, BlUploadedFile } from '@monorepo/back-core-lib';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { HnNodeDTO } from './folder/hn-folder.dto';
+import { Response } from 'express';
+
 import { HnIsAdminGuard } from '../core/guards/hn-is-admin.guard';
-import { HnBrickAggregateService } from './hn-brick-aggregate.service';
-import { HnDocumentationDto } from './documentation/hn-documentation.dto';
 import { HnAbstractFileController } from '../file-aggregate/file-core/hn-abstract-file.controller';
-import { HnFileDocumentationService } from '../file-aggregate/file-documentation/hn-file-documentation.service';
 import {
   HnAbstractFileEntityDTO,
   HnUploadFileResponseDto,
 } from '../file-aggregate/file-core/hn-abstract-file.dto';
-import {
-  TeBlockFigureUploadedResponse,
-  TeRichText,
-  TeRichTextBlockModificationWithUser,
-  TeRichTextDTO,
-  TeRichTextPipe,
-} from '@monorepo/te-text-editor';
-import { Response } from 'express';
+import { HnFileDocumentationService } from '../file-aggregate/file-documentation/hn-file-documentation.service';
+import { HnDocumentationDto } from './documentation/hn-documentation.dto';
+import { HnDocumentation, HnDocumentationDTO } from './documentation/hn-documentation.entity';
+import { HnNodeDTO } from './folder/hn-folder.dto';
+import { HnBrickAggregateService } from './hn-brick-aggregate.service';
 
 @Controller('documentation')
 @UseGuards(HnIsAdminGuard)

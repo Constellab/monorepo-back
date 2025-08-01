@@ -1,8 +1,9 @@
-import { Controller, Get, Put, UseInterceptors } from '@nestjs/common';
-import { CnSettingsService } from './cn-settings.service';
-import { CnServerDecisionTreeDTO } from './cn-settings.entity';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { BlFile, BlPublic, BlUploadedFile } from '@monorepo/back-core-lib';
+import { Controller, Get, Put, UseInterceptors } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+
+import { CnServerDecisionTreeDTO } from './cn-settings.entity';
+import { CnSettingsService } from './cn-settings.service';
 import { CnYoutubeService } from './cn-youtube.service';
 
 @Controller('settings')

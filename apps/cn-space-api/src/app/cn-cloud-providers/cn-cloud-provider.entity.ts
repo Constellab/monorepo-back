@@ -1,6 +1,7 @@
-import { Column, Entity, Unique } from 'typeorm';
-import { CnBaseEntity } from '../cn-core/model/entities/cn-base.entity';
 import { BlBucketType } from '@monorepo/back-core-lib';
+import { Column, Entity, Unique } from 'typeorm';
+
+import { CnBaseEntity } from '../cn-core/model/entities/cn-base.entity';
 
 export type CnCloudProviderName = 'OVH' | 'AZURE' | 'OUTSCALE' | 'GCP';
 

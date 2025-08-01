@@ -2,6 +2,7 @@ import { BlAbstractPaginatedService, BlUserSearch } from '@monorepo/back-core-li
 import { FindOptionsWhere } from 'typeorm';
 import { FindOptionsOrder } from 'typeorm/find-options/FindOptionsOrder';
 import { FindOptionsRelations } from 'typeorm/find-options/FindOptionsRelations';
+
 import { CnUser } from '../cn-users/cn-user.entity';
 import { CnSpaceUserEntity, CnSpaceUserWithUser } from './cn-space-user.entity';
 

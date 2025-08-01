@@ -1,13 +1,14 @@
+import { ClLuxonDateTimeTransform } from '@monorepo/core-lib';
+import { Type } from 'class-transformer';
+import { DateTime } from 'luxon';
+
+import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
 import {
   CnFolderUser,
   CnFolderUserWithSharedBy,
   CnRootFolderNotifOptions,
   CnRootFolderUserRole,
 } from './cn-folder-user.entity';
-import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
-import { Type } from 'class-transformer';
-import { ClLuxonDateTimeTransform } from '@monorepo/core-lib';
-import { DateTime } from 'luxon';
 
 /**
  * Link between folder and user that stores the notification options

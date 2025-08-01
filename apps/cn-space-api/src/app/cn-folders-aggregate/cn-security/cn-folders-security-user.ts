@@ -1,10 +1,11 @@
-import { CnFoldersAggregateSecurityI } from './cn-folders-security.service';
-import { CnHierarchyObject } from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
 import { BlUnauthorizedException } from '@monorepo/back-core-lib';
-import { CnFolderUserService } from '../cn-folder-user/cn-folder-user.service';
+
 import { CnErrorText } from '../../cn-core/model/config/cn-error-text.class';
 import { CnUserSpaceInfo } from '../../cn-users/cn-user.dto';
 import { CnRootFolderUserRole } from '../cn-folder-user/cn-folder-user.entity';
+import { CnFolderUserService } from '../cn-folder-user/cn-folder-user.service';
+import { CnHierarchyObject } from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
+import { CnFoldersAggregateSecurityI } from './cn-folders-security.service';
 
 /**
  * Security for the folders aggregate service when call is made from a user

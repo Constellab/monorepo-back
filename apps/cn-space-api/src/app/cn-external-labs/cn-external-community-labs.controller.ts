@@ -1,9 +1,10 @@
+import { Controller, Get } from '@nestjs/common';
+
 import {
   CnLabAllowDev,
   CnLabGuard,
   CnLabRobotAuthentication,
 } from '../cn-core/decorators/cn-lab-guard.decorator';
-import { Controller, Get } from '@nestjs/common';
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
 
 @CnLabGuard()

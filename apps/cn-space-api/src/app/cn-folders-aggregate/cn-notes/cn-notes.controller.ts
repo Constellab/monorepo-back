@@ -2,10 +2,11 @@ import { BlResponseHelper } from '@monorepo/back-core-lib';
 import { TeRichTextBlockModificationWithUser, TeRichTextDTO } from '@monorepo/te-text-editor';
 import { Controller, Get, Param, ParseUUIDPipe, Res } from '@nestjs/common';
 import { Response } from 'express';
+
 import { CnLabMinimumDTO } from '../../cn-labs/cn-lab.dto';
 import { CnHierarchyObjectTokenDecorator } from '../cn-hierarchy-object-token/cn-hierarchy-object-token-guard.decorator';
-import { CnNoteAggregateService } from './cn-note-aggregate.service';
 import { CnNote } from './cn-note.entity';
+import { CnNoteAggregateService } from './cn-note-aggregate.service';
 
 @Controller('notes')
 export class CnNotesController {

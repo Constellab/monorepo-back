@@ -1,10 +1,11 @@
 import { BlEntityWithId } from '@monorepo/back-core-lib';
-import { HnAbstractLikeEntity } from './hn-abstract-like.entity';
-import { Repository } from 'typeorm';
-import { HnCurrentUserHelper } from '../../core/utils/hn-current-user.helper';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { Repository } from 'typeorm';
+
 import { HnEntityType } from '../../core/model/entities/hn-entity-type.enum';
+import { HnCurrentUserHelper } from '../../core/utils/hn-current-user.helper';
 import { HnEventType, HnLikeEventData } from '../../core/utils/hn-events.enum';
+import { HnAbstractLikeEntity } from './hn-abstract-like.entity';
 
 export abstract class HnAbstractLikeService<T extends BlEntityWithId> {
   repository: Repository<HnAbstractLikeEntity<BlEntityWithId>>;

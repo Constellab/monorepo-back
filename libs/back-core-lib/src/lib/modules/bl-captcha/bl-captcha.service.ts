@@ -1,7 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { BL_CAPTCHA_CONFIG_PROVIDER, BlCaptchaModuleConfig } from './bl-captcha.class';
 import { lastValueFrom } from 'rxjs';
+
 import { BlExternalApiService } from '../bl-external-api/bl-external-api.service';
+import { BL_CAPTCHA_CONFIG_PROVIDER, BlCaptchaModuleConfig } from './bl-captcha.class';
 
 @Injectable()
 export class BlCaptchaService {

@@ -1,19 +1,20 @@
-import { Injectable } from '@nestjs/common';
 import { BlAbstractPaginatedService, BlBadRequestException } from '@monorepo/back-core-lib';
+import { ClDateHelper, ClHelpService, ClPage } from '@monorepo/core-lib';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, EntityManager, Repository } from 'typeorm';
+
+import { CnErrorText } from '../../cn-core/model/config/cn-error-text.class';
+import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
+import { CnGroupsService } from '../../cn-groups/cn-groups.service';
+import { CnUser } from '../../cn-users/cn-user.entity';
 import {
   CnFolderUser,
   CnFolderUserEntity,
   CnFolderUserWithSharedBy,
   CnRootFolderUserRole,
 } from './cn-folder-user.entity';
-import { CnUser } from '../../cn-users/cn-user.entity';
-import { CnGroupsService } from '../../cn-groups/cn-groups.service';
-import { CnErrorText } from '../../cn-core/model/config/cn-error-text.class';
-import { ClDateHelper, ClHelpService, ClPage } from '@monorepo/core-lib';
 import { CnFolderUserSearch } from './cn-folder-user-search.class';
-import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
 
 @Injectable()
 export class CnFolderUserService extends BlAbstractPaginatedService<CnFolderUserEntity> {

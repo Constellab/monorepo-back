@@ -1,6 +1,7 @@
-import { CnBaseEntity } from './cn-base.entity';
-import { DateTime } from 'luxon';
 import { BlEntityWithId, BlLuxonDateTimeColumn } from '@monorepo/back-core-lib';
+import { DateTime } from 'luxon';
+
+import { CnBaseEntity } from './cn-base.entity';
 
 /**
  * Describe a status history table

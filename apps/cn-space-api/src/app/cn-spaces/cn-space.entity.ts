@@ -1,9 +1,10 @@
-import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne } from 'typeorm';
-import { CnBaseEntity } from '../cn-core/model/entities/cn-base.entity';
 import { ClDateHelper, ClStringHelper } from '@monorepo/core-lib';
 import { Exclude, Type } from 'class-transformer';
-import { CnBucket } from '../cn-object-storages/cn-buckets/cn-bucket.entity';
+import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne } from 'typeorm';
 import { FindOptionsRelations } from 'typeorm/find-options/FindOptionsRelations';
+
+import { CnBaseEntity } from '../cn-core/model/entities/cn-base.entity';
+import { CnBucket } from '../cn-object-storages/cn-buckets/cn-bucket.entity';
 
 export enum CnSpaceType {
   // personal space create on the user creation (he cas invite other users in his space)

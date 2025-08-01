@@ -1,6 +1,7 @@
-import { CnServerPrice } from './cn-server-price.entity';
-import { DateTime } from 'luxon';
 import { ClLuxonDateTransform } from '@monorepo/core-lib';
+import { DateTime } from 'luxon';
+
+import { CnServerPrice } from './cn-server-price.entity';
 
 export class CnServerPrices {
   constructor(public prices: CnServerPrice[]) {}

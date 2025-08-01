@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { CnStats } from './cn-stats.class';
-import { CnLabsService } from '../cn-labs/cn-labs.service';
-import { CnGroupsService } from '../cn-groups/cn-groups.service';
-import { CnScenariosService } from '../cn-folders-aggregate/cn-scenarios/cn-scenarios.service';
-import { CnNotesService } from '../cn-folders-aggregate/cn-notes/cn-notes.service';
+
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
 import { CnHierarchyObjectService } from '../cn-folders-aggregate/cn-hierarchy-objects/cn-hierarchy-object.service';
+import { CnNotesService } from '../cn-folders-aggregate/cn-notes/cn-notes.service';
+import { CnScenariosService } from '../cn-folders-aggregate/cn-scenarios/cn-scenarios.service';
+import { CnGroupsService } from '../cn-groups/cn-groups.service';
+import { CnLabsService } from '../cn-labs/cn-labs.service';
+import { CnStats } from './cn-stats.class';
 
 @Injectable()
 export class CnStatsService {

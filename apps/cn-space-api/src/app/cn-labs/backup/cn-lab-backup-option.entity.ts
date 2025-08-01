@@ -1,10 +1,11 @@
-import { Column, Entity, ManyToOne, Unique } from 'typeorm';
-import { CnBaseEntity } from '../../cn-core/model/entities/cn-base.entity';
-import { Type } from 'class-transformer';
 import { BlNotUpdatable } from '@monorepo/back-core-lib';
+import { Type } from 'class-transformer';
+import { Column, Entity, ManyToOne, Unique } from 'typeorm';
+
+import { CnBaseEntity } from '../../cn-core/model/entities/cn-base.entity';
+import { CnBucket } from '../../cn-object-storages/cn-buckets/cn-bucket.entity';
 import { CnLabEntity } from '../cn-lab.entity';
 import { CnLabBackupFrequency } from './cn-lab-backup.dto';
-import { CnBucket } from '../../cn-object-storages/cn-buckets/cn-bucket.entity';
 
 @Entity('lab_backup_option')
 @Unique(['lab'])

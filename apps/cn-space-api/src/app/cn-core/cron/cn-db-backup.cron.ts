@@ -1,8 +1,9 @@
+import { BlBucketConfig, BlBucketType, BlDbBackupService } from '@monorepo/back-core-lib';
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
-import { BlBucketConfig, BlBucketType, BlDbBackupService } from '@monorepo/back-core-lib';
-import { CnCoreConfigService } from '../modules/cn-core-config/cn-core-config.service';
 import { DataSource } from 'typeorm';
+
+import { CnCoreConfigService } from '../modules/cn-core-config/cn-core-config.service';
 
 @Injectable()
 export class CnDbBackupCron {

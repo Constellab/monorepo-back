@@ -1,11 +1,12 @@
+import { TeRichText } from '@monorepo/te-text-editor';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
-import { HnAgentVersion, HnAgentVersionState } from './hn-agent-version.entity';
-import { HnAgent } from '../agent/hn-agent.entity';
-import { HnAgentVersionFileInput } from '../agent/hn-agent.dto';
+
 import { HnTypingStyle } from '../../brick-aggregate/brick/hn-brick.dto';
-import { TeRichText } from '@monorepo/te-text-editor';
+import { HnAgentVersionFileInput } from '../agent/hn-agent.dto';
+import { HnAgent } from '../agent/hn-agent.entity';
+import { HnAgentVersion, HnAgentVersionState } from './hn-agent-version.entity';
 
 @Injectable()
 export class HnAgentVersionService {

@@ -1,7 +1,8 @@
-import { ExecutionContext, SetMetadata, UseGuards } from '@nestjs/common';
-import { CnLabAuthGuard } from '../guards/cn-lab-auth.guard';
-import { Reflector } from '@nestjs/core';
 import { BlReflectorHelper } from '@monorepo/back-core-lib';
+import { ExecutionContext, SetMetadata, UseGuards } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
+
+import { CnLabAuthGuard } from '../guards/cn-lab-auth.guard';
 
 const cnLabAuthMetadata = 'labAuth';
 const cnLabAllowDevAuthMetadata = 'labAllowDevAuth';

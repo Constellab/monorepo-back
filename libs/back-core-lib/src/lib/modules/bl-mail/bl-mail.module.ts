@@ -1,19 +1,20 @@
+import { BullModule } from '@nestjs/bullmq';
 import { DynamicModule, Global, Module, Type } from '@nestjs/common';
-import { BlMailSenderService } from './bl-mail-sender.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+
+import { BlTranslateModule } from '../bl-translate/bl-translate.module';
 import {
   BL_MAIL_CAN_GET_MAIL_PROVIDER,
   BL_MAIL_CONFIG_PROVIDER,
   BlCurrentUserIsAdmin,
   BlMailModuleAsyncOptions,
 } from './bl-mail.class';
-import { BlTranslateModule } from '../bl-translate/bl-translate.module';
-import { BlMailService } from './bl-mail.service';
-import { BullModule } from '@nestjs/bullmq';
-import { BlMailProcessor } from './bl-mail.processor';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { BlMailEntity } from './bl-mail.entity';
-import { BlMailEntityService } from './bl-mail-entity.service';
 import { BlMailController } from './bl-mail.controller';
+import { BlMailEntity } from './bl-mail.entity';
+import { BlMailProcessor } from './bl-mail.processor';
+import { BlMailService } from './bl-mail.service';
+import { BlMailEntityService } from './bl-mail-entity.service';
+import { BlMailSenderService } from './bl-mail-sender.service';
 
 @Global()
 @Module({})

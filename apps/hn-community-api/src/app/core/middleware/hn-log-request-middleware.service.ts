@@ -1,5 +1,6 @@
 import { Injectable, Logger, NestMiddleware } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
+
 import { HnCurrentUserHelper } from '../utils/hn-current-user.helper';
 
 /**

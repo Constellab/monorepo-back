@@ -1,4 +1,5 @@
 import { Column, Entity } from 'typeorm';
+
 import { CnBaseEntity } from '../cn-core/model/entities/cn-base.entity';
 
 export class CnServerDecisionTreeOptionDTO {

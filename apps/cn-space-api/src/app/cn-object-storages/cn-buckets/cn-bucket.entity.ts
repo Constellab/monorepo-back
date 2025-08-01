@@ -1,7 +1,3 @@
-import { Column, Entity, ManyToOne } from 'typeorm';
-import { CnBaseEntity } from '../../cn-core/model/entities/cn-base.entity';
-import { CnCloudProviderRegion } from '../../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
-import { CnBucketCredentials } from '../cn-bucket-credential/cn-bucket-credential.entity';
 import {
   BlAzureBlobContainerConfig,
   BlBucketConfig,
@@ -11,8 +7,13 @@ import {
   BlTrim,
 } from '@monorepo/back-core-lib';
 import { Type } from 'class-transformer';
+import { Column, Entity, ManyToOne } from 'typeorm';
 import { FindOptionsRelations } from 'typeorm/find-options/FindOptionsRelations';
+
+import { CnCloudProviderRegion } from '../../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
+import { CnBaseEntity } from '../../cn-core/model/entities/cn-base.entity';
 import { CnLabEntity } from '../../cn-labs/cn-lab.entity';
+import { CnBucketCredentials } from '../cn-bucket-credential/cn-bucket-credential.entity';
 
 export enum CnBucketContentType {
   LAB_BACKUP = 'LAB_BACKUP',

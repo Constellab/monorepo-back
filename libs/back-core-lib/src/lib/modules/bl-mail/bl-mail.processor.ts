@@ -1,6 +1,7 @@
 import { WorkerHost } from '@nestjs/bullmq';
-import { Job } from 'bullmq';
 import { Inject, Logger } from '@nestjs/common';
+import { Job } from 'bullmq';
+
 import { BlMailQueue } from './bl-mail.class';
 import { BlMailSenderService } from './bl-mail-sender.service';
 

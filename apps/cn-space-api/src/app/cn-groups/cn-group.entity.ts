@@ -1,3 +1,7 @@
+import { BlLuxonDateTimeColumn, BlNotUpdatable } from '@monorepo/back-core-lib';
+import { ClDateHelper } from '@monorepo/core-lib';
+import { Exclude, Type } from 'class-transformer';
+import { DateTime } from 'luxon';
 import {
   BeforeInsert,
   BeforeUpdate,
@@ -12,15 +16,12 @@ import {
   Relation,
   TableInheritance,
 } from 'typeorm';
+
 import { CnBaseEntity } from '../cn-core/model/entities/cn-base.entity';
-import { CnGroupType } from './cn-group-type.enum';
-import { CnUser, CnUserEntity } from '../cn-users/cn-user.entity';
-import { Exclude, Type } from 'class-transformer';
-import { BlLuxonDateTimeColumn, BlNotUpdatable } from '@monorepo/back-core-lib';
-import { CnSpace, CnSpaceEntity } from '../cn-spaces/cn-space.entity';
-import { ClDateHelper } from '@monorepo/core-lib';
-import { DateTime } from 'luxon';
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
+import { CnSpace, CnSpaceEntity } from '../cn-spaces/cn-space.entity';
+import { CnUser, CnUserEntity } from '../cn-users/cn-user.entity';
+import { CnGroupType } from './cn-group-type.enum';
 
 @TableInheritance({ column: { type: 'enum', enum: CnGroupType, name: 'type' } })
 @Entity('group')

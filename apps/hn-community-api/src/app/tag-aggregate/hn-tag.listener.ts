@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { HnTagKeyService } from './tag-key/hn-tag-key.service';
 import { OnEvent } from '@nestjs/event-emitter';
+
 import { HnCommentEventData, HnEventType, HnLikeEventData } from '../core/utils/hn-events.enum';
+import { HnTagKeyService } from './tag-key/hn-tag-key.service';
 
 @Injectable()
 export class HnTagListener {

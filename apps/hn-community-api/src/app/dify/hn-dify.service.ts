@@ -1,21 +1,21 @@
-import { Injectable } from '@nestjs/common';
-import { HnDocumentationService } from '../brick-aggregate/documentation/hn-documentation.service';
-import { HnDifyCreateDocumentDto, HnDifyCreateDocumentOptionsDto, HnDifyDocument } from './hn-dify.dto';
-import { HnAgentService } from '../agent-aggregate/agent/hn-agent.service';
-import { HnStoryService } from '../story/hn-story.service';
-import { HnEntityType } from '../core/model/entities/hn-entity-type.enum';
-import { HnDocumentation } from '../brick-aggregate/documentation/hn-documentation.entity';
-import { HnCoreConfigService } from '../core/modules/core-config/hn-core-config.service';
 import { BlBadRequestException, BlExternalApiService } from '@monorepo/back-core-lib';
-import { lastValueFrom } from 'rxjs';
-import { HnFrontService } from '../core/service/hn-front.service';
-import * as FormData from 'form-data';
-import { Readable } from 'stream';
-import { HttpService } from '@nestjs/axios';
-
-import { HnBrickMajorVersionService } from '../brick-aggregate/brick-major-version/hn-brick-major-version.service';
 import { ClStringHelper } from '@monorepo/core-lib';
+import { HttpService } from '@nestjs/axios';
+import { Injectable } from '@nestjs/common';
 import { AxiosError } from 'axios';
+import * as FormData from 'form-data';
+import { lastValueFrom } from 'rxjs';
+import { Readable } from 'stream';
+
+import { HnAgentService } from '../agent-aggregate/agent/hn-agent.service';
+import { HnBrickMajorVersionService } from '../brick-aggregate/brick-major-version/hn-brick-major-version.service';
+import { HnDocumentation } from '../brick-aggregate/documentation/hn-documentation.entity';
+import { HnDocumentationService } from '../brick-aggregate/documentation/hn-documentation.service';
+import { HnEntityType } from '../core/model/entities/hn-entity-type.enum';
+import { HnCoreConfigService } from '../core/modules/core-config/hn-core-config.service';
+import { HnFrontService } from '../core/service/hn-front.service';
+import { HnStoryService } from '../story/hn-story.service';
+import { HnDifyCreateDocumentDto, HnDifyCreateDocumentOptionsDto, HnDifyDocument } from './hn-dify.dto';
 
 @Injectable()
 export class HnDifyService {
