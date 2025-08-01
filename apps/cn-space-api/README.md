@@ -19,4 +19,4 @@ are used to deploy the api in pre-prod or prod using caprover.
 To build the api in a local docker :
 
 - build the docker image : `cn-space-api:build-image-dev`
-- to run the image use the cn-space-api repository and run the command : `docker-compose -f docker-compose-dev.yml up -d cn-space-api` (the maria db image must be running)
+- to run the image use the cn-space-api repository and run the command : `docker compose -f docker-compose-dev.yml up -d cn-space-api` (the maria db image must be running)
