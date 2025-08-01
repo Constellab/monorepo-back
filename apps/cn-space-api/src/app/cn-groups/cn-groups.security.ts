@@ -1,9 +1,10 @@
+import { BlUnauthorizedException } from '@monorepo/back-core-lib';
 import { Injectable } from '@nestjs/common';
-import { CnUserTeamService } from './cn-user-team.service';
+
+import { CnUserSpaceInfo } from '../cn-users/cn-user.dto';
 import { CnGroupTeam } from './cn-group.entity';
 import { CnGroupsService } from './cn-groups.service';
-import { CnUserSpaceInfo } from '../cn-users/cn-user.dto';
-import { BlUnauthorizedException } from '@monorepo/back-core-lib';
+import { CnUserTeamService } from './cn-user-team.service';
 
 /**
  * Class to check the user authorization on groups

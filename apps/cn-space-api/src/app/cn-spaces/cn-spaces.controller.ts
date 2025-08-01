@@ -25,12 +25,11 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
+
 import { CnUserCategories } from '../cn-core/decorators/cn-user-category.decorator';
 import { CnFolderStorageUsageDTO } from '../cn-folders-aggregate/cn-documents/cn-document-dto.class';
 import { CnUserSpaceInfo } from '../cn-users/cn-user.dto';
 import { CnUser } from '../cn-users/cn-user.entity';
-import { CnSpaceAggregateService } from './cn-space-aggregate.service';
-import { CnSpaceUserRole, CnSpaceUserWithUser } from './cn-space-user.entity';
 import {
   CnCreateSpaceDTO,
   CnRequestNewLicensesDto,
@@ -39,6 +38,8 @@ import {
   CnSpaceUpdateStorageLocationDTO,
 } from './cn-space.dto';
 import { CnSpace } from './cn-space.entity';
+import { CnSpaceAggregateService } from './cn-space-aggregate.service';
+import { CnSpaceUserRole, CnSpaceUserWithUser } from './cn-space-user.entity';
 
 @Controller('spaces')
 export class CnSpacesController {

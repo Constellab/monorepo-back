@@ -1,19 +1,20 @@
-import { CnDocumentService } from './cn-document.service';
-import { CnHierarchyObjectService } from '../cn-hierarchy-objects/cn-hierarchy-object.service';
-import { CnFoldersSecurityService } from '../cn-security/cn-folders-security.service';
-import { CnFolderEventService } from '../cn-folder.event';
-import { CnConstellabDocumentDTO } from './cn-document-dto.class';
+import { BlBadRequestException, BlFile, BlFileResponse } from '@monorepo/back-core-lib';
 import {
   TeBlockFigureUploadedResponse,
   TeBlockFileUploadResponse,
   TeRichText,
   TeRichTextBlockModificationWithUser,
 } from '@monorepo/te-text-editor';
-import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
-import { BlBadRequestException, BlFile, BlFileResponse } from '@monorepo/back-core-lib';
-import { CnDocument, CnDocumentType } from './cn-document.entity';
 import { Injectable } from '@nestjs/common';
+
+import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
 import { CnUsersService } from '../../cn-users/cn-users.service';
+import { CnFolderEventService } from '../cn-folder.event';
+import { CnHierarchyObjectService } from '../cn-hierarchy-objects/cn-hierarchy-object.service';
+import { CnFoldersSecurityService } from '../cn-security/cn-folders-security.service';
+import { CnDocument, CnDocumentType } from './cn-document.entity';
+import { CnDocumentService } from './cn-document.service';
+import { CnConstellabDocumentDTO } from './cn-document-dto.class';
 
 @Injectable()
 export class CnConstellabDocumentAggregateService {
@@ -50,7 +51,6 @@ export class CnConstellabDocumentAggregateService {
       Math.abs(document.lastModifiedAt.diffNow().toMillis()) < 60000 &&
       document.lastModifiedBy.id !== CnCurrentUserHelper.getAndCheckCurrentUser().id
     ) {
-      // eslint-disable-next-line max-len
       throw new BlBadRequestException(
         `This document is currently being modified by ${document.lastModifiedBy.alias}` +
           `, please wait for the end of the modification`
@@ -82,7 +82,6 @@ export class CnConstellabDocumentAggregateService {
       Math.abs(document.lastModifiedAt.diffNow().toMillis()) < 60000 &&
       document.lastModifiedBy.id !== CnCurrentUserHelper.getAndCheckCurrentUser().id
     ) {
-      // eslint-disable-next-line max-len
       throw new BlBadRequestException(
         `This document is currently being modified by ${document.lastModifiedBy.alias}` +
           `, please wait for the end of the modification`

@@ -1,6 +1,11 @@
+import { Disk, ImageReference, SshPublicKey } from '@azure/arm-compute';
 import { Injectable } from '@nestjs/common';
-import { CnCloudProviderService } from '../cn-cloud-provider.service';
+
 import { CnCloudProviderName } from '../../../cn-cloud-providers/cn-cloud-provider.entity';
+import { CnCoreConfigService } from '../../../cn-core/modules/cn-core-config/cn-core-config.service';
+import { CnCommandService } from '../../../cn-core/services/cn-command.service';
+import { CnLab } from '../../cn-lab.entity';
+import { CnLabVolumeType } from '../../volume/cn-lab-volume-entity';
 import {
   CnCpCreateInstanceRequest,
   CnCpCreateVolumeRequest,
@@ -11,13 +16,9 @@ import {
   CnCpVolumeStatus,
   cnServerSshAuthorizedKeyPath,
 } from '../cn-cloud-provider.class';
-import { CnAzureService } from './cn-azure.service';
-import { CnLab } from '../../cn-lab.entity';
+import { CnCloudProviderService } from '../cn-cloud-provider.service';
 import { CnAzureInstance, CnAzureVolumeStatus } from './cn-azure.class';
-import { Disk, ImageReference, SshPublicKey } from '@azure/arm-compute';
-import { CnCoreConfigService } from '../../../cn-core/modules/cn-core-config/cn-core-config.service';
-import { CnCommandService } from '../../../cn-core/services/cn-command.service';
-import { CnLabVolumeType } from '../../volume/cn-lab-volume-entity';
+import { CnAzureService } from './cn-azure.service';
 
 @Injectable()
 export class CnCloudProviderAzureService extends CnCloudProviderService {

@@ -1,4 +1,3 @@
-import { Column, Entity, ManyToOne } from 'typeorm';
 import {
   BlBadRequestException,
   BlEntityWithId,
@@ -6,8 +5,10 @@ import {
   BlVersion,
   BlVersionTransform,
 } from '@monorepo/back-core-lib';
-import { CnBrick } from './cn-brick.entity';
 import { Exclude, Expose } from 'class-transformer';
+import { Column, Entity, ManyToOne } from 'typeorm';
+
+import { CnBrick } from './cn-brick.entity';
 
 export enum CnRepoType {
   PIP = 'PIP',

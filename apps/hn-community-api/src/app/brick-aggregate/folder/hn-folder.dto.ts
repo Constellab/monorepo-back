@@ -1,7 +1,8 @@
 import { BlEntityWithId } from '@monorepo/back-core-lib';
-import { HnFolder } from './hn-folder.entity';
+
 import { HnBaseDto } from '../../core/model/entities/hn-base.dto';
 import { HnDocumentationDto } from '../documentation/hn-documentation.dto';
+import { HnFolder } from './hn-folder.entity';
 
 export class HnFolderDto extends HnBaseDto {
   title: string;

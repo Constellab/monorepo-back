@@ -1,13 +1,14 @@
-import { CnScenarioStatus } from './cn-scenario-status.enum';
-import { DateTime } from 'luxon';
 import { ClLuxonDateTimeTransform } from '@monorepo/core-lib';
-import { CnScenario } from './cn-scenario.entity';
-import { CnLabConfigDto } from '../../cn-lab-configs/cn-lab-config.dto';
-import { Type } from 'class-transformer';
-import { CnEntityDTO } from '../../cn-core/model/entities/cn.entity';
-import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
 import { TeRichText, TeRichTextTransform } from '@monorepo/te-text-editor';
+import { Type } from 'class-transformer';
+import { DateTime } from 'luxon';
+
+import { CnEntityDTO } from '../../cn-core/model/entities/cn.entity';
+import { CnLabConfigDto } from '../../cn-lab-configs/cn-lab-config.dto';
+import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
+import { CnScenario } from './cn-scenario.entity';
 import { CnScenarioProtocol } from './cn-scenario-protocol.class';
+import { CnScenarioStatus } from './cn-scenario-status.enum';
 
 /**
  * Scenario object from the Lab

@@ -1,9 +1,10 @@
-import { Body, Controller, Post, Res } from '@nestjs/common';
-import { HnAuthResponse, HnAuthService } from './hn-auth.service';
-import { Response } from 'express';
-import { hnJwtConfig } from './hn-jwt.config';
-import { HnCoreConfigService } from '../core/modules/core-config/hn-core-config.service';
 import { BlCredentials, BlCredentials2Fa, BlPublicSecure } from '@monorepo/back-core-lib';
+import { Body, Controller, Post, Res } from '@nestjs/common';
+import { Response } from 'express';
+
+import { HnCoreConfigService } from '../core/modules/core-config/hn-core-config.service';
+import { HnAuthResponse, HnAuthService } from './hn-auth.service';
+import { hnJwtConfig } from './hn-jwt.config';
 
 @Controller('auth')
 export class HnAuthController {
@@ -69,20 +70,20 @@ export class HnAuthController {
       token,
       this.configService.getDomain()
         ? {
-            path: '/',
-            maxAge: expiresInMilliseconds,
-            sameSite: 'lax',
-            domain: this.configService.getDomain(),
-            httpOnly: true,
-            secure: !this.configService.isLocal(),
-          }
+          path: '/',
+          maxAge: expiresInMilliseconds,
+          sameSite: 'lax',
+          domain: this.configService.getDomain(),
+          httpOnly: true,
+          secure: !this.configService.isLocal(),
+        }
         : {
-            path: '/',
-            maxAge: expiresInMilliseconds,
-            sameSite: 'lax',
-            httpOnly: true,
-            secure: !this.configService.isLocal(),
-          }
+          path: '/',
+          maxAge: expiresInMilliseconds,
+          sameSite: 'lax',
+          httpOnly: true,
+          secure: !this.configService.isLocal(),
+        }
     );
   }
 }

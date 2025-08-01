@@ -1,9 +1,10 @@
-import { HnTagKey, HnTagKeyType } from './hn-tag-key.entity';
-import { TeRichTextDTO } from '@monorepo/te-text-editor';
-import { HnSpaceDto, HnSpaceForLabDto } from '../../space-aggregate/space/hn-space.dto';
-import { HnTagCoAuthorDto } from '../tag-co-author/hn-tag-co-author.dto';
-import { HnUserDto } from '../../users/hn-user.dto';
 import { BlEntityWithIdDTO } from '@monorepo/back-core-lib';
+import { TeRichTextDTO } from '@monorepo/te-text-editor';
+
+import { HnSpaceDto, HnSpaceForLabDto } from '../../space-aggregate/space/hn-space.dto';
+import { HnUserDto } from '../../users/hn-user.dto';
+import { HnTagCoAuthorDto } from '../tag-co-author/hn-tag-co-author.dto';
+import { HnTagKey, HnTagKeyType } from './hn-tag-key.entity';
 
 export class HnTagKeyDto extends BlEntityWithIdDTO {
   technicalName: string;

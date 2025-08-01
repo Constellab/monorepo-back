@@ -1,30 +1,31 @@
-import { CnLabBillingMode, CnLabEntity, CnLabType } from './cn-lab.entity';
+import { BlBadRequestException } from '@monorepo/back-core-lib';
+import { ClStringHelper } from '@monorepo/core-lib';
+import { Injectable } from '@nestjs/common';
+import { EntityManager } from 'typeorm';
+
 import { CnBrickGWS, CnBrickVersionDTO } from '../cn-bricks/cn-brick.dto';
+import { CnBrickVersion } from '../cn-bricks/cn-brick-version.entity';
+import { CnBricksService } from '../cn-bricks/cn-bricks.service';
+import { CnCloudProviderName } from '../cn-cloud-providers/cn-cloud-provider.entity';
+import { CnCloudProviderAggregateService } from '../cn-cloud-providers/cn-cloud-provider-aggregate.service';
+import { CnCloudProviderRegion } from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
+import { CnLabConfigDto } from '../cn-lab-configs/cn-lab-config.dto';
+import { CnLabConfig } from '../cn-lab-configs/cn-lab-config.entity';
+import { CnLabConfigsService } from '../cn-lab-configs/cn-lab-configs.service';
+import { CnServerCloud } from '../cn-servers-info/server-cloud/cn-server-cloud.entity';
+import { CnServerCloudService } from '../cn-servers-info/server-cloud/cn-server-cloud.service';
+import { CnSpace } from '../cn-spaces/cn-space.entity';
+import { CnUser } from '../cn-users/cn-user.entity';
+import { CnLabBillingMode, CnLabEntity, CnLabType } from './cn-lab.entity';
+import { CnLabAggregateService } from './cn-lab-aggregate.service';
+import { CnLabGreenOptionFormDto } from './green-option/cn-lab-green-option.dto';
 import {
   CnLabGreenOptionStopAfterInactivityValue,
   CnLabGreenOptionType,
 } from './green-option/cn-lab-green-option.entity';
-import { CnBricksService } from '../cn-bricks/cn-bricks.service';
-import { CnLabConfigsService } from '../cn-lab-configs/cn-lab-configs.service';
-import { CnCloudProviderAggregateService } from '../cn-cloud-providers/cn-cloud-provider-aggregate.service';
-import { EntityManager } from 'typeorm';
 import { CnLabGreenOptionService } from './green-option/cn-lab-green-option.service';
-import { CnLabUserService } from './user/cn-lab-user.service';
-import { CnLabAggregateService } from './cn-lab-aggregate.service';
-import { CnUser } from '../cn-users/cn-user.entity';
-import { ClStringHelper } from '@monorepo/core-lib';
-import { CnCloudProviderRegion } from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
-import { CnLabConfig } from '../cn-lab-configs/cn-lab-config.entity';
-import { CnLabConfigDto } from '../cn-lab-configs/cn-lab-config.dto';
-import { CnBrickVersion } from '../cn-bricks/cn-brick-version.entity';
-import { BlBadRequestException } from '@monorepo/back-core-lib';
 import { CnLabUserRole } from './user/cn-lab-user.entity';
-import { CnLabGreenOptionFormDto } from './green-option/cn-lab-green-option.dto';
-import { Injectable } from '@nestjs/common';
-import { CnCloudProviderName } from '../cn-cloud-providers/cn-cloud-provider.entity';
-import { CnSpace } from '../cn-spaces/cn-space.entity';
-import { CnServerCloudService } from '../cn-servers-info/server-cloud/cn-server-cloud.service';
-import { CnServerCloud } from '../cn-servers-info/server-cloud/cn-server-cloud.entity';
+import { CnLabUserService } from './user/cn-lab-user.service';
 import { CnLabVolumeType } from './volume/cn-lab-volume-entity';
 
 export interface CnLabFactoryBrick {

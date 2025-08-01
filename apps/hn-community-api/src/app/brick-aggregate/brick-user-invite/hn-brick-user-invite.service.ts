@@ -1,16 +1,17 @@
+import { BlMailService } from '@monorepo/back-core-lib';
+import { ClStringHelper, ClSupportedLanguage } from '@monorepo/core-lib';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { HnBrickUserInvite } from './hn-brick-user-invite.entity';
 import { Repository } from 'typeorm';
-import { HnBrick } from '../brick/hn-brick.entity';
-import { ClStringHelper, ClSupportedLanguage } from '@monorepo/core-lib';
+
+import { HnInviteStatus } from '../../core/model/config/hn-invite-status.enum';
+import { HnMailTemplate } from '../../core/model/config/hn-mail-template.class';
+import { HnFrontService } from '../../core/service/hn-front.service';
+import { HnCurrentUserHelper } from '../../core/utils/hn-current-user.helper';
 import { HnUser } from '../../users/hn-user.entity';
 import { HnUserService } from '../../users/hn-user.service';
-import { HnMailTemplate } from '../../core/model/config/hn-mail-template.class';
-import { BlMailService } from '@monorepo/back-core-lib';
-import { HnInviteStatus } from '../../core/model/config/hn-invite-status.enum';
-import { HnCurrentUserHelper } from '../../core/utils/hn-current-user.helper';
-import { HnFrontService } from '../../core/service/hn-front.service';
+import { HnBrick } from '../brick/hn-brick.entity';
+import { HnBrickUserInvite } from './hn-brick-user-invite.entity';
 
 @Injectable()
 export class HnBrickUserInviteService {

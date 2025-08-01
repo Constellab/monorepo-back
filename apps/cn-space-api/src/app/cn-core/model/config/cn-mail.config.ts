@@ -1,5 +1,3 @@
-import { Injectable } from '@nestjs/common';
-import { InjectQueue, Processor } from '@nestjs/bullmq';
 import {
   BlCurrentUserIsAdmin,
   BlMailModuleAsyncOptions,
@@ -8,11 +6,14 @@ import {
   BlMailService,
   blTransportSpaceMailQueue,
 } from '@monorepo/back-core-lib';
+import { InjectQueue, Processor } from '@nestjs/bullmq';
+import { Injectable } from '@nestjs/common';
 import { Queue } from 'bullmq';
-import { CnCoreConfigService } from '../../modules/cn-core-config/cn-core-config.service';
 import { join } from 'path';
-import { CnCurrentUserHelper } from '../../utils/cn-current-user.helper';
+
 import { CnCoreModule } from '../../cn-core.module';
+import { CnCoreConfigService } from '../../modules/cn-core-config/cn-core-config.service';
+import { CnCurrentUserHelper } from '../../utils/cn-current-user.helper';
 
 /**
  * classes to configure the correct queue for the Mail module

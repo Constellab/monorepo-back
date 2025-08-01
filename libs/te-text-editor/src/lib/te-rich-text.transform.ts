@@ -1,6 +1,7 @@
-import { TeRichText, TeRichTextInput } from './te-rich-text.class';
 import { ClTransformFnParams } from '@monorepo/core-lib';
 import { Transform } from 'class-transformer';
+
+import { TeRichText, TeRichTextInput } from './te-rich-text.class';
 
 /**
  * Transform decorator for TeRichText

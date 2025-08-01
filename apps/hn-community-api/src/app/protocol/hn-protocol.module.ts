@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
-import { HnProtocolService } from './hn-protocol.service';
-import { HnProtocolController } from './hn-protocol.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
+import { HnProtocolController } from './hn-protocol.controller';
 import { HnProtocol } from './hn-protocol.entity';
+import { HnProtocolService } from './hn-protocol.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([HnProtocol])],

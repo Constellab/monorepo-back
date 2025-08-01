@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+
 import { CnNotificationService } from './cn-notification.service';
 
 describe('CnNotificationService', () => {

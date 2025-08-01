@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common';
-import { CnAuthService } from './cn-auth.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+
+import { CnUserEntity } from '../cn-users/cn-user.entity';
 import { CnUsersModule } from '../cn-users/cn-users.module';
 import { CnAuthController } from './cn-auth.controller';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { CnAuthService } from './cn-auth.service';
 import { CnUser2FA } from './cn-user-2-f-a/cn-user-2-f-a.entity';
 import { CnUser2FAService } from './cn-user-2-f-a/cn-user-2-f-a.service';
-import { CnUserEntity } from '../cn-users/cn-user.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([CnUser2FA, CnUserEntity]), CnUsersModule],

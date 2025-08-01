@@ -1,11 +1,12 @@
 import { DynamicModule, Global, Module } from '@nestjs/common';
+import { ModuleMetadata } from '@nestjs/common/interfaces';
+import { JwtModule } from '@nestjs/jwt';
+import { JwtModuleOptions } from '@nestjs/jwt/dist/interfaces/jwt-module-options.interface';
+import { PassportModule } from '@nestjs/passport';
+
 import { BL_JWT_CONFIG_PROVIDER, BlJwtConfig } from './bl-jwt.class';
 import { BlJwtService } from './bl-jwt.service';
 import { BlJwtStrategy } from './bl-jwt.strategy';
-import { ModuleMetadata } from '@nestjs/common/interfaces';
-import { JwtModule } from '@nestjs/jwt';
-import { PassportModule } from '@nestjs/passport';
-import { JwtModuleOptions } from '@nestjs/jwt/dist/interfaces/jwt-module-options.interface';
 
 export interface BlJwtModuleAsyncOptions extends Pick<ModuleMetadata, 'imports'> {
   useFactory?: (...args: any[]) => BlJwtConfig;

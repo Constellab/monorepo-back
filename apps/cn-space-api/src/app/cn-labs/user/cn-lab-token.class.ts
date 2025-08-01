@@ -1,5 +1,6 @@
-import { CnLab, CnLabEntity } from '../cn-lab.entity';
 import { Type } from 'class-transformer';
+
+import { CnLab, CnLabEntity } from '../cn-lab.entity';
 
 /**
  * Lab instance object with single use token to logon lab

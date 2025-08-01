@@ -1,10 +1,11 @@
-import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Query } from '@nestjs/common';
-import { HnCommentAggregateService } from './hn-comment-aggregate.service';
 import { BlPublic } from '@monorepo/back-core-lib';
 import { ClPage } from '@monorepo/core-lib';
+import { TeRichText, TeRichTextPipe } from '@monorepo/te-text-editor';
+import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Query } from '@nestjs/common';
+
 import { HnEntityType } from '../core/model/entities/hn-entity-type.enum';
 import { HnAbstractCommentDto } from './comment-core/hn-abstract-comment.dto';
-import { TeRichText, TeRichTextPipe } from '@monorepo/te-text-editor';
+import { HnCommentAggregateService } from './hn-comment-aggregate.service';
 
 @Controller('comment')
 export class HnCommentController {

@@ -1,15 +1,16 @@
-import { TeRichTextMigrator } from './te-rich-text-migrator.class';
+import { Duration } from 'luxon';
+
 import { TeBlockType } from './te-block.class';
+import {
+  TeRichTextBlockModification,
+  TeRichTextModificationType,
+} from './te-rich-text-block-modification.class';
 import {
   TeRichTextBlockModificationsDTO,
   TeRichTextBlockModificationWithUser,
   TeRichTextGetUserFunction,
 } from './te-rich-text-block-modification.dto';
-import {
-  TeRichTextBlockModification,
-  TeRichTextModificationType,
-} from './te-rich-text-block-modification.class';
-import { Duration } from 'luxon';
+import { TeRichTextMigrator } from './te-rich-text-migrator.class';
 import { TeUser } from './te-user.class';
 
 export class TeRichTextModifications {

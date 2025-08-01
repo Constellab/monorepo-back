@@ -1,5 +1,6 @@
 import { BlUnauthorizedException } from '@monorepo/back-core-lib';
 import { Injectable } from '@nestjs/common';
+
 import { CnUser } from '../cn-users/cn-user.entity';
 import { CnSpaceUser } from './cn-space-user.entity';
 import { CnSpaceUserService } from './cn-space-user.service';

@@ -1,6 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
-import { CnStatsService } from './cn-stats.service';
+
 import { CnStats } from './cn-stats.class';
+import { CnStatsService } from './cn-stats.service';
 
 @Controller('stats')
 export class CnStatsController {

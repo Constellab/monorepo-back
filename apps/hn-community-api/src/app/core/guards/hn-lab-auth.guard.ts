@@ -1,11 +1,12 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { BlExternalApiService, BlUnauthorizedException } from '@monorepo/back-core-lib';
-import { HnCoreConfigService } from '../modules/core-config/hn-core-config.service';
-import { lastValueFrom } from 'rxjs';
-import { HnUserService } from '../../users/hn-user.service';
-import { HnCurrentUserHelper } from '../utils/hn-current-user.helper';
-import { hnIsLabAllowWithoutUserAuth } from '../decorators/hn-lab-auth-guard.decorator';
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { lastValueFrom } from 'rxjs';
+
+import { HnUserService } from '../../users/hn-user.service';
+import { hnIsLabAllowWithoutUserAuth } from '../decorators/hn-lab-auth-guard.decorator';
+import { HnCoreConfigService } from '../modules/core-config/hn-core-config.service';
+import { HnCurrentUserHelper } from '../utils/hn-current-user.helper';
 
 interface HnLabAuthGuardResult {
   labId: string;

@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
 import { CnHierarchyObjectTagEntity } from './cn-hierarchy-object-tag.entity';
-import { CnHierarchyObjectTagHistoryEntity } from './cn-hierarchy-object-tag-history.entity';
 import { CnHierarchyObjectTagService } from './cn-hierarchy-object-tag.service';
+import { CnHierarchyObjectTagHistoryEntity } from './cn-hierarchy-object-tag-history.entity';
 import { CnHierarchyObjectTagHistoryService } from './cn-hierarchy-object-tag-history.service';
 
 @Module({

@@ -4,12 +4,13 @@ import { Injectable, Logger } from '@nestjs/common';
 import { AxiosError, AxiosResponse } from 'axios';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { BlExternalApiErrorService } from './bl-external-api-error.service';
+
 import {
   BlExternalApiError,
   BlExternalApiHttpOption,
   BlExternalApiHttpOptionObserve,
 } from './bl-external-api.class';
+import { BlExternalApiErrorService } from './bl-external-api-error.service';
 
 @Injectable()
 export class BlExternalApiService {

@@ -1,6 +1,9 @@
+import { protos } from '@google-cloud/compute';
 import { Injectable } from '@nestjs/common';
-import { CnCloudProviderService } from '../cn-cloud-provider.service';
+
 import { CnCloudProviderName } from '../../../cn-cloud-providers/cn-cloud-provider.entity';
+import { CnCoreConfigService } from '../../../cn-core/modules/cn-core-config/cn-core-config.service';
+import { CnCommandService } from '../../../cn-core/services/cn-command.service';
 import {
   CnCpCreateInstanceRequest,
   CnCpCreateVolumeRequest,
@@ -10,11 +13,9 @@ import {
   CnCpVolume,
   cnServerUbuntuUser,
 } from '../cn-cloud-provider.class';
-import { CnGcpService } from './cn-gcp.service';
+import { CnCloudProviderService } from '../cn-cloud-provider.service';
 import { CnGcpHelper } from './cn-gcp.class';
-import { CnCoreConfigService } from '../../../cn-core/modules/cn-core-config/cn-core-config.service';
-import { CnCommandService } from '../../../cn-core/services/cn-command.service';
-import { protos } from '@google-cloud/compute';
+import { CnGcpService } from './cn-gcp.service';
 
 /**
  * GCP Cloud Provider
@@ -23,7 +24,6 @@ import { protos } from '@google-cloud/compute';
  */
 @Injectable()
 export class CnCloudProviderGcpService extends CnCloudProviderService {
-
   // Ubuntu 22.04 LTS on GCP
   private static IMAGE_FAMILY = 'ubuntu-2204-lts';
   private static IMAGE_PROJECT = 'ubuntu-os-cloud';

@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+
 import { CnCoreConfigController } from './cn-core-config.controller';
 
 describe('CoreConfigController', () => {

@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
-import { CnUser } from '../../cn-users/cn-user.entity';
 import { BlUnauthorizedException } from '@monorepo/back-core-lib';
+import { Injectable } from '@nestjs/common';
+
+import { CnUser } from '../../cn-users/cn-user.entity';
 
 /**
  * Basic security that allow only G admin to modify entities and all users to read entities

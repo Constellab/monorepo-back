@@ -1,15 +1,16 @@
-import { Injectable } from '@nestjs/common';
 import { BlAbstractService, BlBadRequestException } from '@monorepo/back-core-lib';
-import { CnSpaceInvit } from './cn-space-invit.entity';
-import { DataSource, Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
-import { CnSpace } from './cn-space.entity';
-import { CnSpaceUserRole } from './cn-space-user.entity';
-import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
-import { CnSpaceInvitCreateDto } from './cn-space.dto';
-import { DateTime } from 'luxon';
 import { ClDateHelper, ClPage } from '@monorepo/core-lib';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { DateTime } from 'luxon';
+import { DataSource, Repository } from 'typeorm';
+
+import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
 import { CnUsersService } from '../cn-users/cn-users.service';
+import { CnSpaceInvitCreateDto } from './cn-space.dto';
+import { CnSpace } from './cn-space.entity';
+import { CnSpaceInvit } from './cn-space-invit.entity';
+import { CnSpaceUserRole } from './cn-space-user.entity';
 import { CnSpacesMailService } from './cn-spaces-mail.service';
 
 @Injectable()

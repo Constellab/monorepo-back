@@ -1,18 +1,17 @@
+import { BlBadRequestException, BlBucketConfig, BlMultipleBucketConfig } from '@monorepo/back-core-lib';
+import { ClPage } from '@monorepo/core-lib';
 import { Injectable, Logger } from '@nestjs/common';
-import { CnFolderWithStorage } from './cn-folder.entity';
+
+import { CnErrorText } from '../../cn-core/model/config/cn-error-text.class';
 import {
   CnBucket,
   CnBucketContentType,
   CnBucketLocationDTO,
 } from '../../cn-object-storages/cn-buckets/cn-bucket.entity';
-import { BlBadRequestException, BlBucketConfig, BlMultipleBucketConfig } from '@monorepo/back-core-lib';
-import { CnErrorText } from '../../cn-core/model/config/cn-error-text.class';
-import {
-  CnObjectStoragesAggregateService,
-} from '../../cn-object-storages/cn-object-storages-aggregate.service';
+import { CnObjectStoragesAggregateService } from '../../cn-object-storages/cn-object-storages-aggregate.service';
 import { CnFolderBucketsDTO } from './cn-folder.dto';
+import { CnFolderWithStorage } from './cn-folder.entity';
 import { CnFoldersService } from './cn-folders.service';
-import { ClPage } from '@monorepo/core-lib';
 
 /**
  * Class to handle folder bucket.

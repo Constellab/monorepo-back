@@ -1,8 +1,9 @@
+import { BlVersion } from '@monorepo/back-core-lib';
 import { Controller, Get, Param, ParseUUIDPipe } from '@nestjs/common';
-import { CnBricksService } from './cn-bricks.service';
+
 import { CnBrick } from './cn-brick.entity';
 import { CnBrickVersion } from './cn-brick-version.entity';
-import { BlVersion } from '@monorepo/back-core-lib';
+import { CnBricksService } from './cn-bricks.service';
 
 @Controller('bricks')
 export class CnBricksController {

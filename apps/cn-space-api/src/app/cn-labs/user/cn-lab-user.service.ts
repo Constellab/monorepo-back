@@ -2,6 +2,7 @@ import { BlBadRequestException } from '@monorepo/back-core-lib';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
+
 import { CnErrorText } from '../../cn-core/model/config/cn-error-text.class';
 import { CnUser } from '../../cn-users/cn-user.entity';
 import { CnLab, CnLabEntity } from '../cn-lab.entity';

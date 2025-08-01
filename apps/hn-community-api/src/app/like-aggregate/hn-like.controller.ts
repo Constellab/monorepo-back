@@ -1,7 +1,8 @@
-import { Controller, Get, Param, ParseUUIDPipe, Post } from '@nestjs/common';
-import { HnLikeAggregateService } from './hn-like-aggregate.service';
 import { BlPublic } from '@monorepo/back-core-lib';
+import { Controller, Get, Param, ParseUUIDPipe, Post } from '@nestjs/common';
+
 import { HnEntityType } from '../core/model/entities/hn-entity-type.enum';
+import { HnLikeAggregateService } from './hn-like-aggregate.service';
 
 @Controller('like')
 export class HnLikeController {

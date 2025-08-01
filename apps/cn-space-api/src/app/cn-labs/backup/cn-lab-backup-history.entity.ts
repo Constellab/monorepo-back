@@ -1,14 +1,15 @@
-import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
-import { CnBaseEntity } from '../../cn-core/model/entities/cn-base.entity';
-import { Exclude, Expose, Type } from 'class-transformer';
-import { CnLabEntity } from '../cn-lab.entity';
 import { BlLuxonDateTimeColumn, BlNotUpdatable } from '@monorepo/back-core-lib';
-import { CnLabBackupFrequency, CnLabBackupStatus, CnLabBackupTriggerMode } from './cn-lab-backup.dto';
-import { CnBucket } from '../../cn-object-storages/cn-buckets/cn-bucket.entity';
+import { Exclude, Expose, Type } from 'class-transformer';
 import { DateTime } from 'luxon';
-import { CnCloudProviderRegion } from '../../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
-import { CnLabBackupHistoryDetail } from './cn-lab-backup-history-detail.entity';
+import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 import { FindOptionsRelations } from 'typeorm/find-options/FindOptionsRelations';
+
+import { CnCloudProviderRegion } from '../../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
+import { CnBaseEntity } from '../../cn-core/model/entities/cn-base.entity';
+import { CnBucket } from '../../cn-object-storages/cn-buckets/cn-bucket.entity';
+import { CnLabEntity } from '../cn-lab.entity';
+import { CnLabBackupFrequency, CnLabBackupStatus, CnLabBackupTriggerMode } from './cn-lab-backup.dto';
+import { CnLabBackupHistoryDetail } from './cn-lab-backup-history-detail.entity';
 
 @Entity('lab_backup_history')
 export class CnLabBackupHistoryEntity extends CnBaseEntity {

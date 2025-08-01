@@ -1,4 +1,14 @@
+import { ClPage } from '@monorepo/core-lib';
+import { TeRichTextDTO } from '@monorepo/te-text-editor';
 import { Injectable } from '@nestjs/common';
+import { DateTime } from 'luxon';
+import { DataSource } from 'typeorm';
+
+import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
+import { HnSpaceAggregateService } from '../space-aggregate/hn-space-aggregate.service';
+import { HnSpace } from '../space-aggregate/space/hn-space.entity';
+import { HnUser } from '../users/hn-user.entity';
+import { HnTagCoAuthorService } from './tag-co-author/hn-tag-co-author.service';
 import { HnCreateTagKeyDto, HnTagKeyForLabDto } from './tag-key/hn-tag-key.dto';
 import {
   HnTagKey,
@@ -6,19 +16,10 @@ import {
   HnTagKeyType,
   HnTagParamSpec,
 } from './tag-key/hn-tag-key.entity';
-import { HnUser } from '../users/hn-user.entity';
-import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
-import { HnSpaceAggregateService } from '../space-aggregate/hn-space-aggregate.service';
-import { HnTagCoAuthorService } from './tag-co-author/hn-tag-co-author.service';
 import { HnTagKeyService } from './tag-key/hn-tag-key.service';
-import { ClPage } from '@monorepo/core-lib';
-import { HnSpace } from '../space-aggregate/space/hn-space.entity';
-import { TeRichTextDTO } from '@monorepo/te-text-editor';
 import { HnEditTagValueDto, HnTagValueForLabDto } from './tag-value/hn-tag-value.dto';
 import { HnTagValue } from './tag-value/hn-tag-value.entity';
 import { HnTagValueService } from './tag-value/hn-tag-value.service';
-import { DataSource } from 'typeorm';
-import { DateTime } from 'luxon';
 
 @Injectable()
 export class HnTagAggregateService {

@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { HnTechnicalFolder } from '../technical-folder/hn-technical-folder.entity';
+
 import { HnImportTechDocOtherClassesDTO } from '../brick-aggregate/brick/hn-brick.dto';
-import { HnTechnicalDocOtherClass } from './hn-technical-doc-other-class.entity';
 import { HnGeneratedDocEntity } from '../core/model/entities/hn-generated-doc-typing.entity';
+import { HnTechnicalFolder } from '../technical-folder/hn-technical-folder.entity';
+import { HnTechnicalDocOtherClass } from './hn-technical-doc-other-class.entity';
 
 @Injectable()
 export class HnTechnicalDocOtherClassService {

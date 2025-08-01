@@ -12,11 +12,12 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Queue } from 'bullmq';
 import { EntityManager, Repository } from 'typeorm';
+
 import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
 import { CnUser } from '../cn-users/cn-user.entity';
-import { CnSpaceUserSearch } from './cn-space-user-search.class';
-import { CnSpaceUser, CnSpaceUserEntity, CnSpaceUserRole, CnSpaceUserWithUser } from './cn-space-user.entity';
 import { CnSpace, CnSpaceEntity, CnSpaceType } from './cn-space.entity';
+import { CnSpaceUser, CnSpaceUserEntity, CnSpaceUserRole, CnSpaceUserWithUser } from './cn-space-user.entity';
+import { CnSpaceUserSearch } from './cn-space-user-search.class';
 
 @Injectable()
 export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUserEntity> {

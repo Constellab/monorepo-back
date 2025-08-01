@@ -1,20 +1,21 @@
-import { Injectable } from '@nestjs/common';
 import { BlAbstractService } from '@monorepo/back-core-lib';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { EntityManager, Repository } from 'typeorm';
+
+import { CnHierarchyObject } from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
+import { CnTag } from './cn-hierarchy-object-tag.dto';
 import {
   CnHierarchyObjectTagHistory,
   CnHierarchyObjectTagHistoryEntity,
   CnHierarchyObjectTagHistoryType,
 } from './cn-hierarchy-object-tag-history.entity';
-import { InjectRepository } from '@nestjs/typeorm';
-import { EntityManager, Repository } from 'typeorm';
-import { CnHierarchyObject } from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
-import { CnTag } from './cn-hierarchy-object-tag.dto';
 
 @Injectable()
 export class CnHierarchyObjectTagHistoryService extends BlAbstractService<CnHierarchyObjectTagHistoryEntity> {
   constructor(
     @InjectRepository(CnHierarchyObjectTagHistoryEntity)
-      repository: Repository<CnHierarchyObjectTagHistoryEntity>
+    repository: Repository<CnHierarchyObjectTagHistoryEntity>
   ) {
     super(repository, CnHierarchyObjectTagHistoryEntity);
   }

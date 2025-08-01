@@ -10,6 +10,7 @@ import {
 import { Injectable, Logger } from '@nestjs/common';
 import { existsSync } from 'fs';
 import { Exception } from 'handlebars';
+
 import { CnCoreConfigService } from '../../../cn-core/modules/cn-core-config/cn-core-config.service';
 import { CnGcpHelper, CnGcpInstance, CnGcpVolume } from './cn-gcp.class';
 
@@ -36,7 +37,7 @@ export class CnGcpService {
 
   /**
    * Creates a GCP instance and a volume.
-   * For now, we don't need to provide an ssh public key because it is configured at project
+   * For now, we don't need to provide an ssh public key because it is configured a project
    * level and new instances automatically inherit the project-level metadata.
    * @param createInstance
    */
@@ -300,7 +301,7 @@ export class CnGcpService {
     getOperation: () => Promise<[protos.google.cloud.compute.v1.IOperation, any, any]>
   ): Promise<void> {
     let i = 0;
-    // eslint-disable-next-line no-constant-condition
+
     while (true) {
       const [operation] = await getOperation();
 

@@ -1,9 +1,10 @@
-import { NestFactory } from '@nestjs/core';
 import { blGetCorsConfig } from '@monorepo/back-core-lib';
-import { HN_ENVIRONMENT_PROFILE_KEY, HnEnvironmentProfile } from './app/core/model/config/hn-config.class';
-import { json, urlencoded } from 'body-parser';
+import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { json, urlencoded } from 'body-parser';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+
+import { HN_ENVIRONMENT_PROFILE_KEY, HnEnvironmentProfile } from './app/core/model/config/hn-config.class';
 import { HnAppModule } from './hn-app.module';
 
 async function bootstrap(): Promise<void> {

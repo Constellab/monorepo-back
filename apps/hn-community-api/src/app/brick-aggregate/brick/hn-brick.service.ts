@@ -1,9 +1,3 @@
-import { Injectable } from '@nestjs/common';
-import { HnBrick } from './hn-brick.entity';
-import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptionsWhere, Repository } from 'typeorm';
-import { HnBrickDto, HnEditBrickDTO } from './hn-brick.dto';
-import { HnCurrentUserHelper } from '../../core/utils/hn-current-user.helper';
 import {
   BlAbstractPaginatedService,
   BlAbstractService,
@@ -18,8 +12,15 @@ import {
   BlUnauthorizedException,
 } from '@monorepo/back-core-lib';
 import { ClPage, ClStringHelper } from '@monorepo/core-lib';
-import { HnCoreConfigService } from '../../core/modules/core-config/hn-core-config.service';
 import { TeBlockFigureUploadedResponse } from '@monorepo/te-text-editor';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { FindOptionsWhere, Repository } from 'typeorm';
+
+import { HnCoreConfigService } from '../../core/modules/core-config/hn-core-config.service';
+import { HnCurrentUserHelper } from '../../core/utils/hn-current-user.helper';
+import { HnBrickDto, HnEditBrickDTO } from './hn-brick.dto';
+import { HnBrick } from './hn-brick.entity';
 
 @Injectable()
 export class HnBrickService extends BlAbstractService<HnBrick> {

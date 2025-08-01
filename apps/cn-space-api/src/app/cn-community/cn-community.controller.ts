@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, Query } from '@nestjs/common';
-import { CnCommunityBrickDto, CnCommunityBrickVersionDTO } from './dto/cn-community-brick.dto';
 import { ClPage } from '@monorepo/core-lib';
+import { Body, Controller, Get, Param, ParseIntPipe, Post, Query } from '@nestjs/common';
+
 import { CnCommunityService } from './cn-community.service';
+import { CnCommunityBrickDto, CnCommunityBrickVersionDTO } from './dto/cn-community-brick.dto';
 
 @Controller('community')
 export class CnCommunityController {

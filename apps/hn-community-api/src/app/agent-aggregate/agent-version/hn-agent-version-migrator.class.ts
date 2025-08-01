@@ -72,13 +72,13 @@ export class HnAgentVersionMigrator {
       if ((agentVersionDto.params as Record<string, any>)?.specs) {
         let params: string = '';
         for (const [key, value] of Object.entries((agentVersionDto.params as Record<string, any>).values)) {
-          params = (params + `${key}=${value}\n`) as string;
+          params = params + `${key}=${value}\n`;
         }
         agentVersionDto.params = params;
         return agentVersionDto;
       }
       if (agentVersionDto.params instanceof Array) {
-        agentVersionDto.params = (agentVersionDto.params as string[]).join('\n');
+        agentVersionDto.params = agentVersionDto.params.join('\n');
         return agentVersionDto;
       } else {
         return agentVersionDto;
@@ -93,7 +93,7 @@ export class HnAgentVersionMigrator {
           specs: {},
           values: {},
         };
-        for (const param of agentVersionDto.params as string[]) {
+        for (const param of agentVersionDto.params) {
           const [key, value] = param.trim().split('=');
           const v = this.parseValue(value);
           params['specs'][key] = this.getBasicParamSpecs(v);
@@ -122,11 +122,7 @@ export class HnAgentVersionMigrator {
   private parseValue(value: string): any {
     try {
       // Tenter de parser comme JSON
-      if (
-        (value as string).includes(',') &&
-        !(value as string).includes('[') &&
-        !(value as string).includes('{')
-      ) {
+      if (value.includes(',') && !value.includes('[') && !value.includes('{')) {
         value = '[' + value + ']';
       }
       return JSON.parse(value);

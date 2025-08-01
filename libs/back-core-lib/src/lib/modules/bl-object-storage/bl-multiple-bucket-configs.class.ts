@@ -35,12 +35,9 @@ export class BlMultipleBucketConfig {
   private bucketsAreEquals(config1: BlBucketConfig, config2: BlBucketConfig): boolean {
     if (config1.type !== config2.type) return false;
     if (config1.type === BlBucketType.AZURE) {
-      return this.azureBlobBucketAreEqual(
-        config1.config as BlAzureBlobContainerConfig,
-        config2.config as BlAzureBlobContainerConfig
-      );
+      return this.azureBlobBucketAreEqual(config1.config, config2.config as BlAzureBlobContainerConfig);
     } else {
-      return this.s3BucketAreEqual(config1.config as BlS3BucketConfig, config2.config as BlS3BucketConfig);
+      return this.s3BucketAreEqual(config1.config, config2.config as BlS3BucketConfig);
     }
   }
 

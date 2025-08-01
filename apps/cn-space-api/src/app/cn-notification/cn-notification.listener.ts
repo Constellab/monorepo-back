@@ -1,7 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { CnNotificationService } from './cn-notification.service';
 import { OnEvent } from '@nestjs/event-emitter';
+
 import { CnSpaceEvent, cnSpaceEventName } from '../cn-spaces/cn-space.event';
+import { CnNotificationService } from './cn-notification.service';
 
 @Injectable()
 export class CnNotificationListener {

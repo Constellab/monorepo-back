@@ -1,9 +1,10 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { HnCoreModule } from '../core/hn-core.module';
-import { HnPublicController } from './hn-public.controller';
-import { HnIconModule } from '../icon/hn-icon.module';
-import * as cors from 'cors';
 import { blGetCorsConfig } from '@monorepo/back-core-lib';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import * as cors from 'cors';
+
+import { HnCoreModule } from '../core/hn-core.module';
+import { HnIconModule } from '../icon/hn-icon.module';
+import { HnPublicController } from './hn-public.controller';
 
 @Module({
   imports: [HnCoreModule, HnIconModule],

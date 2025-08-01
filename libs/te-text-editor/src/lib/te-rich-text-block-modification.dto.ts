@@ -1,12 +1,13 @@
+import { ClLuxonDateTimeTransform } from '@monorepo/core-lib';
+import { DateTime } from 'luxon';
+
+import { TeBlockData, TeBlockType } from './te-block.class';
 import {
   TeRichTextBlockModification,
   TeRichTextModificationDifference,
   TeRichTextModificationType,
 } from './te-rich-text-block-modification.class';
-import { TeBlockType, TeBlockData } from './te-block.class';
 import { TeUser } from './te-user.class';
-import { DateTime } from 'luxon';
-import { ClLuxonDateTimeTransform } from '@monorepo/core-lib';
 
 export type TeRichTextGetUserFunction = (userId: string) => Promise<TeUser>;
 

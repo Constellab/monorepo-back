@@ -1,9 +1,10 @@
-import { Column, Entity, ManyToOne, Unique } from 'typeorm';
-import { CnBaseEntity } from '../../cn-core/model/entities/cn-base.entity';
-import { CnCloudProvider } from '../cn-cloud-provider.entity';
-import { CnCity } from '../../cn-city/cn-city.entity';
 import { BlTrim } from '@monorepo/back-core-lib';
 import { Type } from 'class-transformer';
+import { Column, Entity, ManyToOne, Unique } from 'typeorm';
+
+import { CnCity } from '../../cn-city/cn-city.entity';
+import { CnBaseEntity } from '../../cn-core/model/entities/cn-base.entity';
+import { CnCloudProvider } from '../cn-cloud-provider.entity';
 
 export enum CnCloudProviderRegionType {
   ALL = 'ALL', // server and s3

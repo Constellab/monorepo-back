@@ -1,6 +1,7 @@
-import { BlFile } from '../models/bl-file.class';
 import imageSize from 'image-size';
 import { ISizeCalculationResult } from 'image-size/dist/types/interface';
+
+import { BlFile } from '../models/bl-file.class';
 
 export class BlImageHelper {
   /**

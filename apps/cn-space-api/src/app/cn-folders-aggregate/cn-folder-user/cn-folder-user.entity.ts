@@ -1,9 +1,10 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn, Relation } from 'typeorm';
-import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
-import { Exclude, Type } from 'class-transformer';
-import { CnHierarchyObjectEntity } from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
 import { BlLuxonDateTimeColumn, BlNotUpdatable } from '@monorepo/back-core-lib';
+import { Exclude, Type } from 'class-transformer';
 import { DateTime } from 'luxon';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn, Relation } from 'typeorm';
+
+import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
+import { CnHierarchyObjectEntity } from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
 
 export enum CnRootFolderNotifOptions {
   NOTIF_ONLY = 'NOTIF_ONLY',

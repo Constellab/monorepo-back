@@ -1,10 +1,11 @@
+import { BlParsePipe, BlPublicSecure } from '@monorepo/back-core-lib';
 import { Body, Controller, Get, HttpException, Param, ParseUUIDPipe, Post, Put, Res } from '@nestjs/common';
 import { Response } from 'express';
+
+import { CnFrontService } from '../../cn-core/services/cn-front.service';
+import { CnUserUpdateLicenseDTO } from '../cn-user.dto';
 import { CnUser, CnUserEntity } from '../cn-user.entity';
 import { CnUserAccountsService } from './cn-user-accounts.service';
-import { CnFrontService } from '../../cn-core/services/cn-front.service';
-import { BlParsePipe, BlPublicSecure } from '@monorepo/back-core-lib';
-import { CnUserUpdateLicenseDTO } from '../cn-user.dto';
 
 /**
  * Open routes to manage users' accounts

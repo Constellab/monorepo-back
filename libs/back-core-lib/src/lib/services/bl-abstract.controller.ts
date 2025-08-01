@@ -1,7 +1,8 @@
 import { Body, Delete, Get, Param, ParseUUIDPipe, Post, Put } from '@nestjs/common';
+
+import { BlEntityWithId } from '../models/bl-entity-with-id.entity';
 import { BlParsePipe } from '../pipes/bl-parse.pipe';
 import { BlAbstractService } from './bl-abstract.service';
-import { BlEntityWithId } from '../models/bl-entity-with-id.entity';
 
 export abstract class CnAbstractController<T extends BlEntityWithId> {
   private readonly parsePipe: BlParsePipe<T>;

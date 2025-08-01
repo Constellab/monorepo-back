@@ -1,8 +1,9 @@
-import { Column, Entity, ManyToOne, Unique } from 'typeorm';
-import { HnBaseEntity } from '../../core/model/entities/hn-base.entity';
 import { BlNotUpdatable, BlVersion } from '@monorepo/back-core-lib';
-import { HnBrickMajorVersion } from '../brick-major-version/hn-brick-major-version.entity';
+import { Column, Entity, ManyToOne, Unique } from 'typeorm';
+
 import { HnBrickVersionRefState } from '../../brick-version-reference/hn-brick-version-reference.entity';
+import { HnBaseEntity } from '../../core/model/entities/hn-base.entity';
+import { HnBrickMajorVersion } from '../brick-major-version/hn-brick-major-version.entity';
 
 export enum HnRepoType {
   PIP = 'PIP',

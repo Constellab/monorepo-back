@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
+
 import { CnCoreConfigService } from '../../cn-core/modules/cn-core-config/cn-core-config.service';
 import { CnLabManagerInitConfig } from '../../cn-external-lab-api/model/cn-lab-manager.class';
-import { CnLabManagerService } from '../cn-lab-manager.service';
 import { CnLab, CnLabWithSpace } from '../cn-lab.entity';
+import { CnLabManagerService } from '../cn-lab-manager.service';
 import { CnLabDesktopGenerateConfig } from './cn-lab-desktop.class';
 
 @Injectable()

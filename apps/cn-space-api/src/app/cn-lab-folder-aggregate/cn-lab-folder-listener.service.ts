@@ -1,19 +1,20 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
+
 import {
   CnFolderEvent,
   CnFolderEventMoveObjectToFolderData,
   cnFolderEventName,
   cnRemoveFolderFromAllLabsEventName,
 } from '../cn-folders-aggregate/cn-folder.event';
-import { CnFolder } from '../cn-folders-aggregate/cn-folders/cn-folder.entity';
 import { CnFolderAggregateService } from '../cn-folders-aggregate/cn-folder-aggregate.service';
-import { CnLabFolderAggregateService } from './cn-lab-folder-aggregate.service';
+import { CnFolder } from '../cn-folders-aggregate/cn-folders/cn-folder.entity';
 import { CnFolderBucketService } from '../cn-folders-aggregate/cn-folders/cn-folder-bucket.service';
 import {
   CnHierarchyObject,
   CnHierarchyObjectType,
 } from '../cn-folders-aggregate/cn-hierarchy-objects/cn-hierarchy-object.entity';
+import { CnLabFolderAggregateService } from './cn-lab-folder-aggregate.service';
 
 @Injectable()
 export class CnLabFolderListener {

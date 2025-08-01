@@ -1,12 +1,13 @@
-import { Column, Entity, ManyToOne } from 'typeorm';
-import { HnFolder } from '../folder/hn-folder.entity';
-import { HnBaseEntity } from '../../core/model/entities/hn-base.entity';
 import {
   TeRichText,
   TeRichTextAggregate,
   TeRichTextDTO,
   TeRichTextModifications,
 } from '@monorepo/te-text-editor';
+import { Column, Entity, ManyToOne } from 'typeorm';
+
+import { HnBaseEntity } from '../../core/model/entities/hn-base.entity';
+import { HnFolder } from '../folder/hn-folder.entity';
 
 export interface HnDocumentationSearchDTO {
   id: string;

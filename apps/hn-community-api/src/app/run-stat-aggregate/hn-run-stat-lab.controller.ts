@@ -1,9 +1,10 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { HnRunStatAgService } from './hn-run-stat-ag.service';
+
 import {
   HnLabAllowWithoutUserAuthentication,
   HnLabGuard,
 } from '../core/decorators/hn-lab-auth-guard.decorator';
+import { HnRunStatAgService } from './hn-run-stat-ag.service';
 import { HnRunStatFromLabDto } from './run-stat/hn-run-stat.dto';
 
 @HnLabGuard()

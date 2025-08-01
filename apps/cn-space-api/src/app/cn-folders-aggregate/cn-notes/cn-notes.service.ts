@@ -3,6 +3,7 @@ import { TeRichText, TeRichTextAggregate, TeRichTextModifications } from '@monor
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
+
 import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
 import { CnLabConfigsService } from '../../cn-lab-configs/cn-lab-configs.service';
 import { CnDocument, CnDocumentEntity, CnDocumentType } from '../cn-documents/cn-document.entity';

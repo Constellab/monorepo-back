@@ -1,12 +1,13 @@
-import { Injectable } from '@nestjs/common';
-import { HnAbstractCommentService } from '../comment-core/hn-abstract-comment.service';
-import { HnTagKey } from '../../tag-aggregate/tag-key/hn-tag-key.entity';
-import { InjectRepository } from '@nestjs/typeorm';
-import { HnCommentTag } from './hn-comment-tag.entity';
-import { Repository } from 'typeorm';
-import { EventEmitter2 } from '@nestjs/event-emitter';
-import { HnTagKeyService } from '../../tag-aggregate/tag-key/hn-tag-key.service';
 import { TeRichText } from '@monorepo/te-text-editor';
+import { Injectable } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+
+import { HnTagKey } from '../../tag-aggregate/tag-key/hn-tag-key.entity';
+import { HnTagKeyService } from '../../tag-aggregate/tag-key/hn-tag-key.service';
+import { HnAbstractCommentService } from '../comment-core/hn-abstract-comment.service';
+import { HnCommentTag } from './hn-comment-tag.entity';
 
 @Injectable()
 export class HnCommentTagService extends HnAbstractCommentService<HnTagKey> {

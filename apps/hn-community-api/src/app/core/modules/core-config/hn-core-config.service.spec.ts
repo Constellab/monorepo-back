@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+
 import { HnCoreConfigService } from './hn-core-config.service';
 
 describe('HnCoreConfigService', () => {

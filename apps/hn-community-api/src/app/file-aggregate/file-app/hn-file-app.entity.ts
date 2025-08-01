@@ -1,9 +1,10 @@
 import { Entity, ManyToOne } from 'typeorm';
-import { HnAbstractFileEntity } from '../file-core/hn-abstract-file.entity';
+
 import {
   HnCommunityApp,
   HnCommunityAppEntity,
 } from '../../community-app-aggregate/community-app/hn-community-app.entity';
+import { HnAbstractFileEntity } from '../file-core/hn-abstract-file.entity';
 
 @Entity('file_app')
 export class HnFileApp extends HnAbstractFileEntity<HnCommunityApp> {

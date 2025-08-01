@@ -1,11 +1,12 @@
-import { Column, Entity, ManyToOne, Unique } from 'typeorm';
-import { CnBaseEntity } from '../../cn-core/model/entities/cn-base.entity';
 import { BlNotUpdatable } from '@monorepo/back-core-lib';
+import { Exclude } from 'class-transformer';
+import { Column, Entity, ManyToOne, Unique } from 'typeorm';
+
+import { CnBaseEntity } from '../../cn-core/model/entities/cn-base.entity';
 import {
   CnHierarchyObject,
   CnHierarchyObjectEntity,
 } from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
-import { Exclude } from 'class-transformer';
 
 @Unique('hierarchy_object_tag_key_value_lab', ['key', 'value', 'hierarchyObject'])
 @Entity('hierarchy_object_tag')

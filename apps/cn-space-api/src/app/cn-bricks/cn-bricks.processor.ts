@@ -1,9 +1,10 @@
-import { Injectable, Logger } from '@nestjs/common';
 import { blTransportCommunityBrickQueue } from '@monorepo/back-core-lib';
 import { Processor, WorkerHost } from '@nestjs/bullmq';
+import { Injectable, Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
-import { CnBricksService } from './cn-bricks.service';
+
 import { CnBrickSaveDTO } from './cn-brick.dto';
+import { CnBricksService } from './cn-bricks.service';
 
 @Processor(blTransportCommunityBrickQueue)
 @Injectable()

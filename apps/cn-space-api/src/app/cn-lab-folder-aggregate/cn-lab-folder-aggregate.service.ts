@@ -1,6 +1,7 @@
 import { BlBadRequestException, BlUnauthorizedException } from '@monorepo/back-core-lib';
 import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
+
 import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
 import { CnExternalLabApiService } from '../cn-external-lab-api/cn-external-lab-api.service';
@@ -11,12 +12,12 @@ import { CnExternalLabSyncedObjectDTO } from '../cn-external-lab-api/model/cn-ex
 import { CnFolderAggregateService } from '../cn-folders-aggregate/cn-folder-aggregate.service';
 import { CnHierarchyObjectWithChildren } from '../cn-folders-aggregate/cn-hierarchy-objects/cn-hierarchy-object.entity';
 import { CnNoteAggregateService } from '../cn-folders-aggregate/cn-notes/cn-note-aggregate.service';
-import { CnResourceAggregateService } from '../cn-folders-aggregate/cn-resources/cn-resource-aggregate.service';
 import { CnResourceAccessDTO } from '../cn-folders-aggregate/cn-resources/cn-resource.dto';
+import { CnResourceAggregateService } from '../cn-folders-aggregate/cn-resources/cn-resource-aggregate.service';
 import { CnScenarioAggregateService } from '../cn-folders-aggregate/cn-scenarios/cn-scenario-aggregate.service';
-import { CnLabAggregateService } from '../cn-labs/cn-lab-aggregate.service';
 import { CnLabGlabApiInfo } from '../cn-labs/cn-lab.dto';
 import { CnLab } from '../cn-labs/cn-lab.entity';
+import { CnLabAggregateService } from '../cn-labs/cn-lab-aggregate.service';
 import { CnLabFolder, CnLabFolderWithLab, CnLabFolderWithRootFolder } from './cn-lab-folder.entity';
 import { CnLabFolderService } from './cn-lab-folder.service';
 

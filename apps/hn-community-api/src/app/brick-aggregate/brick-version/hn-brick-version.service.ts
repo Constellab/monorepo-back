@@ -1,8 +1,3 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { HnBrickVersion, HnNewVersionDTO, HnReferenceDTO, HnVersionType } from './hn-brick-version.entity';
-import { DataSource, EntityManager, IsNull, Repository } from 'typeorm';
-import { HnBrickMajorVersion, HnVersionState } from '../brick-major-version/hn-brick-major-version.entity';
 import {
   BlAbstractPaginatedService,
   BlAbstractService,
@@ -10,18 +5,24 @@ import {
   BlUnauthorizedException,
   BlVersion,
 } from '@monorepo/back-core-lib';
-import { HnBrickTransportDto } from '../brick/hn-brick.dto';
-import { HnCurrentUserHelper } from '../../core/utils/hn-current-user.helper';
 import { ClPage, ClStringHelper } from '@monorepo/core-lib';
-import { HnBrickVersionReferenceService } from '../../brick-version-reference/hn-brick-version-reference.service';
+import { InjectQueue } from '@nestjs/bullmq';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Queue } from 'bullmq';
+import { DataSource, EntityManager, IsNull, Repository } from 'typeorm';
+
 import {
   HnBrickVersionReference,
   HnBrickVersionRefState,
 } from '../../brick-version-reference/hn-brick-version-reference.entity';
+import { HnBrickVersionReferenceService } from '../../brick-version-reference/hn-brick-version-reference.service';
 import { HnErrorText } from '../../core/model/config/hn-error-text.class';
+import { HnCurrentUserHelper } from '../../core/utils/hn-current-user.helper';
+import { HnBrickTransportDto } from '../brick/hn-brick.dto';
+import { HnBrickMajorVersion, HnVersionState } from '../brick-major-version/hn-brick-major-version.entity';
 import { HnBrickVersionDto } from './hn-brick-version.dto';
-import { InjectQueue } from '@nestjs/bullmq';
-import { Queue } from 'bullmq';
+import { HnBrickVersion, HnNewVersionDTO, HnReferenceDTO, HnVersionType } from './hn-brick-version.entity';
 
 @Injectable()
 export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {

@@ -10,10 +10,11 @@ import {
 import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Put, Res, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
+
 import { CnHierarchyObjectTokenDecorator } from '../cn-hierarchy-object-token/cn-hierarchy-object-token-guard.decorator';
 import { CnConstellabDocumentAggregateService } from './cn-constellab-document.aggregate.service';
-import { CnConstellabDocumentDTO } from './cn-document-dto.class';
 import { CnDocument } from './cn-document.entity';
+import { CnConstellabDocumentDTO } from './cn-document-dto.class';
 
 @Controller('constellab-documents')
 export class CnConstellabDocumentController {

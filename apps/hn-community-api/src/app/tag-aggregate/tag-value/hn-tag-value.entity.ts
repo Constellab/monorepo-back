@@ -1,5 +1,6 @@
-import { Column, Entity, ManyToOne, Unique } from 'typeorm';
 import { BlEntityWithId } from '@monorepo/back-core-lib';
+import { Column, Entity, ManyToOne, Unique } from 'typeorm';
+
 import { HnTagKey } from '../tag-key/hn-tag-key.entity';
 
 @Unique(['value', 'tagKey'])

@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { HnCommunityAppService } from './community-app/hn-community-app.service';
 import { OnEvent } from '@nestjs/event-emitter';
+
 import { HnCommentEventData, HnEventType, HnLikeEventData } from '../core/utils/hn-events.enum';
+import { HnCommunityAppService } from './community-app/hn-community-app.service';
 
 @Injectable()
 export class HnCommunityAppListener {

@@ -1,7 +1,3 @@
-import { ManyToOne, Relation } from 'typeorm';
-import { CnUser, CnUserEntity } from '../../../cn-users/cn-user.entity';
-import { Type } from 'class-transformer';
-import { DateTime } from 'luxon';
 import {
   BlEntityWithId,
   BlEntityWithIdDTO,
@@ -9,6 +5,11 @@ import {
   BlNotUpdatable,
 } from '@monorepo/back-core-lib';
 import { ClLuxonDateTimeTransform } from '@monorepo/core-lib';
+import { Type } from 'class-transformer';
+import { DateTime } from 'luxon';
+import { ManyToOne, Relation } from 'typeorm';
+
+import { CnUser, CnUserEntity } from '../../../cn-users/cn-user.entity';
 
 /**
  * Basic entity with same info as CnBaseEntity

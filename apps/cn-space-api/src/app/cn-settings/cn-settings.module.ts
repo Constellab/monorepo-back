@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
-import { CnCoreModule } from '../cn-core/cn-core.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
+import { CnCoreModule } from '../cn-core/cn-core.module';
+import { CnSettingsController } from './cn-settings.controller';
 import { CnSettings } from './cn-settings.entity';
 import { CnSettingsService } from './cn-settings.service';
-import { CnSettingsController } from './cn-settings.controller';
 import { CnYoutubeService } from './cn-youtube.service';
 
 @Module({

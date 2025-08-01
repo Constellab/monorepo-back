@@ -1,5 +1,6 @@
-import { Column, Entity, Unique } from 'typeorm';
 import { BlEntityWithId } from '@monorepo/back-core-lib';
+import { Column, Entity, Unique } from 'typeorm';
+
 import { HnRunStat } from '../run-stat/hn-run-stat.entity';
 
 export enum HnRunStatAggregateObjectType {

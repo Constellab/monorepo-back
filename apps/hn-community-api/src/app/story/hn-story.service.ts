@@ -1,9 +1,3 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { HnStory, HnStoryStatus } from './hn-story.entity';
-import { DataSource, EntityManager, FindOptionsOrder, FindOptionsWhere, In, Like, Repository } from 'typeorm';
-import { HnTopicService } from '../topic/hn-topic.service';
-import { ClPage, ClStringHelper } from '@monorepo/core-lib';
 import {
   BlAbstractPaginatedService,
   BlAbstractService,
@@ -14,31 +8,38 @@ import {
   BlSearchParams,
   BlUnauthorizedException,
 } from '@monorepo/back-core-lib';
-import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
-import { HnCreateStoryDto, HnStoryDto, HnStoryFilter } from './hn-story.dto';
-import { HnTopicDto } from '../topic/hn-topic.dto';
-import { HnTopic } from '../topic/hn-topic.entity';
-import { DateTime } from 'luxon';
-import { HnStoryAuthorService } from '../story-author/hn-story-author.service';
-import { HnStoryCoAuthor } from '../story-author/hn-story-author.entity';
-import { HnStoryCoAuthorInvite } from '../story-author-invite/hn-story-author-invite.entity';
-import { HnInviteStatus } from '../core/model/config/hn-invite-status.enum';
-import { HnSiteMapEnumChangefreq, HnSitemapItemBase } from '../core/model/config/hn-site-map.class';
-import { HnFrontService } from '../core/service/hn-front.service';
-import { HnFileStoryService } from '../file-aggregate/file-story/hn-file-story.service';
-import {
-  HnAbstractFileEntityDTO,
-  HnUploadFileResponseDto,
-} from '../file-aggregate/file-core/hn-abstract-file.dto';
-import { HnUserService } from '../users/hn-user.service';
+import { ClPage, ClStringHelper } from '@monorepo/core-lib';
 import {
   TeBlockFigureUploadedResponse,
   TeRichText,
   TeRichTextAggregate,
   TeRichTextBlockModificationWithUser,
 } from '@monorepo/te-text-editor';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { DateTime } from 'luxon';
+import { DataSource, EntityManager, FindOptionsOrder, FindOptionsWhere, In, Like, Repository } from 'typeorm';
+
+import { HnInviteStatus } from '../core/model/config/hn-invite-status.enum';
+import { HnSiteMapEnumChangefreq, HnSitemapItemBase } from '../core/model/config/hn-site-map.class';
 import { HnCoreConfigService } from '../core/modules/core-config/hn-core-config.service';
+import { HnFrontService } from '../core/service/hn-front.service';
+import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
 import { HnMarkdownFile, HnZipHelper } from '../core/utils/hn-zip.helper';
+import {
+  HnAbstractFileEntityDTO,
+  HnUploadFileResponseDto,
+} from '../file-aggregate/file-core/hn-abstract-file.dto';
+import { HnFileStoryService } from '../file-aggregate/file-story/hn-file-story.service';
+import { HnStoryCoAuthor } from '../story-author/hn-story-author.entity';
+import { HnStoryAuthorService } from '../story-author/hn-story-author.service';
+import { HnStoryCoAuthorInvite } from '../story-author-invite/hn-story-author-invite.entity';
+import { HnTopicDto } from '../topic/hn-topic.dto';
+import { HnTopic } from '../topic/hn-topic.entity';
+import { HnTopicService } from '../topic/hn-topic.service';
+import { HnUserService } from '../users/hn-user.service';
+import { HnCreateStoryDto, HnStoryDto, HnStoryFilter } from './hn-story.dto';
+import { HnStory, HnStoryStatus } from './hn-story.entity';
 
 @Injectable()
 export class HnStoryService extends BlAbstractService<HnStory> {

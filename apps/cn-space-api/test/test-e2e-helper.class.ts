@@ -1,12 +1,13 @@
-import { CnAppModule } from '../src/cn-app.module';
-import { CnCoreConfigService } from '../src/app/cn-core/modules/cn-core-config/cn-core-config.service';
-import { TestConfigService } from './test-config.service';
 import { INestApplication } from '@nestjs/common';
-import supertest, { SuperTest } from 'supertest';
 import { Test } from '@nestjs/testing';
-import { TestRequest } from './test-request.class';
-import { TestGetOptions, TestIdOptions } from './test-e2e-helper.config';
+import supertest, { SuperTest } from 'supertest';
+
+import { CnCoreConfigService } from '../src/app/cn-core/modules/cn-core-config/cn-core-config.service';
+import { CnAppModule } from '../src/cn-app.module';
 import { CnTestDbInitializerService } from './cn-test.module';
+import { TestConfigService } from './test-config.service';
+import { TestGetOptions, TestIdOptions } from './test-e2e-helper.config';
+import { TestRequest } from './test-request.class';
 
 export class TestE2EHelper {
   public app: INestApplication;

@@ -1,7 +1,7 @@
 import { CnHierarchyObject } from '../../cn-folders-aggregate/cn-hierarchy-objects/cn-hierarchy-object.entity';
 import { CnLab } from '../../cn-labs/cn-lab.entity';
-import { CnSpaceUserRole } from '../../cn-spaces/cn-space-user.entity';
 import { CnSpace } from '../../cn-spaces/cn-space.entity';
+import { CnSpaceUserRole } from '../../cn-spaces/cn-space-user.entity';
 import { CnUserSpaceInfo } from '../../cn-users/cn-user.dto';
 import { CnUser } from '../../cn-users/cn-user.entity';
 

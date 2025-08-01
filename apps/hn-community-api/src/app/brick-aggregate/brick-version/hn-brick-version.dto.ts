@@ -1,6 +1,6 @@
-import { HnBrickVersion, HnVersionType } from './hn-brick-version.entity';
 import { HnBaseDto } from '../../core/model/entities/hn-base.dto';
 import { HnBrickMajorVersionDTO } from '../brick-major-version/hn-brick-major-version.dto';
+import { HnBrickVersion, HnVersionType } from './hn-brick-version.entity';
 
 export class HnBrickVersionDto extends HnBaseDto {
   minor: number;

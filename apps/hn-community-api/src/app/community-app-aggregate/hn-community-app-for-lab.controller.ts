@@ -1,8 +1,9 @@
-import { HnLabAllowWithoutUserAuthentication } from '../core/decorators/hn-lab-auth-guard.decorator';
-import { Body, Controller, Post } from '@nestjs/common';
-import { HnCommunityAppAggregateService } from './hn-community-app-aggregate.service';
-import { HnCommunityAppStatLabDto } from './community-app-stat/hn-community-app-stat.dto';
 import { BlParsePipe } from '@monorepo/back-core-lib';
+import { Body, Controller, Post } from '@nestjs/common';
+
+import { HnLabAllowWithoutUserAuthentication } from '../core/decorators/hn-lab-auth-guard.decorator';
+import { HnCommunityAppStatLabDto } from './community-app-stat/hn-community-app-stat.dto';
+import { HnCommunityAppAggregateService } from './hn-community-app-aggregate.service';
 
 @HnLabAllowWithoutUserAuthentication()
 @Controller('app/for-lab')

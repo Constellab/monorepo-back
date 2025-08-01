@@ -1,6 +1,7 @@
 import { ClDateHelper, ClLuxonDateTransform } from '@monorepo/core-lib';
 import { Type } from 'class-transformer';
 import { DateTime } from 'luxon';
+
 import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
 
 export type CnLabKpiPeriod =

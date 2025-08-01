@@ -1,7 +1,8 @@
 import { DynamicModule, Module } from '@nestjs/common';
-import { CnCoreConfigService } from './cn-core-config.service';
 import { ConfigModule } from '@nestjs/config';
+
 import { CnCoreConfigController } from './cn-core-config.controller';
+import { CnCoreConfigService } from './cn-core-config.service';
 import { CN_CORE_MODULE_CONFIG, CnCoreConfigModuleConfig } from './cn-core-module-config.class';
 
 @Module({})

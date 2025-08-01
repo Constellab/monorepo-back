@@ -1,13 +1,14 @@
-import { Injectable } from '@nestjs/common';
 import { BlMailService } from '@monorepo/back-core-lib';
-import { CnRequestNewLicensesDto } from './cn-space.dto';
-import { CnUserSpaceInfo } from '../cn-users/cn-user.dto';
+import { ClSupportedLanguage } from '@monorepo/core-lib';
+import { Injectable } from '@nestjs/common';
+
 import { CnMailTemplate } from '../cn-core/model/config/cn-mail-template.class';
 import { CnCoreConfigService } from '../cn-core/modules/cn-core-config/cn-core-config.service';
-import { CnSpaceInvit } from './cn-space-invit.entity';
-import { ClSupportedLanguage } from '@monorepo/core-lib';
-import { CnUser } from '../cn-users/cn-user.entity';
 import { CnFrontService } from '../cn-core/services/cn-front.service';
+import { CnUserSpaceInfo } from '../cn-users/cn-user.dto';
+import { CnUser } from '../cn-users/cn-user.entity';
+import { CnRequestNewLicensesDto } from './cn-space.dto';
+import { CnSpaceInvit } from './cn-space-invit.entity';
 
 /**
  * Service that handle mail for spaces

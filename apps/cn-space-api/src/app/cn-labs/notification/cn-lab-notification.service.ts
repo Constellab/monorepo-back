@@ -1,5 +1,6 @@
 import { BlBadRequestException } from '@monorepo/back-core-lib';
 import { Injectable } from '@nestjs/common';
+
 import { CnFrontService } from '../../cn-core/services/cn-front.service';
 import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
 import { CnNotificationType } from '../../cn-notification/cn-notification.entity';

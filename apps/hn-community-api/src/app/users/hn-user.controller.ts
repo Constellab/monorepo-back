@@ -1,10 +1,11 @@
-import { Body, Controller, Get, Param, ParseUUIDPipe, Put } from '@nestjs/common';
-import { HnUserService } from './hn-user.service';
-import { HnUser } from './hn-user.entity';
 import { BlParseEnumPipe, BlPublic } from '@monorepo/back-core-lib';
 import { ClSupportedLanguage, ClTheme } from '@monorepo/core-lib';
-import { HnUserDetailDto, HnUserEditDetailDto } from './hn-user.dto';
+import { Body, Controller, Get, Param, ParseUUIDPipe, Put } from '@nestjs/common';
+
 import { HnSitemapItemBase } from '../core/model/config/hn-site-map.class';
+import { HnUserDetailDto, HnUserEditDetailDto } from './hn-user.dto';
+import { HnUser } from './hn-user.entity';
+import { HnUserService } from './hn-user.service';
 
 @Controller('user')
 export class HnUserController {

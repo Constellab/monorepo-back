@@ -1,6 +1,7 @@
 import { ClLuxonDateTimeTransform, ClLuxonDateTransform } from '@monorepo/core-lib';
-import { DateTime } from 'luxon';
 import { Type } from 'class-transformer';
+import { DateTime } from 'luxon';
+
 import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
 
 /*

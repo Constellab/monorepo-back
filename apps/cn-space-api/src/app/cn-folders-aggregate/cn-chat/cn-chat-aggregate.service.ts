@@ -1,20 +1,21 @@
-import { CnHierarchyObjectService } from '../cn-hierarchy-objects/cn-hierarchy-object.service';
-import { CnFoldersSecurityService } from '../cn-security/cn-folders-security.service';
+import { BlBadRequestException, BlFile, BlFileResponse } from '@monorepo/back-core-lib';
+import { ClPage } from '@monorepo/core-lib';
+import { TeBlockFigureUploadedResponse } from '@monorepo/te-text-editor';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { DataSource } from 'typeorm';
+
+import { CnNewMessageDTO } from '../../cn-core/model/entities/cn-message.entity';
+import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
 import { CnFolderEventService } from '../cn-folder.event';
 import { CnFolder } from '../cn-folders/cn-folder.entity';
+import { CnFoldersService } from '../cn-folders/cn-folders.service';
 import {
   CnHierarchyObjectVisibility,
   CnHierarchyObjectWithChildren,
 } from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
-import { CnNewMessageDTO } from '../../cn-core/model/entities/cn-message.entity';
+import { CnHierarchyObjectService } from '../cn-hierarchy-objects/cn-hierarchy-object.service';
+import { CnFoldersSecurityService } from '../cn-security/cn-folders-security.service';
 import { CnChatMessage } from './cn-chat-message.entity';
-import { BlBadRequestException, BlFile, BlFileResponse } from '@monorepo/back-core-lib';
-import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { ClPage } from '@monorepo/core-lib';
-import { TeBlockFigureUploadedResponse } from '@monorepo/te-text-editor';
-import { DataSource } from 'typeorm';
-import { CnFoldersService } from '../cn-folders/cn-folders.service';
 import { CnChatMessageService } from './cn-chat-message.service';
 
 @Injectable()

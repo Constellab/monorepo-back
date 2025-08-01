@@ -1,9 +1,10 @@
 import { BlEntityWithId, BlFile, BlPublic, BlResponseHelper } from '@monorepo/back-core-lib';
-import { HnAbstractFileService } from './hn-abstract-file.service';
+import { TeBlockFigureUploadedResponse, TeBlockFileUploadResponse } from '@monorepo/te-text-editor';
 import { Body, Delete, Get, Param, ParseUUIDPipe, Put, Res } from '@nestjs/common';
 import { Response } from 'express';
+
 import { HnAbstractFileEntityDTO } from './hn-abstract-file.dto';
-import { TeBlockFigureUploadedResponse, TeBlockFileUploadResponse } from '@monorepo/te-text-editor';
+import { HnAbstractFileService } from './hn-abstract-file.service';
 
 export abstract class HnAbstractFileController<T extends BlEntityWithId> {
   fileService: HnAbstractFileService<T>;

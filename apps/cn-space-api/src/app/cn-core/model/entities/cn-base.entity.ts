@@ -1,5 +1,6 @@
-import { BeforeInsert, BeforeUpdate } from 'typeorm';
 import { ClDateHelper } from '@monorepo/core-lib';
+import { BeforeInsert, BeforeUpdate } from 'typeorm';
+
 import { CnCurrentUserHelper } from '../../utils/cn-current-user.helper';
 import { CnEntity } from './cn.entity';
 

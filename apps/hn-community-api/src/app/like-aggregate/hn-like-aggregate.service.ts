@@ -1,12 +1,13 @@
+import { BlEntityWithId } from '@monorepo/back-core-lib';
 import { Injectable } from '@nestjs/common';
-import { HnLikeStoryService } from './like-story/hn-like-story.service';
+
+import { HnEntityType } from '../core/model/entities/hn-entity-type.enum';
 import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
 import { HnLikeAgentService } from './like-agent/hn-like-agent.service';
-import { HnLikeBrickService } from './like-brick/hn-like-brick.service';
-import { BlEntityWithId } from '@monorepo/back-core-lib';
-import { HnAbstractLikeService } from './like-core/hn-abstract-like.service';
-import { HnEntityType } from '../core/model/entities/hn-entity-type.enum';
 import { HnLikeAppService } from './like-app/hn-like-app.service';
+import { HnLikeBrickService } from './like-brick/hn-like-brick.service';
+import { HnAbstractLikeService } from './like-core/hn-abstract-like.service';
+import { HnLikeStoryService } from './like-story/hn-like-story.service';
 import { HnLikeTagService } from './like-tag/hn-like-tag.service';
 
 @Injectable()

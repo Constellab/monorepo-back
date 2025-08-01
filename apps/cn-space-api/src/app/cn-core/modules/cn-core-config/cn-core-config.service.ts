@@ -2,6 +2,7 @@ import { BlMailConfig, BlObjectStorageCredentials, BlTransportModuleConfig } fro
 import { Inject, Injectable, Logger, LogLevel } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { join } from 'path';
+
 import {
   CN_ENVIRONMENT_PROFILE_KEY,
   CN_ENVIRONMENT_PROFILE_PROD_VALUE,

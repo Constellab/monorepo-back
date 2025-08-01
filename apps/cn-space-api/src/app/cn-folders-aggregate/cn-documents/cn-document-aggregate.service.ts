@@ -1,23 +1,24 @@
 import { BlBadRequestException, BlFile, BlFileResponse } from '@monorepo/back-core-lib';
 import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
+
 import { CnFrontService } from '../../cn-core/services/cn-front.service';
 import { CnSpaceService } from '../../cn-spaces/cn-space.service';
-import { CnFolderAggregateService } from '../cn-folder-aggregate.service';
 import { CnFolderEventService } from '../cn-folder.event';
+import { CnFolderAggregateService } from '../cn-folder-aggregate.service';
 import { CnSaveFolderDTO } from '../cn-folders/cn-folder.dto';
 import { CnHierarchyObject, CnHierarchyObjectType } from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
 import { CnHierarchyObjectService } from '../cn-hierarchy-objects/cn-hierarchy-object.service';
 import { CnNotesService } from '../cn-notes/cn-notes.service';
 import { CnFoldersSecurityService } from '../cn-security/cn-folders-security.service';
+import { CnDocument, CnDocumentType } from './cn-document.entity';
+import { CnDocumentService } from './cn-document.service';
 import {
   CnDocumentCheckSameNameRequest,
   CnDocumentCheckSameNameResponse,
   CnDocumentPreviewDTO,
   CnDocumentUploadOverrideMode,
 } from './cn-document-dto.class';
-import { CnDocument, CnDocumentType } from './cn-document.entity';
-import { CnDocumentService } from './cn-document.service';
 
 @Injectable()
 export class CnDocumentAggregateService {

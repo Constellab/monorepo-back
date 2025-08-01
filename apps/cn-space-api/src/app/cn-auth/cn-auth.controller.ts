@@ -1,10 +1,11 @@
-import { Body, Controller, Post, Res } from '@nestjs/common';
-import { CnAuthResponse, CnAuthService, CnExternalCheckCredentialResponse } from './cn-auth.service';
-import { Response } from 'express';
-import { cnJwtConfig } from './cn-jwt.config';
-import { CnCoreConfigService } from '../cn-core/modules/cn-core-config/cn-core-config.service';
 import { BlCredentials, BlCredentials2Fa, BlPublicSecure } from '@monorepo/back-core-lib';
+import { Body, Controller, Post, Res } from '@nestjs/common';
+import { Response } from 'express';
+
+import { CnCoreConfigService } from '../cn-core/modules/cn-core-config/cn-core-config.service';
 import { CnUser } from '../cn-users/cn-user.entity';
+import { CnAuthResponse, CnAuthService, CnExternalCheckCredentialResponse } from './cn-auth.service';
+import { cnJwtConfig } from './cn-jwt.config';
 
 @Controller('auth')
 export class CnAuthController {

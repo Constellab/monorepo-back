@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
-import { CnCityService } from './cn-city.service';
-import { CnCityController } from './cn-city.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
+import { CnCityController } from './cn-city.controller';
 import { CnCity } from './cn-city.entity';
+import { CnCityService } from './cn-city.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([CnCity])],

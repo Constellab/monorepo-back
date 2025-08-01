@@ -1,5 +1,5 @@
-import { Transform } from 'class-transformer';
 import { ClTransformFnParams } from '@monorepo/core-lib';
+import { Transform } from 'class-transformer';
 
 export type BlTrimOptions = 'start' | 'end' | 'both';
 

@@ -1,8 +1,9 @@
-import { Column, Entity, ManyToOne } from 'typeorm';
-import { HnBaseEntity } from '../core/model/entities/hn-base.entity';
 import { Expose } from 'class-transformer';
-import { HnStory } from '../story/hn-story.entity';
+import { Column, Entity, ManyToOne } from 'typeorm';
+
 import { HnInviteStatus } from '../core/model/config/hn-invite-status.enum';
+import { HnBaseEntity } from '../core/model/entities/hn-base.entity';
+import { HnStory } from '../story/hn-story.entity';
 
 @Entity('story_co_author_invite')
 export class HnStoryCoAuthorInvite extends HnBaseEntity {

@@ -1,15 +1,16 @@
-import { Injectable } from '@nestjs/common';
-import { HnUserService } from '../users/hn-user.service';
 import {
   BlCredentials,
   BlCredentials2Fa,
   BlJwtService,
   BlUnauthorizedException,
 } from '@monorepo/back-core-lib';
-import { HnUser } from '../users/hn-user.entity';
-import { HnSpaceAuthService } from './hn-space-auth.service';
-import { HnCoreConfigService } from '../core/modules/core-config/hn-core-config.service';
+import { Injectable } from '@nestjs/common';
+
 import { HnErrorText } from '../core/model/config/hn-error-text.class';
+import { HnCoreConfigService } from '../core/modules/core-config/hn-core-config.service';
+import { HnUser } from '../users/hn-user.entity';
+import { HnUserService } from '../users/hn-user.service';
+import { HnSpaceAuthService } from './hn-space-auth.service';
 
 export interface HnAuthResponse {
   status: 'LOGGED_IN' | '2FA_REQUIRED';

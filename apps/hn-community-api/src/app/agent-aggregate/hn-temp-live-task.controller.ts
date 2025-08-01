@@ -1,6 +1,7 @@
-import { Body, Controller, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, Query } from '@nestjs/common';
-import { HnAgentAggregateService } from './hn-agent-aggregate.service';
 import { BlParsePipe, BlPublic } from '@monorepo/back-core-lib';
+import { ClPage } from '@monorepo/core-lib';
+import { Body, Controller, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, Query } from '@nestjs/common';
+
 import { HnLabGuard } from '../core/decorators/hn-lab-auth-guard.decorator';
 import {
   HaCreateAgentVersionFromLabResponseDtoOldFormat,
@@ -10,7 +11,7 @@ import {
   HnCreateAgentDto,
 } from './agent/hn-agent.dto';
 import { HnAgentVersionMigrator } from './agent-version/hn-agent-version-migrator.class';
-import { ClPage } from '@monorepo/core-lib';
+import { HnAgentAggregateService } from './hn-agent-aggregate.service';
 
 @Controller('live-task')
 export class HnTempLiveTaskController {

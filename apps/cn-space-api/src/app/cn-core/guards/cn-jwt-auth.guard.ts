@@ -8,12 +8,13 @@ import { ClStringHelper } from '@monorepo/core-lib';
 import { ExecutionContext, Injectable, Logger } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
+
 import { cnIsDecoratedWithHierarchyObjectTokenAuth } from '../../cn-folders-aggregate/cn-hierarchy-object-token/cn-hierarchy-object-token-guard.decorator';
 import { CnHierarchyObjectTokenGuard } from '../../cn-folders-aggregate/cn-hierarchy-object-token/cn-hierarchy-object-token-guard.service';
-import { CnSpaceUserRole } from '../../cn-spaces/cn-space-user.entity';
-import { CnSpaceUserService } from '../../cn-spaces/cn-space-user.service';
 import { CnSpace } from '../../cn-spaces/cn-space.entity';
 import { CnSpaceService } from '../../cn-spaces/cn-space.service';
+import { CnSpaceUserRole } from '../../cn-spaces/cn-space-user.entity';
+import { CnSpaceUserService } from '../../cn-spaces/cn-space-user.service';
 import { CnUserSpaceInfo } from '../../cn-users/cn-user.dto';
 import { CnUsersService } from '../../cn-users/cn-users.service';
 import { cnIsDecoratedWithLabAuth } from '../decorators/cn-lab-guard.decorator';

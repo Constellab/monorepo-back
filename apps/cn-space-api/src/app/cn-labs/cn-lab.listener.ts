@@ -1,15 +1,16 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
+
 import { CnLabConfigsService } from '../cn-lab-configs/cn-lab-configs.service';
 import { CnSpaceEvent, cnSpaceEventName } from '../cn-spaces/cn-space.event';
-import { CnLabAggregateService } from './cn-lab-aggregate.service';
-import { CnLabManagerService } from './cn-lab-manager.service';
 import {
   CnLabEvent,
   cnLabEventName,
   CnLabServerTaskStatusChangedEvent,
   CnLabStatusChangedEvent,
 } from './cn-lab.event';
+import { CnLabAggregateService } from './cn-lab-aggregate.service';
+import { CnLabManagerService } from './cn-lab-manager.service';
 import { CnLabsService } from './cn-labs.service';
 import { CnLabMailService } from './mail/cn-lab-mail.service';
 import { CnLabServerTaskStatus, CnLabStatus } from './status/cn-lab-status.enum';

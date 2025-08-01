@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { HnTagCoAuthor } from './hn-tag-co-author.entity';
 import { Repository } from 'typeorm';
-import { HnTagCoAuthorInviteService } from '../tag-co-author-invite/hn-tag-co-author-invite.service';
+
 import { HnTagCoAuthorInvite } from '../tag-co-author-invite/hn-tag-co-author-invite.entity';
+import { HnTagCoAuthorInviteService } from '../tag-co-author-invite/hn-tag-co-author-invite.service';
 import { HnTagKey } from '../tag-key/hn-tag-key.entity';
+import { HnTagCoAuthor } from './hn-tag-co-author.entity';
 
 @Injectable()
 export class HnTagCoAuthorService {

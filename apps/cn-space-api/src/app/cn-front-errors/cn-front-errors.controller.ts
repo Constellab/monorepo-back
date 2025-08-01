@@ -1,7 +1,8 @@
-import { Body, Controller, Post } from '@nestjs/common';
-import { CnFrontErrorsService } from './cn-front-errors.service';
-import { CnFrontError } from './cn-front-error.entity';
 import { BlParsePipe, BlPublicSecure } from '@monorepo/back-core-lib';
+import { Body, Controller, Post } from '@nestjs/common';
+
+import { CnFrontError } from './cn-front-error.entity';
+import { CnFrontErrorsService } from './cn-front-errors.service';
 
 @Controller('front-errors')
 export class CnFrontErrorsController {

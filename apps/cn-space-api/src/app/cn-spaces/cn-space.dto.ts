@@ -1,9 +1,10 @@
-import { CnSpaceUserRole } from './cn-space-user.entity';
-import { CnUser } from '../cn-users/cn-user.entity';
-import { CnSpaceInvit } from './cn-space-invit.entity';
-import { CnSpaceEntity } from './cn-space.entity';
 import { Type } from 'class-transformer';
+
 import { CnBucketLocationDTO } from '../cn-object-storages/cn-buckets/cn-bucket.entity';
+import { CnUser } from '../cn-users/cn-user.entity';
+import { CnSpaceEntity } from './cn-space.entity';
+import { CnSpaceInvit } from './cn-space-invit.entity';
+import { CnSpaceUserRole } from './cn-space-user.entity';
 
 export class CnCreateSpaceDTO {
   name: string;

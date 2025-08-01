@@ -1,7 +1,8 @@
-import { Column, Entity, ManyToOne } from 'typeorm';
 import { BlEntityWithId, BlLuxonDateTimeColumn } from '@monorepo/back-core-lib';
-import { HnAgentVersion } from '../../agent-aggregate/agent-version/hn-agent-version.entity';
 import { DateTime } from 'luxon';
+import { Column, Entity, ManyToOne } from 'typeorm';
+
+import { HnAgentVersion } from '../../agent-aggregate/agent-version/hn-agent-version.entity';
 import { HnUser } from '../../users/hn-user.entity';
 import { HnRunStatFromLabDto } from './hn-run-stat.dto';
 

@@ -1,10 +1,11 @@
-import { CnUserGroup } from './cn-group.entity';
-import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { BlAbstractPaginatedService, BlBadRequestException } from '@monorepo/back-core-lib';
 import { ClPageI } from '@monorepo/core-lib';
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { In, Repository } from 'typeorm';
+
 import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
-import { BlAbstractPaginatedService, BlBadRequestException } from '@monorepo/back-core-lib';
+import { CnUserGroup } from './cn-group.entity';
 
 /**
  * Service to manage user groups of teams

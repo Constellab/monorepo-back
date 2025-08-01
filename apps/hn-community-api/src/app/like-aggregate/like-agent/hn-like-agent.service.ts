@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { HnAbstractLikeService } from '../like-core/hn-abstract-like.service';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { HnLikeAgent } from './hn-like-agent.entity';
+
 import { HnAgent } from '../../agent-aggregate/agent/hn-agent.entity';
 import { HnAgentAggregateService } from '../../agent-aggregate/hn-agent-aggregate.service';
-import { EventEmitter2 } from '@nestjs/event-emitter';
+import { HnAbstractLikeService } from '../like-core/hn-abstract-like.service';
+import { HnLikeAgent } from './hn-like-agent.entity';
 
 @Injectable()
 export class HnLikeAgentService extends HnAbstractLikeService<HnAgent> {

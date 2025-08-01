@@ -1,6 +1,7 @@
 import { BlMailService, BlSendMailDTO } from '@monorepo/back-core-lib';
 import { ClSupportedLanguage } from '@monorepo/core-lib';
 import { Injectable } from '@nestjs/common';
+
 import { CnMailTemplate } from '../../cn-core/model/config/cn-mail-template.class';
 import { CnCoreConfigService } from '../../cn-core/modules/cn-core-config/cn-core-config.service';
 import { CnFrontService } from '../../cn-core/services/cn-front.service';

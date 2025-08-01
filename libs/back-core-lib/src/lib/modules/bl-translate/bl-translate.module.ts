@@ -1,6 +1,7 @@
 import { DynamicModule, Global, Module } from '@nestjs/common';
-import { BlTranslateService } from './bl-translate.service';
+
 import { BL_TRANSLATE_CONFIG_PROVIDER, BlTranslateConfig } from './bl-translate.class';
+import { BlTranslateService } from './bl-translate.service';
 
 @Global()
 @Module({})

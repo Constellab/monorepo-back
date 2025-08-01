@@ -1,4 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
+
 import { BlExceptionOptions, BlHttpException } from './bl-http.exception';
 
 /**

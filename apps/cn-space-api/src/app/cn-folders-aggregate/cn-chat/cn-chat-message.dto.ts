@@ -1,6 +1,7 @@
 import { BlBaseEntityDto } from '@monorepo/back-core-lib';
-import { CnChatMessage } from './cn-chat-message.entity';
 import { TeRichTextDTO } from '@monorepo/te-text-editor';
+
+import { CnChatMessage } from './cn-chat-message.entity';
 
 export class CnChatMessageDto extends BlBaseEntityDto {
   content: TeRichTextDTO;

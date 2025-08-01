@@ -1,16 +1,17 @@
-import { Module } from '@nestjs/common';
-import { HnDifyController } from './hn-dify.controller';
-import { HnDifyService } from './hn-dify.service';
-import { HnDocumentationModule } from '../brick-aggregate/documentation/hn-documentation.module';
-import { HnAgentModule } from '../agent-aggregate/agent/hn-agent.module';
-import { HnCommentAppModule } from '../comment-aggregate/comment-app/hn-comment-app.module';
-import { HnStoryModule } from '../story/hn-story.module';
-import { HnCoreConfigModule } from '../core/modules/core-config/hn-core-config.module';
 import { BlExternalApiModule } from '@monorepo/back-core-lib';
-import { HnFrontService } from '../core/service/hn-front.service';
 import { HttpModule } from '@nestjs/axios';
+import { Module } from '@nestjs/common';
+
+import { HnAgentModule } from '../agent-aggregate/agent/hn-agent.module';
 import { HnBrickModule } from '../brick-aggregate/brick/hn-brick.module';
 import { HnBrickMajorVersionModule } from '../brick-aggregate/brick-major-version/hn-brick-major-version.module';
+import { HnDocumentationModule } from '../brick-aggregate/documentation/hn-documentation.module';
+import { HnCommentAppModule } from '../comment-aggregate/comment-app/hn-comment-app.module';
+import { HnCoreConfigModule } from '../core/modules/core-config/hn-core-config.module';
+import { HnFrontService } from '../core/service/hn-front.service';
+import { HnStoryModule } from '../story/hn-story.module';
+import { HnDifyController } from './hn-dify.controller';
+import { HnDifyService } from './hn-dify.service';
 
 @Module({
   imports: [

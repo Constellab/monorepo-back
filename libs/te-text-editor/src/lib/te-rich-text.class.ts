@@ -1,4 +1,5 @@
 import { ClHelpService } from '@monorepo/core-lib';
+
 import {
   TeBlock,
   TeBlockFigureData,
@@ -8,8 +9,8 @@ import {
   TeBlockType,
   TeBlockViewData,
 } from './te-block.class';
-import { TeRichTextMigrator } from './te-rich-text-migrator.class';
 import { TeMarkdown } from './te-markdown.class';
+import { TeRichTextMigrator } from './te-rich-text-migrator.class';
 
 /**
  * JSON of the HTMLEditor

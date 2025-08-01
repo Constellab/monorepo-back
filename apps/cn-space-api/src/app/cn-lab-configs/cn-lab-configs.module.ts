@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { CnLabConfig } from './cn-lab-config.entity';
-import { CnLabConfigsService } from './cn-lab-configs.service';
-import { CnLabConfigsController } from './cn-lab-configs.controller';
+
 import { CnBricksModule } from '../cn-bricks/cn-bricks.module';
+import { CnLabConfig } from './cn-lab-config.entity';
+import { CnLabConfigsController } from './cn-lab-configs.controller';
+import { CnLabConfigsService } from './cn-lab-configs.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([CnLabConfig]), CnBricksModule],

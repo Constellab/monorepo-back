@@ -1,4 +1,3 @@
-/* eslint-disable */
 export default {
   displayName: 'back-core-lib',
   preset: '../../jest.preset.js',

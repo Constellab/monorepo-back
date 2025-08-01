@@ -1,10 +1,11 @@
 import { BlRequestContextHelper, BlUnauthorizedException } from '@monorepo/back-core-lib';
-import { CnUser } from '../../cn-users/cn-user.entity';
+import { Request } from 'express';
+
 import { CnLab } from '../../cn-labs/cn-lab.entity';
 import { CnSpace } from '../../cn-spaces/cn-space.entity';
 import { CnSpaceUserRole } from '../../cn-spaces/cn-space-user.entity';
 import { CnUserSpaceInfo } from '../../cn-users/cn-user.dto';
-import { Request } from 'express';
+import { CnUser } from '../../cn-users/cn-user.entity';
 import { CnAuthContext, CnAuthContextCron } from './cn-auth-context.class';
 
 export type CnRequest = Request & {

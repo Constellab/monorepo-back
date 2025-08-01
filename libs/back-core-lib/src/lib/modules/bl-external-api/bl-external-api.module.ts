@@ -1,7 +1,8 @@
+import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
+
 import { BlExternalApiService } from './bl-external-api.service';
 import { BlExternalApiErrorService } from './bl-external-api-error.service';
-import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [HttpModule],

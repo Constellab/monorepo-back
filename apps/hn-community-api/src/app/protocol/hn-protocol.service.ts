@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { HnProtocol } from './hn-protocol.entity';
-import { HnTechnicalFolder } from '../technical-folder/hn-technical-folder.entity';
+
 import { HnImportProtocolDTO } from '../brick-aggregate/brick/hn-brick.dto';
+import { HnTechnicalFolder } from '../technical-folder/hn-technical-folder.entity';
+import { HnProtocol } from './hn-protocol.entity';
 
 @Injectable()
 export class HnProtocolService {

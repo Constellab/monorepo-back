@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { HnBrickMajorVersion, HnVersionState } from './hn-brick-major-version.entity';
 import { EntityManager, Repository } from 'typeorm';
-import { HnBrick } from '../brick/hn-brick.entity';
+
 import { HnCreateBrickDTO } from '../brick/hn-brick.dto';
+import { HnBrick } from '../brick/hn-brick.entity';
+import { HnBrickMajorVersion, HnVersionState } from './hn-brick-major-version.entity';
 
 @Injectable()
 export class HnBrickMajorVersionService {

@@ -1,19 +1,20 @@
+import { BlBadRequestException } from '@monorepo/back-core-lib';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { EntityManager, In, Repository } from 'typeorm';
+
+import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
+import {
+  CnHierarchyObject,
+  CnHierarchyObjectEntity,
+} from '../cn-folders-aggregate/cn-hierarchy-objects/cn-hierarchy-object.entity';
+import { CnLab, CnLabEntity } from '../cn-labs/cn-lab.entity';
 import {
   CnLabFolder,
   CnLabFolderEntity,
   CnLabFolderWithLab,
   CnLabFolderWithRootFolder,
 } from './cn-lab-folder.entity';
-import { EntityManager, In, Repository } from 'typeorm';
-import { CnLab, CnLabEntity } from '../cn-labs/cn-lab.entity';
-import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
-import { BlBadRequestException } from '@monorepo/back-core-lib';
-import {
-  CnHierarchyObject,
-  CnHierarchyObjectEntity,
-} from '../cn-folders-aggregate/cn-hierarchy-objects/cn-hierarchy-object.entity';
 
 @Injectable()
 export class CnLabFolderService {

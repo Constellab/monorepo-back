@@ -1,6 +1,7 @@
+import { ClPage } from '@monorepo/core-lib';
 import { FindOptionsOrder, FindOptionsWhere, Like } from 'typeorm';
 import { FindOptionsRelations } from 'typeorm/find-options/FindOptionsRelations';
-import { ClPage } from '@monorepo/core-lib';
+
 import { BlAbstractPaginatedService } from '../../services/bl-abstract-paginated.service';
 import { BlUser } from './bl-user.class';
 

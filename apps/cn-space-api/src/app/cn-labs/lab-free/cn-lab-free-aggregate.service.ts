@@ -1,16 +1,17 @@
-import { Injectable } from '@nestjs/common';
-import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
 import { BlBadRequestException, BlUnauthorizedException } from '@monorepo/back-core-lib';
-import { CnLab } from '../cn-lab.entity';
+import { Injectable } from '@nestjs/common';
 import { DataSource, EntityManager } from 'typeorm';
-import { CnUser } from '../../cn-users/cn-user.entity';
-import { CnLabAggregateService } from '../cn-lab-aggregate.service';
-import { CnLabFreeCreateDto, CnLabFreeGetDto, CnLabFreeUpdateDto } from './cn-lab-free.dto';
-import { CnLabFreeService } from './cn-lab-free.service';
-import { CnLabFree } from './cn-lab-free.entity';
-import { CnLabStatus } from '../status/cn-lab-status.enum';
-import { CnLabFactoryData, CnLabFactoryService } from '../cn-lab-factory.service';
+
+import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
 import { CnSpace } from '../../cn-spaces/cn-space.entity';
+import { CnUser } from '../../cn-users/cn-user.entity';
+import { CnLab } from '../cn-lab.entity';
+import { CnLabAggregateService } from '../cn-lab-aggregate.service';
+import { CnLabFactoryData, CnLabFactoryService } from '../cn-lab-factory.service';
+import { CnLabStatus } from '../status/cn-lab-status.enum';
+import { CnLabFreeCreateDto, CnLabFreeGetDto, CnLabFreeUpdateDto } from './cn-lab-free.dto';
+import { CnLabFree } from './cn-lab-free.entity';
+import { CnLabFreeService } from './cn-lab-free.service';
 
 /**
  * Service to configure and manage the free lab for users

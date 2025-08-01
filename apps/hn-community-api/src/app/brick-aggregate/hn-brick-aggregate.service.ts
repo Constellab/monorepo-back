@@ -1,5 +1,40 @@
+import {
+  BlBadRequestException,
+  BlFile,
+  BlFileResponse,
+  BlNotFoundException,
+  BlSearchParams,
+  BlUnauthorizedException,
+  BlVersion,
+} from '@monorepo/back-core-lib';
+import { ClPage, ClStringHelper } from '@monorepo/core-lib';
+import {
+  TeBlockFigureUploadedResponse,
+  TeRichText,
+  TeRichTextAggregate,
+  TeRichTextBlockModificationWithUser,
+} from '@monorepo/te-text-editor';
 import { Injectable } from '@nestjs/common';
-import { HnBrickService } from './brick/hn-brick.service';
+import { DataSource, FindOptionsWhere, In, IsNull, Like } from 'typeorm';
+
+import { HnErrorText } from '../core/model/config/hn-error-text.class';
+import { HnSiteMapEnumChangefreq, HnSitemapItemBase } from '../core/model/config/hn-site-map.class';
+import { HnGeneratedDocDto } from '../core/model/entities/hn-generated-doc.dto';
+import { HnCoreConfigService } from '../core/modules/core-config/hn-core-config.service';
+import { HnFrontService } from '../core/service/hn-front.service';
+import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
+import { HnMarkdownHelper } from '../core/utils/hn-markdown.helper';
+import { HnMarkdownFile, HnZipHelper } from '../core/utils/hn-zip.helper';
+import {
+  HnAbstractFileEntityDTO,
+  HnUploadFileResponseDto,
+} from '../file-aggregate/file-core/hn-abstract-file.dto';
+import { HnFileDocumentationService } from '../file-aggregate/file-documentation/hn-file-documentation.service';
+import { HnSpaceAggregateService } from '../space-aggregate/hn-space-aggregate.service';
+import { HnSpaceUserService } from '../space-aggregate/space-user/hn-space-user.service';
+import { HnTechnicalFolderService } from '../technical-folder/hn-technical-folder.service';
+import { HnUser } from '../users/hn-user.entity';
+import { HnUserService } from '../users/hn-user.service';
 import {
   HnBrickDto,
   HnBrickVersionDownloadDTO,
@@ -10,61 +45,27 @@ import {
   HnTechnicalDocInputDTO,
 } from './brick/hn-brick.dto';
 import { HnBrick, HnBrickVisibility } from './brick/hn-brick.entity';
-import { HnFolderDto, HnNode, HnNodeDTO, HnNodeType } from './folder/hn-folder.dto';
+import { HnBrickService } from './brick/hn-brick.service';
+import { HnBrickMajorVersion } from './brick-major-version/hn-brick-major-version.entity';
+import { HnBrickMajorVersionService } from './brick-major-version/hn-brick-major-version.service';
+import { HnBrickUser } from './brick-user/hn-brick-user.entity';
+import { HnBrickUserService } from './brick-user/hn-brick-user.service';
+import { HnBrickUserInviteDto } from './brick-user-invite/hn-brick-user-invite.dto';
+import { HnBrickUserInvite } from './brick-user-invite/hn-brick-user-invite.entity';
+import { HnBrickUserInviteService } from './brick-user-invite/hn-brick-user-invite.service';
+import { HnBrickVersionDto } from './brick-version/hn-brick-version.dto';
+import { HnBrickVersion, HnNewVersionDTO, HnReferenceDTO } from './brick-version/hn-brick-version.entity';
+import { HnBrickVersionService } from './brick-version/hn-brick-version.service';
+import { HnDocumentationDto } from './documentation/hn-documentation.dto';
 import {
   HnDocumentation,
   HnDocumentationDTO,
   HnDocumentationSearchDTO,
 } from './documentation/hn-documentation.entity';
-import { HnBrickVersion, HnNewVersionDTO, HnReferenceDTO } from './brick-version/hn-brick-version.entity';
-import { HnBrickMajorVersionService } from './brick-major-version/hn-brick-major-version.service';
-import { HnBrickVersionService } from './brick-version/hn-brick-version.service';
-import { ClPage, ClStringHelper } from '@monorepo/core-lib';
-import { DataSource, FindOptionsWhere, In, IsNull, Like } from 'typeorm';
-import { HnBrickMajorVersion } from './brick-major-version/hn-brick-major-version.entity';
-import { HnFolderService } from './folder/hn-folder.service';
-import { HnFolder } from './folder/hn-folder.entity';
 import { HnDocumentationService } from './documentation/hn-documentation.service';
-import {
-  BlBadRequestException,
-  BlFile,
-  BlFileResponse,
-  BlNotFoundException,
-  BlSearchParams,
-  BlUnauthorizedException,
-  BlVersion,
-} from '@monorepo/back-core-lib';
-import { HnBrickUserService } from './brick-user/hn-brick-user.service';
-import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
-import { HnBrickUserInviteService } from './brick-user-invite/hn-brick-user-invite.service';
-import { HnBrickUserInvite } from './brick-user-invite/hn-brick-user-invite.entity';
-import { HnBrickUser } from './brick-user/hn-brick-user.entity';
-import { HnSiteMapEnumChangefreq, HnSitemapItemBase } from '../core/model/config/hn-site-map.class';
-import { HnUser } from '../users/hn-user.entity';
-import { HnCoreConfigService } from '../core/modules/core-config/hn-core-config.service';
-import { HnTechnicalFolderService } from '../technical-folder/hn-technical-folder.service';
-import { HnSpaceUserService } from '../space-aggregate/space-user/hn-space-user.service';
-import { HnErrorText } from '../core/model/config/hn-error-text.class';
-import { HnFrontService } from '../core/service/hn-front.service';
-import { HnSpaceAggregateService } from '../space-aggregate/hn-space-aggregate.service';
-import { HnUserService } from '../users/hn-user.service';
-import { HnDocumentationDto } from './documentation/hn-documentation.dto';
-import { HnGeneratedDocDto } from '../core/model/entities/hn-generated-doc.dto';
-import { HnBrickUserInviteDto } from './brick-user-invite/hn-brick-user-invite.dto';
-import { HnBrickVersionDto } from './brick-version/hn-brick-version.dto';
-import { HnFileDocumentationService } from '../file-aggregate/file-documentation/hn-file-documentation.service';
-import {
-  HnAbstractFileEntityDTO,
-  HnUploadFileResponseDto,
-} from '../file-aggregate/file-core/hn-abstract-file.dto';
-import {
-  TeBlockFigureUploadedResponse,
-  TeRichText,
-  TeRichTextAggregate,
-  TeRichTextBlockModificationWithUser,
-} from '@monorepo/te-text-editor';
-import { HnMarkdownFile, HnZipHelper } from '../core/utils/hn-zip.helper';
-import { HnMarkdownHelper } from '../core/utils/hn-markdown.helper';
+import { HnFolderDto, HnNode, HnNodeDTO, HnNodeType } from './folder/hn-folder.dto';
+import { HnFolder } from './folder/hn-folder.entity';
+import { HnFolderService } from './folder/hn-folder.service';
 
 @Injectable()
 export class HnBrickAggregateService {
@@ -363,11 +364,11 @@ export class HnBrickAggregateService {
       const version: BlVersion =
         body.version.subPatch != null
           ? new BlVersion(
-            +body.version.major,
-            +body.version.minor,
-            +body.version.patch,
-            +body.version.subPatch
-          )
+              +body.version.major,
+              +body.version.minor,
+              +body.version.patch,
+              +body.version.subPatch
+            )
           : new BlVersion(+body.version.major, +body.version.minor, +body.version.patch);
 
       // TODO: Improve brick version creation (simplify in the aggregate)

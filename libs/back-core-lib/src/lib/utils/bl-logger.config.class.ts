@@ -1,8 +1,9 @@
-import { format, transports } from 'winston';
-import { WinstonModuleOptions } from 'nest-winston';
-import { TransformableInfo } from 'logform';
 import 'winston-daily-rotate-file';
+
 import { LogLevel } from '@nestjs/common/services/logger.service';
+import { TransformableInfo } from 'logform';
+import { WinstonModuleOptions } from 'nest-winston';
+import { format, transports } from 'winston';
 
 export interface BlLoggerConfig {
   logLevel: LogLevel;

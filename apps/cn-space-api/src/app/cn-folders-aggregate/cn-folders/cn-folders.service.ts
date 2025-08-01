@@ -1,9 +1,10 @@
+import { BlAbstractService } from '@monorepo/back-core-lib';
+import { TeRichText } from '@monorepo/te-text-editor';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+
 import { CnFolder, CnFolderEntity, CnFolderWithHierarchy, CnFolderWithStorage } from './cn-folder.entity';
-import { BlAbstractService } from '@monorepo/back-core-lib';
-import { TeRichText } from '@monorepo/te-text-editor';
 
 @Injectable()
 export class CnFoldersService extends BlAbstractService<CnFolderEntity> {

@@ -1,6 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
-import { HnCurrentUserHelper } from '../utils/hn-current-user.helper';
 import { Reflector } from '@nestjs/core';
+
+import { HnCurrentUserHelper } from '../utils/hn-current-user.helper';
 
 @Injectable()
 export class HnIsAdminGuard implements CanActivate {

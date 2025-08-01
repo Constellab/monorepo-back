@@ -1,17 +1,18 @@
+import { BlAbstractPaginatedService, BlUnauthorizedException } from '@monorepo/back-core-lib';
+import { ClPage } from '@monorepo/core-lib';
+import { TeRichText } from '@monorepo/te-text-editor';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, FindOptionsWhere, In, IsNull, Like, Not, Repository } from 'typeorm';
-import { HnAgent } from './hn-agent.entity';
-import { HnAgentDto, HnCreateAgentDto } from './hn-agent.dto';
-import { BlAbstractPaginatedService, BlUnauthorizedException } from '@monorepo/back-core-lib';
+
+import { HnTypingStyle } from '../../brick-aggregate/brick/hn-brick.dto';
 import { HnCurrentUserHelper } from '../../core/utils/hn-current-user.helper';
-import { ClPage } from '@monorepo/core-lib';
+import { HnSpaceDto } from '../../space-aggregate/space/hn-space.dto';
 import { HnUser } from '../../users/hn-user.entity';
 import { HnAgentCoAuthorService } from '../agent-co-author/hn-agent-co-author.service';
-import { HnSpaceDto } from '../../space-aggregate/space/hn-space.dto';
-import { HnTypingStyle } from '../../brick-aggregate/brick/hn-brick.dto';
 import { HnAgentVersion } from '../agent-version/hn-agent-version.entity';
-import { TeRichText } from '@monorepo/te-text-editor';
+import { HnAgentDto, HnCreateAgentDto } from './hn-agent.dto';
+import { HnAgent } from './hn-agent.entity';
 
 @Injectable()
 export class HnAgentService {

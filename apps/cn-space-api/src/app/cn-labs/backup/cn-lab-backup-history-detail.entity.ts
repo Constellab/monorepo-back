@@ -1,6 +1,7 @@
-import { Column, Entity, ManyToOne, Unique } from 'typeorm';
-import { Type } from 'class-transformer';
 import { BlEntityWithId, BlNotUpdatable } from '@monorepo/back-core-lib';
+import { Type } from 'class-transformer';
+import { Column, Entity, ManyToOne, Unique } from 'typeorm';
+
 import { CnLabBackupInfo, CnLabBackupStatus } from './cn-lab-backup.dto';
 import { CnLabBackupHistoryEntity } from './cn-lab-backup-history.entity';
 

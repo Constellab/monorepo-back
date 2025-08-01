@@ -1,7 +1,3 @@
-import { Injectable } from '@nestjs/common';
-import { CnSpace, CnSpaceEntity, CnSpaceType } from './cn-space.entity';
-import { InjectRepository } from '@nestjs/typeorm';
-import { DeleteResult, EntityManager, Like, Repository } from 'typeorm';
 import {
   BlAbstractService,
   BlBadRequestException,
@@ -16,12 +12,17 @@ import {
   BlTransportSpaceUserPattern,
 } from '@monorepo/back-core-lib';
 import { ClPage } from '@monorepo/core-lib';
+import { InjectQueue } from '@nestjs/bullmq';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Queue } from 'bullmq';
+import { DeleteResult, EntityManager, Like, Repository } from 'typeorm';
+
 import { CnCoreConfigService } from '../cn-core/modules/cn-core-config/cn-core-config.service';
-import { CnUser } from '../cn-users/cn-user.entity';
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
 import { CnBucket } from '../cn-object-storages/cn-buckets/cn-bucket.entity';
-import { InjectQueue } from '@nestjs/bullmq';
-import { Queue } from 'bullmq';
+import { CnUser } from '../cn-users/cn-user.entity';
+import { CnSpace, CnSpaceEntity, CnSpaceType } from './cn-space.entity';
 
 @Injectable()
 export class CnSpaceService extends BlAbstractService<CnSpaceEntity> {

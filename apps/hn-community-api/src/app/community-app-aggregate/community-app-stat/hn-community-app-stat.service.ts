@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { HnCommunityAppStat } from './hn-community-app-stat.entity';
 import { EntityManager, Repository } from 'typeorm';
+
 import { HnUser } from '../../users/hn-user.entity';
 import { HnCommunityAppStatLabDto } from './hn-community-app-stat.dto';
+import { HnCommunityAppStat } from './hn-community-app-stat.entity';
 
 @Injectable()
 export class HnCommunityAppStatService {

@@ -1,3 +1,7 @@
+import { CnCloudProviderName } from '../../cn-cloud-providers/cn-cloud-provider.entity';
+import { CnCoreConfigService } from '../../cn-core/modules/cn-core-config/cn-core-config.service';
+import { CnCommandService } from '../../cn-core/services/cn-command.service';
+import { CnLab } from '../cn-lab.entity';
 import {
   CnCpCreateInstanceRequest,
   CnCpCreateVolumeRequest,
@@ -6,11 +10,7 @@ import {
   CnCpStaticIpAddress,
   CnCpVolume,
 } from './cn-cloud-provider.class';
-import { CnCloudProviderName } from '../../cn-cloud-providers/cn-cloud-provider.entity';
-import { CnLab } from '../cn-lab.entity';
 import { CnLabSshService } from './cn-lab-ssh.service';
-import { CnCommandService } from '../../cn-core/services/cn-command.service';
-import { CnCoreConfigService } from '../../cn-core/modules/cn-core-config/cn-core-config.service';
 
 /**
  * Abstract class to communicate with different cloud provider

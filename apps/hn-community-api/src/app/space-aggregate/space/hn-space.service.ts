@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { HnSpace } from './hn-space.entity';
+
 import { HnCoreConfigService } from '../../core/modules/core-config/hn-core-config.service';
+import { HnSpace } from './hn-space.entity';
 
 @Injectable()
 export class HnSpaceService {

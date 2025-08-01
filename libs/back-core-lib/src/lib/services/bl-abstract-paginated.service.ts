@@ -1,7 +1,7 @@
-import { EntityManager, Repository } from 'typeorm';
-import { FindOneOptions } from 'typeorm/find-options/FindOneOptions';
-import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
 import { ClPage } from '@monorepo/core-lib';
+import { EntityManager, Repository } from 'typeorm';
+import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
+import { FindOneOptions } from 'typeorm/find-options/FindOneOptions';
 
 export abstract class BlAbstractPaginatedService<T> {
   private readonly maxPageSize: number = 50;

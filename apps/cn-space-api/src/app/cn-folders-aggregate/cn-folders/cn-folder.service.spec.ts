@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { CnFoldersService } from './cn-folders.service';
+
 import { CnFoldersModule } from './cn-folders.module';
+import { CnFoldersService } from './cn-folders.service';
 
 describe('CnProjectsService', () => {
   let service: CnFoldersService;

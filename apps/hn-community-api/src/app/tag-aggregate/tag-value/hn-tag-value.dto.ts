@@ -1,6 +1,7 @@
 import { BlEntityWithIdDTO } from '@monorepo/back-core-lib';
-import { HnTagValue } from './hn-tag-value.entity';
+
 import { HnTagKeyDto, HnTagKeyForLabDto } from '../tag-key/hn-tag-key.dto';
+import { HnTagValue } from './hn-tag-value.entity';
 
 export class HnTagValueDto extends BlEntityWithIdDTO {
   value: string;

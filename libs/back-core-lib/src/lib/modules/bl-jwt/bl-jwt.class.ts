@@ -1,5 +1,6 @@
-import { BlUser } from '../../models/bl-user/bl-user.class';
 import { Request } from 'express';
+
+import { BlUser } from '../../models/bl-user/bl-user.class';
 
 export const BL_JWT_CONFIG_PROVIDER = Symbol();
 

@@ -8,12 +8,13 @@ import {
   BlObject,
   BlObjectStorageService,
 } from '@monorepo/back-core-lib';
-import { HnAbstractFileEntity, HnFileType } from './hn-abstract-file.entity';
-import { EntityManager, FindOptionsWhere, Repository } from 'typeorm';
 import { ClStringHelper } from '@monorepo/core-lib';
-import { HnAbstractFileEntityDTO, HnUploadFileResponseDto } from './hn-abstract-file.dto';
-import { Logger } from '@nestjs/common';
 import { TeBlockFigureUploadedResponse } from '@monorepo/te-text-editor';
+import { Logger } from '@nestjs/common';
+import { EntityManager, FindOptionsWhere, Repository } from 'typeorm';
+
+import { HnAbstractFileEntityDTO, HnUploadFileResponseDto } from './hn-abstract-file.dto';
+import { HnAbstractFileEntity, HnFileType } from './hn-abstract-file.entity';
 
 export abstract class HnAbstractFileService<T extends BlEntityWithId> {
   private logger = new Logger(HnAbstractFileService.name);
@@ -35,16 +36,16 @@ export abstract class HnAbstractFileService<T extends BlEntityWithId> {
     const whereCondition: FindOptionsWhere<HnAbstractFileEntity<T>> = (
       type == null
         ? {
-          entity: {
-            id: entityId,
-          },
-        }
+            entity: {
+              id: entityId,
+            },
+          }
         : {
-          entity: {
-            id: entityId,
-          },
-          type: type,
-        }
+            entity: {
+              id: entityId,
+            },
+            type: type,
+          }
     ) as any;
 
     return await this.repository.find({

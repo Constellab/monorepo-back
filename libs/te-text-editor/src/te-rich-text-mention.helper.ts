@@ -1,5 +1,6 @@
-import { TeInlineToolType, TeRichText } from './lib';
 import { JSDOM } from 'jsdom';
+
+import { TeInlineToolType, TeRichText } from './lib';
 
 export interface TeMentionUser {
   id: string;
@@ -7,7 +8,7 @@ export interface TeMentionUser {
   lastname: string;
 }
 
-export class TeRichTextMentionHelper{
+export class TeRichTextMentionHelper {
   public static getMentions(richText: TeRichText): TeMentionUser[] {
     const mentions: TeMentionUser[] = [];
     for (const block of richText.getBlocks()) {

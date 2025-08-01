@@ -1,8 +1,9 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { HnDifyService } from './hn-dify.service';
-import { HnDifyCreateDocumentDto, HnDifyCreateDocumentOptionsDto } from './hn-dify.dto';
+
 import { IsAdmin } from '../core/decorators/hn-is-admin.decorator';
 import { HnEntityType } from '../core/model/entities/hn-entity-type.enum';
+import { HnDifyCreateDocumentDto, HnDifyCreateDocumentOptionsDto } from './hn-dify.dto';
+import { HnDifyService } from './hn-dify.service';
 
 @IsAdmin()
 @Controller('dify')

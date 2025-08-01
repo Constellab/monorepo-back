@@ -1,6 +1,7 @@
 import { BlBucketType } from '@monorepo/back-core-lib';
 import { TeRichTextDTO } from '@monorepo/te-text-editor';
 import { Type } from 'class-transformer';
+
 import { CnDocument, CnDocumentEntity } from './cn-document.entity';
 
 export class CnConstellabDocumentDTO {

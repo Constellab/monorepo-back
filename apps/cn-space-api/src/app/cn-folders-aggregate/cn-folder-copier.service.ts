@@ -1,18 +1,19 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { CnFolder, CnFolderWithHierarchy } from './cn-folders/cn-folder.entity';
-import { CnFoldersService } from './cn-folders/cn-folders.service';
-import { CnFolderAggregateService } from './cn-folder-aggregate.service';
-import { CnDocumentService } from './cn-documents/cn-document.service';
-import { CnSaveFolderDTO } from './cn-folders/cn-folder.dto';
 import { BlBadRequestException } from '@monorepo/back-core-lib';
-import { CnDocumentType } from './cn-documents/cn-document.entity';
-import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
+import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
-import { CnUserEvent, cnUserEventName } from '../cn-users/cn-user.event';
+
 import { CnCoreConfigService } from '../cn-core/modules/cn-core-config/cn-core-config.service';
+import { CnAuthContextUser } from '../cn-core/utils/cn-auth-context.class';
+import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
 import { CnSpaceAggregateService } from '../cn-spaces/cn-space-aggregate.service';
 import { CnUserSpaceInfo } from '../cn-users/cn-user.dto';
-import { CnAuthContextUser } from '../cn-core/utils/cn-auth-context.class';
+import { CnUserEvent, cnUserEventName } from '../cn-users/cn-user.event';
+import { CnDocumentType } from './cn-documents/cn-document.entity';
+import { CnDocumentService } from './cn-documents/cn-document.service';
+import { CnFolderAggregateService } from './cn-folder-aggregate.service';
+import { CnSaveFolderDTO } from './cn-folders/cn-folder.dto';
+import { CnFolder, CnFolderWithHierarchy } from './cn-folders/cn-folder.entity';
+import { CnFoldersService } from './cn-folders/cn-folders.service';
 
 /**
  * Service to copy a folder and its content to another space folder

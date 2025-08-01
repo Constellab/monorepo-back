@@ -1,7 +1,8 @@
-import { Entity, ManyToOne } from 'typeorm';
-import { HnBrick } from '../brick/hn-brick.entity';
-import { HnUser } from '../../users/hn-user.entity';
 import { BlEntityWithId } from '@monorepo/back-core-lib';
+import { Entity, ManyToOne } from 'typeorm';
+
+import { HnUser } from '../../users/hn-user.entity';
+import { HnBrick } from '../brick/hn-brick.entity';
 
 @Entity('brick_user')
 export class HnBrickUser extends BlEntityWithId {

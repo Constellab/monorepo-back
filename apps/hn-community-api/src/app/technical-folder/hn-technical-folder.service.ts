@@ -1,21 +1,22 @@
+import { ClDateHelper } from '@monorepo/core-lib';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { HnTechnicalFolder } from './hn-technical-folder.entity';
 import { Repository } from 'typeorm';
-import { HnResourceService } from '../resource/hn-resource.service';
-import { HnBrickMajorVersion } from '../brick-aggregate/brick-major-version/hn-brick-major-version.entity';
+
 import { HnImportTechnicalDocDTO, HnTechnicalDocInputDTO } from '../brick-aggregate/brick/hn-brick.dto';
+import { HnBrickMajorVersion } from '../brick-aggregate/brick-major-version/hn-brick-major-version.entity';
+import { HnDocumentationSearchDTO } from '../brick-aggregate/documentation/hn-documentation.entity';
 import { HnNode } from '../brick-aggregate/folder/hn-folder.dto';
-import { HnResource } from '../resource/hn-resource.entity';
 import { HnGeneratedDocEntity } from '../core/model/entities/hn-generated-doc-typing.entity';
-import { HnTaskService } from '../task/hn-task.service';
-import { HnTask } from '../task/hn-task.entity';
 import { HnProtocol } from '../protocol/hn-protocol.entity';
 import { HnProtocolService } from '../protocol/hn-protocol.service';
-import { HnDocumentationSearchDTO } from '../brick-aggregate/documentation/hn-documentation.entity';
-import { ClDateHelper } from '@monorepo/core-lib';
-import { HnTechnicalDocOtherClassService } from '../technical-doc-other-class/hn-technical-doc-other-class.service';
+import { HnResource } from '../resource/hn-resource.entity';
+import { HnResourceService } from '../resource/hn-resource.service';
+import { HnTask } from '../task/hn-task.entity';
+import { HnTaskService } from '../task/hn-task.service';
 import { HnTechnicalDocOtherClass } from '../technical-doc-other-class/hn-technical-doc-other-class.entity';
+import { HnTechnicalDocOtherClassService } from '../technical-doc-other-class/hn-technical-doc-other-class.service';
+import { HnTechnicalFolder } from './hn-technical-folder.entity';
 
 @Injectable()
 export class HnTechnicalFolderService {

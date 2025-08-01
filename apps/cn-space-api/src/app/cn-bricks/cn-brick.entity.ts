@@ -1,5 +1,6 @@
-import { Column, Entity, OneToMany } from 'typeorm';
 import { BlEntityWithId } from '@monorepo/back-core-lib';
+import { Column, Entity, OneToMany } from 'typeorm';
+
 import { CnBrickVersion } from './cn-brick-version.entity';
 
 export enum CnBrickVisibility {

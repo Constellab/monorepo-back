@@ -2,6 +2,7 @@ import { BlAbstractService, BlBadRequestException, BlUnauthorizedException } fro
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
+
 import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
 import { CnLabConfig } from '../../cn-lab-configs/cn-lab-config.entity';
 import { CnLabConfigsService } from '../../cn-lab-configs/cn-lab-configs.service';
@@ -11,7 +12,6 @@ import {
   CnHierarchyObjectVisibility,
 } from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
 import { CnProtocolMigrator } from './cn-protocol-migrator.class';
-import { CnScenarioProtocol } from './cn-scenario-protocol.class';
 import { CnCreateLabScenarioDto, CnSaveScenarioResultDTO } from './cn-scenario.dto';
 import {
   CnScenario,
@@ -20,6 +20,7 @@ import {
   CnScenarioWithLab,
   CnScenarioWithNotes,
 } from './cn-scenario.entity';
+import { CnScenarioProtocol } from './cn-scenario-protocol.class';
 
 @Injectable()
 export class CnScenariosService extends BlAbstractService<CnScenarioEntity> {

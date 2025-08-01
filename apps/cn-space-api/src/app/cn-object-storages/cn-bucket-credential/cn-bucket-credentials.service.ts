@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
 import { BlAbstractService, BlBadRequestException } from '@monorepo/back-core-lib';
+import { ClPage } from '@monorepo/core-lib';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
+
 import { CnBucketCredentials } from './cn-bucket-credential.entity';
-import { ClPage } from '@monorepo/core-lib';
 
 @Injectable()
 export class CnBucketCredentialsService extends BlAbstractService<CnBucketCredentials> {

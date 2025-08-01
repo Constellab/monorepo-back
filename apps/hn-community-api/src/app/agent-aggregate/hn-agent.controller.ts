@@ -1,3 +1,11 @@
+import { BlFile, BlParsePipe, BlPublic, BlUploadedFile } from '@monorepo/back-core-lib';
+import { ClPage } from '@monorepo/core-lib';
+import {
+  TeBlockFigureUploadedResponse,
+  TeBlockFileUploadResponse,
+  TeRichText,
+  TeRichTextPipe,
+} from '@monorepo/te-text-editor';
 import {
   Body,
   Controller,
@@ -12,8 +20,15 @@ import {
   Res,
   UseInterceptors,
 } from '@nestjs/common';
-import { HnAgentAggregateService } from './hn-agent-aggregate.service';
-import { HnAgentVersion } from './agent-version/hn-agent-version.entity';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { Response } from 'express';
+
+import { HnBrickVersionDto } from '../brick-aggregate/brick-version/hn-brick-version.dto';
+import { HnLabGuard } from '../core/decorators/hn-lab-auth-guard.decorator';
+import { HnSitemapItemBase } from '../core/model/config/hn-site-map.class';
+import { HnFileAgentService } from '../file-aggregate/file-agent/hn-file-agent.service';
+import { HnAbstractFileController } from '../file-aggregate/file-core/hn-abstract-file.controller';
+import { HnUserDto } from '../users/hn-user.dto';
 import {
   HnAgentDto,
   HnAgentEditStyleData,
@@ -21,26 +36,12 @@ import {
   HnAgentVersionFileInput,
   HnCreateAgentDto,
 } from './agent/hn-agent.dto';
-import { BlFile, BlParsePipe, BlPublic, BlUploadedFile } from '@monorepo/back-core-lib';
 import { HnAgent } from './agent/hn-agent.entity';
-import { ClPage } from '@monorepo/core-lib';
 import { HnAgentCoAuthorInvite } from './agent-co-author-invite/hn-agent-co-author-invite.entity';
-import { HnSitemapItemBase } from '../core/model/config/hn-site-map.class';
-import { HnBrickVersionDto } from '../brick-aggregate/brick-version/hn-brick-version.dto';
 import { HnAgentVersionDto } from './agent-version/hn-agent-version.dto';
-import { HnUserDto } from '../users/hn-user.dto';
-import { HnAbstractFileController } from '../file-aggregate/file-core/hn-abstract-file.controller';
-import { HnFileAgentService } from '../file-aggregate/file-agent/hn-file-agent.service';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { HnAgentVersion } from './agent-version/hn-agent-version.entity';
 import { HnAgentVersionMigrator } from './agent-version/hn-agent-version-migrator.class';
-import { HnLabGuard } from '../core/decorators/hn-lab-auth-guard.decorator';
-import {
-  TeBlockFigureUploadedResponse,
-  TeBlockFileUploadResponse,
-  TeRichText,
-  TeRichTextPipe,
-} from '@monorepo/te-text-editor';
-import { Response } from 'express';
+import { HnAgentAggregateService } from './hn-agent-aggregate.service';
 import { HnAgentForLabController } from './hn-agent-for-lab.controller';
 
 @Controller('agent')
@@ -322,7 +323,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
   @Put(':agentId/version/draft')
   createNewDraftVersion(
     @Param('agentId', ParseUUIDPipe) agentId: string,
-    // eslint-disable-next-line max-len
+
     @Body(new BlParsePipe(HnAgentVersionFileInput)) newAgentVersionFile: HnAgentVersionFileInput
   ): Promise<HnAgentVersion> {
     const migrator: HnAgentVersionMigrator = new HnAgentVersionMigrator();
@@ -339,7 +340,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
   @Put(':agentId/version/draft/replace')
   replaceDraftVersion(
     @Param('agentId', ParseUUIDPipe) agentId: string,
-    // eslint-disable-next-line max-len
+
     @Body(new BlParsePipe(HnAgentVersionFileInput)) newAgentVersionFile: HnAgentVersionFileInput
   ): Promise<HnAgentVersion> {
     const migrator: HnAgentVersionMigrator = new HnAgentVersionMigrator();

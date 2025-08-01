@@ -1,14 +1,15 @@
+import { BlBadRequestException } from '@monorepo/back-core-lib';
+import { ClStringHelper } from '@monorepo/core-lib';
+import { TeRichText, TeRichTextAggregate } from '@monorepo/te-text-editor';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
-import { HnDocumentation, HnDocumentationSearchDTO } from './hn-documentation.entity';
+
+import { HnCurrentUserHelper } from '../../core/utils/hn-current-user.helper';
 import { HnBrickMajorVersion } from '../brick-major-version/hn-brick-major-version.entity';
-import { BlBadRequestException } from '@monorepo/back-core-lib';
-import { TeRichText, TeRichTextAggregate } from '@monorepo/te-text-editor';
 import { HnNodeDTO } from '../folder/hn-folder.dto';
 import { HnFolder } from '../folder/hn-folder.entity';
-import { ClStringHelper } from '@monorepo/core-lib';
-import { HnCurrentUserHelper } from '../../core/utils/hn-current-user.helper';
+import { HnDocumentation, HnDocumentationSearchDTO } from './hn-documentation.entity';
 
 @Injectable()
 export class HnDocumentationService {

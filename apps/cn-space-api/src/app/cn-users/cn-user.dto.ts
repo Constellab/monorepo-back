@@ -1,6 +1,6 @@
 import { CnSpace } from '../cn-spaces/cn-space.entity';
-import { CnUser, CnUserLicense } from './cn-user.entity';
 import { CnSpaceUserRole } from '../cn-spaces/cn-space-user.entity';
+import { CnUser, CnUserLicense } from './cn-user.entity';
 
 export interface CnCreateUserDto {
   firstname: string;

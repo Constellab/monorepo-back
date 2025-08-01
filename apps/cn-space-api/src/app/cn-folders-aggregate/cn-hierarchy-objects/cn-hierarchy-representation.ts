@@ -2,6 +2,7 @@ import { BlEntityWithId, BlLuxonDateTimeColumn, BlNotUpdatable } from '@monorepo
 import { Type } from 'class-transformer';
 import { DateTime } from 'luxon';
 import { JoinColumn, ManyToOne, OneToOne, Relation } from 'typeorm';
+
 import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
 import { CnHierarchyObjectInfo } from './cn-hierarchy-object.dto';
 import { CnHierarchyObject, CnHierarchyObjectEntity } from './cn-hierarchy-object.entity';

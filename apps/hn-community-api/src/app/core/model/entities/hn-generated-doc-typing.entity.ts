@@ -1,9 +1,10 @@
 import { BlEntityWithId } from '@monorepo/back-core-lib';
-import { Column, ManyToOne } from 'typeorm';
 import { Type } from 'class-transformer';
+import { Column, ManyToOne } from 'typeorm';
+
+import { HnTechnicalFolderDto } from '../../../technical-folder/hn-technical-folder.dto';
 import { HnTechnicalFolder } from '../../../technical-folder/hn-technical-folder.entity';
 import { HnGeneratedDocDto } from './hn-generated-doc.dto';
-import { HnTechnicalFolderDto } from '../../../technical-folder/hn-technical-folder.dto';
 
 export abstract class HnGeneratedDocEntity extends BlEntityWithId {
   @Column()

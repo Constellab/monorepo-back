@@ -1,20 +1,21 @@
 import { Injectable } from '@nestjs/common';
-import { HnRunStatService } from './run-stat/hn-run-stat.service';
-import { HnRunStatFromLabDto } from './run-stat/hn-run-stat.dto';
-import { HnUserService } from '../users/hn-user.service';
-import { HnAgentAggregateService } from '../agent-aggregate/hn-agent-aggregate.service';
+import { DataSource, EntityManager } from 'typeorm';
+
 import { HnAgentVersion } from '../agent-aggregate/agent-version/hn-agent-version.entity';
+import { HnAgentAggregateService } from '../agent-aggregate/hn-agent-aggregate.service';
+import { HnBrick } from '../brick-aggregate/brick/hn-brick.entity';
+import { HnBrickAggregateService } from '../brick-aggregate/hn-brick-aggregate.service';
+import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
+import { HnTypingName } from '../core/utils/hn-typing-name.class';
+import { HnUserService } from '../users/hn-user.service';
+import { HnRunStatFromLabDto } from './run-stat/hn-run-stat.dto';
 import { HnRunStat } from './run-stat/hn-run-stat.entity';
+import { HnRunStatService } from './run-stat/hn-run-stat.service';
 import {
   HnRunStatAggregate,
   HnRunStatAggregateObjectType,
 } from './run-stat-aggregate/hn-run-stat-aggregate.entity';
-import { HnBrickAggregateService } from '../brick-aggregate/hn-brick-aggregate.service';
-import { HnBrick } from '../brick-aggregate/brick/hn-brick.entity';
 import { HnRunStatAggregateService } from './run-stat-aggregate/hn-run-stat-aggregate.service';
-import { HnTypingName } from '../core/utils/hn-typing-name.class';
-import { DataSource, EntityManager } from 'typeorm';
-import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
 
 @Injectable()
 export class HnRunStatAgService {

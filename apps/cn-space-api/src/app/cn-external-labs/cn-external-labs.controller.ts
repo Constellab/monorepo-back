@@ -22,6 +22,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
+
 import { CnExternalCheckCredentialResponse } from '../cn-auth/cn-auth.service';
 import {
   CnLabAllowDev,
@@ -39,21 +40,21 @@ import { CnSaveFolderDTO } from '../cn-folders-aggregate/cn-folders/cn-folder.dt
 import { CnFolderWithHierarchy } from '../cn-folders-aggregate/cn-folders/cn-folder.entity';
 import { CnTag } from '../cn-folders-aggregate/cn-hierarchy-object-tags/cn-hierarchy-object-tag.dto';
 import { CnHierarchyObjectTag } from '../cn-folders-aggregate/cn-hierarchy-object-tags/cn-hierarchy-object-tag.entity';
-import { CnHierarchyObjectAggregateService } from '../cn-folders-aggregate/cn-hierarchy-objects/cn-hierarchy-object-aggregate.service';
 import {
   CnFolderDtoHelper,
   CnLabFolderDTO,
 } from '../cn-folders-aggregate/cn-hierarchy-objects/cn-hierarchy-object.dto';
 import { CnHierarchyObject } from '../cn-folders-aggregate/cn-hierarchy-objects/cn-hierarchy-object.entity';
-import { CnNoteAggregateService } from '../cn-folders-aggregate/cn-notes/cn-note-aggregate.service';
+import { CnHierarchyObjectAggregateService } from '../cn-folders-aggregate/cn-hierarchy-objects/cn-hierarchy-object-aggregate.service';
 import { CnCreateNoteWithConfigDto } from '../cn-folders-aggregate/cn-notes/cn-note.dto';
-import { CnResourceAggregateService } from '../cn-folders-aggregate/cn-resources/cn-resource-aggregate.service';
+import { CnNoteAggregateService } from '../cn-folders-aggregate/cn-notes/cn-note-aggregate.service';
 import { CnShareResourceRequestDTO } from '../cn-folders-aggregate/cn-resources/cn-resource.dto';
-import { CnScenarioAggregateService } from '../cn-folders-aggregate/cn-scenarios/cn-scenario-aggregate.service';
+import { CnResourceAggregateService } from '../cn-folders-aggregate/cn-resources/cn-resource-aggregate.service';
 import { CnCreateLabScenarioDto } from '../cn-folders-aggregate/cn-scenarios/cn-scenario.dto';
+import { CnScenarioAggregateService } from '../cn-folders-aggregate/cn-scenarios/cn-scenario-aggregate.service';
 import { CnLabFolderAggregateService } from '../cn-lab-folder-aggregate/cn-lab-folder-aggregate.service';
-import { CnLabAggregateService } from '../cn-labs/cn-lab-aggregate.service';
 import { CnLabStartDTO } from '../cn-labs/cn-lab.dto';
+import { CnLabAggregateService } from '../cn-labs/cn-lab-aggregate.service';
 import { CnLabSendMailDto, CnLabSendMailToMailsDto } from '../cn-labs/mail/cn-lab-mail.dto';
 import { CnLabMailService } from '../cn-labs/mail/cn-lab-mail.service';
 import { CnLabNotificationCreateDTO } from '../cn-labs/notification/cn-lab-notification.dto';

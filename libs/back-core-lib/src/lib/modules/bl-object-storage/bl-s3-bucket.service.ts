@@ -1,4 +1,3 @@
-import { Logger } from '@nestjs/common';
 import {
   CreateBucketCommand,
   DeleteBucketCommand,
@@ -15,12 +14,14 @@ import {
   PutObjectTaggingCommand,
   S3Client,
 } from '@aws-sdk/client-s3';
-import { BlFileResponse, BlObject, BlS3BucketConfig } from './bl-object-storage.class';
-import { Stream } from 'stream';
 import { _Object } from '@aws-sdk/client-s3/dist-types/models/models_0';
-import { BlObjectStorageInterface } from './bl-object-storage.interface';
+import { Logger } from '@nestjs/common';
+import { Stream } from 'stream';
+
 import { BlBadRequestException } from '../../exceptions/bl-bad-request.exception';
 import { BlNotFoundException } from '../../exceptions/bl-not-found.exception';
+import { BlFileResponse, BlObject, BlS3BucketConfig } from './bl-object-storage.class';
+import { BlObjectStorageInterface } from './bl-object-storage.interface';
 
 /**
  * Service to communicate with an object storage s3 to store files.

@@ -1,16 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { CnLabStatsRequestDTO } from './cn-lab-stats.dto';
-import { CnLabStatsRunningResponseDTO } from './cn-lab-running-stats.dto';
-import { CnLab, CnLabBillingMode } from '../cn-lab.entity';
-import { CnLabStatsStorageResponseDTO } from './cn-lab-storage-stats.dto';
-import { CnLabsService } from '../cn-labs.service';
-import { CnLabBackupAggregateService } from '../backup/cn-lab-backup-aggregate.service';
+
 import { CnServerPriceService } from '../../cn-servers-info/server-price/cn-server-price.service';
 import { CnStoragePriceService } from '../../cn-servers-info/storage-price/cn-storage-price.service';
+import { CnLabBackupAggregateService } from '../backup/cn-lab-backup-aggregate.service';
+import { CnLab, CnLabBillingMode } from '../cn-lab.entity';
+import { CnLabsService } from '../cn-labs.service';
+import { CnLabStatusHistoryService } from '../status/cn-lab-status-history.service';
 import { CnLabVolumeService } from '../volume/cn-lab-volume.service';
+import { CnLabStatsRunningResponseDTO } from './cn-lab-running-stats.dto';
+import { CnLabStatsRequestDTO } from './cn-lab-stats.dto';
 import { CnLabStatsStorage } from './cn-lab-stats.storage';
 import { CnLabStatsRunningService } from './cn-lab-stats-running.service';
-import { CnLabStatusHistoryService } from '../status/cn-lab-status-history.service';
+import { CnLabStatsStorageResponseDTO } from './cn-lab-storage-stats.dto';
 
 @Injectable()
 export class CnLabStatsAggregateService {

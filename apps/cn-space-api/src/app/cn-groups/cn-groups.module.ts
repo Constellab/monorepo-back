@@ -1,13 +1,14 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { CnGroup, CnGroupSingleUser, CnGroupTeam, CnUserGroup } from './cn-group.entity';
-import { CnGroupsService } from './cn-groups.service';
-import { CnGroupsController } from './cn-groups.controller';
-import { CnUserTeamService } from './cn-user-team.service';
+
 import { CnSpacesModule } from '../cn-spaces/cn-spaces.module';
-import { CnGroupsSecurity } from './cn-groups.security';
-import { CnGroupsAggregateService } from './cn-groups-aggregate.service';
+import { CnGroup, CnGroupSingleUser, CnGroupTeam, CnUserGroup } from './cn-group.entity';
 import { CnGroupListener } from './cn-group.listener';
+import { CnGroupsController } from './cn-groups.controller';
+import { CnGroupsSecurity } from './cn-groups.security';
+import { CnGroupsService } from './cn-groups.service';
+import { CnGroupsAggregateService } from './cn-groups-aggregate.service';
+import { CnUserTeamService } from './cn-user-team.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([CnGroup, CnGroupSingleUser, CnGroupTeam, CnUserGroup]), CnSpacesModule],

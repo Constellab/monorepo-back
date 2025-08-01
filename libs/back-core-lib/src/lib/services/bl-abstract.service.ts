@@ -1,11 +1,12 @@
 import { DeleteResult, EntityManager, Repository } from 'typeorm';
 import { FindOneOptions } from 'typeorm/find-options/FindOneOptions';
-import { BlEntityWithId } from '../models/bl-entity-with-id.entity';
-import { blPropertyIsNotUpdatable } from '../decorators/bl-not-updatable.decorator';
-import { BlAbstractPaginatedService } from './bl-abstract-paginated.service';
 import { FindOptionsRelations } from 'typeorm/find-options/FindOptionsRelations';
+
+import { blPropertyIsNotUpdatable } from '../decorators/bl-not-updatable.decorator';
 import { BlBadRequestException } from '../exceptions/bl-bad-request.exception';
 import { BlNotFoundException } from '../exceptions/bl-not-found.exception';
+import { BlEntityWithId } from '../models/bl-entity-with-id.entity';
+import { BlAbstractPaginatedService } from './bl-abstract-paginated.service';
 
 export abstract class BlAbstractService<T extends BlEntityWithId> extends BlAbstractPaginatedService<T> {
   protected constructor(repo: Repository<T>, entityClass: new () => T) {

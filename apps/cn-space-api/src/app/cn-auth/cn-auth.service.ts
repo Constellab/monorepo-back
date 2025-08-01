@@ -1,9 +1,3 @@
-import { Injectable } from '@nestjs/common';
-import { CnUsersService } from '../cn-users/cn-users.service';
-import { CnUser } from '../cn-users/cn-user.entity';
-import { CnCoreConfigService } from '../cn-core/modules/cn-core-config/cn-core-config.service';
-import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
-import { ClDateHelper } from '@monorepo/core-lib';
 import {
   BlCaptchaService,
   BlCredentials,
@@ -12,9 +6,16 @@ import {
   BlUnauthorizedException,
   BlUserStatus,
 } from '@monorepo/back-core-lib';
-import { CnUser2FAService } from './cn-user-2-f-a/cn-user-2-f-a.service';
+import { ClDateHelper } from '@monorepo/core-lib';
+import { Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+
+import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
+import { CnCoreConfigService } from '../cn-core/modules/cn-core-config/cn-core-config.service';
+import { CnUser } from '../cn-users/cn-user.entity';
+import { CnUsersService } from '../cn-users/cn-users.service';
 import { CnAuthEvent, cnAuthEventName } from './cn-auth-event.class';
+import { CnUser2FAService } from './cn-user-2-f-a/cn-user-2-f-a.service';
 
 export interface CnAuthResponse {
   status: 'LOGGED_IN' | '2FA_REQUIRED';

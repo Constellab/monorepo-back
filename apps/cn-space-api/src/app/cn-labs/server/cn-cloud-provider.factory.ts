@@ -1,14 +1,15 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { CnCloudProviderName } from '../../cn-cloud-providers/cn-cloud-provider.entity';
-import { CnCloudProviderService } from './cn-cloud-provider.service';
 import { BlBadRequestException } from '@monorepo/back-core-lib';
-import { CnCloudProviderOvhService } from './ovh/cn-cloud-provider-ovh.service';
-import { CnCloudProviderAzureService } from './azure/cn-cloud-provider-azure.service';
-import { CnLabSshService } from './cn-lab-ssh.service';
+import { Injectable, Logger } from '@nestjs/common';
+
+import { CnCloudProviderName } from '../../cn-cloud-providers/cn-cloud-provider.entity';
 import { CnLab } from '../cn-lab.entity';
-import { CnCloudProviderOutscaleService } from './outscale/cn-cloud-provider-outscale.service';
 import { CnLabsService } from '../cn-labs.service';
+import { CnCloudProviderAzureService } from './azure/cn-cloud-provider-azure.service';
+import { CnCloudProviderService } from './cn-cloud-provider.service';
+import { CnLabSshService } from './cn-lab-ssh.service';
 import { CnCloudProviderGcpService } from './gcp/cn-cloud-provider-gcp.service';
+import { CnCloudProviderOutscaleService } from './outscale/cn-cloud-provider-outscale.service';
+import { CnCloudProviderOvhService } from './ovh/cn-cloud-provider-ovh.service';
 
 @Injectable()
 export class CnCloudProviderFactory {

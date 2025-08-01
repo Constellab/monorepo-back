@@ -1,3 +1,4 @@
+import { TeBlock } from './te-block.class';
 import { TeHTMLEditorJSON, TeRichText, TeRichTextDTO } from './te-rich-text.class';
 import {
   TeRichTextBlockModification,
@@ -8,7 +9,6 @@ import {
   TeRichTextBlockModificationWithUser,
   TeRichTextGetUserFunction,
 } from './te-rich-text-block-modification.dto';
-import { TeBlock } from './te-block.class';
 import { TeRichTextModifications } from './te-rich-text-modifications.class';
 
 /**
@@ -33,7 +33,6 @@ export type TeRichTextAggregateJsonInput =
   | TeHTMLEditorJSON
   | TeOldRichTextContentWithModificationsI
   | TeNewFullRichTextDTO;
-
 
 export class TeRichTextAggregate {
   private static readonly CURRENT_VERSION = 1;

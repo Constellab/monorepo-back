@@ -1,6 +1,7 @@
 import { BlUserSearch } from '@monorepo/back-core-lib';
 import { FindOptionsOrder, FindOptionsWhere } from 'typeorm';
 import { FindOptionsRelations } from 'typeorm/find-options/FindOptionsRelations';
+
 import { CnUser } from './cn-user.entity';
 
 /**

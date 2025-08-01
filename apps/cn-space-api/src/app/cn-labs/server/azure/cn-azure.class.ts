@@ -1,8 +1,9 @@
 import { DataDisk, InstanceViewStatus, VirtualMachine } from '@azure/arm-compute';
 import { ClHelpService } from '@monorepo/core-lib';
-import { CnCpInstance, CnCpInstanceStatus, CnCpInstanceStatusObject } from '../cn-cloud-provider.class';
 import { Logger } from '@nestjs/common';
+
 import { CnLabBillingMode } from '../../cn-lab.entity';
+import { CnCpInstance, CnCpInstanceStatus, CnCpInstanceStatusObject } from '../cn-cloud-provider.class';
 
 export type CnAzureInstanceStatus =
   | 'ProvisioningState/succeeded'

@@ -1,4 +1,15 @@
 import {
+  BlDtoHelper,
+  BlFile,
+  BlParseEnumPipe,
+  BlParsePipe,
+  BlResponseHelper,
+  BlSearchParams,
+  BlUploadedFile,
+} from '@monorepo/back-core-lib';
+import { ClPage, ClPageI } from '@monorepo/core-lib';
+import { TeBlockFigureUploadedResponse, TeRichText, TeRichTextPipe } from '@monorepo/te-text-editor';
+import {
   Body,
   Controller,
   Delete,
@@ -12,34 +23,24 @@ import {
   Res,
   UseInterceptors,
 } from '@nestjs/common';
-import { CnFolder, CnFolderWithHierarchy } from './cn-folders/cn-folder.entity';
-import {
-  BlDtoHelper,
-  BlFile,
-  BlParseEnumPipe,
-  BlParsePipe,
-  BlResponseHelper,
-  BlSearchParams,
-  BlUploadedFile,
-} from '@monorepo/back-core-lib';
-import { TeBlockFigureUploadedResponse, TeRichText, TeRichTextPipe } from '@monorepo/te-text-editor';
-import { ClPage, ClPageI } from '@monorepo/core-lib';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { Response } from 'express';
+
+import { CnActivity } from '../cn-activity/cn-activity.entity';
+import { CnBucketLocationDTO } from '../cn-object-storages/cn-buckets/cn-bucket.entity';
+import { CnUser } from '../cn-users/cn-user.entity';
+import { CnFolderStorageUsageDTO } from './cn-documents/cn-document-dto.class';
 import { CnFolderAggregateService } from './cn-folder-aggregate.service';
+import { CnFolderUserConfigDTO, CnFolderUserDTO } from './cn-folder-user/cn-folder-user.dto';
+import { CnRootFolderUserRole } from './cn-folder-user/cn-folder-user.entity';
 import {
   CnFolderSimpleDTO,
   CnFolderStorageLocationDTO,
   CnGetFolderDescriptionDTO,
   CnSaveFolderDTO,
 } from './cn-folders/cn-folder.dto';
-import { CnUser } from '../cn-users/cn-user.entity';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { Response } from 'express';
-import { CnRootFolderUserRole } from './cn-folder-user/cn-folder-user.entity';
-import { CnActivity } from '../cn-activity/cn-activity.entity';
-import { CnBucketLocationDTO } from '../cn-object-storages/cn-buckets/cn-bucket.entity';
-import { CnFolderStorageUsageDTO } from './cn-documents/cn-document-dto.class';
+import { CnFolder, CnFolderWithHierarchy } from './cn-folders/cn-folder.entity';
 import { CnHierarchyObject } from './cn-hierarchy-objects/cn-hierarchy-object.entity';
-import { CnFolderUserConfigDTO, CnFolderUserDTO } from './cn-folder-user/cn-folder-user.dto';
 
 @Controller('folders')
 export class CnFoldersController {

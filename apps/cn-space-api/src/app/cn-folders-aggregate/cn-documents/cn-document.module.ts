@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
-import { CnCoreModule } from '../../cn-core/cn-core.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
+import { CnCoreModule } from '../../cn-core/cn-core.module';
 import { CnFoldersModule } from '../cn-folders/cn-folders.module';
+import { CnHierarchyObjectModule } from '../cn-hierarchy-objects/cn-hierarchy-object.module';
 import { CnDocumentEntity } from './cn-document.entity';
 import { CnDocumentService } from './cn-document.service';
-import { CnHierarchyObjectModule } from '../cn-hierarchy-objects/cn-hierarchy-object.module';
 
 @Module({
   imports: [

@@ -1,5 +1,6 @@
-import { Column, Entity, ManyToMany } from 'typeorm';
 import { BlEntityWithId } from '@monorepo/back-core-lib';
+import { Column, Entity, ManyToMany } from 'typeorm';
+
 import { HnStory } from '../story/hn-story.entity';
 
 //TODO: Rename to HnStoryTopic

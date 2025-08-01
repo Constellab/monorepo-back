@@ -1,7 +1,8 @@
-import { HnUserDto } from '../../users/hn-user.dto';
-import { HnSpaceDto } from '../../space-aggregate/space/hn-space.dto';
-import { HnCommunityApp } from './hn-community-app.entity';
 import { TeRichText, TeRichTextDTO } from '@monorepo/te-text-editor';
+
+import { HnSpaceDto } from '../../space-aggregate/space/hn-space.dto';
+import { HnUserDto } from '../../users/hn-user.dto';
+import { HnCommunityApp } from './hn-community-app.entity';
 
 export class HnCommunityAppDto {
   id: string;

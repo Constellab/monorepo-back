@@ -1,6 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { CnCloudProviderService } from '../cn-cloud-provider.service';
+import { Volume } from 'outscale-api';
+import { Vm } from 'outscale-api/dist/esm/models/Vm';
+
+import { CnCloudProviderName } from '../../../cn-cloud-providers/cn-cloud-provider.entity';
+import { CnCoreConfigService } from '../../../cn-core/modules/cn-core-config/cn-core-config.service';
+import { CnCommandService } from '../../../cn-core/services/cn-command.service';
 import { CnLab, CnLabBillingMode } from '../../cn-lab.entity';
+import { CnLabVolumeType } from '../../volume/cn-lab-volume-entity';
 import {
   CnCpCreateInstanceRequest,
   CnCpCreateVolumeRequest,
@@ -11,13 +17,8 @@ import {
   CnCpVolume,
   CnCpVolumeStatus,
 } from '../cn-cloud-provider.class';
-import { CnCloudProviderName } from '../../../cn-cloud-providers/cn-cloud-provider.entity';
+import { CnCloudProviderService } from '../cn-cloud-provider.service';
 import { CnOutscaleService } from './cn-outscale.service';
-import { Vm } from 'outscale-api/dist/esm/models/Vm';
-import { Volume } from 'outscale-api';
-import { CnCoreConfigService } from '../../../cn-core/modules/cn-core-config/cn-core-config.service';
-import { CnCommandService } from '../../../cn-core/services/cn-command.service';
-import { CnLabVolumeType } from '../../volume/cn-lab-volume-entity';
 
 @Injectable()
 export class CnCloudProviderOutscaleService extends CnCloudProviderService {

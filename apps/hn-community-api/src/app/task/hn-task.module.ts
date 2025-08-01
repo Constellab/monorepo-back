@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
-import { HnTaskService } from './hn-task.service';
-import { HnTaskController } from './hn-task.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
+import { HnTaskController } from './hn-task.controller';
 import { HnTask } from './hn-task.entity';
+import { HnTaskService } from './hn-task.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([HnTask])],

@@ -1,5 +1,3 @@
-import { Injectable } from '@nestjs/common';
-import { DefaultAzureCredential } from '@azure/identity';
 import {
   ComputeManagementClient,
   Disk,
@@ -9,8 +7,11 @@ import {
   VirtualMachine,
 } from '@azure/arm-compute';
 import { NetworkManagementClient, PublicIPAddress } from '@azure/arm-network';
-import { cnServerUbuntuUser } from '../cn-cloud-provider.class';
+import { DefaultAzureCredential } from '@azure/identity';
+import { Injectable } from '@nestjs/common';
+
 import { CnCoreConfigService } from '../../../cn-core/modules/cn-core-config/cn-core-config.service';
+import { cnServerUbuntuUser } from '../cn-cloud-provider.class';
 
 @Injectable()
 export class CnAzureService {
@@ -142,7 +143,6 @@ export class CnAzureService {
 
     const instance = await this.getInstance(instanceName);
 
-    // eslint-disable-next-line max-len
     const diskId = `${this.getResourceGroupFullId()}/providers/Microsoft.Compute/disks/${volumeName}`;
     instance.storageProfile.dataDisks.push({
       name: volumeName,

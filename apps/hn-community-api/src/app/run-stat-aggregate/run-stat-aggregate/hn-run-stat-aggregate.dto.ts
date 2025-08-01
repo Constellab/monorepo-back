@@ -1,9 +1,9 @@
-import { HnAgentVersionDto } from '../../agent-aggregate/agent-version/hn-agent-version.dto';
-import { HnTask } from '../../task/hn-task.entity';
-import { HnProtocol } from '../../protocol/hn-protocol.entity';
-import { HnBrickDto } from '../../brick-aggregate/brick/hn-brick.dto';
-import { HnUserDto } from '../../users/hn-user.dto';
 import { HnAgentDto } from '../../agent-aggregate/agent/hn-agent.dto';
+import { HnAgentVersionDto } from '../../agent-aggregate/agent-version/hn-agent-version.dto';
+import { HnBrickDto } from '../../brick-aggregate/brick/hn-brick.dto';
+import { HnProtocol } from '../../protocol/hn-protocol.entity';
+import { HnTask } from '../../task/hn-task.entity';
+import { HnUserDto } from '../../users/hn-user.dto';
 
 export interface HnRunStatAggregateDto {
   executionCount: number;

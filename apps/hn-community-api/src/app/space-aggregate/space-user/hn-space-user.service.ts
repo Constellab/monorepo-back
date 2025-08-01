@@ -1,9 +1,10 @@
+import { BlUnauthorizedException } from '@monorepo/back-core-lib';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { HnSpaceUser, HnSpaceUserRole } from './hn-space-user.entity';
-import { BlUnauthorizedException } from '@monorepo/back-core-lib';
+
 import { HnCurrentUserHelper } from '../../core/utils/hn-current-user.helper';
+import { HnSpaceUser, HnSpaceUserRole } from './hn-space-user.entity';
 
 @Injectable()
 export class HnSpaceUserService {

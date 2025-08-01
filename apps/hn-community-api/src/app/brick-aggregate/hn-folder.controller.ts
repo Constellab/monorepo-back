@@ -1,11 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { BlParsePipe, BlPublic } from '@monorepo/back-core-lib';
-import { HnFolder } from './folder/hn-folder.entity';
+import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
+
+import { HnIsAdminGuard } from '../core/guards/hn-is-admin.guard';
+import { HnDocumentationDto } from './documentation/hn-documentation.dto';
 import { HnDocumentation } from './documentation/hn-documentation.entity';
 import { HnFolderDto, HnNode, HnNodeDTO, HnNodeType } from './folder/hn-folder.dto';
-import { HnIsAdminGuard } from '../core/guards/hn-is-admin.guard';
+import { HnFolder } from './folder/hn-folder.entity';
 import { HnBrickAggregateService } from './hn-brick-aggregate.service';
-import { HnDocumentationDto } from './documentation/hn-documentation.dto';
 
 @Controller('folder')
 @UseGuards(HnIsAdminGuard)

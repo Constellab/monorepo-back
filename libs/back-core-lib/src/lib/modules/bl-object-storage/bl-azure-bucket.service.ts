@@ -1,5 +1,3 @@
-import { Logger } from '@nestjs/common';
-import { BlAzureBlobContainerConfig, BlFileResponse, BlObject } from './bl-object-storage.class';
 import {
   BlobClient,
   BlobServiceClient,
@@ -7,8 +5,11 @@ import {
   ContainerClient,
   StorageSharedKeyCredential,
 } from '@azure/storage-blob';
-import { BlObjectStorageInterface } from './bl-object-storage.interface';
+import { Logger } from '@nestjs/common';
+
 import { BlBadRequestException } from '../../exceptions/bl-bad-request.exception';
+import { BlAzureBlobContainerConfig, BlFileResponse, BlObject } from './bl-object-storage.class';
+import { BlObjectStorageInterface } from './bl-object-storage.interface';
 
 export class BlAzureBucketService implements BlObjectStorageInterface {
   private readonly logger = new Logger(BlAzureBucketService.name);

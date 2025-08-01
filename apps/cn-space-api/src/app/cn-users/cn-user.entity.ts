@@ -16,6 +16,7 @@ import * as argon2 from 'argon2';
 import { Exclude } from 'class-transformer';
 import { DateTime } from 'luxon';
 import { BeforeInsert, Column, Entity, ManyToMany, ManyToOne, OneToOne } from 'typeorm';
+
 import type { CnGroupSingleUser, CnGroupTeam } from '../cn-groups/cn-group.entity';
 import { CnSpace, CnSpaceEntity } from '../cn-spaces/cn-space.entity';
 
