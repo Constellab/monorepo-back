@@ -51,7 +51,7 @@ export class CnLabConfigurerService {
 
       // wait for lab manager
       await this.labManagerService.waitForHealthCheck(lab.getLabManagerApiInfo().apiUrl);
-    } catch (e) {
+    } catch (e: any) {
       await this.labService.updateServerTask(
         lab.id,
         `Error during server configuration. Error : ${e}`,
@@ -68,7 +68,7 @@ export class CnLabConfigurerService {
 
     try {
       await this.refreshLabConfigurerRepo(sshService, lab.id);
-    } catch (e) {
+    } catch (e: any) {
       await this.labService.updateServerTask(
         lab.id,
         `Error while updating lab-configurer repository. Error : ${e}`,
@@ -123,7 +123,7 @@ export class CnLabConfigurerService {
     try {
       const cloudProvider = await this.cloudProviderFactory.getCloudProviderServiceFromLab(lab.id);
       await cloudProvider.mountVolume(lab);
-    } catch (e) {
+    } catch (e: any) {
       throw new Error(`Error while mounting volume. Error : ${e}`);
     }
   }
@@ -136,7 +136,7 @@ export class CnLabConfigurerService {
     );
     try {
       await labSshService.execSshCommand([`cd ${labSshService.getUtilsFolder()}`, `bash prepare_server.sh`]);
-    } catch (e) {
+    } catch (e: any) {
       throw new Error(`Error while preparing server. Error : ${e}`);
     }
   }
@@ -152,7 +152,7 @@ export class CnLabConfigurerService {
       });
 
       await labSshService.waitForSshConnection(3);
-    } catch (e) {
+    } catch (e: any) {
       throw new Error(`Error while rebooting server. Error : ${e}`);
     }
   }
@@ -185,9 +185,9 @@ export class CnLabConfigurerService {
     try {
       await labSshService.execSshCommand([
         `cd ${CnLabSshService.LAB_CONFIGURER_FOLDER}`,
-        'docker-compose up -d',
+        'docker compose up -d',
       ]);
-    } catch (e) {
+    } catch (e: any) {
       throw new Error(`Error while starting lab manager. Error : ${e}`);
     }
   }
@@ -198,9 +198,9 @@ export class CnLabConfigurerService {
     try {
       await labSshService.execSshCommand([
         `cd ${CnLabSshService.LAB_CONFIGURER_FOLDER}`,
-        'docker-compose down',
+        'docker compose down',
       ]);
-    } catch (e) {
+    } catch (e: any) {
       throw new Error(`Error while stopping lab manager. Error : ${e}`);
     }
   }
@@ -219,7 +219,7 @@ export class CnLabConfigurerService {
         `cd ${CnLabSshService.LAB_CONFIGURER_FOLDER}`,
         `. update_lab_manager.sh ${labManagerVersion}`,
       ]);
-    } catch (e) {
+    } catch (e: any) {
       const error = `Error while updating lab manager. Error : ${e}`;
       await this.labService.updateServerTask(lab.id, error, CnLabServerTaskStatus.ERROR);
       throw new BlBadRequestException(error);
@@ -236,9 +236,9 @@ export class CnLabConfigurerService {
     try {
       await labSshService.execSshCommand([
         `cd ${CnLabSshService.LAB_CONFIGURER_FOLDER}`,
-        'docker-compose down',
+        'docker compose down',
       ]);
-    } catch (e) {
+    } catch (e: any) {
       const error = `Error while destroying containers. Error : ${e}`;
       await this.labService.updateServerTask(lab.id, error, CnLabServerTaskStatus.ERROR);
       throw new BlBadRequestException(error);
@@ -254,10 +254,10 @@ export class CnLabConfigurerService {
     await this.labService.updateServerTask(lab.id, `Clearing old image`, CnLabServerTaskStatus.RUNNING);
 
     try {
-      await labSshService.execSshCommand([`cd dockerlab`, 'docker-compose down']);
+      await labSshService.execSshCommand([`cd dockerlab`, 'docker compose down']);
 
       await labSshService.execSshCommand([`rm -rf dockerlab`]);
-    } catch (e) {
+    } catch (e: any) {
       const error = `Error migrating to github. Error : ${e}`;
       await this.labService.updateServerTask(lab.id, error, CnLabServerTaskStatus.ERROR);
       throw new BlBadRequestException(error);
@@ -290,7 +290,7 @@ export class CnLabConfigurerService {
       await this.callDockerComposeDown(labSshService, lab.id);
       // execute docker compose up
       await this.callDockerComposeUp(labSshService, lab.id);
-    } catch (e) {
+    } catch (e: any) {
       const error = `Error while migrating to DNS Challenge. Error : ${e}`;
       await this.labService.updateServerTask(lab.id, error, CnLabServerTaskStatus.ERROR);
       throw new BlBadRequestException(error);
