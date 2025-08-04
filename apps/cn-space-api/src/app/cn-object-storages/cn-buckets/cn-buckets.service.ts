@@ -1,4 +1,3 @@
-import { Injectable } from '@nestjs/common';
 import {
   BlAbstractService,
   BlBadRequestException,
@@ -8,10 +7,11 @@ import {
   BlSearchBuilder,
   BlSearchParams,
 } from '@monorepo/back-core-lib';
+import { ClPage } from '@monorepo/core-lib';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, EntityManager, In, Not, Repository } from 'typeorm';
 import { CnBucket, CnBucketContentType } from './cn-bucket.entity';
-import { ClPage } from '@monorepo/core-lib';
 
 @Injectable()
 export class CnBucketsService extends BlAbstractService<CnBucket> {
@@ -115,19 +115,20 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
           `There is already a bucket of type ${bucket.contentType} in region ${bucket.region.technicalName}`
         );
       }
-    }
 
-    if (bucket.bucketType === BlBucketType.NORMAL) {
-      if (!bucket.region.cloudProvider.hasNativeS3()) {
-        throw new BlBadRequestException(
-          `Normal bucket cannot be linked cloud provider ${bucket.region.cloudProvider.name}`
-        );
-      }
-    } else {
-      if (bucket.region.cloudProvider.getS3BucketType() !== bucket.bucketType) {
-        throw new BlBadRequestException(
-          `Bucket type ${bucket.bucketType} is not compatible with region ${bucket.region.cloudProvider.name}`
-        );
+      if (bucket.bucketType === BlBucketType.NORMAL) {
+        if (!bucket.region.cloudProvider.hasNativeS3()) {
+          throw new BlBadRequestException(
+            `Normal bucket cannot be linked cloud provider ${bucket.region.cloudProvider.name}`
+          );
+        }
+      } else {
+        if (bucket.region.cloudProvider.getS3BucketType() !== bucket.bucketType) {
+          throw new BlBadRequestException(
+            `Bucket type ${bucket.bucketType} is not compatible with region ` +
+              `${bucket.region.cloudProvider.name}`
+          );
+        }
       }
     }
 
