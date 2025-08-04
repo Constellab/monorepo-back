@@ -116,19 +116,20 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
           `There is already a bucket of type ${bucket.contentType} in region ${bucket.region.technicalName}`
         );
       }
-    }
 
-    if (bucket.bucketType === BlBucketType.NORMAL) {
-      if (!bucket.region.cloudProvider.hasNativeS3()) {
-        throw new BlBadRequestException(
-          `Normal bucket cannot be linked cloud provider ${bucket.region.cloudProvider.name}`
-        );
-      }
-    } else {
-      if (bucket.region.cloudProvider.getS3BucketType() !== bucket.bucketType) {
-        throw new BlBadRequestException(
-          `Bucket type ${bucket.bucketType} is not compatible with region ${bucket.region.cloudProvider.name}`
-        );
+      if (bucket.bucketType === BlBucketType.NORMAL) {
+        if (!bucket.region.cloudProvider.hasNativeS3()) {
+          throw new BlBadRequestException(
+            `Normal bucket cannot be linked cloud provider ${bucket.region.cloudProvider.name}`
+          );
+        }
+      } else {
+        if (bucket.region.cloudProvider.getS3BucketType() !== bucket.bucketType) {
+          throw new BlBadRequestException(
+            `Bucket type ${bucket.bucketType} is not compatible with region ` +
+              `${bucket.region.cloudProvider.name}`
+          );
+        }
       }
     }
 
