@@ -153,9 +153,10 @@ export class CnDocumentAggregateService {
       throw new BlBadRequestException('The uploaded folder is empty');
     }
 
-    if (files.length > 100) {
-      throw new BlBadRequestException('The uploaded folder contains too many files. The limit is 100 files');
-    }
+    // if (files.length > 100) {
+    //   throw new BlBadRequestException
+    // ('The uploaded folder contains too many files. The limit is 100 files');
+    // }
 
     // check if the folder already exists
     const uploadedFolderName = files[0].originalname.split('/')[0];
