@@ -13,6 +13,7 @@ import { HnAgentCoAuthor } from '../agent-aggregate/agent-co-author/hn-agent-co-
 import { HnBrickUser } from '../brick-aggregate/brick-user/hn-brick-user.entity';
 import { HnStoryCoAuthor } from '../story-author/hn-story-author.entity';
 import { HnTagCoAuthor } from '../tag-aggregate/tag-co-author/hn-tag-co-author.entity';
+import { HnCommunityAppCoAuthor } from '../community-app-aggregate/community-app-co-author/hn-community-app-co-author.entity';
 
 @Unique(['userCode'])
 @Entity('user')
@@ -71,6 +72,12 @@ export class HnUser {
   })
   agentCoAuthors: HnAgentCoAuthor[];
 
+  @OneToMany(() => HnCommunityAppCoAuthor, (communityAppCoAuthor) => communityAppCoAuthor.user, {
+    nullable: true,
+    onDelete: 'CASCADE',
+  })
+  communityAppCoAuthors: HnCommunityAppCoAuthor[];
+
   @OneToMany(() => HnBrickUser, (brickUser) => brickUser.user, { nullable: true })
   brickUsers: HnBrickUser[];
 
@@ -119,4 +126,9 @@ export interface HnUserConstellabDTO {
   theme: ClTheme;
   photo: string;
   lang: ClSupportedLanguage;
+}
+
+export interface HnUserSearchFilters {
+  alias?: string;
+  email?: string;
 }

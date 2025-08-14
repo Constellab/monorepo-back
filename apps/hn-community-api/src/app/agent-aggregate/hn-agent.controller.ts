@@ -221,6 +221,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
 
   /**
    * Get latest published agent version by agent id for lab
+   * @param res
    * @param agentId
    * @param jsonVersionNumber
    * @return an agent version code
@@ -228,7 +229,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
   @BlPublic()
   @HnLabGuard()
   @Get(':agentId/version/latest/for-lab/:jsonVersionNumber?')
-  async getLatestPublishedAgentVersionForLabByAgentId(
+  getLatestPublishedAgentVersionForLabByAgentId(
     @Res() res: Response,
     @Param('agentId', ParseUUIDPipe) agentId: string,
     @Param('jsonVersionNumber') jsonVersionNumber?: string
@@ -389,9 +390,9 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
   @Post('co-authors/:id/invite')
   async inviteAgentCoAuthor(
     @Param('id', new ParseUUIDPipe()) id: string,
-    @Body('coAuthorMail') coAuthorMail: string
+    @Body('emailOrId') emailOrId: string
   ): Promise<boolean> {
-    return this.agentAggregateService.inviteAgentCoAuthor(id, coAuthorMail);
+    return this.agentAggregateService.inviteAgentCoAuthor(id, emailOrId);
   }
 
   @BlPublic()

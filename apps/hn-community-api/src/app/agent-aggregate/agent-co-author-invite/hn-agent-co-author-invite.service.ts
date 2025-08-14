@@ -1,85 +1,32 @@
 import { BlMailService } from '@monorepo/back-core-lib';
-import { ClStringHelper, ClSupportedLanguage } from '@monorepo/core-lib';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { HnInviteStatus } from '../../core/model/config/hn-invite-status.enum';
-import { HnMailTemplate } from '../../core/model/config/hn-mail-template.class';
+import { HnAbstractUserInviteService } from '../../core/service/hn-abstract-user-invite.service';
 import { HnFrontService } from '../../core/service/hn-front.service';
-import { HnUser } from '../../users/hn-user.entity';
 import { HnUserService } from '../../users/hn-user.service';
 import { HnAgent } from '../agent/hn-agent.entity';
 import { HnAgentCoAuthorInvite } from './hn-agent-co-author-invite.entity';
+import { HnMailTemplate } from '../../core/model/config/hn-mail-template.class';
 
 @Injectable()
-export class HnAgentCoAuthorInviteService {
+export class HnAgentCoAuthorInviteService extends HnAbstractUserInviteService<
+  HnAgentCoAuthorInvite,
+  HnAgent
+> {
   constructor(
     @InjectRepository(HnAgentCoAuthorInvite)
     private agentCoAuthorInviteRepository: Repository<HnAgentCoAuthorInvite>,
-    private userService: HnUserService,
-    private frontService: HnFrontService,
-    private mailService: BlMailService
-  ) {}
-
-  async createAgentCoAuthorMail(agent: HnAgent, coAuthorMail: string): Promise<boolean> {
-    const agentCoAuthorInvite = new HnAgentCoAuthorInvite();
-    agentCoAuthorInvite.agent = agent;
-    agentCoAuthorInvite.token = ClStringHelper.generateUUID();
-    agentCoAuthorInvite.email = coAuthorMail;
-
-    const inviteMail = await this.agentCoAuthorInviteRepository.save(agentCoAuthorInvite);
-
-    const user: HnUser = await this.userService.findOneByEmail(coAuthorMail);
-    let template: string;
-    let lang: ClSupportedLanguage;
-
-    const data = {
-      agentTitle: agent.title,
-      url: this.frontService.getAgentInviteUrl(agentCoAuthorInvite.token),
-      invitUser: inviteMail.createdBy,
-      user: null as any,
-      subscribeUrl: '',
-    };
-
-    if (user) {
-      template = HnMailTemplate.agent_invite_existing_user;
-      lang = user.lang;
-      data.user = {
-        firstname: user.firstname,
-        lastname: user.lastname,
-      };
-    } else {
-      template = HnMailTemplate.agent_invite_new_user;
-      lang = inviteMail.createdBy.lang;
-      data.subscribeUrl = this.frontService.getConstellabLoginUrl();
-    }
-    return await this.mailService.sendMail({
-      templateName: template,
-      recipients: coAuthorMail,
-      lang: lang,
-      data: data,
-    });
+    userService: HnUserService,
+    frontService: HnFrontService,
+    mailService: BlMailService
+  ) {
+    super(agentCoAuthorInviteRepository, userService, frontService, mailService);
   }
 
-  async getAgentCoAuthorInviteByToken(token: string): Promise<HnAgentCoAuthorInvite> {
-    return this.agentCoAuthorInviteRepository.findOneBy({ token: token });
-  }
-
-  async acceptInvite(agentCoAuthorInvite: HnAgentCoAuthorInvite): Promise<boolean> {
-    agentCoAuthorInvite.status = HnInviteStatus.ACCEPTED;
-    return (await this.agentCoAuthorInviteRepository.save(agentCoAuthorInvite)) != null;
-  }
-
-  async getAgentCoAuthorsInvites(agentId: string): Promise<HnAgentCoAuthorInvite[]> {
-    return this.agentCoAuthorInviteRepository.findBy({
-      agent: {
-        id: agentId,
-      },
-    });
-  }
-
-  async getAgentCoAuthorsPendingInvites(agentId: string): Promise<HnAgentCoAuthorInvite[]> {
+  protected async getPendingUserInvites(agentId: string): Promise<HnAgentCoAuthorInvite[]> {
     return this.agentCoAuthorInviteRepository.findBy({
       agent: {
         id: agentId,
@@ -88,11 +35,25 @@ export class HnAgentCoAuthorInviteService {
     });
   }
 
-  async deleteCoAuthorInvite(inviteId: string): Promise<boolean> {
-    const invite = await this.agentCoAuthorInviteRepository.findOneBy({ id: inviteId });
-    if (invite == null) {
-      return false;
-    }
-    return (await this.agentCoAuthorInviteRepository.remove(invite)) != null;
+  protected initNewUserInvite(entity: HnAgent): HnAgentCoAuthorInvite {
+    const agentUserInvite = new HnAgentCoAuthorInvite();
+    agentUserInvite.agent = entity;
+    return agentUserInvite;
+  }
+
+  protected getInviteEntityTitle(entity: HnAgent): string {
+    return entity.title;
+  }
+
+  protected getFrontInviteUrl(token: string): string {
+    return this.frontService.getAgentInviteUrl(token);
+  }
+
+  protected getExistingUserInviteMailTemplate(): string {
+    return HnMailTemplate.agent_invite_existing_user;
+  }
+
+  protected getNewUserInviteMailTemplate(): string {
+    return HnMailTemplate.agent_invite_new_user;
   }
 }

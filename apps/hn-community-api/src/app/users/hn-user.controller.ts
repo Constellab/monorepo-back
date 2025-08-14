@@ -1,10 +1,10 @@
 import { BlParseEnumPipe, BlPublic } from '@monorepo/back-core-lib';
-import { ClSupportedLanguage, ClTheme } from '@monorepo/core-lib';
-import { Body, Controller, Get, Param, ParseUUIDPipe, Put } from '@nestjs/common';
+import { ClPage, ClSupportedLanguage, ClTheme } from '@monorepo/core-lib';
+import { Body, Controller, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, Put, Query } from '@nestjs/common';
 
 import { HnSitemapItemBase } from '../core/model/config/hn-site-map.class';
-import { HnUserDetailDto, HnUserEditDetailDto } from './hn-user.dto';
-import { HnUser } from './hn-user.entity';
+import { HnUserDetailDto, HnUserDto, HnUserEditDetailDto } from './hn-user.dto';
+import { HnUser, HnUserSearchFilters } from './hn-user.entity';
 import { HnUserService } from './hn-user.service';
 
 @Controller('user')
@@ -12,8 +12,8 @@ export class HnUserController {
   constructor(private readonly userService: HnUserService) {}
 
   @Get()
-  async getCurrent(): Promise<HnUser> {
-    return await this.userService.getCurrent();
+  getCurrent(): HnUser {
+    return this.userService.getCurrent();
   }
 
   @BlPublic()
@@ -32,6 +32,16 @@ export class HnUserController {
   @Get(':id')
   async getById(@Param('id', new ParseUUIDPipe()) id: string): Promise<HnUserDetailDto> {
     return await this.userService.getUserById(id);
+  }
+
+  @Post('search')
+  async searchUser(
+    @Body() filters: Partial<HnUserSearchFilters>,
+    @Query('page', ParseIntPipe) page: number,
+    @Query('size', ParseIntPipe) size: number
+  ): Promise<ClPage<HnUserDto>> {
+    const users = await this.userService.search(filters, page, size);
+    return users.map((user) => new HnUserDto(user));
   }
 
   @Put('theme/:theme')

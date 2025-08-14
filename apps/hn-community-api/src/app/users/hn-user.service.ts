@@ -1,21 +1,22 @@
 import {
+  BlAbstractPaginatedService,
   BlBadRequestException,
   BlCredentials,
   BlUnauthorizedException,
   BlUserService,
 } from '@monorepo/back-core-lib';
-import { ClSupportedLanguage, ClTheme } from '@monorepo/core-lib';
+import { ClPage, ClStringHelper, ClSupportedLanguage, ClTheme } from '@monorepo/core-lib';
 import { TeUser } from '@monorepo/te-text-editor';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, Like, Repository } from 'typeorm';
 
 import { HnExternalCheckCredentialResponse } from '../auth/hn-space-auth.service';
 import { HnSiteMapEnumChangefreq, HnSitemapItemBase } from '../core/model/config/hn-site-map.class';
 import { HnFrontService } from '../core/service/hn-front.service';
 import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
 import { HnUserDetailDto, HnUserEditDetailDto } from './hn-user.dto';
-import { HnUser, HnUserConstellabDTO } from './hn-user.entity';
+import { HnUser, HnUserConstellabDTO, HnUserSearchFilters } from './hn-user.entity';
 
 @Injectable()
 export class HnUserService implements BlUserService {
@@ -79,7 +80,7 @@ export class HnUserService implements BlUserService {
     return await this.userRepository.findOneBy({ email: email });
   }
 
-  async getCurrent(): Promise<HnUser> {
+  getCurrent(): HnUser {
     return HnCurrentUserHelper.getCurrentUser();
   }
 
@@ -101,13 +102,13 @@ export class HnUserService implements BlUserService {
   }
 
   async changeLang(lang: ClSupportedLanguage): Promise<void> {
-    const user: HnUser = await this.getCurrent();
+    const user: HnUser = this.getCurrent();
     user.lang = lang;
     await this.userRepository.save(user);
   }
 
   async changeTheme(theme: ClTheme): Promise<void> {
-    const user: HnUser = await this.getCurrent();
+    const user: HnUser = this.getCurrent();
     if (user.theme != theme) {
       user.theme = theme;
       await this.userRepository.save(user);
@@ -120,7 +121,7 @@ export class HnUserService implements BlUserService {
   }
 
   async editUser(data: HnUserEditDetailDto): Promise<HnUserDetailDto> {
-    const user = await this.getCurrent();
+    const user = this.getCurrent();
 
     if (!user || user.id !== data.id) {
       throw new BlUnauthorizedException();
@@ -142,5 +143,26 @@ export class HnUserService implements BlUserService {
       priority: 0.8,
       changefreq: HnSiteMapEnumChangefreq.MONTHLY,
     }));
+  }
+
+  async search(filters: Partial<HnUserSearchFilters>, page: number, size: number): Promise<ClPage<HnUser>> {
+    const whereOptions: FindOptionsWhere<HnUser> = {};
+
+    if (filters.email && filters.email.length > 0 && ClStringHelper.isEmail(filters.email)) {
+      whereOptions.email = filters.email;
+    } else if (filters.alias && filters.alias.length > 0) {
+      whereOptions.alias = Like(`%${filters.alias}%`);
+    }
+
+    return await BlAbstractPaginatedService.findPaginatedStatic(
+      page,
+      size,
+      {
+        where: whereOptions,
+        order: { createdAt: 'DESC' as any },
+      },
+      this.userRepository.manager,
+      HnUser
+    );
   }
 }

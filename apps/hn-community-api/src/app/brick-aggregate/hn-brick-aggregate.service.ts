@@ -421,7 +421,7 @@ export class HnBrickAggregateService {
     const brickUserInvite: HnBrickUserInvite = await this.brickUserInviteService.getAndCheckInvite(token);
     if (!brickUserInvite) throw new BlUnauthorizedException('This invite is not valid');
     const brick: HnBrick = await this.brickService.findBrickForInviteById(brickUserInvite.brick.id);
-    await this.brickUserInviteService.acceptBrickUserInvite(brickUserInvite);
+    await this.brickUserInviteService.acceptUserInvite(brickUserInvite);
     await this.brickUserService.createBrickUser(brick, HnCurrentUserHelper.getCurrentUser());
     return brick;
   }
@@ -1036,9 +1036,9 @@ export class HnBrickAggregateService {
   //------------------------------------- BRICK CO AUTHOR -------------------------------------
   async getBrickCoAuthorsPendingInvites(brickId: string): Promise<HnBrickUserInviteDto[]> {
     await this.assertUserCanEditBrick(brickId);
-    return (await this.brickUserInviteService.getBrickCoAuthorsPendingInvites(brickId))?.map(
-      (bu) => new HnBrickUserInviteDto(bu)
-    );
+    const brickUserInvites: HnBrickUserInvite[] =
+      await this.brickUserInviteService.getPendingUserInvitesWithUser(brickId);
+    return brickUserInvites.map((brickUserInvite) => new HnBrickUserInviteDto(brickUserInvite));
   }
 
   //------------------------------------- DOCUMENTATION FILE -------------------------------------
@@ -1048,12 +1048,10 @@ export class HnBrickAggregateService {
     return await this.fileDocumentationService.saveFile(doc, file);
   }
 
-  async inviteBrickCoAuthor(brickId: string, email: string): Promise<HnBrick> {
+  async inviteBrickCoAuthor(brickId: string, emailOrId: string): Promise<HnBrick> {
     await this.assertUserCanEditBrick(brickId);
     const brick: HnBrick = await this.findBrickById(brickId);
-    if (ClStringHelper.isEmail(email)) {
-      await this.brickUserInviteService.createBrickUserMail(brick, email);
-    }
+    await this.brickUserInviteService.createUserInviteMail(brick, emailOrId);
     return brick;
   }
 
@@ -1063,7 +1061,7 @@ export class HnBrickAggregateService {
   }
 
   async deleteCoAuthorInvite(inviteId: string): Promise<boolean> {
-    return await this.brickUserInviteService.deleteCoAuthorInvite(inviteId);
+    return await this.brickUserInviteService.deleteUserInvite(inviteId);
   }
 
   async getBrickCoAuthors(brickId: string): Promise<HnBrickUser[]> {

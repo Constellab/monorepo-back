@@ -3,7 +3,7 @@ import { ClPage } from '@monorepo/core-lib';
 import { TeRichTextDTO } from '@monorepo/te-text-editor';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EntityManager, FindOptionsWhere, Repository } from 'typeorm';
+import { EntityManager, FindOptionsWhere, Like, Repository } from 'typeorm';
 
 import { HnSpace } from '../../space-aggregate/space/hn-space.entity';
 import { HnCommunityAppEditDto } from './hn-community-app.dto';
@@ -47,7 +47,7 @@ export class HnCommunityAppService {
   }
 
   async findOneByAppUrl(appUrl: string): Promise<HnCommunityApp> {
-    return this.communityAppRepository.findOneBy({ appUrl: appUrl });
+    return this.communityAppRepository.findOneBy({ appUrl: Like(`${appUrl}%`) });
   }
 
   async create(dto: HnCommunityAppEditDto, space: HnSpace = null): Promise<HnCommunityApp> {

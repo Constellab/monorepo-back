@@ -30,7 +30,7 @@ export class HnStoryAuthorService {
   }
 
   async getStoryAuthorInviteByToken(token: string): Promise<HnStoryCoAuthorInvite> {
-    return this.storyAuthorInviteService.getStoryAuthorInviteByToken(token);
+    return this.storyAuthorInviteService.getAndCheckInvite(token);
   }
 
   async acceptInvite(
@@ -38,7 +38,7 @@ export class HnStoryAuthorService {
     storyAuthorInvite: HnStoryCoAuthorInvite
   ): Promise<boolean> {
     return (
-      (await this.storyAuthorInviteService.acceptInvite(storyAuthorInvite)) != null &&
+      (await this.storyAuthorInviteService.acceptUserInvite(storyAuthorInvite)) != null &&
       (await this.storyAuthorRepository.save(storyAuthor)) != null
     );
   }
@@ -48,14 +48,14 @@ export class HnStoryAuthorService {
   }
 
   async getStoryCoAuthorsPendingInvites(storyId: string): Promise<HnStoryCoAuthorInvite[]> {
-    return this.storyAuthorInviteService.getStoryCoAuthorsPendingInvites(storyId);
+    return this.storyAuthorInviteService.getPendingUserInvitesWithUser(storyId);
   }
 
-  async inviteStoryCoAuthor(story: HnStory, coAuthorMail: string): Promise<boolean> {
-    return this.storyAuthorInviteService.createStoryAuthorMail(story, coAuthorMail);
+  async inviteStoryCoAuthor(story: HnStory, emailOrId: string): Promise<boolean> {
+    return this.storyAuthorInviteService.createUserInviteMail(story, emailOrId);
   }
 
   async deleteCoAuthorInvite(inviteId: string): Promise<boolean> {
-    return this.storyAuthorInviteService.deleteCoAuthorInvite(inviteId);
+    return this.storyAuthorInviteService.deleteUserInvite(inviteId);
   }
 }

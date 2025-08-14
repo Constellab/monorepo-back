@@ -34,7 +34,7 @@ export class HnAgentCoAuthorService {
   }
 
   async getAgentCoAuthorInviteByToken(token: string): Promise<HnAgentCoAuthorInvite> {
-    return this.agentCoAuthorInviteService.getAgentCoAuthorInviteByToken(token);
+    return this.agentCoAuthorInviteService.getAndCheckInvite(token);
   }
 
   async acceptInvite(
@@ -42,24 +42,20 @@ export class HnAgentCoAuthorService {
     agentCoAuthorInvite: HnAgentCoAuthorInvite
   ): Promise<boolean> {
     return (
-      (await this.agentCoAuthorInviteService.acceptInvite(agentCoAuthorInvite)) != null &&
+      (await this.agentCoAuthorInviteService.acceptUserInvite(agentCoAuthorInvite)) != null &&
       (await this.agentCoAuthorRepository.save(agentCoAuthor)) != null
     );
   }
 
-  async getAgentCoAuthorsInvites(agentId: string): Promise<HnAgentCoAuthorInvite[]> {
-    return this.agentCoAuthorInviteService.getAgentCoAuthorsInvites(agentId);
-  }
-
   async getAgentCoAuthorsPendingInvites(agentId: string): Promise<HnAgentCoAuthorInvite[]> {
-    return this.agentCoAuthorInviteService.getAgentCoAuthorsPendingInvites(agentId);
+    return this.agentCoAuthorInviteService.getPendingUserInvitesWithUser(agentId);
   }
 
-  async inviteAgentCoAuthor(agent: HnAgent, coAuthorMail: string): Promise<boolean> {
-    return this.agentCoAuthorInviteService.createAgentCoAuthorMail(agent, coAuthorMail);
+  async inviteAgentCoAuthor(agent: HnAgent, emailOrId: string): Promise<boolean> {
+    return this.agentCoAuthorInviteService.createUserInviteMail(agent, emailOrId);
   }
 
   async deleteCoAuthorInvite(inviteId: string): Promise<boolean> {
-    return this.agentCoAuthorInviteService.deleteCoAuthorInvite(inviteId);
+    return this.agentCoAuthorInviteService.deleteUserInvite(inviteId);
   }
 }

@@ -494,11 +494,11 @@ export class HnStoryService extends BlAbstractService<HnStory> {
     return this.storyAuthorService.removeStoryCoAuthor(id, storyAuthorUserId);
   }
 
-  async inviteStoryCoAuthor(storyId: string, coAuthorMail: string): Promise<boolean> {
+  async inviteStoryCoAuthor(storyId: string, emailOrId: string): Promise<boolean> {
     await this.checkAndValidateOwnerOrCoAuthor(storyId, true);
     const story: HnStory = await this.getStory(storyId);
     if (story == null) throw new BlBadRequestException('Story not found');
-    return this.storyAuthorService.inviteStoryCoAuthor(story, coAuthorMail);
+    return this.storyAuthorService.inviteStoryCoAuthor(story, emailOrId);
   }
 
   async isInviteValid(token: string): Promise<HnStoryCoAuthorInvite> {

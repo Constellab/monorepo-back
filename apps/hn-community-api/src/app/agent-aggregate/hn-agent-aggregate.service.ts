@@ -491,7 +491,7 @@ export class HnAgentAggregateService {
     return await this.dataSource.transaction(async (entityManager) => {
       let latestAgentVersion = await this.agentVersionService.findLatestByAgent(agent);
 
-      if (latestAgentVersion.versionState == 'DRAFT') {
+      if (latestAgentVersion.versionState == HnAgentVersionState.DRAFT) {
         if (replaceDraft) {
           await this.agentVersionService.deleteById(entityManager, latestAgentVersion.id);
           latestAgentVersion = await this.agentVersionService.findSecondLastByAgent(agent);
@@ -526,7 +526,7 @@ export class HnAgentAggregateService {
     let agent = await this.agentService.findOne(agentId);
     const latestAgentVersion = await this.agentVersionService.findLatestByAgent(agent);
 
-    if (latestAgentVersion?.versionState != 'DRAFT')
+    if (latestAgentVersion?.versionState != HnAgentVersionState.DRAFT)
       throw new BlBadRequestException('The latest agent version could not be replaced');
 
     return await this.dataSource.transaction(async (entityManager) => {
@@ -601,9 +601,9 @@ export class HnAgentAggregateService {
   }
 
   ////////////////////////////////////////// AGENT CO AUTHORS //////////////////////////////////////////
-  public async inviteAgentCoAuthor(agentId: string, coAuthorMail: string): Promise<boolean> {
+  public async inviteAgentCoAuthor(agentId: string, emailOrId: string): Promise<boolean> {
     const agent = await this.agentService.checkIfCreatorAndGetAgent(agentId);
-    return this.agentCoAuthorService.inviteAgentCoAuthor(agent, coAuthorMail);
+    return this.agentCoAuthorService.inviteAgentCoAuthor(agent, emailOrId);
   }
 
   public async getAgentCoAuthors(agentId: string): Promise<HnAgentCoAuthor[]> {
@@ -625,7 +625,7 @@ export class HnAgentAggregateService {
       await this.agentCoAuthorService.getAgentCoAuthorInviteByToken(token);
     return agentCoAuthorInvite &&
       agentCoAuthorInvite.status == HnInviteStatus.PENDING &&
-      agentCoAuthorInvite.email === HnCurrentUserHelper.getCurrentUser().email
+      agentCoAuthorInvite.email === HnCurrentUserHelper.getCurrentUser()?.email
       ? agentCoAuthorInvite
       : null;
   }

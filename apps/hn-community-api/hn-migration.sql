@@ -384,3 +384,40 @@ CREATE TABLE `like_tag` (
                           CONSTRAINT `FK_4a34296857ef7a85939d6adc48b` FOREIGN KEY (`entityId`) REFERENCES `tag_key` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
                           CONSTRAINT `FK_7c0ce0ac4aa0f1cd1626aa3dced` FOREIGN KEY (`likedById`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+#1.8.4
+-- Add app co author
+
+DROP TABLE IF EXISTS `app_co_author`;
+CREATE TABLE `app_co_author` (
+                               `id` varchar(36) NOT NULL,
+                               `communityAppId` varchar(36) DEFAULT NULL,
+                               `userId` varchar(36) DEFAULT NULL,
+                               PRIMARY KEY (`id`),
+                               KEY `FK_4d137c715705746e4d3c6eca559` (`communityAppId`),
+                               KEY `FK_f91b287b1018e8e298c45bf513e` (`userId`),
+                               CONSTRAINT `FK_4d137c715705746e4d3c6eca559` FOREIGN KEY (`communityAppId`) REFERENCES `app` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+                               CONSTRAINT `FK_f91b287b1018e8e298c45bf513e` FOREIGN KEY (`userId`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+DROP TABLE IF EXISTS `app_co_author_invite`;
+CREATE TABLE `app_co_author_invite` (
+                                      `id` varchar(36) NOT NULL,
+                                      `createdAt` datetime DEFAULT NULL,
+                                      `lastModifiedAt` datetime DEFAULT NULL,
+                                      `email` varchar(255) NOT NULL,
+                                      `status` enum('ACCEPTED','PENDING') NOT NULL DEFAULT 'PENDING',
+                                      `token` varchar(255) NOT NULL,
+                                      `createdById` varchar(36) DEFAULT NULL,
+                                      `lastModifiedById` varchar(36) DEFAULT NULL,
+                                      `communityAppId` varchar(36) DEFAULT NULL,
+                                      PRIMARY KEY (`id`),
+                                      KEY `FK_fe25581e89d690b22a942e39ef4` (`createdById`),
+                                      KEY `FK_c8af6f3e103dc64b7ff9402d7d3` (`lastModifiedById`),
+                                      KEY `FK_eba150aa7061205b7a775864b2a` (`communityAppId`),
+                                      CONSTRAINT `FK_c8af6f3e103dc64b7ff9402d7d3` FOREIGN KEY (`lastModifiedById`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+                                      CONSTRAINT `FK_eba150aa7061205b7a775864b2a` FOREIGN KEY (`communityAppId`) REFERENCES `app` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+                                      CONSTRAINT `FK_fe25581e89d690b22a942e39ef4` FOREIGN KEY (`createdById`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
