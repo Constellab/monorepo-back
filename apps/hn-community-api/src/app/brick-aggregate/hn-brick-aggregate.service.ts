@@ -214,13 +214,17 @@ export class HnBrickAggregateService {
     return this.brickService.findOne(whereConditions);
   }
 
-  async findBrickByName(name: string, userId: string = null): Promise<HnBrick> {
-    const whereConditions: FindOptionsWhere<HnBrick>[] | FindOptionsWhere<HnBrick> =
-      await this.getUserBasedWhereBrickConditions(
+  async findBrickByName(name: string, userId: string = null, strict: boolean = true): Promise<HnBrick> {
+    let whereConditions: FindOptionsWhere<HnBrick>[] | FindOptionsWhere<HnBrick> = {};
+
+    if (strict) {
+      whereConditions = await this.getUserBasedWhereBrickConditions(
         null,
         null,
         userId ? await this.userService.findOne(userId) : HnCurrentUserHelper.getCurrentUser()
       );
+    }
+
     if (whereConditions instanceof Array) {
       whereConditions.map((wc) => (wc.name = name));
     } else {
