@@ -88,7 +88,7 @@ export class HnRunStatAgService {
     );
 
     const brickName: string = HnTypingName.getBrickName(runStat.processTypingName);
-    const brick: HnBrick = await this.brickAggregateService.findBrickByName(brickName);
+    const brick: HnBrick = await this.brickAggregateService.findBrickByName(brickName, null, false);
     if (brick) {
       await this.runStatAggregateService.updateBrickRunStatGroup(entityManager, brick, runStat);
     }
@@ -140,7 +140,7 @@ export class HnRunStatAgService {
       return creators;
     }
     const brickName: string = HnTypingName.getBrickName(runStat.processTypingName);
-    const brick: HnBrick = await this.brickAggregateService.findBrickByName(brickName);
+    const brick: HnBrick = await this.brickAggregateService.findBrickByName(brickName, null, false);
     const creators: string[] = [brick.createdBy.id];
     if (brick.brickUsers?.length > 0) {
       for (const brickUser of brick.brickUsers) {
