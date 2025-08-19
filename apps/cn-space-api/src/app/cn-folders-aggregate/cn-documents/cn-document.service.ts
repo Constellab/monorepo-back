@@ -284,10 +284,15 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
   }
 
   async renameDocument(rootFolderId: string, document: CnDocument, newName: string): Promise<CnDocument> {
-    // force the extension in the name
+    // force the extension in the name for documents (not notes)
     const newExtensionName = BlFileHelper.getFileExtension(newName);
     const fileExtension = document.getExtension();
-    if (fileExtension && newExtensionName !== fileExtension) {
+    if (
+      document.type !== CnDocumentType.CONSTELLAB_DOCUMENT &&
+      document.type !== CnDocumentType.NOTE &&
+      fileExtension &&
+      newExtensionName !== fileExtension
+    ) {
       newName += `.${fileExtension}`;
     }
 
