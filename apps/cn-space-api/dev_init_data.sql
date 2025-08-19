@@ -51,7 +51,10 @@ VALUES ('57a6f823-6b73-4e0a-9818-f055cbd6d546', '2023-05-19 14:58:31', '2024-03-
         'https://storage.sbg.cloud.ovh.net/v1/AUTH_a0286631d7b24afba3f3cdebed2992aa/public/ovh.png'),
        ('cdfdc499-61a4-445d-94e6-b65cef54f479', '2023-12-21 15:27:08', '2024-03-27 11:11:27', 'OUTSCALE',
         'cc041136-3e20-48e6-bf9d-9aa8ecaad21f', 'cc041136-3e20-48e6-bf9d-9aa8ecaad21f', NULL,
-        'https://storage.sbg.cloud.ovh.net/v1/AUTH_a0286631d7b24afba3f3cdebed2992aa/public/ouscale.gif');
+        'https://storage.sbg.cloud.ovh.net/v1/AUTH_a0286631d7b24afba3f3cdebed2992aa/public/ouscale.gif'),
+        ('cce27e1c-71d3-4820-a65a-12baac537115', '2023-12-21 15:27:08', '2024-03-27 11:11:27', 'GCP',
+        'cc041136-3e20-48e6-bf9d-9aa8ecaad21f', 'cc041136-3e20-48e6-bf9d-9aa8ecaad21f', NULL,
+        'https://storage.sbg.cloud.ovh.net/v1/AUTH_a0286631d7b24afba3f3cdebed2992aa/public/gcp.png');
 
 
 INSERT INTO `cloud_provider_region` (`id`, `createdAt`, `lastModifiedAt`, `technicalName`, `s3Endpoint`, `createdById`,
@@ -63,7 +66,12 @@ VALUES ('2f71581d-2882-476a-a6d5-e077dd2724ff', '2023-02-27 17:19:45', '2023-12-
        ('d4c4172b-10d6-4c47-84c5-b6575d90c06f', '2023-10-04 09:23:30', '2024-03-25 12:21:17', 'sbg',
         'https://s3.sbg.io.cloud.ovh.net/', 'cc041136-3e20-48e6-bf9d-9aa8ecaad21f',
         'cc041136-3e20-48e6-bf9d-9aa8ecaad21f', '964ad825-6b0b-44f2-9825-7129b01a9df7',
-        '305860a7-0835-11ed-afdd-0242ac120004', 'Strasbourg', 'S3');
+        '305860a7-0835-11ed-afdd-0242ac120004', 'Strasbourg', 'S3'),
+      ('0d9edec6-19b3-41a0-8811-606e240188f9',	'2024-07-03 15:34:50',	'2024-07-03 16:10:41',	'francecentral',	NULL,	'cc041136-3e20-48e6-bf9d-9aa8ecaad21f',	'cc041136-3e20-48e6-bf9d-9aa8ecaad21f',	'57a6f823-6b73-4e0a-9818-f055cbd6d546',	'305860a7-0835-11ed-afdd-0242ac120004',	'France central',	'ALL'),
+      ('53534232-d11a-4fae-a97e-d9dbc6d28763',	'2025-04-30 09:00:06',	'2025-04-30 09:00:06',	'europe-west9',	'https://storage.googleapis.com',	'cc041136-3e20-48e6-bf9d-9aa8ecaad21f',	'cc041136-3e20-48e6-bf9d-9aa8ecaad21f',	'cce27e1c-71d3-4820-a65a-12baac537115',	'2694a12e-0835-11ed-afdd-0242ac120004',	'Europe west S3',	'S3'),
+      ('588de190-d0a2-479c-a31e-792b98b89156',	'2025-04-30 08:59:48',	'2025-04-30 08:59:48',	'europe-west9-a',	NULL,	'cc041136-3e20-48e6-bf9d-9aa8ecaad21f',	'cc041136-3e20-48e6-bf9d-9aa8ecaad21f',	'cce27e1c-71d3-4820-a65a-12baac537115',	'2694a12e-0835-11ed-afdd-0242ac120004',	'Europe west',	'SERVER'),
+      ('6e908ec7-15c4-4c6a-b967-13ca11b7ccc3',	'2023-05-24 14:47:59',	'2024-07-03 16:10:47',	'northeurope',	NULL,	'cc041136-3e20-48e6-bf9d-9aa8ecaad21f',	'cc041136-3e20-48e6-bf9d-9aa8ecaad21f',	'57a6f823-6b73-4e0a-9818-f055cbd6d546',	'2694a12e-0835-11ed-afdd-0242ac120004',	'North europe',	'ALL'),
+      ('9c8d95a8-57d8-4936-835a-98d295766e98',	'2025-04-30 09:07:18',	'2025-04-30 09:07:18',	'europe-north1',	'https://storage.googleapis.com',	'cc041136-3e20-48e6-bf9d-9aa8ecaad21f',	'cc041136-3e20-48e6-bf9d-9aa8ecaad21f',	'cce27e1c-71d3-4820-a65a-12baac537115',	'8253cb0c-0835-11ed-afdd-0242ac120004',	'Europe north S3',	'S3');
 
 
 INSERT INTO `bucket_credentials` (`id`, `createdAt`, `lastModifiedAt`, `name`, `accessKeyId`, `secretAccessKey`,
@@ -107,3 +115,16 @@ INSERT INTO `storage_price` (`id`, `createdAt`, `lastModifiedAt`, `startDate`, `
 VALUES ('0c3c83db-f7cb-4c78-804e-11796476ed3e', '2024-04-25 11:17:43', '2024-04-25 11:17:43', '2000-01-01 00:00:00',
         NULL, 'cc041136-3e20-48e6-bf9d-9aa8ecaad21f', 'cc041136-3e20-48e6-bf9d-9aa8ecaad21f', 0.33, 0.075, 0.03);
 
+
+INSERT INTO `server_standard` (`id`, `createdAt`, `lastModifiedAt`, `name`, `description`, `technicalDescription`, `createdById`, `lastModifiedById`) VALUES
+('c5714c74-c8c4-4175-b231-51a58a5a3522',	'2024-04-25 11:00:13',	'2024-04-25 11:00:13',	'General purpose',	'Basic usage',	'2 CPU\8 GB RAM',	'cc041136-3e20-48e6-bf9d-9aa8ecaad21f',	'cc041136-3e20-48e6-bf9d-9aa8ecaad21f');
+
+
+INSERT INTO `server_price` (`id`, `price`, `startDate`, `endDate`, `createdAt`, `lastModifiedAt`, `createdById`, `lastModifiedById`, `serverStandardId`) VALUES
+('2b0b9b80-ada8-49a0-bd0f-b06e6e0660b6',	3.14,	'2010-04-25 09:40:23',	NULL,	'2024-04-25 09:42:35',	'2024-04-25 09:42:35',	'cc041136-3e20-48e6-bf9d-9aa8ecaad21f',	'cc041136-3e20-48e6-bf9d-9aa8ecaad21f',	'c5714c74-c8c4-4175-b231-51a58a5a3522');
+
+INSERT INTO `server_cloud` (`id`, `technicalName`, `ram`, `diskSpace`, `diskType`, `cpuCount`, `cpuType`, `gpuCount`, `gpuType`, `cloudProviderId`, `createdAt`, `lastModifiedAt`, `createdById`, `lastModifiedById`, `serverStandardId`) VALUES
+('0e69afcf-a477-45eb-9854-38854c0e8366',	'e2-medium',	4,	0,	'SSD',	2,	'Unknown',	NULL,	NULL,	'cce27e1c-71d3-4820-a65a-12baac537115',	'2025-04-30 09:08:20',	'2025-04-30 09:08:20',	'cc041136-3e20-48e6-bf9d-9aa8ecaad21f',	'cc041136-3e20-48e6-bf9d-9aa8ecaad21f',	'c5714c74-c8c4-4175-b231-51a58a5a3522'),
+('1affda9b-10c7-4e0a-a281-37429279ba74',	'e2-standard-4',	16,	0,	'SSD',	4,	'Unknown',	NULL,	NULL,	'cce27e1c-71d3-4820-a65a-12baac537115',	'2025-07-10 10:04:05',	'2025-07-10 10:04:05',	'cc041136-3e20-48e6-bf9d-9aa8ecaad21f',	'cc041136-3e20-48e6-bf9d-9aa8ecaad21f',	'c5714c74-c8c4-4175-b231-51a58a5a3522'),
+('4009b9e6-7e9d-43d6-afab-51d178a6f3bb',	'b2-7',	7000,	50,	'SSD',	2,	'2.3 Ghz',	NULL,	NULL,	'964ad825-6b0b-44f2-9825-7129b01a9df7',	'2023-01-01 00:00:00',	'2024-04-26 07:03:49',	'cc041136-3e20-48e6-bf9d-9aa8ecaad21f',	'cc041136-3e20-48e6-bf9d-9aa8ecaad21f',	'c5714c74-c8c4-4175-b231-51a58a5a3522'),
+('c8a43d0f-ff7c-4298-9a04-c18aa8d50be7',	'Standard_D4as_v5',	16,	30,	'SSD',	4,	'Unknown',	NULL,	NULL,	'57a6f823-6b73-4e0a-9818-f055cbd6d546',	'2024-04-25 11:00:44',	'2024-04-25 11:00:44',	'cc041136-3e20-48e6-bf9d-9aa8ecaad21f',	'cc041136-3e20-48e6-bf9d-9aa8ecaad21f',	'c5714c74-c8c4-4175-b231-51a58a5a3522');
