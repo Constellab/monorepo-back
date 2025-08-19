@@ -74,13 +74,14 @@ export class HnCommunityAppAggregateService {
   }
 
   ////////////////////////////////////// APP ////////////////////////////////////////
-  async findOneById(id: string): Promise<HnCommunityApp> {
+  async getAndCheckCommunityApp(id: string): Promise<HnCommunityApp> {
     const communityApp = await this.communityAppService.findOneById(id);
+    if (!communityApp) throw new BlNotFoundException('Community App not found');
     if (communityApp.space) {
       const currentUser = HnCurrentUserHelper.getCurrentUser();
-      if (!currentUser) return null;
+      if (!currentUser) throw new BlNotFoundException('Community App not found');
       if (!(await this.spaceAggregateService.checkSpaceUser(communityApp.space.id, currentUser.id)))
-        return null;
+        throw new BlNotFoundException('Community App not found');
     }
     return communityApp;
   }
@@ -377,34 +378,25 @@ export class HnCommunityAppAggregateService {
 
   ////////////////////////////////////// CO AUTHORS /////////////////////////////////
   public async inviteCommunityAppCoAuthor(communityAppId: string, emailOrId: string): Promise<boolean> {
-    const communityApp = await this.findOneById(communityAppId);
-    if (!communityApp) {
-      throw new BlUnauthorizedException('You are not authorized to perform this action');
-    }
+    const communityApp = await this.getAndCheckCommunityApp(communityAppId);
     return this.communityAppCoAuthorService.inviteCommunityAppCoAuthor(communityApp, emailOrId);
   }
 
   public async getCommunityAppCoAuthors(communityAppId: string): Promise<HnCommunityAppCoAuthor[]> {
-    const communityApp = await this.findOneById(communityAppId);
-    if (!communityApp) {
-      throw new BlUnauthorizedException('You are not authorized to perform this action');
-    }
+    await this.getAndCheckCommunityApp(communityAppId);
     return this.communityAppCoAuthorService.getCommunityAppCoAuthorsByCommunityAppId(communityAppId);
   }
 
   public async getCommunityAppCoAuthorsPendingInvites(
     communityAppId: string
   ): Promise<HnCommunityAppCoAuthorInvite[]> {
-    const communityApp = await this.findOneById(communityAppId);
-    if (!communityApp) {
-      throw new BlUnauthorizedException('You are not authorized to perform this action');
-    }
+    await this.getAndCheckCommunityApp(communityAppId);
     return this.communityAppCoAuthorService.getCommunityAppCoAuthorsPendingInvites(communityAppId);
   }
 
   public async removeCommunityAppCoAuthor(id: string, communityAppCoAuthorUserId: string): Promise<void> {
-    const communityApp = await this.findOneById(id);
-    if (!communityApp || communityApp.createdBy.id != HnCurrentUserHelper.getCurrentUser().id) {
+    const communityApp = await this.getAndCheckCommunityApp(id);
+    if (communityApp.createdBy.id != HnCurrentUserHelper.getCurrentUser().id) {
       throw new BlUnauthorizedException('You are not authorized to perform this action');
     }
     return this.communityAppCoAuthorService.removeCommunityAppCoAuthor(id, communityAppCoAuthorUserId);

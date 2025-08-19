@@ -9,7 +9,7 @@ export class HnBrickUser extends BlEntityWithId {
   @ManyToOne(() => HnBrick, (brick) => brick.brickUsers)
   brick: HnBrick;
 
-  @ManyToOne(() => HnUser, (user) => user.brickUsers, { eager: true })
+  @ManyToOne(() => HnUser, { eager: true, onDelete: 'CASCADE' })
   user: HnUser;
 
   initBrickUser(brick: HnBrick, user: HnUser): void {

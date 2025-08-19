@@ -9,7 +9,7 @@ export class HnCommunityAppCoAuthor extends BlEntityWithId {
   @ManyToOne(() => HnCommunityAppEntity, (agent) => agent.communityAppCoAuthors)
   communityApp: HnCommunityApp;
 
-  @ManyToOne(() => HnUser, (user) => user.communityAppCoAuthors, { eager: true })
+  @ManyToOne(() => HnUser, { eager: true, onDelete: 'CASCADE' })
   user: HnUser;
 
   initCoAuthor(communityApp: HnCommunityAppEntity, user: HnUser): void {

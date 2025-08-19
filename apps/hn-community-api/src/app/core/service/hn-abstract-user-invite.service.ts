@@ -1,4 +1,4 @@
-import { BlMailService } from '@monorepo/back-core-lib';
+import { BlMailService, BlUnauthorizedException } from '@monorepo/back-core-lib';
 import { ClStringHelper, ClSupportedLanguage } from '@monorepo/core-lib';
 import { Repository } from 'typeorm';
 
@@ -22,13 +22,13 @@ export abstract class HnAbstractUserInviteService<T extends HnUserInvite, E> {
     const userInviteMail: T = this.initNewUserInvite(entity);
     userInviteMail.token = ClStringHelper.generateUUID();
     let user: HnUser;
-    if (!ClStringHelper.isEmail(emailOrId)) {
+    if (ClStringHelper.isEmail(emailOrId)) {
+      user = await this.userService.findOneByEmail(emailOrId);
+      userInviteMail.email = emailOrId;
+    } else {
       if (!ClStringHelper.isUUID(emailOrId)) throw Error('User not found');
       user = await this.userService.findOne(emailOrId);
       userInviteMail.email = user.email;
-    } else {
-      user = await this.userService.findOneByEmail(emailOrId);
-      userInviteMail.email = emailOrId;
     }
 
     const savedUserInviteMail: T = await this.repository.save(userInviteMail);
@@ -70,11 +70,15 @@ export abstract class HnAbstractUserInviteService<T extends HnUserInvite, E> {
       token: token,
     })) as T;
 
-    return userInvite &&
-      userInvite.status === HnInviteStatus.PENDING &&
-      userInvite.email === HnCurrentUserHelper.getCurrentUser().email
-      ? userInvite
-      : null;
+    if (
+      !userInvite ||
+      userInvite.status !== HnInviteStatus.PENDING ||
+      userInvite.email !== HnCurrentUserHelper.getCurrentUser().email
+    ) {
+      throw new BlUnauthorizedException('This invite is not valid');
+    }
+
+    return userInvite;
   }
 
   async acceptUserInvite(userInvite: T): Promise<boolean> {

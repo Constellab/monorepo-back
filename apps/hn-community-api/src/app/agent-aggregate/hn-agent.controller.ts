@@ -233,7 +233,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
     @Res() res: Response,
     @Param('agentId', ParseUUIDPipe) agentId: string,
     @Param('jsonVersionNumber') jsonVersionNumber?: string
-  ): Promise<void> {
+  ): void {
     return res.redirect(`/agent/for-lab/${agentId}/version/latest/${jsonVersionNumber}`);
   }
 

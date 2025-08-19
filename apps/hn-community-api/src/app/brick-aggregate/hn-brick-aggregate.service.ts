@@ -419,7 +419,6 @@ export class HnBrickAggregateService {
 
   async acceptBrickUserInvite(token: string): Promise<HnBrick> {
     const brickUserInvite: HnBrickUserInvite = await this.brickUserInviteService.getAndCheckInvite(token);
-    if (!brickUserInvite) throw new BlUnauthorizedException('This invite is not valid');
     const brick: HnBrick = await this.brickService.findBrickForInviteById(brickUserInvite.brick.id);
     await this.brickUserInviteService.acceptUserInvite(brickUserInvite);
     await this.brickUserService.createBrickUser(brick, HnCurrentUserHelper.getCurrentUser());

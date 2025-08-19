@@ -9,6 +9,6 @@ export class HnTagCoAuthor extends BlEntityWithId {
   @ManyToOne(() => HnTagKey, (tagKey) => tagKey.tagCoAuthors)
   tagKey: HnTagKey;
 
-  @ManyToOne(() => HnUser, (user) => user.tagCoAuthors, { eager: true })
+  @ManyToOne(() => HnUser, { eager: true, onDelete: 'CASCADE' })
   user: HnUser;
 }

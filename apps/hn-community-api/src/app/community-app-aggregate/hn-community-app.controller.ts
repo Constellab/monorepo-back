@@ -49,7 +49,7 @@ export class HnCommunityAppController extends HnAbstractFileController<HnCommuni
   @BlPublic()
   @Get(':id')
   async getById(@Param('id', new ParseUUIDPipe()) id: string): Promise<HnCommunityAppDto> {
-    return new HnCommunityAppDto(await this.communityAppAggregateService.findOneById(id));
+    return new HnCommunityAppDto(await this.communityAppAggregateService.getAndCheckCommunityApp(id));
   }
 
   @BlPublic()

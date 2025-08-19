@@ -19,7 +19,7 @@ export class HnLikeAppService extends HnAbstractLikeService<HnCommunityApp> {
   }
 
   getEntityAndCheckRightsById(entityId: string): Promise<HnCommunityApp> {
-    return this.communityAppAggregateService.findOneById(entityId);
+    return this.communityAppAggregateService.getAndCheckCommunityApp(entityId);
   }
 
   createLike(entity: HnCommunityApp): HnLikeApp {

@@ -7,13 +7,7 @@ import {
   ClTheme,
 } from '@monorepo/core-lib';
 import { DateTime } from 'luxon';
-import { BeforeInsert, Column, Entity, OneToMany, PrimaryColumn, Unique } from 'typeorm';
-
-import { HnAgentCoAuthor } from '../agent-aggregate/agent-co-author/hn-agent-co-author.entity';
-import { HnBrickUser } from '../brick-aggregate/brick-user/hn-brick-user.entity';
-import { HnStoryCoAuthor } from '../story-author/hn-story-author.entity';
-import { HnTagCoAuthor } from '../tag-aggregate/tag-co-author/hn-tag-co-author.entity';
-import { HnCommunityAppCoAuthor } from '../community-app-aggregate/community-app-co-author/hn-community-app-co-author.entity';
+import { BeforeInsert, Column, Entity, PrimaryColumn, Unique } from 'typeorm';
 
 @Unique(['userCode'])
 @Entity('user')
@@ -62,27 +56,6 @@ export class HnUser {
 
   @Column({ nullable: false, type: 'enum', enum: ClTheme, default: clDefaultTheme })
   theme: ClTheme;
-
-  @OneToMany(() => HnStoryCoAuthor, (storyAuthor) => storyAuthor.user, { nullable: true })
-  storyAuthors: HnStoryCoAuthor[];
-
-  @OneToMany(() => HnAgentCoAuthor, (agentCoAuthor) => agentCoAuthor.user, {
-    nullable: true,
-    onDelete: 'CASCADE',
-  })
-  agentCoAuthors: HnAgentCoAuthor[];
-
-  @OneToMany(() => HnCommunityAppCoAuthor, (communityAppCoAuthor) => communityAppCoAuthor.user, {
-    nullable: true,
-    onDelete: 'CASCADE',
-  })
-  communityAppCoAuthors: HnCommunityAppCoAuthor[];
-
-  @OneToMany(() => HnBrickUser, (brickUser) => brickUser.user, { nullable: true })
-  brickUsers: HnBrickUser[];
-
-  @OneToMany(() => HnTagCoAuthor, (tagCoAuthor) => tagCoAuthor.user, { nullable: true })
-  tagCoAuthors: HnTagCoAuthor[];
 
   @BeforeInsert()
   initValues(): void {
