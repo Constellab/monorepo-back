@@ -67,6 +67,11 @@ import { HnFolderDto, HnNode, HnNodeDTO, HnNodeType } from './folder/hn-folder.d
 import { HnFolder } from './folder/hn-folder.entity';
 import { HnFolderService } from './folder/hn-folder.service';
 
+export interface HnBrickUserBasedWhereOptionalParams {
+  spacesFilter?: string[];
+  user?: HnUser;
+}
+
 @Injectable()
 export class HnBrickAggregateService {
   constructor(
@@ -130,7 +135,10 @@ export class HnBrickAggregateService {
 
     const whereConditions: FindOptionsWhere<HnBrick>[] | FindOptionsWhere<HnBrick> = myBricks
       ? await this.getMyBricksWhereBrickConditions(publicSelected, spacesFilter, user)
-      : await this.getUserBasedWhereBrickConditions(publicSelected, spacesFilter, user);
+      : await this.getUserBasedWhereBrickConditions(publicSelected, {
+          spacesFilter: spacesFilter,
+          user: user,
+        });
 
     // Add where conditions based on filters
     if (titleFilter) {
@@ -205,7 +213,7 @@ export class HnBrickAggregateService {
 
   async findBrickById(id: string, user: HnUser = null): Promise<HnBrick> {
     const whereConditions: FindOptionsWhere<HnBrick>[] | FindOptionsWhere<HnBrick> =
-      await this.getUserBasedWhereBrickConditions(null, null, user);
+      await this.getUserBasedWhereBrickConditions(null, { spacesFilter: null, user: user });
     if (whereConditions instanceof Array) {
       whereConditions.map((wc) => (wc.id = id));
     } else {
@@ -218,11 +226,9 @@ export class HnBrickAggregateService {
     let whereConditions: FindOptionsWhere<HnBrick>[] | FindOptionsWhere<HnBrick> = {};
 
     if (strict) {
-      whereConditions = await this.getUserBasedWhereBrickConditions(
-        null,
-        null,
-        userId ? await this.userService.findOne(userId) : HnCurrentUserHelper.getCurrentUser()
-      );
+      whereConditions = await this.getUserBasedWhereBrickConditions(null, {
+        user: userId ? await this.userService.findOne(userId) : HnCurrentUserHelper.getCurrentUser(),
+      });
     }
 
     if (whereConditions instanceof Array) {
@@ -1115,62 +1121,6 @@ export class HnBrickAggregateService {
     }
   }
 
-  private async getUserBasedWhereBrickConditions(
-    publicSelected: boolean = null,
-    spacesFilter: string[] = null,
-    user: HnUser = null
-  ): Promise<FindOptionsWhere<HnBrick>[] | FindOptionsWhere<HnBrick>> {
-    const currentUser: HnUser = user ?? HnCurrentUserHelper.getCurrentUser();
-    let whereConditions: FindOptionsWhere<HnBrick>[] | FindOptionsWhere<HnBrick>;
-
-    if (currentUser == null) {
-      whereConditions = [
-        {
-          space: {
-            id: IsNull(),
-          },
-          visibility: HnBrickVisibility.PUBLIC,
-        },
-      ];
-    } else if (publicSelected) {
-      whereConditions = [
-        {
-          space: {
-            id: In(spacesFilter),
-          },
-        },
-        {
-          space: {
-            id: IsNull(),
-          },
-        },
-      ];
-    } else if (spacesFilter && spacesFilter.length > 0) {
-      whereConditions = [
-        {
-          space: {
-            id: In(spacesFilter),
-          },
-        },
-      ];
-    } else {
-      const userSpacesIds: string[] = (
-        await this.spaceUserService.findActiveSpaceUsersByUserId(currentUser?.id)
-      ).map((su) => su.spaceId);
-
-      whereConditions = [
-        {
-          visibility: HnBrickVisibility.PUBLIC,
-        },
-        {
-          space: In(userSpacesIds),
-        },
-      ];
-    }
-
-    return whereConditions;
-  }
-
   public async getMyBricksWhereBrickConditions(
     publicSelected: boolean,
     spacesFilter: string[],
@@ -1304,5 +1254,60 @@ export class HnBrickAggregateService {
       ClStringHelper.getCleanUrlPath(doc.title) + '.md',
       docContentMarkdown
     );
+  }
+
+  private async getUserBasedWhereBrickConditions(
+    publicSelected: boolean = null,
+    optionalParams?: HnBrickUserBasedWhereOptionalParams
+  ): Promise<FindOptionsWhere<HnBrick>[] | FindOptionsWhere<HnBrick>> {
+    const currentUser: HnUser = optionalParams?.user ?? HnCurrentUserHelper.getCurrentUser();
+    let whereConditions: FindOptionsWhere<HnBrick>[] | FindOptionsWhere<HnBrick>;
+
+    if (currentUser == null) {
+      whereConditions = [
+        {
+          space: {
+            id: IsNull(),
+          },
+          visibility: HnBrickVisibility.PUBLIC,
+        },
+      ];
+    } else if (publicSelected) {
+      whereConditions = [
+        {
+          space: {
+            id: In(optionalParams?.spacesFilter ?? []),
+          },
+        },
+        {
+          space: {
+            id: IsNull(),
+          },
+        },
+      ];
+    } else if (optionalParams?.spacesFilter && optionalParams.spacesFilter.length > 0) {
+      whereConditions = [
+        {
+          space: {
+            id: In(optionalParams.spacesFilter),
+          },
+        },
+      ];
+    } else {
+      const userSpacesIds: string[] = (
+        await this.spaceUserService.findActiveSpaceUsersByUserId(currentUser?.id)
+      ).map((su) => su.spaceId);
+
+      whereConditions = [
+        {
+          visibility: HnBrickVisibility.PUBLIC,
+        },
+        {
+          space: In(userSpacesIds),
+        },
+      ];
+    }
+
+    return whereConditions;
   }
 }
