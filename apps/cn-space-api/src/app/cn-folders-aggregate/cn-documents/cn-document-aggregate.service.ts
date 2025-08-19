@@ -1,8 +1,14 @@
-import { BlBadRequestException, BlFile, BlFileResponse } from '@monorepo/back-core-lib';
+import {
+  BlBadRequestException,
+  BlFile,
+  BlFileResponse,
+  BlUnauthorizedException,
+} from '@monorepo/back-core-lib';
 import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 
 import { CnFrontService } from '../../cn-core/services/cn-front.service';
+import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
 import { CnSpaceService } from '../../cn-spaces/cn-space.service';
 import { CnFolderEventService } from '../cn-folder.event';
 import { CnFolderAggregateService } from '../cn-folder-aggregate.service';
@@ -233,5 +239,17 @@ export class CnDocumentAggregateService {
     const folder = await this.hierarchyObjectService.findByIdAndCheck(document.id);
 
     return this.documentService.getDocumentContentByDocument(folder.getRootFolderId(), document);
+  }
+
+  //////////////////////////////////// ADMIN //////////////////////////////////////
+
+  /**
+   * Admin route to refresh all the documents tags in S3 server
+   */
+  public async syncAllDocumentsTags(): Promise<void> {
+    if (!CnCurrentUserHelper.isAdmin()) {
+      throw new BlUnauthorizedException();
+    }
+    await this.documentService.syncAllDocumentsTags();
   }
 }

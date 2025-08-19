@@ -857,4 +857,28 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
     });
     return count > 0;
   }
+
+  public async syncAllDocumentsTags(): Promise<void> {
+    const documents: CnDocumentWithHierarchy[] = await this.repo.find({
+      relations: { hierarchyRepresentation: true },
+    });
+
+    this.logger.log(`[REFRESH DOCUMENTS TAGS] Found ${documents.length} documents to refresh tags for`);
+    for (const document of documents) {
+      try {
+        const bucketConfig = await this.folderBucketService.getAndCheckFolderBucketConfig(
+          document.hierarchyRepresentation.getRootFolderId()
+        );
+        const tags = this.getTags(document.name, document.hierarchyRepresentation.parentId);
+        await this.objectStorageService.setObjectTags(
+          bucketConfig.bucketConfigs,
+          document.filename,
+          tags as any
+        );
+      } catch (error) {
+        this.logger.error(`Failed to set tags for document ${document.id}: ${error.toString()}`);
+      }
+    }
+    this.logger.log(`[REFRESH DOCUMENTS TAGS] Finished refreshing tags for all documents`);
+  }
 }

@@ -101,4 +101,10 @@ export class CnDocumentController {
     const file = await this.documentAggregateService.getDocumentByPreviewToken(token);
     BlResponseHelper.setFileResponse(response, file, 'download');
   }
+
+  //////////////////////////////////// ADMIN //////////////////////////////////////
+  @Post('sync-all-documents-tags')
+  public async syncAllDocumentsTags(): Promise<void> {
+    await this.documentAggregateService.syncAllDocumentsTags();
+  }
 }
