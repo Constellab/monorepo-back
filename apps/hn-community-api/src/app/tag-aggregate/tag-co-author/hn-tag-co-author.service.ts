@@ -39,7 +39,7 @@ export class HnTagCoAuthorService {
 
   async acceptInvite(tagCoAuthor: HnTagCoAuthor, tagCoAuthorInvite: HnTagCoAuthorInvite): Promise<boolean> {
     return (
-      (await this.tagCoAuthorInviteService.acceptInvite(tagCoAuthorInvite)) != null &&
+      (await this.tagCoAuthorInviteService.acceptUserInvite(tagCoAuthorInvite)) != null &&
       (await this.tagCoAuthorRepository.save(tagCoAuthor)) != null
     );
   }
@@ -49,14 +49,14 @@ export class HnTagCoAuthorService {
   }
 
   async getTagCoAuthorsPendingInvites(tagKeyId: string): Promise<HnTagCoAuthorInvite[]> {
-    return this.tagCoAuthorInviteService.getTagCoAuthorsPendingInvites(tagKeyId);
+    return this.tagCoAuthorInviteService.getPendingUserInvitesWithUser(tagKeyId);
   }
 
-  async inviteTagCoAuthor(tagKey: HnTagKey, coAuthorMail: string): Promise<boolean> {
-    return this.tagCoAuthorInviteService.createTagCoAuthorMail(tagKey, coAuthorMail);
+  async inviteTagCoAuthor(tagKey: HnTagKey, emailOrId: string): Promise<boolean> {
+    return this.tagCoAuthorInviteService.createUserInviteMail(tagKey, emailOrId);
   }
 
   async deleteCoAuthorInvite(inviteId: string): Promise<boolean> {
-    return this.tagCoAuthorInviteService.deleteCoAuthorInvite(inviteId);
+    return this.tagCoAuthorInviteService.deleteUserInvite(inviteId);
   }
 }

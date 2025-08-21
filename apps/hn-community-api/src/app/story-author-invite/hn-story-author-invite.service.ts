@@ -1,74 +1,26 @@
 import { BlMailService } from '@monorepo/back-core-lib';
-import { ClStringHelper, ClSupportedLanguage } from '@monorepo/core-lib';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { HnInviteStatus } from '../core/model/config/hn-invite-status.enum';
-import { HnMailTemplate } from '../core/model/config/hn-mail-template.class';
 import { HnFrontService } from '../core/service/hn-front.service';
+import { HnAbstractUserInviteService } from '../core/service/hn-abstract-user-invite.service';
 import { HnStory } from '../story/hn-story.entity';
-import { HnUser } from '../users/hn-user.entity';
 import { HnUserService } from '../users/hn-user.service';
 import { HnStoryCoAuthorInvite } from './hn-story-author-invite.entity';
+import { HnMailTemplate } from '../core/model/config/hn-mail-template.class';
 
 @Injectable()
-export class HnStoryAuthorInviteService {
+export class HnStoryAuthorInviteService extends HnAbstractUserInviteService<HnStoryCoAuthorInvite, HnStory> {
   constructor(
     @InjectRepository(HnStoryCoAuthorInvite)
     private readonly storyAuthorInviteRepository: Repository<HnStoryCoAuthorInvite>,
-    private readonly userService: HnUserService,
-    private readonly frontService: HnFrontService,
-    private readonly mailService: BlMailService
-  ) {}
-
-  async createStoryAuthorMail(story: HnStory, coAuthorMail: string): Promise<boolean> {
-    const storyAuthorMail = new HnStoryCoAuthorInvite();
-    storyAuthorMail.story = story;
-    storyAuthorMail.token = ClStringHelper.generateUUID();
-    storyAuthorMail.email = coAuthorMail;
-
-    const inviteMail = await this.storyAuthorInviteRepository.save(storyAuthorMail);
-
-    const user: HnUser = await this.userService.findOneByEmail(coAuthorMail);
-    let template: string;
-    let lang: ClSupportedLanguage;
-
-    const data = {
-      storyTitle: story.title,
-      url: this.frontService.getStoryInviteUrl(storyAuthorMail.token),
-      invitUser: inviteMail.createdBy,
-      user: null as any,
-      subscribeUrl: '',
-    };
-
-    if (user) {
-      template = HnMailTemplate.story_invite_existing_user;
-      lang = user.lang;
-      data.user = {
-        firstname: user.firstname,
-        lastname: user.lastname,
-      };
-    } else {
-      template = HnMailTemplate.story_invite_new_user;
-      lang = inviteMail.createdBy.lang;
-      data.subscribeUrl = this.frontService.getConstellabLoginUrl();
-    }
-    return this.mailService.sendMail({
-      templateName: template,
-      recipients: coAuthorMail,
-      lang: lang,
-      data: data,
-    });
-  }
-
-  async getStoryAuthorInviteByToken(token: string): Promise<HnStoryCoAuthorInvite> {
-    return this.storyAuthorInviteRepository.findOneBy({ token: token });
-  }
-
-  async acceptInvite(storyAuthorInvite: HnStoryCoAuthorInvite): Promise<boolean> {
-    storyAuthorInvite.status = HnInviteStatus.ACCEPTED;
-    return (await this.storyAuthorInviteRepository.save(storyAuthorInvite)) != null;
+    userService: HnUserService,
+    frontService: HnFrontService,
+    mailService: BlMailService
+  ) {
+    super(storyAuthorInviteRepository, userService, frontService, mailService);
   }
 
   async getStoryCoAuthorsInvites(storyId: string): Promise<HnStoryCoAuthorInvite[]> {
@@ -79,7 +31,7 @@ export class HnStoryAuthorInviteService {
     });
   }
 
-  async getStoryCoAuthorsPendingInvites(storyId: string): Promise<HnStoryCoAuthorInvite[]> {
+  protected async getPendingUserInvites(storyId: string): Promise<HnStoryCoAuthorInvite[]> {
     return this.storyAuthorInviteRepository.findBy({
       story: {
         id: storyId,
@@ -88,11 +40,25 @@ export class HnStoryAuthorInviteService {
     });
   }
 
-  async deleteCoAuthorInvite(inviteId: string): Promise<boolean> {
-    const invite = await this.storyAuthorInviteRepository.findOneBy({ id: inviteId });
-    if (invite == null) {
-      return false;
-    }
-    return (await this.storyAuthorInviteRepository.remove(invite)) != null;
+  protected initNewUserInvite(entity: HnStory): HnStoryCoAuthorInvite {
+    const storyAuthorMail = new HnStoryCoAuthorInvite();
+    storyAuthorMail.story = entity;
+    return storyAuthorMail;
+  }
+
+  protected getInviteEntityTitle(entity: HnStory): string {
+    return entity.title;
+  }
+
+  protected getFrontInviteUrl(token: string): string {
+    return this.frontService.getStoryInviteUrl(token);
+  }
+
+  protected getExistingUserInviteMailTemplate(): string {
+    return HnMailTemplate.story_invite_existing_user;
+  }
+
+  protected getNewUserInviteMailTemplate(): string {
+    return HnMailTemplate.story_invite_new_user;
   }
 }

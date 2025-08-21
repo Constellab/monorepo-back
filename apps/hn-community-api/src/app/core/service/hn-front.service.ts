@@ -105,6 +105,10 @@ export class HnFrontService {
     return `${this.getAppUrl(appId, appTitlePath)}/detail`;
   }
 
+  public getAppInviteUrl(token: string): string {
+    return `${this.getAppsUrl()}/invite/${token}`;
+  }
+
   ////////////////////////////// TAGS ///////////////////////////////////////////
   public getTagsUrl(): string {
     return `${this.getBaseWebsiteURL()}/tags`;

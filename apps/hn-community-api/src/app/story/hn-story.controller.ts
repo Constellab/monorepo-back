@@ -252,9 +252,9 @@ export class HnStoryController extends HnAbstractFileController<HnStory> {
   @Post(':id/invite-co-author')
   async inviteStoryCoAuthor(
     @Param('id', new ParseUUIDPipe()) id: string,
-    @Body('coAuthorMail') coAuthorMail: string
+    @Body('emailOrId') emailOrId: string
   ): Promise<boolean> {
-    return this.storyService.inviteStoryCoAuthor(id, coAuthorMail);
+    return this.storyService.inviteStoryCoAuthor(id, emailOrId);
   }
 
   @BlPublic()

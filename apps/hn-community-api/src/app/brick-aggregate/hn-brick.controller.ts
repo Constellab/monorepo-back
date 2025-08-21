@@ -328,9 +328,9 @@ export class HnBrickController {
   @Post(':id/invite-co-author')
   async inviteBrickCoAuthor(
     @Param('id', new ParseUUIDPipe()) id: string,
-    @Body('coAuthorMail') coAuthorMail: string
+    @Body('emailOrId') emailOrId: string
   ): Promise<HnBrick> {
-    return this.brickAggregateService.inviteBrickCoAuthor(id, coAuthorMail);
+    return this.brickAggregateService.inviteBrickCoAuthor(id, emailOrId);
   }
 
   /***

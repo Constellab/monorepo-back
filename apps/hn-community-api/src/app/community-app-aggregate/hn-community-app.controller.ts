@@ -25,8 +25,10 @@ import { Response } from 'express';
 import { HnSitemapItemBase } from '../core/model/config/hn-site-map.class';
 import { HnFileAppService } from '../file-aggregate/file-app/hn-file-app.service';
 import { HnAbstractFileController } from '../file-aggregate/file-core/hn-abstract-file.controller';
+import { HnUserDto } from '../users/hn-user.dto';
 import { HnCommunityAppDto, HnCommunityAppEditDto } from './community-app/hn-community-app.dto';
 import { HnCommunityApp } from './community-app/hn-community-app.entity';
+import { HnCommunityAppCoAuthorInvite } from './community-app-co-author-invite/hn-community-app-co-author-invite.entity';
 import { HnCommunityAppAggregateService } from './hn-community-app-aggregate.service';
 
 @Controller('app')
@@ -47,7 +49,7 @@ export class HnCommunityAppController extends HnAbstractFileController<HnCommuni
   @BlPublic()
   @Get(':id')
   async getById(@Param('id', new ParseUUIDPipe()) id: string): Promise<HnCommunityAppDto> {
-    return new HnCommunityAppDto(await this.communityAppAggregateService.findOneById(id));
+    return new HnCommunityAppDto(await this.communityAppAggregateService.getAndCheckCommunityApp(id));
   }
 
   @BlPublic()
@@ -159,5 +161,52 @@ export class HnCommunityAppController extends HnAbstractFileController<HnCommuni
     @Param('appId', new ParseUUIDPipe()) appId: string
   ): Promise<any> {
     return this.communityAppAggregateService.saveResourceViewFile(file, appId);
+  }
+
+  ///////////////////////// CO AUTHORS //////////////////////////
+  @Post('co-authors/:id/invite')
+  inviteCommunityAppCoAuthor(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body('emailOrId') emailOrId: string
+  ): Promise<boolean> {
+    return this.communityAppAggregateService.inviteCommunityAppCoAuthor(id, emailOrId);
+  }
+
+  @BlPublic()
+  @Get('co-authors/:id')
+  async getCommunityAppCoAuthors(@Param('id', new ParseUUIDPipe()) id: string): Promise<HnUserDto[]> {
+    return (await this.communityAppAggregateService.getCommunityAppCoAuthors(id)).map(
+      (communityAppCoAuthor) => new HnUserDto(communityAppCoAuthor.user)
+    );
+  }
+
+  @Get('co-authors/:id/pending-invites')
+  getCommunityAppCoAuthorsPendingInvites(
+    @Param('id', new ParseUUIDPipe()) id: string
+  ): Promise<HnCommunityAppCoAuthorInvite[]> {
+    return this.communityAppAggregateService.getCommunityAppCoAuthorsPendingInvites(id);
+  }
+
+  @Put('co-authors/:id/remove/:communityAppUserId')
+  removeCommunityAppCoAuthor(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('communityAppUserId', new ParseUUIDPipe()) communityAppUserId: string
+  ): Promise<void> {
+    return this.communityAppAggregateService.removeCommunityAppCoAuthor(id, communityAppUserId);
+  }
+
+  @Get('co-authors/invite/:token/is-valid')
+  isInviteValid(@Param('token') token: string): Promise<HnCommunityAppCoAuthorInvite> {
+    return this.communityAppAggregateService.isInviteValid(token);
+  }
+
+  @Put('co-authors/invite/:token/accept')
+  acceptInvite(@Param('token') token: string): Promise<HnCommunityApp> {
+    return this.communityAppAggregateService.acceptInvite(token);
+  }
+
+  @Delete('co-authors/invite/:inviteId')
+  deleteCoAuthorInvite(@Param('inviteId', new ParseUUIDPipe()) inviteId: string): Promise<boolean> {
+    return this.communityAppAggregateService.deleteCoAuthorInvite(inviteId);
   }
 }

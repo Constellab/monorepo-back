@@ -5,6 +5,7 @@ import { Column, Entity, Index, ManyToOne, OneToMany } from 'typeorm';
 import { HnBaseEntity } from '../../core/model/entities/hn-base.entity';
 import { HnFileApp } from '../../file-aggregate/file-app/hn-file-app.entity';
 import { HnSpace } from '../../space-aggregate/space/hn-space.entity';
+import { HnCommunityAppCoAuthor } from '../community-app-co-author/hn-community-app-co-author.entity';
 import { HnCommunityAppUser } from '../community-app-user/hn-community-app-user.entity';
 
 @Entity('app')
@@ -39,6 +40,12 @@ export class HnCommunityAppEntity extends HnBaseEntity {
 
   @OneToMany(() => HnCommunityAppUser, (appUser) => appUser.app, { nullable: true, eager: true })
   appUsers: HnCommunityAppUser[];
+
+  @OneToMany(() => HnCommunityAppCoAuthor, (communityAppCoAuthor) => communityAppCoAuthor.communityApp, {
+    nullable: true,
+    onDelete: 'CASCADE',
+  })
+  communityAppCoAuthors: HnCommunityAppCoAuthor[];
 
   static isValidAppUrl(appUrl: string): boolean {
     if (!ClStringHelper.isHttpLink(appUrl)) return false;

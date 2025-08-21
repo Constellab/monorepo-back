@@ -30,6 +30,10 @@ import { HnCommunityAppStatLabDto } from './community-app-stat/hn-community-app-
 import { HnCommunityAppStatService } from './community-app-stat/hn-community-app-stat.service';
 import { HnCommunityAppUser } from './community-app-user/hn-community-app-user.entity';
 import { HnCommunityAppUserService } from './community-app-user/hn-community-app-user.service';
+import { HnCommunityAppCoAuthorService } from './community-app-co-author/hn-community-app-co-author.service';
+import { HnCommunityAppCoAuthor } from './community-app-co-author/hn-community-app-co-author.entity';
+import { HnCommunityAppCoAuthorInvite } from './community-app-co-author-invite/hn-community-app-co-author-invite.entity';
+import { HnInviteStatus } from '../core/model/config/hn-invite-status.enum';
 
 @Injectable()
 export class HnCommunityAppAggregateService {
@@ -42,6 +46,7 @@ export class HnCommunityAppAggregateService {
     private readonly communityAppUserService: HnCommunityAppUserService,
     private readonly frontService: HnFrontService,
     private readonly userService: HnUserService,
+    private readonly communityAppCoAuthorService: HnCommunityAppCoAuthorService,
     private dataSource: DataSource
   ) {}
 
@@ -69,13 +74,14 @@ export class HnCommunityAppAggregateService {
   }
 
   ////////////////////////////////////// APP ////////////////////////////////////////
-  async findOneById(id: string): Promise<HnCommunityApp> {
+  async getAndCheckCommunityApp(id: string): Promise<HnCommunityApp> {
     const communityApp = await this.communityAppService.findOneById(id);
+    if (!communityApp) throw new BlNotFoundException('Community App not found');
     if (communityApp.space) {
       const currentUser = HnCurrentUserHelper.getCurrentUser();
-      if (!currentUser) return null;
+      if (!currentUser) throw new BlNotFoundException('Community App not found');
       if (!(await this.spaceAggregateService.checkSpaceUser(communityApp.space.id, currentUser.id)))
-        return null;
+        throw new BlNotFoundException('Community App not found');
     }
     return communityApp;
   }
@@ -368,6 +374,71 @@ export class HnCommunityAppAggregateService {
     }
 
     return whereConditions;
+  }
+
+  ////////////////////////////////////// CO AUTHORS /////////////////////////////////
+  public async inviteCommunityAppCoAuthor(communityAppId: string, emailOrId: string): Promise<boolean> {
+    const communityApp = await this.getAndCheckCommunityApp(communityAppId);
+    return this.communityAppCoAuthorService.inviteCommunityAppCoAuthor(communityApp, emailOrId);
+  }
+
+  public async getCommunityAppCoAuthors(communityAppId: string): Promise<HnCommunityAppCoAuthor[]> {
+    await this.getAndCheckCommunityApp(communityAppId);
+    return this.communityAppCoAuthorService.getCommunityAppCoAuthorsByCommunityAppId(communityAppId);
+  }
+
+  public async getCommunityAppCoAuthorsPendingInvites(
+    communityAppId: string
+  ): Promise<HnCommunityAppCoAuthorInvite[]> {
+    await this.getAndCheckCommunityApp(communityAppId);
+    return this.communityAppCoAuthorService.getCommunityAppCoAuthorsPendingInvites(communityAppId);
+  }
+
+  public async removeCommunityAppCoAuthor(id: string, communityAppCoAuthorUserId: string): Promise<void> {
+    const communityApp = await this.getAndCheckCommunityApp(id);
+    if (communityApp.createdBy.id != HnCurrentUserHelper.getCurrentUser().id) {
+      throw new BlUnauthorizedException('You are not authorized to perform this action');
+    }
+    return this.communityAppCoAuthorService.removeCommunityAppCoAuthor(id, communityAppCoAuthorUserId);
+  }
+
+  public async isInviteValid(token: string): Promise<HnCommunityAppCoAuthorInvite> {
+    const coAuthorInvite: HnCommunityAppCoAuthorInvite =
+      await this.communityAppCoAuthorService.getCommunityAppCoAuthorInviteByToken(token);
+    return coAuthorInvite &&
+      coAuthorInvite.status == HnInviteStatus.PENDING &&
+      coAuthorInvite.email === HnCurrentUserHelper.getCurrentUser()?.email
+      ? coAuthorInvite
+      : null;
+  }
+
+  public async acceptInvite(token: string): Promise<HnCommunityApp> {
+    const coAuthorInvite: HnCommunityAppCoAuthorInvite =
+      await this.communityAppCoAuthorService.getCommunityAppCoAuthorInviteByToken(token);
+    if (!coAuthorInvite) throw new Error('Invalid invite');
+    const communityApp = await this.communityAppService.findOneById(coAuthorInvite.communityApp.id);
+    if (
+      communityApp.space &&
+      !(await this.spaceAggregateService.checkSpaceUser(
+        communityApp.space.id,
+        HnCurrentUserHelper.getCurrentUser()?.id
+      ))
+    ) {
+      throw new BlUnauthorizedException('User is not in the space of the app');
+    }
+
+    const communityAppCoAuthor: HnCommunityAppCoAuthor = new HnCommunityAppCoAuthor();
+    communityAppCoAuthor.communityApp = communityApp;
+    communityAppCoAuthor.user = HnCurrentUserHelper.getCurrentUser();
+    const acceptInvite = await this.communityAppCoAuthorService.acceptInvite(
+      communityAppCoAuthor,
+      coAuthorInvite
+    );
+    return acceptInvite ? communityApp : null;
+  }
+
+  public async deleteCoAuthorInvite(inviteId: string): Promise<boolean> {
+    return this.communityAppCoAuthorService.deleteCoAuthorInvite(inviteId);
   }
 
   ////////////////////////////////////// LAB ////////////////////////////////////////

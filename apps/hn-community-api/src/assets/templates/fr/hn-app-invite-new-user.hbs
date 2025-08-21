@@ -1,13 +1,21 @@
-<p>Bonjour {{user.firstname}} {{user.lastname}},</p>
+<p>Bonjour,</p>
 
 <p><strong>{{invitUser.firstname}} {{invitUser.lastname}}</strong>
-  vous invite à devenir utilisateur de la brick :
+  vous invite à devenir co-auteur de l'application :
   <strong>{{title}}</strong></p>
 
 <p>
   Veuillez
+  <a href='{{subscribeUrl}}'>cliquer ici</a>
+  pour vous inscrire.
+</p>
+
+<p>Voici le lien complet : {{subscribeUrl}}</p>
+
+<p>
+  Après avoir créé votre compte, Veuillez
   <a href='{{url}}'>cliquer ici</a>
-  pour accepter l'invitation.
+  pour devenir co-auteur.
 </p>
 
 <p>Voici le lien complet : {{url}}</p>

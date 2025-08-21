@@ -51,6 +51,8 @@ import { HnCommentStoryModule } from './app/comment-aggregate/comment-story/hn-c
 import { HnCommentTagModule } from './app/comment-aggregate/comment-tag/hn-comment-tag.module';
 import { HnCommentAggregateModule } from './app/comment-aggregate/hn-comment-aggregate.module';
 import { HnCommunityAppModule } from './app/community-app-aggregate/community-app/hn-community-app.module';
+import { HnCommunityAppCoAuthorModule } from './app/community-app-aggregate/community-app-co-author/hn-community-app-co-author.module';
+import { HnCommunityAppCoAuthorInviteModule } from './app/community-app-aggregate/community-app-co-author-invite/hn-community-app-co-author-invite.module';
 import { HnCommunityAppStatModule } from './app/community-app-aggregate/community-app-stat/hn-community-app-stat.module';
 import { HnCommunityAppUserModule } from './app/community-app-aggregate/community-app-user/hn-community-app-user.module';
 import { HnCommunityAppAggregateModule } from './app/community-app-aggregate/hn-community-app-aggregate.module';
@@ -286,6 +288,8 @@ TeRichTextModifications.setBackTimeDifference();
     HnCommunityAppStatModule,
     HnCommunityAppAggregateModule,
     HnCommunityAppUserModule,
+    HnCommunityAppCoAuthorInviteModule,
+    HnCommunityAppCoAuthorModule,
 
     HnTagValueModule,
     HnTagKeyModule,

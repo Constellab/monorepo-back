@@ -1,97 +1,53 @@
 import { BlMailService } from '@monorepo/back-core-lib';
-import { ClStringHelper, ClSupportedLanguage } from '@monorepo/core-lib';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { HnInviteStatus } from '../../core/model/config/hn-invite-status.enum';
-import { HnMailTemplate } from '../../core/model/config/hn-mail-template.class';
 import { HnFrontService } from '../../core/service/hn-front.service';
-import { HnCurrentUserHelper } from '../../core/utils/hn-current-user.helper';
-import { HnUser } from '../../users/hn-user.entity';
+import { HnAbstractUserInviteService } from '../../core/service/hn-abstract-user-invite.service';
 import { HnUserService } from '../../users/hn-user.service';
 import { HnBrick } from '../brick/hn-brick.entity';
 import { HnBrickUserInvite } from './hn-brick-user-invite.entity';
+import { HnMailTemplate } from '../../core/model/config/hn-mail-template.class';
 
 @Injectable()
-export class HnBrickUserInviteService {
+export class HnBrickUserInviteService extends HnAbstractUserInviteService<HnBrickUserInvite, HnBrick> {
   constructor(
     @InjectRepository(HnBrickUserInvite)
-    private readonly brickUserInviteRepository: Repository<HnBrickUserInvite>,
-    private readonly userService: HnUserService,
-    private readonly frontService: HnFrontService,
-    private mailService: BlMailService
-  ) {}
-
-  async createBrickUserMail(brick: HnBrick, userMail: string): Promise<boolean> {
-    const brickUserMail = new HnBrickUserInvite();
-    brickUserMail.brick = brick;
-    brickUserMail.token = ClStringHelper.generateUUID();
-    brickUserMail.email = userMail;
-
-    const inviteMail = await this.brickUserInviteRepository.save(brickUserMail);
-
-    const user: HnUser = await this.userService.findOneByEmail(userMail);
-    let template: string;
-    let lang: ClSupportedLanguage;
-
-    const data = {
-      brickTitle: brick.name,
-      url: this.frontService.getBrickInviteUrl(brickUserMail.token),
-      invitUser: inviteMail.createdBy,
-      user: null as any,
-      subscribeUrl: '',
-    };
-
-    if (user) {
-      template = HnMailTemplate.brick_invite_existing_user;
-      lang = user.lang;
-      data.user = {
-        firstname: user.firstname,
-        lastname: user.lastname,
-      };
-    } else {
-      template = HnMailTemplate.brick_invite_new_user;
-      lang = inviteMail.createdBy.lang;
-      data.subscribeUrl = this.frontService.getConstellabLoginUrl();
-    }
-    return this.mailService.sendMail({
-      templateName: template,
-      recipients: userMail,
-      lang: lang,
-      data: data,
-    });
+    private brickUserInviteRepository: Repository<HnBrickUserInvite>,
+    userService: HnUserService,
+    frontService: HnFrontService,
+    mailService: BlMailService
+  ) {
+    super(brickUserInviteRepository, userService, frontService, mailService);
   }
 
-  async getAndCheckInvite(token: string): Promise<HnBrickUserInvite> {
-    const brickUserInvite: HnBrickUserInvite = await this.getBrickUserInviteByToken(token);
-    return brickUserInvite &&
-      brickUserInvite.status === HnInviteStatus.PENDING &&
-      brickUserInvite.email === HnCurrentUserHelper.getCurrentUser().email
-      ? brickUserInvite
-      : null;
-  }
-
-  async getBrickUserInviteByToken(token: string): Promise<HnBrickUserInvite> {
-    return this.brickUserInviteRepository.findOneBy({ token: token });
-  }
-
-  async acceptBrickUserInvite(brickUserInvite: HnBrickUserInvite): Promise<boolean> {
-    brickUserInvite.status = HnInviteStatus.ACCEPTED;
-    return (await this.brickUserInviteRepository.save(brickUserInvite)) != null;
-  }
-
-  async getBrickCoAuthorsPendingInvites(brickId: string): Promise<HnBrickUserInvite[]> {
+  protected async getPendingUserInvites(entityId: string): Promise<HnBrickUserInvite[]> {
     return this.brickUserInviteRepository.find({
-      where: { brick: { id: brickId }, status: HnInviteStatus.PENDING },
+      where: { brick: { id: entityId }, status: HnInviteStatus.PENDING },
     });
   }
 
-  async deleteCoAuthorInvite(inviteId: string): Promise<boolean> {
-    const invite: HnBrickUserInvite = await this.brickUserInviteRepository.findOneBy({ id: inviteId });
-    if (invite == null) {
-      return false;
-    }
-    return (await this.brickUserInviteRepository.remove(invite)) != null;
+  protected initNewUserInvite(entity: HnBrick): HnBrickUserInvite {
+    const brickUserMail = new HnBrickUserInvite();
+    brickUserMail.brick = entity;
+    return brickUserMail;
+  }
+
+  protected getInviteEntityTitle(entity: HnBrick): string {
+    return entity.name;
+  }
+
+  protected getFrontInviteUrl(token: string): string {
+    return this.frontService.getBrickInviteUrl(token);
+  }
+
+  protected getExistingUserInviteMailTemplate(): string {
+    return HnMailTemplate.brick_invite_existing_user;
+  }
+
+  protected getNewUserInviteMailTemplate(): string {
+    return HnMailTemplate.brick_invite_new_user;
   }
 }
