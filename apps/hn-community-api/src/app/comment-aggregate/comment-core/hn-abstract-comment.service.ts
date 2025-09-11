@@ -23,6 +23,10 @@ export abstract class HnAbstractCommentService<T extends BlEntityWithId> {
 
   abstract createComment(entity: T, commentData: TeRichText): HnCommentEntity<T>;
 
+  async getCommentsCount(entityId: string): Promise<number> {
+    return await this.repository.countBy({ entity: { id: entityId } });
+  }
+
   async getComments(page: number, size: number, entityId: string): Promise<ClPage<HnCommentEntity<T>>> {
     return await BlAbstractPaginatedService.findPaginatedStatic(
       page,
@@ -53,7 +57,7 @@ export abstract class HnAbstractCommentService<T extends BlEntityWithId> {
     }
     const comment: HnCommentEntity<T> = this.createComment(entity, commentData);
     const newComment = await this.repository.save(comment);
-    await this.emitCommentEvent(
+    this.emitCommentEvent(
       commentType,
       newComment.entityId,
       await this.getNumberOfComments(newComment.entityId)
@@ -64,18 +68,10 @@ export abstract class HnAbstractCommentService<T extends BlEntityWithId> {
   async deleteComment(commentType: HnEntityType, commentId: string): Promise<void> {
     const comment = await this.repository.findOneBy({ id: commentId });
     await this.repository.remove(comment);
-    await this.emitCommentEvent(
-      commentType,
-      comment.entityId,
-      await this.getNumberOfComments(comment.entityId)
-    );
+    this.emitCommentEvent(commentType, comment.entityId, await this.getNumberOfComments(comment.entityId));
   }
 
-  private async emitCommentEvent(
-    commentType: HnEntityType,
-    entityId: string,
-    numberOfComments: number
-  ): Promise<void> {
+  private emitCommentEvent(commentType: HnEntityType, entityId: string, numberOfComments: number): void {
     this.eventEmitter.emit(this.getEvent(commentType), {
       entityId: entityId,
       numberOfComments: numberOfComments,

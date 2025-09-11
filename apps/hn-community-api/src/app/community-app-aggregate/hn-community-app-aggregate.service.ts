@@ -15,6 +15,7 @@ import {
 import { Injectable } from '@nestjs/common';
 import { DataSource, FindOptionsWhere, In, IsNull, Like } from 'typeorm';
 
+import { HnInviteStatus } from '../core/model/config/hn-invite-status.enum';
 import { HnSiteMapEnumChangefreq, HnSitemapItemBase } from '../core/model/config/hn-site-map.class';
 import { HnFrontService } from '../core/service/hn-front.service';
 import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
@@ -26,14 +27,13 @@ import { HnUserService } from '../users/hn-user.service';
 import { HnCommunityAppEditDto } from './community-app/hn-community-app.dto';
 import { HnCommunityApp, HnCommunityAppEntity } from './community-app/hn-community-app.entity';
 import { HnCommunityAppService } from './community-app/hn-community-app.service';
+import { HnCommunityAppCoAuthor } from './community-app-co-author/hn-community-app-co-author.entity';
+import { HnCommunityAppCoAuthorService } from './community-app-co-author/hn-community-app-co-author.service';
+import { HnCommunityAppCoAuthorInvite } from './community-app-co-author-invite/hn-community-app-co-author-invite.entity';
 import { HnCommunityAppStatLabDto } from './community-app-stat/hn-community-app-stat.dto';
 import { HnCommunityAppStatService } from './community-app-stat/hn-community-app-stat.service';
 import { HnCommunityAppUser } from './community-app-user/hn-community-app-user.entity';
 import { HnCommunityAppUserService } from './community-app-user/hn-community-app-user.service';
-import { HnCommunityAppCoAuthorService } from './community-app-co-author/hn-community-app-co-author.service';
-import { HnCommunityAppCoAuthor } from './community-app-co-author/hn-community-app-co-author.entity';
-import { HnCommunityAppCoAuthorInvite } from './community-app-co-author-invite/hn-community-app-co-author-invite.entity';
-import { HnInviteStatus } from '../core/model/config/hn-invite-status.enum';
 
 @Injectable()
 export class HnCommunityAppAggregateService {
@@ -116,11 +116,30 @@ export class HnCommunityAppAggregateService {
           id: In(commonSpacesIds),
         },
       });
+      whereConditions.push({
+        communityAppCoAuthors: {
+          user: {
+            id: HnCurrentUserHelper.getCurrentUser().id,
+          },
+        },
+        space: {
+          id: In(commonSpacesIds),
+        },
+      });
     }
 
     whereConditions.push({
       createdBy: {
         id: user.id,
+      },
+      space: IsNull(),
+    });
+
+    whereConditions.push({
+      communityAppCoAuthors: {
+        user: {
+          id: HnCurrentUserHelper.getCurrentUser().id,
+        },
       },
       space: IsNull(),
     });

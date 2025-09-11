@@ -12,6 +12,15 @@ export class HnCommentController {
   constructor(private readonly commentAggregateService: HnCommentAggregateService) {}
 
   @BlPublic()
+  @Get(':commentType/:entityId/count')
+  async getCommentsCount(
+    @Param('commentType') commentType: HnEntityType,
+    @Param('entityId', new ParseUUIDPipe()) entityId: string
+  ): Promise<number> {
+    return await this.commentAggregateService.getCommentsCount(entityId, commentType);
+  }
+
+  @BlPublic()
   @Get(':commentType/:entityId')
   async getComments(
     @Query('page') page: number,

@@ -21,6 +21,10 @@ export class HnCommentAggregateService {
     private readonly commentTagService: HnCommentTagService
   ) {}
 
+  async getCommentsCount(entityId: string, commentType: HnEntityType): Promise<number> {
+    return this.getService(commentType).getCommentsCount(entityId);
+  }
+
   async getComments(
     commentType: HnEntityType,
     entityId: string,
