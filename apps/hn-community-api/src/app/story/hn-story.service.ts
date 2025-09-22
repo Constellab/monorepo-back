@@ -6,6 +6,7 @@ import {
   BlFileResponse,
   BlSearchBuilder,
   BlSearchParams,
+  BlSearchSortCriteria,
   BlUnauthorizedException,
 } from '@monorepo/back-core-lib';
 import { ClPage, ClStringHelper } from '@monorepo/core-lib';
@@ -18,7 +19,7 @@ import {
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DateTime } from 'luxon';
-import { DataSource, EntityManager, FindOptionsOrder, FindOptionsWhere, In, Like, Repository } from 'typeorm';
+import { DataSource, EntityManager, FindOptionsWhere, Like, Repository } from 'typeorm';
 
 import { HnInviteStatus } from '../core/model/config/hn-invite-status.enum';
 import { HnSiteMapEnumChangefreq, HnSitemapItemBase } from '../core/model/config/hn-site-map.class';
@@ -123,7 +124,7 @@ export class HnStoryService extends BlAbstractService<HnStory> {
       where: {
         id: id,
       },
-      relations: ['topics', 'storyAuthors'],
+      relations: ['storyAuthors'],
     });
     if (story == null && strict) {
       throw new BlBadRequestException('Story not found');
@@ -174,7 +175,8 @@ export class HnStoryService extends BlAbstractService<HnStory> {
   async getMyStoriesFiltered(
     page: number,
     size: number,
-    filters: HnStoryFilter
+    filters: HnStoryFilter,
+    sortsCriteria: BlSearchSortCriteria[] = [{ key: 'createdAt', direction: 'DESC' }]
   ): Promise<ClPage<HnStoryDto>> {
     const where: FindOptionsWhere<HnStory>[] = [
       {
@@ -190,15 +192,9 @@ export class HnStoryService extends BlAbstractService<HnStory> {
         },
       },
     ];
-    const order: FindOptionsOrder<HnStory> = { createdAt: 'DESC' as any };
-
-    if (filters.topics && filters.topics.length > 0) {
-      where.map(
-        (w) =>
-          (w.topics = {
-            id: In(filters.topics),
-          })
-      );
+    const order: any = {};
+    for (const sortCriteria of sortsCriteria) {
+      order[sortCriteria.key] = sortCriteria.direction;
     }
 
     if (filters.title && filters.title.length > 0) {
@@ -211,7 +207,7 @@ export class HnStoryService extends BlAbstractService<HnStory> {
         size,
         {
           where: where,
-          relations: ['topics', 'storyAuthors'],
+          relations: ['storyAuthors'],
           order: order,
         },
         this.storyRepository.manager,
@@ -244,7 +240,6 @@ export class HnStoryService extends BlAbstractService<HnStory> {
               status: HnStoryStatus.PUBLISHED,
             },
           ],
-          relations: ['topics'],
           order: { publishedAt: 'DESC' as any },
         },
         this.storyRepository.manager,
@@ -273,7 +268,6 @@ export class HnStoryService extends BlAbstractService<HnStory> {
               },
             },
           ],
-          relations: ['topics'],
           order: {
             createdAt: 'DESC' as any,
           },
@@ -284,14 +278,19 @@ export class HnStoryService extends BlAbstractService<HnStory> {
     ).map((story) => new HnStoryDto(story));
   }
 
-  async getStoriesByFilter(filters: HnStoryFilter, page: number, size: number): Promise<ClPage<HnStoryDto>> {
+  async getStoriesByFilter(
+    filters: HnStoryFilter,
+    sortsCriteria: BlSearchSortCriteria[],
+    page: number,
+    size: number
+  ): Promise<ClPage<HnStoryDto>> {
     const where: FindOptionsWhere<HnStory> = {};
-    const order: FindOptionsOrder<HnStory> = { createdAt: 'DESC' as any };
-    if (filters.topics && filters.topics.length > 0) {
-      where.topics = {
-        id: In(filters.topics),
-      };
+
+    const order: any = {};
+    for (const sortCriteria of sortsCriteria) {
+      order[sortCriteria.key] = sortCriteria.direction;
     }
+
     if (filters.title && filters.title.length > 0) {
       where.title = Like(`%${filters.title}%`);
     }
@@ -304,7 +303,6 @@ export class HnStoryService extends BlAbstractService<HnStory> {
         size,
         {
           where: where,
-          relations: ['topics'],
           order: order,
         },
         this.storyRepository.manager,
@@ -327,7 +325,6 @@ export class HnStoryService extends BlAbstractService<HnStory> {
               status: HnStoryStatus.PUBLISHED,
             },
           ],
-          relations: ['topics'],
           order: { createdAt: 'DESC' as any },
         },
         this.storyRepository.manager,

@@ -2,6 +2,7 @@ import {
   BlBadRequestException,
   BlFile,
   BlNotFoundException,
+  BlSearchSortCriteria,
   BlUnauthorizedException,
 } from '@monorepo/back-core-lib';
 import { ClPage, ClStringHelper } from '@monorepo/core-lib';
@@ -165,7 +166,7 @@ export class HnAgentAggregateService {
     size: number
   ): Promise<ClPage<HnAgentForLabDto>> {
     const user = HnCurrentUserHelper.getAndCheckCurrentUser();
-    return (await this.findAllWithFilters(spacesFilter, titleFilter, page, size, user, personalOnly)).map(
+    return (await this.findAllWithFilters(spacesFilter, titleFilter, [], page, size, user, personalOnly)).map(
       (agent) => HnAgentForLabDto.fromAgentDto(agent)
     );
   }
@@ -219,6 +220,7 @@ export class HnAgentAggregateService {
   public async findAllWithFilters(
     spacesFilter: string[],
     titleFilter: string,
+    sortsCriteria: BlSearchSortCriteria[],
     page: number,
     size: number,
     user: HnUser = null,
@@ -259,6 +261,7 @@ export class HnAgentAggregateService {
       personalOnly,
       page,
       size,
+      sortsCriteria,
       user,
       userSpacesIds,
       coAuthorAgentsIds

@@ -1,4 +1,4 @@
-import { BlAbstractPaginatedService } from '@monorepo/back-core-lib';
+import { BlAbstractPaginatedService, BlSearchSortCriteria } from '@monorepo/back-core-lib';
 import { ClPage } from '@monorepo/core-lib';
 import { TeRichTextDTO } from '@monorepo/te-text-editor';
 import { Injectable } from '@nestjs/common';
@@ -31,15 +31,21 @@ export class HnCommunityAppService {
 
   async findAllPaginated(
     whereConditions: FindOptionsWhere<HnCommunityApp>[] | FindOptionsWhere<HnCommunityApp>,
+    sortsCriteria: BlSearchSortCriteria[],
     page: number,
     size: number
   ): Promise<ClPage<HnCommunityApp>> {
+    const order: any = {};
+    for (const criteria of sortsCriteria) {
+      order[criteria.key] = criteria.direction;
+    }
+
     return await BlAbstractPaginatedService.findPaginatedStatic(
       page,
       size,
       {
         where: whereConditions,
-        order: { lastModifiedAt: 'DESC' as any },
+        order: order,
       },
       this.communityAppRepository.manager,
       HnCommunityAppEntity

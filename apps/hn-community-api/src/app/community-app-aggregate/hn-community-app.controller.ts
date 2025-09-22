@@ -1,4 +1,11 @@
-import { BlFile, BlParsePipe, BlPublic, BlResponseHelper, BlUploadedFile } from '@monorepo/back-core-lib';
+import {
+  BlFile,
+  BlParsePipe,
+  BlPublic,
+  BlResponseHelper,
+  BlSearchSortCriteria,
+  BlUploadedFile,
+} from '@monorepo/back-core-lib';
 import { ClPage } from '@monorepo/core-lib';
 import {
   TeBlockFigureUploadedResponse,
@@ -75,6 +82,7 @@ export class HnCommunityAppController extends HnAbstractFileController<HnCommuni
   ): Promise<ClPage<HnCommunityAppDto>> {
     const result: ClPage<HnCommunityApp> = await this.communityAppAggregateService.findUserCommunityApps(
       userId,
+      [],
       page,
       size
     );
@@ -85,6 +93,7 @@ export class HnCommunityAppController extends HnAbstractFileController<HnCommuni
    * Get all community apps with filters
    * @param spacesFilter
    * @param titleFilter
+   * @param sortsCriteria
    * @param page
    * @param size
    */
@@ -93,10 +102,17 @@ export class HnCommunityAppController extends HnAbstractFileController<HnCommuni
   async getAll(
     @Body('spacesFilter') spacesFilter: string[],
     @Body('titleFilter') titleFilter: string,
+    @Body('sortsCriteria') sortsCriteria: BlSearchSortCriteria[],
     @Query('page', new ParseIntPipe()) page: number,
     @Query('size', new ParseIntPipe()) size: number
   ): Promise<ClPage<HnCommunityAppDto>> {
-    const result = await this.communityAppAggregateService.findAll(spacesFilter, titleFilter, page, size);
+    const result = await this.communityAppAggregateService.findAll(
+      spacesFilter,
+      titleFilter,
+      sortsCriteria,
+      page,
+      size
+    );
     return result.map((communityApp) => new HnCommunityAppDto(communityApp));
   }
 

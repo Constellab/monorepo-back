@@ -11,7 +11,6 @@ export class HnCreateStoryDto {
 }
 
 export class HnStoryFilter {
-  topics: string[];
   title: string;
 }
 

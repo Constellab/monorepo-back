@@ -4,6 +4,7 @@ import {
   BlFileResponse,
   BlNotFoundException,
   BlObjectStorageService,
+  BlSearchSortCriteria,
   BlUnauthorizedException,
 } from '@monorepo/back-core-lib';
 import { ClPage } from '@monorepo/core-lib';
@@ -86,7 +87,12 @@ export class HnCommunityAppAggregateService {
     return communityApp;
   }
 
-  async findUserCommunityApps(userId: string, page: number, size: number): Promise<ClPage<HnCommunityApp>> {
+  async findUserCommunityApps(
+    userId: string,
+    sortsCriteria: BlSearchSortCriteria[],
+    page: number,
+    size: number
+  ): Promise<ClPage<HnCommunityApp>> {
     const user = await this.userService.findOne(userId);
     if (!user) throw new BlNotFoundException('User not found');
     const currentUser = HnCurrentUserHelper.getCurrentUser();
@@ -96,12 +102,13 @@ export class HnCommunityAppAggregateService {
         (space) => space.id
       );
     }
-    return this.findUserCommunityAppsWithCommonSpaces(user, commonSpacesIds, page, size);
+    return this.findUserCommunityAppsWithCommonSpaces(user, commonSpacesIds, sortsCriteria, page, size);
   }
 
   async findUserCommunityAppsWithCommonSpaces(
     user: HnUser,
     commonSpacesIds: string[],
+    sortsCriteria: BlSearchSortCriteria[],
     page: number,
     size: number
   ): Promise<ClPage<HnCommunityApp>> {
@@ -144,12 +151,13 @@ export class HnCommunityAppAggregateService {
       space: IsNull(),
     });
 
-    return this.communityAppService.findAllPaginated(whereConditions, page, size);
+    return this.communityAppService.findAllPaginated(whereConditions, sortsCriteria, page, size);
   }
 
   async findAll(
     spacesFilter: string[],
     titleFilter: string,
+    sortsCriteria: BlSearchSortCriteria[],
     page: number,
     size: number
   ): Promise<ClPage<HnCommunityApp>> {
@@ -183,7 +191,7 @@ export class HnCommunityAppAggregateService {
       }
     }
 
-    return this.communityAppService.findAllPaginated(whereConditions, page, size);
+    return this.communityAppService.findAllPaginated(whereConditions, sortsCriteria, page, size);
   }
 
   async create(dto: HnCommunityAppEditDto): Promise<HnCommunityApp> {

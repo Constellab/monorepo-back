@@ -5,6 +5,7 @@ import {
   BlPublic,
   BlResponseHelper,
   BlSearchParams,
+  BlSearchSortCriteria,
   BlUploadedFile,
 } from '@monorepo/back-core-lib';
 import { ClPage } from '@monorepo/core-lib';
@@ -87,11 +88,12 @@ export class HnStoryController extends HnAbstractFileController<HnStory> {
   @BlPublic()
   @Post('filter')
   async getStoriesByFilter(
-    @Body() filter: HnStoryFilter,
+    @Body('filters') filters: HnStoryFilter,
+    @Body('sorts') sortsCriteria: BlSearchSortCriteria[] = [],
     @Query('page', new ParseIntPipe()) page: number,
     @Query('size', new ParseIntPipe()) size: number
   ): Promise<ClPage<HnStoryDto>> {
-    return this.storyService.getStoriesByFilter(filter, page, size);
+    return this.storyService.getStoriesByFilter(filters, sortsCriteria, page, size);
   }
 
   @BlPublic()
@@ -120,11 +122,12 @@ export class HnStoryController extends HnAbstractFileController<HnStory> {
    */
   @Post('my-filtered')
   async getMyStoriesFiltered(
-    @Body() filters: HnStoryFilter,
+    @Body('filters') filters: HnStoryFilter,
+    @Body('sorts') sortsCriteria: BlSearchSortCriteria[] = [],
     @Query('page', new ParseIntPipe()) page: number,
     @Query('size', new ParseIntPipe()) size: number
   ): Promise<ClPage<HnStoryDto>> {
-    return await this.storyService.getMyStoriesFiltered(page, size, filters);
+    return await this.storyService.getMyStoriesFiltered(page, size, filters, sortsCriteria);
   }
 
   /***

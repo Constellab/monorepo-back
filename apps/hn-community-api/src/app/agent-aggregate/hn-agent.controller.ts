@@ -1,4 +1,4 @@
-import { BlFile, BlParsePipe, BlPublic, BlUploadedFile } from '@monorepo/back-core-lib';
+import { BlFile, BlParsePipe, BlPublic, BlSearchSortCriteria, BlUploadedFile } from '@monorepo/back-core-lib';
 import { ClPage } from '@monorepo/core-lib';
 import {
   TeBlockFigureUploadedResponse,
@@ -125,10 +125,17 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
   getAllWithSpacesFilter(
     @Body('spacesFilter') spacesFilter: string[],
     @Body('titleFilter') titleFilter: string,
+    @Body('sorts') sortsCriteria: BlSearchSortCriteria[],
     @Query('page', new ParseIntPipe()) page: number,
     @Query('size', new ParseIntPipe()) size: number
   ): Promise<ClPage<HnAgentDto>> {
-    return this.agentAggregateService.findAllWithFilters(spacesFilter, titleFilter, page, size);
+    return this.agentAggregateService.findAllWithFilters(
+      spacesFilter,
+      titleFilter,
+      sortsCriteria,
+      page,
+      size
+    );
   }
 
   /**

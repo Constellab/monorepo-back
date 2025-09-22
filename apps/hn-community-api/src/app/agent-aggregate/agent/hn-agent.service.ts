@@ -1,4 +1,8 @@
-import { BlAbstractPaginatedService, BlUnauthorizedException } from '@monorepo/back-core-lib';
+import {
+  BlAbstractPaginatedService,
+  BlSearchSortCriteria,
+  BlUnauthorizedException,
+} from '@monorepo/back-core-lib';
 import { ClPage } from '@monorepo/core-lib';
 import { TeRichText } from '@monorepo/te-text-editor';
 import { Injectable } from '@nestjs/common';
@@ -282,6 +286,7 @@ export class HnAgentService {
     personalOnly: boolean,
     page: number,
     size: number,
+    sortsCriteria: BlSearchSortCriteria[] = [{ key: 'createdAt', direction: 'DESC' }],
     user: HnUser = null,
     userSpacesIds: string[] = null,
     coAuthorAgentsIds: string[] = null
@@ -297,13 +302,18 @@ export class HnAgentService {
       coAuthorAgentsIds
     );
 
+    const order: any = {};
+    for (const sortCriteria of sortsCriteria) {
+      order[sortCriteria.key] = sortCriteria.direction;
+    }
+
     return (
       await BlAbstractPaginatedService.findPaginatedStatic(
         page,
         size,
         {
           where: where,
-          order: { createdAt: 'DESC' as any },
+          order: order,
         },
         this.agentRepository.manager,
         HnAgent
