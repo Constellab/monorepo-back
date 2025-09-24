@@ -5,7 +5,10 @@ import { CnErrorText } from '../../cn-core/model/config/cn-error-text.class';
 import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
 import { CnRootFolderUserRole, CnRootFolderUserRoleObj } from '../cn-folder-user/cn-folder-user.entity';
 import { CnFolderUserService } from '../cn-folder-user/cn-folder-user.service';
-import { CnHierarchyObject } from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
+import {
+  CnHierarchyObject,
+  CnHierarchyObjectVisibility,
+} from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
 import { CnHierarchyObjectService } from '../cn-hierarchy-objects/cn-hierarchy-object.service';
 import { CnFoldersSecurityHierarchyObjectToken } from './cn-folders-security-hierarchy-object-token';
 import { CnFoldersSecurityLabAccessToken } from './cn-folders-security-lab-access-token';
@@ -83,7 +86,7 @@ export class CnFoldersSecurityService {
   }
 
   private checkHierarchyObject(hierarchyObject: CnHierarchyObject): void {
-    if (hierarchyObject.visibility === 'TRASH') {
+    if (hierarchyObject.visibility === CnHierarchyObjectVisibility.TRASH) {
       throw new BlUnauthorizedException('The object is in the trash, please restore it before using it');
     }
   }

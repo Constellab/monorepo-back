@@ -128,3 +128,12 @@ INSERT INTO `server_cloud` (`id`, `technicalName`, `ram`, `diskSpace`, `diskType
 ('1affda9b-10c7-4e0a-a281-37429279ba74',	'e2-standard-4',	16,	0,	'SSD',	4,	'Unknown',	NULL,	NULL,	'cce27e1c-71d3-4820-a65a-12baac537115',	'2025-07-10 10:04:05',	'2025-07-10 10:04:05',	'cc041136-3e20-48e6-bf9d-9aa8ecaad21f',	'cc041136-3e20-48e6-bf9d-9aa8ecaad21f',	'c5714c74-c8c4-4175-b231-51a58a5a3522'),
 ('4009b9e6-7e9d-43d6-afab-51d178a6f3bb',	'b2-7',	7000,	50,	'SSD',	2,	'2.3 Ghz',	NULL,	NULL,	'964ad825-6b0b-44f2-9825-7129b01a9df7',	'2023-01-01 00:00:00',	'2024-04-26 07:03:49',	'cc041136-3e20-48e6-bf9d-9aa8ecaad21f',	'cc041136-3e20-48e6-bf9d-9aa8ecaad21f',	'c5714c74-c8c4-4175-b231-51a58a5a3522'),
 ('c8a43d0f-ff7c-4298-9a04-c18aa8d50be7',	'Standard_D4as_v5',	16,	30,	'SSD',	4,	'Unknown',	NULL,	NULL,	'57a6f823-6b73-4e0a-9818-f055cbd6d546',	'2024-04-25 11:00:44',	'2024-04-25 11:00:44',	'cc041136-3e20-48e6-bf9d-9aa8ecaad21f',	'cc041136-3e20-48e6-bf9d-9aa8ecaad21f',	'c5714c74-c8c4-4175-b231-51a58a5a3522');
+
+
+------------------ Create the bricks and bricks version ------------------
+
+INSERT INTO `brick` (`id`, `name`, `pipRepo`, `gitRepo`, `visibility`) VALUES
+('b34d3952-732b-479b-ad26-b34f9d5d43aa',	'gws_core',	NULL,	'https://github.com/Constellab/gws_core.git',	'public');
+
+INSERT INTO `brick_version` (`id`, `major`, `minor`, `patch`, `subPatch`, `versionType`, `versionState`, `repoType`, `technicalInfo`, `brickId`) VALUES
+('9e9beb89-ddd5-4c05-a502-14327cdd39ec',	0,	16,	6,	NULL,	'NORMAL',	'STABLE',	'GIT',	NULL,	'b34d3952-732b-479b-ad26-b34f9d5d43aa');

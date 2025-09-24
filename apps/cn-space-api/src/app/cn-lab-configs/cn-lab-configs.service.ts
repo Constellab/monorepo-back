@@ -30,7 +30,7 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
   }
 
   public async getOrCreateLabConfig(labConfigDto: CnLabConfigDto): Promise<CnLabConfig> {
-    const hash = await this.hashBrickVersion(labConfigDto.brick_versions);
+    const hash = this.hashBrickVersion(labConfigDto.brick_versions);
 
     const labConfig = await this.findByBrickVersionHash(hash);
 
@@ -66,7 +66,7 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
     });
   }
 
-  private async hashBrickVersion(brickVersions: CnBrickVersionDTO[]): Promise<number> {
+  private hashBrickVersion(brickVersions: CnBrickVersionDTO[]): number {
     // create an object that is always formatted the same to create a hash
     const sortedVersions = ClHelpService.sortAlphabeticalOrder(brickVersions, (a) => a.name).map(
       (version) => ({
@@ -99,6 +99,9 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
       },
       relations: { brickVersions: { brick: true } },
     });
+    if (!labConfig) {
+      throw new BlBadRequestException(`The lab config could not be found for the lab`);
+    }
     return labConfig.brickVersions.find((brickVersion) => brickVersion.brick.name === brick_name);
   }
 
@@ -118,7 +121,7 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
     if (frontVersion == null) {
       throw new BlBadRequestException(
         `The front version does not exists for '${CnBrickGWS.GWS_CORE}'` +
-          ` version '${gwsCoreBrickVersion.version},'`
+          ` version '${gwsCoreBrickVersion.version.toString()},'`
       );
     }
 

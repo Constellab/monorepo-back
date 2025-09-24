@@ -99,7 +99,8 @@ export class BlVersion {
   }
 
   /**
-   * Return the subPatch as a number. If there is no subPatch, return Infinity, so it is greater than beta version
+   * Return the subPatch as a number.
+   * If there is no subPatch, return Infinity, so it is greater than beta version
    */
   public getSubPatchAsNumber(): number {
     return this.subPatch != null ? this.subPatch : Infinity;
