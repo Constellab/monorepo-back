@@ -329,4 +329,8 @@ export class CnCoreConfigService {
   public getFolderIdToCopyOnSignup(): string {
     return this.configService.get('FOLDER_ID_TO_COPY_ON_SIGNUP');
   }
+
+  public getReflexAccessToken(): string {
+    return this.configService.get('REFLEX_ACCESS_TOKEN');
+  }
 }

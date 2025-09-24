@@ -29,6 +29,7 @@ import {
   CnLabGuard,
   CnLabRobotAuthentication,
 } from '../cn-core/decorators/cn-lab-guard.decorator';
+import { CnCoreConfigService } from '../cn-core/modules/cn-core-config/cn-core-config.service';
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
 import {
   CnExternalLabSyncedObjectDTO,
@@ -80,7 +81,8 @@ export class CnExternalLabsController {
     private scenarioAggregateService: CnScenarioAggregateService,
     private noteAggregateService: CnNoteAggregateService,
     private labMailService: CnLabMailService,
-    private labNotificationService: CnLabNotificationService
+    private labNotificationService: CnLabNotificationService,
+    private configService: CnCoreConfigService
   ) {}
 
   // route called on the lab start
@@ -332,9 +334,7 @@ export class CnExternalLabsController {
   // Public route that return the new list of modifications after a rich text content modification
   @BlPublic()
   @Post('rich-text/compare')
-  async compareRichTexts(
-    @Body() body: CnRichTextCompareRequestDTO
-  ): Promise<TeRichTextBlockModificationsDTO> {
+  compareRichTexts(@Body() body: CnRichTextCompareRequestDTO): TeRichTextBlockModificationsDTO {
     return TeRichTextHelper.compareRichTexts(
       body.oldContent,
       body.newContent,
@@ -346,7 +346,7 @@ export class CnExternalLabsController {
   // Public route that return the new content after an undo operation based on modifications
   @BlPublic()
   @Post('rich-text/previous-version')
-  async getRichTextPreviousVersion(@Body() body: CnRichTextUndoRequestDTO): Promise<TeRichTextDTO> {
+  getRichTextPreviousVersion(@Body() body: CnRichTextUndoRequestDTO): TeRichTextDTO {
     return TeRichTextHelper.getRichTextPreviousVersion(body.content, body.modifications, body.modificationId);
   }
 
@@ -370,5 +370,12 @@ export class CnExternalLabsController {
   @Post('send-notification')
   sendNotification(@Body() notification: CnLabNotificationCreateDTO): Promise<void> {
     return this.labNotificationService.sendNotificationFromCurrentLab(notification);
+  }
+
+  @CnLabAllowDev()
+  @CnLabRobotAuthentication()
+  @Get('reflex-access-token')
+  getReflexAccessToken(): { reflexAccessToken: string } {
+    return { reflexAccessToken: this.configService.getReflexAccessToken() };
   }
 }
