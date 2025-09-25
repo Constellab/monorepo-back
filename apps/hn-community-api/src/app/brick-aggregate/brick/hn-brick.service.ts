@@ -9,6 +9,7 @@ import {
   BlObjectStorageService,
   BlSearchBuilder,
   BlSearchParams,
+  BlSearchSortCriteria,
   BlUnauthorizedException,
 } from '@monorepo/back-core-lib';
 import { ClPage, ClStringHelper } from '@monorepo/core-lib';
@@ -20,7 +21,7 @@ import { FindOptionsWhere, Repository } from 'typeorm';
 import { HnCoreConfigService } from '../../core/modules/core-config/hn-core-config.service';
 import { HnCurrentUserHelper } from '../../core/utils/hn-current-user.helper';
 import { HnBrickDto, HnEditBrickDTO } from './hn-brick.dto';
-import { HnBrick } from './hn-brick.entity';
+import { HnBrick, HnBrickVisibility } from './hn-brick.entity';
 
 @Injectable()
 export class HnBrickService extends BlAbstractService<HnBrick> {
@@ -46,15 +47,26 @@ export class HnBrickService extends BlAbstractService<HnBrick> {
 
   async findBrickList(
     whereConditions: FindOptionsWhere<HnBrick>[] | FindOptionsWhere<HnBrick>,
+    sortsCriteria: BlSearchSortCriteria[],
     page: number,
     size: number
   ): Promise<ClPage<HnBrickDto>> {
+    const order: any = {};
+    for (const sortCriteria of sortsCriteria) {
+      if (sortCriteria.key === 'title') {
+        order['name'] = sortCriteria.direction;
+      } else {
+        order[sortCriteria.key] = sortCriteria.direction;
+      }
+    }
+
     return (
       await BlAbstractPaginatedService.findPaginatedStatic(
         page,
         size,
         {
           where: whereConditions,
+          order: order,
         },
         this.bricksRepository.manager,
         HnBrick
@@ -125,7 +137,7 @@ export class HnBrickService extends BlAbstractService<HnBrick> {
     brick.gitRepo = editedBrick.gitRepo;
     brick.pipRepo = editedBrick.pipRepo;
     brick.visibility = editedBrick.visibility;
-    if (brick.visibility == 'public') {
+    if (brick.visibility == HnBrickVisibility.PUBLIC) {
       brick.space = null;
     } else {
       brick.space = editedBrick.space;

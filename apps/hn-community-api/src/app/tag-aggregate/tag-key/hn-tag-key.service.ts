@@ -1,4 +1,8 @@
-import { BlAbstractPaginatedService, BlUnauthorizedException } from '@monorepo/back-core-lib';
+import {
+  BlAbstractPaginatedService,
+  BlSearchSortCriteria,
+  BlUnauthorizedException,
+} from '@monorepo/back-core-lib';
 import { ClDateHelper, ClPage } from '@monorepo/core-lib';
 import { TeRichTextDTO } from '@monorepo/te-text-editor';
 import { Injectable } from '@nestjs/common';
@@ -103,6 +107,7 @@ export class HnTagKeyService {
    * @param publicSelected
    * @param myTagKeysSelected
    * @param personalOnly
+   * @param sortsCriteria
    * @param page
    * @param size
    * @param user
@@ -116,6 +121,7 @@ export class HnTagKeyService {
     publicSelected: boolean,
     myTagKeysSelected: boolean,
     personalOnly: boolean,
+    sortsCriteria: BlSearchSortCriteria[],
     page: number,
     size: number,
     user: HnUser = null,
@@ -134,12 +140,21 @@ export class HnTagKeyService {
       coAuthorTagKeysIds
     );
 
+    const order: any = { deprecated: 'ASC' };
+    for (const sortCriteria of sortsCriteria) {
+      if (sortCriteria.key === 'title') {
+        order['label'] = sortCriteria.direction;
+      } else {
+        order[sortCriteria.key] = sortCriteria.direction;
+      }
+    }
+
     return BlAbstractPaginatedService.findPaginatedStatic(
       page,
       size,
       {
         where: where,
-        order: { deprecated: 'ASC' as any, createdAt: 'DESC' as any },
+        order: order,
       },
       this.tagKeyRepository.manager,
       HnTagKey

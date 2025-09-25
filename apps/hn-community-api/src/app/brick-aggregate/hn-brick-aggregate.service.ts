@@ -4,6 +4,7 @@ import {
   BlFileResponse,
   BlNotFoundException,
   BlSearchParams,
+  BlSearchSortCriteria,
   BlUnauthorizedException,
   BlVersion,
 } from '@monorepo/back-core-lib';
@@ -104,6 +105,7 @@ export class HnBrickAggregateService {
   async findBricksWithFilter(
     spacesFilter: string[],
     titleFilter: string,
+    sortsCriteria: BlSearchSortCriteria[],
     page: number,
     size: number,
     userId: string = null
@@ -136,7 +138,7 @@ export class HnBrickAggregateService {
     const whereConditions: FindOptionsWhere<HnBrick>[] | FindOptionsWhere<HnBrick> = myBricks
       ? await this.getMyBricksWhereBrickConditions(publicSelected, spacesFilter, user)
       : await this.getUserBasedWhereBrickConditions(publicSelected, {
-          spacesFilter: spacesFilter,
+        spacesFilter: spacesFilter,
           user: user,
         });
 
@@ -149,7 +151,7 @@ export class HnBrickAggregateService {
       }
     }
 
-    return this.brickService.findBrickList(whereConditions, page, size);
+    return this.brickService.findBrickList(whereConditions, sortsCriteria, page, size);
   }
 
   async findUserBricksWithCommonSpaces(
@@ -195,7 +197,7 @@ export class HnBrickAggregateService {
       space: IsNull(),
     });
 
-    return this.brickService.findBrickList(whereConditions, page, size);
+    return this.brickService.findBrickList(whereConditions, [], page, size);
   }
 
   async findUserBricks(userId: string, page: number, size: number): Promise<ClPage<HnBrickDto>> {

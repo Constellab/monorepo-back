@@ -1,3 +1,4 @@
+import { BlSearchSortCriteria } from '@monorepo/back-core-lib';
 import { ClPage } from '@monorepo/core-lib';
 import { TeRichTextDTO } from '@monorepo/te-text-editor';
 import { Injectable } from '@nestjs/common';
@@ -44,6 +45,7 @@ export class HnTagAggregateService {
       spacesFilter,
       technicalNameFilter,
       labelFilter,
+      [],
       page,
       size,
       currentUser,
@@ -55,6 +57,7 @@ export class HnTagAggregateService {
     spacesFilter: string[],
     technicalNameFilter: string,
     labelFilter: string,
+    sortsCriteria: BlSearchSortCriteria[],
     page: number,
     size: number,
     user: HnUser = null,
@@ -95,6 +98,7 @@ export class HnTagAggregateService {
       publicSelected,
       myTagKeysSelected,
       personalOnly,
+      sortsCriteria,
       page,
       size,
       user,

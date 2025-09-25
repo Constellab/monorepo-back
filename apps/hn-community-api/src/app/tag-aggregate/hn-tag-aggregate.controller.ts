@@ -1,4 +1,4 @@
-import { BlParsePipe, BlPublic } from '@monorepo/back-core-lib';
+import { BlParsePipe, BlPublic, BlSearchSortCriteria } from '@monorepo/back-core-lib';
 import { ClPage } from '@monorepo/core-lib';
 import { TeRichTextDTO } from '@monorepo/te-text-editor';
 import {
@@ -33,6 +33,7 @@ export class HnTagAggregateController {
       ['public'],
       '',
       '',
+      [],
       page,
       size
     );
@@ -67,6 +68,7 @@ export class HnTagAggregateController {
       [],
       '',
       '',
+      [],
       page,
       size
     );
@@ -79,6 +81,7 @@ export class HnTagAggregateController {
     @Body('technicalNameFilter') technicalNameFilter: string,
     @Body('spacesFilter') spacesFilter: string[],
     @Body('labelFilter') labelFilter: string,
+    @Body('sorts') sortsCriteria: BlSearchSortCriteria[],
     @Query('page', new ParseIntPipe()) page: number,
     @Query('size', new ParseIntPipe()) size: number
   ): Promise<ClPage<HnTagKeyDto>> {
@@ -86,6 +89,7 @@ export class HnTagAggregateController {
       spacesFilter,
       technicalNameFilter,
       labelFilter,
+      sortsCriteria,
       page,
       size
     );

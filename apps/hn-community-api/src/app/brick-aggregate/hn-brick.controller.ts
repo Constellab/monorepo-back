@@ -5,6 +5,7 @@ import {
   BlPublic,
   BlResponseHelper,
   BlSearchParams,
+  BlSearchSortCriteria,
   BlUnauthorizedException,
   BlUploadedFile,
 } from '@monorepo/back-core-lib';
@@ -143,10 +144,17 @@ export class HnBrickController {
   async getBricksByFilter(
     @Body('spacesFilter') spacesFilter: string[],
     @Body('titleFilter') titleFilter: string,
+    @Body('sorts') sortsCriteria: BlSearchSortCriteria[],
     @Query('page', new ParseIntPipe()) page: number,
     @Query('size', new ParseIntPipe()) size: number
   ): Promise<ClPage<HnBrickDto>> {
-    return this.brickAggregateService.findBricksWithFilter(spacesFilter, titleFilter, page, size);
+    return this.brickAggregateService.findBricksWithFilter(
+      spacesFilter,
+      titleFilter,
+      sortsCriteria,
+      page,
+      size
+    );
   }
 
   /**
@@ -180,7 +188,7 @@ export class HnBrickController {
     if (spaceApiKey == null || this.configService.getSpaceApiKey() !== spaceApiKey) {
       throw new BlUnauthorizedException();
     }
-    return this.brickAggregateService.findBricksWithFilter(spacesFilter, titleFilter, page, size, userId);
+    return this.brickAggregateService.findBricksWithFilter(spacesFilter, titleFilter, [], page, size, userId);
   }
 
   @BlPublic()
