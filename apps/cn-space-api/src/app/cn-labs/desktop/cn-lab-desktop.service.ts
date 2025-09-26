@@ -71,9 +71,13 @@ export class CnLabDesktopService {
       .map(([volume, path]) => ` -v ${volume}:${path}`)
       .join(' ');
 
+    // network usage in the run command
+    const networksUsage = CnLabDesktopService.NETWORKS.map((network) => ` --network ${network}`).join('');
+
     // command to start the container
     return (
       `docker run -d --name ${CnLabDesktopService.CONTAINER_NAME}` +
+      networksUsage +
       ` -e ENVIRONMENT_PROFILE=desktop` +
       ` -e LAB_MANAGER_API_KEY=${lab.labManagerApiKey}` +
       ` -e LAB_NAME=${lab.name}` +
