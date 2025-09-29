@@ -1,4 +1,3 @@
-import { ClStringHelper } from '@monorepo/core-lib';
 import { TeRichTextDTO } from '@monorepo/te-text-editor';
 import { Column, Entity, Index, ManyToOne, OneToMany } from 'typeorm';
 
@@ -46,14 +45,6 @@ export class HnCommunityAppEntity extends HnBaseEntity {
     onDelete: 'CASCADE',
   })
   communityAppCoAuthors: HnCommunityAppCoAuthor[];
-
-  static isValidAppUrl(appUrl: string): boolean {
-    if (!ClStringHelper.isHttpLink(appUrl)) return false;
-
-    const urlWithoutHttp: string = appUrl.replace('http://', '').replace('https://', '');
-    const urlFragment: string[] = urlWithoutHttp.split('/');
-    return urlFragment.length > 0 && urlFragment[0].split('?')[0].endsWith('.constellab.app');
-  }
 }
 
 export type HnCommunityApp = Omit<HnCommunityAppEntity, 'appFiles' | 'appUsers'>;

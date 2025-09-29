@@ -7,7 +7,7 @@ import {
   BlSearchSortCriteria,
   BlUnauthorizedException,
 } from '@monorepo/back-core-lib';
-import { ClPage } from '@monorepo/core-lib';
+import { ClPage, ClStringHelper } from '@monorepo/core-lib';
 import {
   TeBlockFigureUploadedResponse,
   TeBlockFileUploadResponse,
@@ -18,6 +18,7 @@ import { DataSource, FindOptionsWhere, In, IsNull, Like } from 'typeorm';
 
 import { HnInviteStatus } from '../core/model/config/hn-invite-status.enum';
 import { HnSiteMapEnumChangefreq, HnSitemapItemBase } from '../core/model/config/hn-site-map.class';
+import { HnCoreConfigService } from '../core/modules/core-config/hn-core-config.service';
 import { HnFrontService } from '../core/service/hn-front.service';
 import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
 import { HnFileAppService } from '../file-aggregate/file-app/hn-file-app.service';
@@ -26,7 +27,7 @@ import { HnSpace } from '../space-aggregate/space/hn-space.entity';
 import { HnUser } from '../users/hn-user.entity';
 import { HnUserService } from '../users/hn-user.service';
 import { HnCommunityAppEditDto } from './community-app/hn-community-app.dto';
-import { HnCommunityApp, HnCommunityAppEntity } from './community-app/hn-community-app.entity';
+import { HnCommunityApp } from './community-app/hn-community-app.entity';
 import { HnCommunityAppService } from './community-app/hn-community-app.service';
 import { HnCommunityAppCoAuthor } from './community-app-co-author/hn-community-app-co-author.entity';
 import { HnCommunityAppCoAuthorService } from './community-app-co-author/hn-community-app-co-author.service';
@@ -48,6 +49,7 @@ export class HnCommunityAppAggregateService {
     private readonly frontService: HnFrontService,
     private readonly userService: HnUserService,
     private readonly communityAppCoAuthorService: HnCommunityAppCoAuthorService,
+    private readonly coreConfigService: HnCoreConfigService,
     private dataSource: DataSource
   ) {}
 
@@ -195,7 +197,7 @@ export class HnCommunityAppAggregateService {
   }
 
   async create(dto: HnCommunityAppEditDto): Promise<HnCommunityApp> {
-    if (!HnCommunityAppEntity.isValidAppUrl(dto.appUrl)) throw new BlBadRequestException('Invalid app url');
+    this.checkCommunityAppUrl(dto.appUrl);
 
     let space: HnSpace = null;
     if (dto.spaceId) {
@@ -207,7 +209,7 @@ export class HnCommunityAppAggregateService {
 
   async update(dto: HnCommunityAppEditDto): Promise<HnCommunityApp> {
     if (dto.id == null) throw new BlBadRequestException('Id is required');
-    if (!HnCommunityAppEntity.isValidAppUrl(dto.appUrl)) throw new BlBadRequestException('Invalid app url');
+    this.checkCommunityAppUrl(dto.appUrl);
     let space: HnSpace = null;
     if (dto.spaceId) {
       await this.spaceAggregateService.checkIfSpaceExists(dto.spaceId);
@@ -401,6 +403,31 @@ export class HnCommunityAppAggregateService {
     }
 
     return whereConditions;
+  }
+
+  private checkCommunityAppUrl(appUrl: string): void {
+    if (!ClStringHelper.isHttpLink(appUrl))
+      throw new Error('The app url must be a valid URL starting with http:// or https://');
+
+    const urlWithoutHttp: string = appUrl.replace('http://', '').replace('https://', '');
+    const urlFragment: string[] = urlWithoutHttp.split('/');
+    if (urlFragment.length <= 0) throw new Error('The app url is not valid');
+
+    const domain = urlFragment[0].split('?')[0];
+
+    if (this.coreConfigService.isProduction()) {
+      if (!domain.endsWith('.constellab.app')) {
+        throw new Error(
+          "The app url must be a valid Constellab app url, the domain must end with '.constellab.app'"
+        );
+      }
+    } else {
+      if (!domain.endsWith('.gencovery.io')) {
+        throw new Error(
+          "The app url must be a valid Constellab app url, the domain must end with '.gencovery.io'"
+        );
+      }
+    }
   }
 
   ////////////////////////////////////// CO AUTHORS /////////////////////////////////
