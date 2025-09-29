@@ -24,10 +24,11 @@ import { Response } from 'express';
 
 import {
   CnLabManagerAdminerInfo,
+  CnLabManagerComposeList,
   CnLabManagerComposeUpOptions,
   CnLabManagerContainerSize,
+  CnLabManagerDockerInspect,
   CnLabManagerDockerLogs,
-  CnLabManagerDockerPs,
   CnLabManagerDockerPsFull,
   CnLabManagerErrorLogs,
   CnLabManagerRestoreBackupConfigDTO,
@@ -353,6 +354,8 @@ export class CnLabsController {
 
   //////////////////////////// LAB MANAGER ////////////////////////////////
 
+  /////////////////////////// LAB MANAGER - STATUS & HEALTH ///////////////////////////
+
   /**
    * Route to update the docker image of the lab manager
    */
@@ -374,10 +377,139 @@ export class CnLabsController {
     return this.aggregateService.getStartingError(id);
   }
 
-  @Get(':id/lab-manager/containers')
-  async listContainers(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabManagerDockerPs[]> {
-    return await this.aggregateService.listContainers(id);
+  @Get('lab-manager/recommended-version')
+  getLabManagerRecommendedVersion(): { labManagerRecommendedVersion: string } {
+    return {
+      labManagerRecommendedVersion: this.aggregateService.getLabManagerRecommendedVersion(),
+    };
   }
+
+  @Post(':id/lab-manager/stop-current-task')
+  public stopCurrentTask(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
+    return this.aggregateService.stopCurrentTask(id);
+  }
+
+  /////////////////////////// LAB MANAGER - INITIALIZATION ///////////////////////////
+
+  @Post(':id/lab-manager/init-all')
+  async initAll(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
+    return await this.aggregateService.initAll(id);
+  }
+
+  @Post(':id/lab-manager/configure-lab-manager')
+  async configureLabManager(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
+    return await this.aggregateService.configureLabManager(id);
+  }
+
+  @Post(':id/lab-manager/pull-biota-db')
+  async pullBiotaDb(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() options: CnManagerLabPullBiotaOptions
+  ): Promise<void> {
+    return this.aggregateService.pullBiota(id, options);
+  }
+
+  /////////////////////////// LAB MANAGER - CONFIGURATION ///////////////////////////
+
+  @Get(':id/lab-manager/config')
+  async getConfig(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabConfigDTO> {
+    return await this.aggregateService.getLabManagerConfig(id);
+  }
+
+  /////////////////////////// LAB MANAGER - DOCKER COMPOSE  ///////////////////////////
+
+  @Get(':id/lab-manager/docker-compose/list')
+  listAllComposes(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabManagerComposeList> {
+    return this.aggregateService.getAllComposes(id);
+  }
+
+  @Get(':id/lab-manager/docker-compose/:brickName/:uniqueName/services')
+  listServices(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('brickName') brickName: string,
+    @Param('uniqueName') uniqueName: string
+  ): Promise<CnLabManagerDockerInspect[]> {
+    return this.aggregateService.listServices(id, brickName, uniqueName);
+  }
+
+  @Put(':id/lab-manager/docker-compose/:brickName/:uniqueName/services/:serviceName/start')
+  startComposeService(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('brickName') brickName: string,
+    @Param('uniqueName') uniqueName: string,
+    @Param('serviceName') serviceName: string
+  ): Promise<void> {
+    return this.aggregateService.startComposeService(id, brickName, uniqueName, [serviceName]);
+  }
+
+  @Post(':id/lab-manager/docker-compose/:brickName/:uniqueName/up-services')
+  async upServices(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('brickName') brickName: string,
+    @Param('uniqueName') uniqueName: string,
+    @Body() options: CnLabManagerComposeUpOptions
+  ): Promise<void> {
+    return await this.aggregateService.upServices(id, brickName, uniqueName, options);
+  }
+
+  @Post(':id/lab-manager/docker-compose/:brickName/:uniqueName/restart-services')
+  restartServices(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('brickName') brickName: string,
+    @Param('uniqueName') uniqueName: string,
+    @Body() options: CnManagerLabComposeRestartOptions
+  ): Promise<void> {
+    return this.aggregateService.restartServices(id, brickName, uniqueName, options);
+  }
+
+  @Post(':id/lab-manager/docker-compose/:brickName/:uniqueName/stop-services')
+  stopServices(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('brickName') brickName: string,
+    @Param('uniqueName') uniqueName: string
+  ): Promise<void> {
+    return this.aggregateService.stopServices(id, brickName, uniqueName);
+  }
+
+  @Post(':id/lab-manager/docker-compose/:brickName/:uniqueName/delete-services')
+  deleteServices(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('brickName') brickName: string,
+    @Param('uniqueName') uniqueName: string
+  ): Promise<void> {
+    return this.aggregateService.deleteServices(id, brickName, uniqueName);
+  }
+
+  @Post(':id/lab-manager/docker-compose/:brickName/:uniqueName/pull-services')
+  pullServices(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('brickName') brickName: string,
+    @Param('uniqueName') uniqueName: string
+  ): Promise<void> {
+    return this.aggregateService.pullServices(id, brickName, uniqueName);
+  }
+
+  @Get(':id/lab-manager/docker-compose/:brickName/:uniqueName/content')
+  getComposeContent(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('brickName') brickName: string,
+    @Param('uniqueName') uniqueName: string
+  ): Promise<{ content: string }> {
+    return this.aggregateService
+      .getComposeContent(id, brickName, uniqueName)
+      .then((content) => ({ content }));
+  }
+
+  @Delete(':id/lab-manager/sub-compose/:brickName/:uniqueName/unregister')
+  unregisterSubCompose(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('brickName') brickName: string,
+    @Param('uniqueName') uniqueName: string
+  ): Promise<void> {
+    return this.aggregateService.unregisterSubCompose(id, brickName, uniqueName);
+  }
+
+  /////////////////////////// LAB MANAGER - CONTAINERS ///////////////////////////
 
   @Get(':id/lab-manager/containers/:containerName')
   async getContainerDetails(
@@ -393,14 +525,6 @@ export class CnLabsController {
     @Param('containerName') containerName: string
   ): Promise<CnLabManagerContainerSize> {
     return await this.aggregateService.getContainerSize(id, containerName);
-  }
-
-  @Put(':id/lab-manager/containers/:serviceName/start')
-  async startContainer(
-    @Param('id', new ParseUUIDPipe()) id: string,
-    @Param('serviceName') serviceName: string
-  ): Promise<void> {
-    return await this.aggregateService.startComposeContainer(id, serviceName);
   }
 
   @Put(':id/lab-manager/containers/:containerName/stop')
@@ -444,69 +568,12 @@ export class CnLabsController {
     return BlResponseHelper.streamableFileFromString(fileContent);
   }
 
-  @Post(':id/lab-manager/init-all')
-  async initAll(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
-    return await this.aggregateService.initAll(id);
-  }
-
-  @Post(':id/lab-manager/configure-lab-manager')
-  async configureLabManager(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
-    return await this.aggregateService.configureLabManager(id);
-  }
-
-  @Post(':id/lab-manager/up-containers')
-  async upContainers(
-    @Param('id', new ParseUUIDPipe()) id: string,
-    @Body() options: CnLabManagerComposeUpOptions
-  ): Promise<void> {
-    return await this.aggregateService.upContainers(id, options);
-  }
-
-  @Post(':id/lab-manager/restart-containers')
-  async restartContainers(
-    @Param('id', new ParseUUIDPipe()) id: string,
-    @Body() options: CnManagerLabComposeRestartOptions
-  ): Promise<void> {
-    return await this.aggregateService.restartContainers(id, options);
-  }
-
-  @Post(':id/lab-manager/stop-containers')
-  async stopContainers(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
-    return await this.aggregateService.stopContainers(id);
-  }
-
-  @Post(':id/lab-manager/delete-containers')
-  async downContainers(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
-    return await this.aggregateService.deleteContainers(id);
-  }
-
-  @Post(':id/lab-manager/pull-containers')
-  async pullContainers(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
-    return await this.aggregateService.pullContainers(id);
-  }
-
-  @Post(':id/lab-manager/pull-biota-db')
-  async pullBiotaDb(
-    @Param('id', new ParseUUIDPipe()) id: string,
-    @Body() options: CnManagerLabPullBiotaOptions
-  ): Promise<void> {
-    return this.aggregateService.pullBiota(id, options);
-  }
-
-  @Post(':id/lab-manager/stop-current-task')
-  public stopCurrentTask(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
-    return this.aggregateService.stopCurrentTask(id);
-  }
-
   @Post(':id/lab-manager/system-prune')
   public systemPrune(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
     return this.aggregateService.systemPrune(id);
   }
 
-  @Get(':id/lab-manager/config')
-  async getConfig(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabConfigDTO> {
-    return await this.aggregateService.getLabManagerConfig(id);
-  }
+  /////////////////////////// LAB MANAGER - ADMINER ///////////////////////////
 
   @Put(':id/lab-manager/adminer/start')
   async startAdminer(@Param('id', new ParseUUIDPipe()) id: string): Promise<boolean> {
@@ -521,13 +588,6 @@ export class CnLabsController {
   @Get(':id/lab-manager/adminer/info')
   async getAdminerInfo(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabManagerAdminerInfo> {
     return await this.aggregateService.getAdminerInfo(id);
-  }
-
-  @Get('lab-manager/recommended-version')
-  getLabManagerRecommendedVersion(): { labManagerRecommendedVersion: string } {
-    return {
-      labManagerRecommendedVersion: this.aggregateService.getLabManagerRecommendedVersion(),
-    };
   }
 
   //////////////////////////// BACKUP ////////////////////////////////

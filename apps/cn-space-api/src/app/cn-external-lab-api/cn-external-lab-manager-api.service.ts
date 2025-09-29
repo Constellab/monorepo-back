@@ -18,8 +18,10 @@ import { CnLabBackupsHistory } from '../cn-labs/backup/cn-lab-backup.dto';
 import {
   CnLabManagerAdminerInfo,
   CnLabManagerBackupInfoDTO,
+  CnLabManagerComposeList,
   CnLabManagerComposeUpOptions,
   CnLabManagerContainerSize,
+  CnLabManagerDockerInspect,
   CnLabManagerDockerLogs,
   CnLabManagerDockerPsFull,
   CnLabManagerErrorLogs,
@@ -36,6 +38,9 @@ import {
 @Injectable()
 export class CnExternalLabManagerApiService {
   private baseLabRoute: string = 'lab';
+  private baseDockerComposeRoute: string = 'docker-compose';
+  private baseContainersRoute: string = 'docker-containers';
+  private baseAdminerRoute: string = 'adminer';
   private baseBackupRoute: string = 'backup';
 
   private logger = new Logger(CnExternalLabManagerApiService.name);
@@ -53,6 +58,8 @@ export class CnExternalLabManagerApiService {
       .catch(() => false);
   }
 
+  ////////////////////////////////////////// LAB //////////////////////////////////////////
+
   public async getStatus(apiInfo: CnExternalApiInfo): Promise<CnLabManagerStatus> {
     return lastValueFrom(this.get(apiInfo, `${this.baseLabRoute}/status`));
   }
@@ -61,53 +68,8 @@ export class CnExternalLabManagerApiService {
     return lastValueFrom(this.get(apiInfo, `${this.baseLabRoute}/starting/error`));
   }
 
-  public async listContainers(apiInfo: CnExternalApiInfo): Promise<CnLabManagerDockerPsFull[]> {
-    return lastValueFrom(this.get(apiInfo, `${this.baseLabRoute}/containers`));
-  }
-
-  public async getContainerDetails(
-    apiInfo: CnExternalApiInfo,
-    containerName: string
-  ): Promise<CnLabManagerDockerPsFull> {
-    return lastValueFrom(this.get(apiInfo, `${this.baseLabRoute}/containers/${containerName}`));
-  }
-
-  public async getContainerSize(
-    apiInfo: CnExternalApiInfo,
-    containerName: string
-  ): Promise<CnLabManagerContainerSize> {
-    return lastValueFrom(this.get(apiInfo, `${this.baseLabRoute}/containers/${containerName}/size`));
-  }
-
-  public async startComposeContainer(apiInfo: CnExternalApiInfo, serviceName: string): Promise<void> {
-    return lastValueFrom(this.put(apiInfo, `${this.baseLabRoute}/containers/${serviceName}/start`, null));
-  }
-
-  public async stopContainer(apiInfo: CnExternalApiInfo, containerName: string): Promise<boolean> {
-    return lastValueFrom(this.put(apiInfo, `${this.baseLabRoute}/containers/${containerName}/stop`, null));
-  }
-
-  public async deleteContainer(apiInfo: CnExternalApiInfo, containerName: string): Promise<boolean> {
-    return lastValueFrom(this.put(apiInfo, `${this.baseLabRoute}/containers/${containerName}/delete`, null));
-  }
-
-  public async getLogs(apiInfo: CnExternalApiInfo, containerName: string): Promise<CnLabManagerDockerLogs> {
-    return lastValueFrom(this.get(apiInfo, `${this.baseLabRoute}/containers/${containerName}/logs`));
-  }
-
-  public async getErrorLogs(
-    apiInfo: CnExternalApiInfo,
-    containerName: string
-  ): Promise<CnLabManagerDockerLogs> {
-    return lastValueFrom(this.get(apiInfo, `${this.baseLabRoute}/containers/${containerName}/logs/error`));
-  }
-
-  public async exportLogs(apiInfo: CnExternalApiInfo, containerName: string): Promise<string> {
-    return lastValueFrom(
-      this.get(apiInfo, `${this.baseLabRoute}/containers/${containerName}/logs/export`, null, {
-        timeout: 20000,
-      })
-    );
+  public async stopCurrentTask(apiInfo: CnExternalApiInfo): Promise<void> {
+    return lastValueFrom(this.post(apiInfo, `${this.baseLabRoute}/stop-current-task`, null));
   }
 
   public async initAll(apiInfo: CnExternalApiInfo, initConfig: CnLabManagerInitConfig): Promise<void> {
@@ -121,42 +83,8 @@ export class CnExternalLabManagerApiService {
     return lastValueFrom(this.post(apiInfo, `${this.baseLabRoute}/configure-lab-manager`, initConfig));
   }
 
-  public async upContainers(
-    apiInfo: CnExternalApiInfo,
-    options?: CnLabManagerComposeUpOptions
-  ): Promise<void> {
-    return lastValueFrom(this.post(apiInfo, `${this.baseLabRoute}/up-containers`, options));
-  }
-
-  public async restartContainers(
-    apiInfo: CnExternalApiInfo,
-    options?: CnManagerLabComposeRestartOptions
-  ): Promise<void> {
-    return lastValueFrom(this.post(apiInfo, `${this.baseLabRoute}/restart-containers`, options));
-  }
-
-  public async stopContainers(apiInfo: CnExternalApiInfo): Promise<void> {
-    return lastValueFrom(this.post(apiInfo, `${this.baseLabRoute}/stop-containers`, null));
-  }
-
-  public async deleteContainers(apiInfo: CnExternalApiInfo): Promise<void> {
-    return lastValueFrom(this.post(apiInfo, `${this.baseLabRoute}/delete-containers`, null));
-  }
-
-  public async pullContainers(apiInfo: CnExternalApiInfo): Promise<void> {
-    return lastValueFrom(this.post(apiInfo, `${this.baseLabRoute}/pull-containers`, null));
-  }
-
   public async pullBiota(apiInfo: CnExternalApiInfo, options: CnManagerLabPullBiotaOptions): Promise<void> {
     return lastValueFrom(this.post(apiInfo, `${this.baseLabRoute}/pull-biota-db`, options));
-  }
-
-  public async stopCurrentTask(apiInfo: CnExternalApiInfo): Promise<void> {
-    return lastValueFrom(this.post(apiInfo, `${this.baseLabRoute}/stop-current-task`, null));
-  }
-
-  public async systemPrune(apiInfo: CnExternalApiInfo): Promise<void> {
-    return lastValueFrom(this.post(apiInfo, `${this.baseLabRoute}/system-prune`, null));
   }
 
   public async updateConfig(apiInfo: CnExternalApiInfo, config: CnLabConfigFile): Promise<void> {
@@ -167,16 +95,170 @@ export class CnExternalLabManagerApiService {
     return lastValueFrom(this.get(apiInfo, `${this.baseLabRoute}/config`));
   }
 
+  ////////////////////////////////////////// DOCKER COMPOSE //////////////////////////////////////////
+
+  public async getAllComposes(apiInfo: CnExternalApiInfo): Promise<CnLabManagerComposeList> {
+    return lastValueFrom(this.get(apiInfo, `${this.baseDockerComposeRoute}/list`));
+  }
+
+  public async listServices(
+    apiInfo: CnExternalApiInfo,
+    brickName: string,
+    uniqueName: string
+  ): Promise<CnLabManagerDockerInspect[]> {
+    return lastValueFrom(
+      this.get(apiInfo, `${this.baseDockerComposeRoute}/${brickName}/${uniqueName}/services`)
+    );
+  }
+
+  public async upServices(
+    apiInfo: CnExternalApiInfo,
+    brickName: string,
+    uniqueName: string,
+    serviceNames: string[]
+  ): Promise<void> {
+    return lastValueFrom(
+      this.put(
+        apiInfo,
+        `${this.baseDockerComposeRoute}/${brickName}/${uniqueName}/services/${serviceNames[0]}/start`,
+        null
+      )
+    );
+  }
+
+  public async upAllServices(
+    apiInfo: CnExternalApiInfo,
+    brickName: string,
+    uniqueName: string,
+    options: CnLabManagerComposeUpOptions
+  ): Promise<void> {
+    return lastValueFrom(
+      this.post(apiInfo, `${this.baseDockerComposeRoute}/${brickName}/${uniqueName}/up-services`, options)
+    );
+  }
+
+  public async restartServices(
+    apiInfo: CnExternalApiInfo,
+    brickName: string,
+    uniqueName: string,
+    options: CnManagerLabComposeRestartOptions
+  ): Promise<void> {
+    return lastValueFrom(
+      this.post(
+        apiInfo,
+        `${this.baseDockerComposeRoute}/${brickName}/${uniqueName}/restart-services`,
+        options
+      )
+    );
+  }
+
+  public async stopServices(
+    apiInfo: CnExternalApiInfo,
+    brickName: string,
+    uniqueName: string
+  ): Promise<void> {
+    return lastValueFrom(
+      this.post(apiInfo, `${this.baseDockerComposeRoute}/${brickName}/${uniqueName}/stop-services`, null)
+    );
+  }
+
+  public async deleteServices(
+    apiInfo: CnExternalApiInfo,
+    brickName: string,
+    uniqueName: string
+  ): Promise<void> {
+    return lastValueFrom(
+      this.post(apiInfo, `${this.baseDockerComposeRoute}/${brickName}/${uniqueName}/delete-services`, null)
+    );
+  }
+
+  public async pullServices(
+    apiInfo: CnExternalApiInfo,
+    brickName: string,
+    uniqueName: string
+  ): Promise<void> {
+    return lastValueFrom(
+      this.post(apiInfo, `${this.baseDockerComposeRoute}/${brickName}/${uniqueName}/pull-services`, null)
+    );
+  }
+
+  public async getComposeContent(
+    apiInfo: CnExternalApiInfo,
+    brickName: string,
+    uniqueName: string
+  ): Promise<string> {
+    return lastValueFrom(
+      this.get(apiInfo, `${this.baseDockerComposeRoute}/${brickName}/${uniqueName}/content`)
+    ).then((res) => res.content);
+  }
+
+  public async unregisterSubCompose(
+    apiInfo: CnExternalApiInfo,
+    brickName: string,
+    uniqueName: string
+  ): Promise<void> {
+    return lastValueFrom(
+      this.delete(apiInfo, `${this.baseDockerComposeRoute}/sub-compose/${brickName}/${uniqueName}/unregister`)
+    );
+  }
+
+  ////////////////////////////////////////// CONTAINERS //////////////////////////////////////////
+  public async getContainerDetails(
+    apiInfo: CnExternalApiInfo,
+    containerName: string
+  ): Promise<CnLabManagerDockerPsFull> {
+    return lastValueFrom(this.get(apiInfo, `${this.baseContainersRoute}/${containerName}`));
+  }
+
+  public async getContainerSize(
+    apiInfo: CnExternalApiInfo,
+    containerName: string
+  ): Promise<CnLabManagerContainerSize> {
+    return lastValueFrom(this.get(apiInfo, `${this.baseContainersRoute}/${containerName}/size`));
+  }
+
+  public async stopContainer(apiInfo: CnExternalApiInfo, containerName: string): Promise<boolean> {
+    return lastValueFrom(this.put(apiInfo, `${this.baseContainersRoute}/${containerName}/stop`, null));
+  }
+
+  public async deleteContainer(apiInfo: CnExternalApiInfo, containerName: string): Promise<boolean> {
+    return lastValueFrom(this.put(apiInfo, `${this.baseContainersRoute}/${containerName}/delete`, null));
+  }
+
+  public async getLogs(apiInfo: CnExternalApiInfo, containerName: string): Promise<CnLabManagerDockerLogs> {
+    return lastValueFrom(this.get(apiInfo, `${this.baseContainersRoute}/${containerName}/logs`));
+  }
+
+  public async getErrorLogs(
+    apiInfo: CnExternalApiInfo,
+    containerName: string
+  ): Promise<CnLabManagerDockerLogs> {
+    return lastValueFrom(this.get(apiInfo, `${this.baseContainersRoute}/${containerName}/logs/error`));
+  }
+
+  public async exportLogs(apiInfo: CnExternalApiInfo, containerName: string): Promise<string> {
+    return lastValueFrom(
+      this.get(apiInfo, `${this.baseContainersRoute}/${containerName}/logs/export`, null, {
+        timeout: 20000,
+      })
+    );
+  }
+
+  public async systemPrune(apiInfo: CnExternalApiInfo): Promise<void> {
+    return lastValueFrom(this.post(apiInfo, `${this.baseContainersRoute}/system-prune`, null));
+  }
+  ////////////////////////////////////////// ADMINER //////////////////////////////////////////
+
   public async startAdminer(apiInfo: CnExternalApiInfo): Promise<boolean> {
-    return lastValueFrom(this.put(apiInfo, `${this.baseLabRoute}/adminer/start`, null));
+    return lastValueFrom(this.put(apiInfo, `${this.baseAdminerRoute}/start`, null));
   }
 
   public async stopAdminer(apiInfo: CnExternalApiInfo): Promise<boolean> {
-    return lastValueFrom(this.put(apiInfo, `${this.baseLabRoute}/adminer/stop`, null));
+    return lastValueFrom(this.put(apiInfo, `${this.baseAdminerRoute}/stop`, null));
   }
 
   public async getAdminerInfo(apiInfo: CnExternalApiInfo): Promise<CnLabManagerAdminerInfo> {
-    return lastValueFrom(this.get(apiInfo, `${this.baseLabRoute}/adminer/info`));
+    return lastValueFrom(this.get(apiInfo, `${this.baseAdminerRoute}/info`));
   }
 
   ///////////////////////////////////// BACKUP /////////////////////////////////////
@@ -264,6 +346,24 @@ export class CnExternalLabManagerApiService {
   ): Observable<any> {
     return this.apiService
       .get(
+        this.constructRoute(apiInfo.apiUrl, route),
+        classReference,
+        this.getRequestOptions(apiInfo.apiKey, options)
+      )
+      .pipe(catchError((error) => this.catchError(error)));
+  }
+
+  /**
+   * Make a http DELETE with the ip of the lab and the API key of the lab in header
+   */
+  private delete(
+    apiInfo: CnExternalApiInfo,
+    route: string,
+    classReference?: ClDeserializationRef,
+    options: BlExternalApiHttpOption = {}
+  ): Observable<any> {
+    return this.apiService
+      .delete(
         this.constructRoute(apiInfo.apiUrl, route),
         classReference,
         this.getRequestOptions(apiInfo.apiKey, options)

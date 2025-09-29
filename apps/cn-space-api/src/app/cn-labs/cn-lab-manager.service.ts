@@ -6,10 +6,11 @@ import { CnExternalLabManagerApiService } from '../cn-external-lab-api/cn-extern
 import {
   CnLabManagerAdminerInfo,
   CnLabManagerBackupInfoDTO,
+  CnLabManagerComposeList,
   CnLabManagerComposeUpOptions,
   CnLabManagerContainerSize,
+  CnLabManagerDockerInspect,
   CnLabManagerDockerLogs,
-  CnLabManagerDockerPs,
   CnLabManagerDockerPsFull,
   CnLabManagerErrorLogs,
   CnLabManagerInitConfig,
@@ -37,6 +38,8 @@ export class CnLabManagerService {
     private labConfigService: CnLabConfigsService
   ) {}
 
+  ////////////////////////////////////////// HEALTH & STATUS //////////////////////////////////////////
+
   public async healthCheck(labManagerUrl: string): Promise<boolean> {
     return this.labManagerApiService.healthCheck(labManagerUrl);
   }
@@ -58,41 +61,33 @@ export class CnLabManagerService {
     return this.configService.getLabManagerRecommendedVersion();
   }
 
-  public async listContainers(lab: CnLab): Promise<CnLabManagerDockerPs[]> {
-    return this.labManagerApiService.listContainers(lab.getLabManagerApiInfo());
+  public async waitForHealthCheck(labManagerUrl: string): Promise<void> {
+    // wait for server to reboot
+    let count = 0;
+    while (count < 15) {
+      const result = await this.healthCheck(labManagerUrl);
+      if (result) {
+        return;
+      }
+
+      if (count >= 15) {
+        break;
+      }
+
+      this.logger.log(`Waiting for lab manager ${labManagerUrl} to be available. Attempt ${count + 1} of 15`);
+      // wait 15 seconds
+      await new Promise((r) => setTimeout(r, 15000));
+      count++;
+    }
+
+    throw new BlBadRequestException(`Server is not available for lab manager ${labManagerUrl}`);
   }
 
-  public async getContainerDetails(lab: CnLab, containerName: string): Promise<CnLabManagerDockerPsFull> {
-    return this.labManagerApiService.getContainerDetails(lab.getLabManagerApiInfo(), containerName);
+  public async stopCurrentTask(lab: CnLab): Promise<void> {
+    return this.labManagerApiService.stopCurrentTask(lab.getLabManagerApiInfo());
   }
 
-  public async getContainerSize(lab: CnLab, containerName: string): Promise<CnLabManagerContainerSize> {
-    return this.labManagerApiService.getContainerSize(lab.getLabManagerApiInfo(), containerName);
-  }
-
-  public async startComposeContainer(lab: CnLab, serviceName: string): Promise<void> {
-    return this.labManagerApiService.startComposeContainer(lab.getLabManagerApiInfo(), serviceName);
-  }
-
-  public async stopContainer(lab: CnLab, containerName: string): Promise<boolean> {
-    return this.labManagerApiService.stopContainer(lab.getLabManagerApiInfo(), containerName);
-  }
-
-  public async deleteContainer(lab: CnLab, containerName: string): Promise<boolean> {
-    return this.labManagerApiService.deleteContainer(lab.getLabManagerApiInfo(), containerName);
-  }
-
-  public async getLogs(lab: CnLab, containerName: string): Promise<CnLabManagerDockerLogs> {
-    return this.labManagerApiService.getLogs(lab.getLabManagerApiInfo(), containerName);
-  }
-
-  public async getErrorLogs(lab: CnLab, containerName: string): Promise<CnLabManagerDockerLogs> {
-    return this.labManagerApiService.getErrorLogs(lab.getLabManagerApiInfo(), containerName);
-  }
-
-  public async exportLogs(lab: CnLab, containerName: string): Promise<string> {
-    return this.labManagerApiService.exportLogs(lab.getLabManagerApiInfo(), containerName);
-  }
+  ////////////////////////////////////////// LAB INITIALIZATION //////////////////////////////////////////
 
   public async initAll(lab: CnLab, spaceDomain: string): Promise<void> {
     const initConfig: CnLabManagerInitConfig = this.getLabManagerInitConfig(lab, spaceDomain);
@@ -107,7 +102,6 @@ export class CnLabManagerService {
   public getLabManagerInitConfig(lab: CnLab, spaceDomain: string): CnLabManagerInitConfig {
     return {
       space: {
-        apiKey: lab.glabProdApiKey,
         prodApiKey: lab.glabProdApiKey,
         devApiKey: lab.glabDevApiKey,
         apiUrl: this.configService.getApiUrl(),
@@ -132,49 +126,11 @@ export class CnLabManagerService {
     };
   }
 
-  public async upContainers(lab: CnLab, options?: CnLabManagerComposeUpOptions): Promise<void> {
-    return this.labManagerApiService.upContainers(lab.getLabManagerApiInfo(), options);
-  }
-
-  public async restartContainers(lab: CnLab, options?: CnManagerLabComposeRestartOptions): Promise<void> {
-    return this.labManagerApiService.restartContainers(lab.getLabManagerApiInfo(), options);
-  }
-
-  public async stopContainers(lab: CnLab): Promise<void> {
-    return this.labManagerApiService.stopContainers(lab.getLabManagerApiInfo());
-  }
-
-  public async deleteContainers(lab: CnLab): Promise<void> {
-    return this.labManagerApiService.deleteContainers(lab.getLabManagerApiInfo());
-  }
-
-  public async pullContainers(lab: CnLab): Promise<void> {
-    return this.labManagerApiService.pullContainers(lab.getLabManagerApiInfo());
-  }
-
   public async pullBiota(lab: CnLab, options: CnManagerLabPullBiotaOptions): Promise<void> {
     return this.labManagerApiService.pullBiota(lab.getLabManagerApiInfo(), options);
   }
 
-  public async stopCurrentTask(lab: CnLab): Promise<void> {
-    return this.labManagerApiService.stopCurrentTask(lab.getLabManagerApiInfo());
-  }
-
-  public async systemPrune(lab: CnLab): Promise<void> {
-    return this.labManagerApiService.systemPrune(lab.getLabManagerApiInfo());
-  }
-
-  public async startAdminer(lab: CnLab): Promise<boolean> {
-    return this.labManagerApiService.startAdminer(lab.getLabManagerApiInfo());
-  }
-
-  public async stopAdminer(lab: CnLab): Promise<boolean> {
-    return this.labManagerApiService.stopAdminer(lab.getLabManagerApiInfo());
-  }
-
-  public async getAdminerInfo(lab: CnLab): Promise<CnLabManagerAdminerInfo> {
-    return this.labManagerApiService.getAdminerInfo(lab.getLabManagerApiInfo());
-  }
+  ////////////////////////////////////////// CONFIGURATION //////////////////////////////////////////
 
   public async updateConfig(lab: CnLab, config: CnLabConfigDTO): Promise<void> {
     const configFile: CnLabConfigFile = await this.labConfigService.getLabConfigFile(lab, config);
@@ -188,32 +144,131 @@ export class CnLabManagerService {
     return this.labConfigService.configFileToLabConfig(configFile);
   }
 
-  /**
-   * Call health check on the lab manager until the lab is ready
-   */
-  public async waitForHealthCheck(labManagerUrl: string): Promise<void> {
-    // wait for server to reboot
-    let count = 0;
-    while (count < 15) {
-      const result = await this.healthCheck(labManagerUrl);
-      if (result) {
-        return;
-      }
+  ////////////////////////////////////////// DOCKER COMPOSE //////////////////////////////////////////
 
-      if (count >= 15) {
-        break;
-      }
-
-      this.logger.log(`Waiting for lab manager ${labManagerUrl} to be available. Attempt ${count + 1} of 15`);
-      // wait 15 seconds
-      await new Promise((r) => setTimeout(r, 15000));
-      count++;
-    }
-
-    throw new BlBadRequestException(`Server is not available for lab manager ${labManagerUrl}`);
+  public async getAllComposes(lab: CnLab): Promise<CnLabManagerComposeList> {
+    return this.labManagerApiService.getAllComposes(lab.getLabManagerApiInfo());
   }
 
-  /////////////////////////////////////////////// BACKUP /////////////////////////////////////////////////////
+  public async listServices(
+    lab: CnLab,
+    brickName: string,
+    uniqueName: string
+  ): Promise<CnLabManagerDockerInspect[]> {
+    return this.labManagerApiService.listServices(lab.getLabManagerApiInfo(), brickName, uniqueName);
+  }
+
+  public async startComposeService(
+    lab: CnLab,
+    brickName: string,
+    uniqueName: string,
+    serviceNames: string[]
+  ): Promise<void> {
+    return this.labManagerApiService.upServices(
+      lab.getLabManagerApiInfo(),
+      brickName,
+      uniqueName,
+      serviceNames
+    );
+  }
+
+  public async upServices(
+    lab: CnLab,
+    brickName: string,
+    uniqueName: string,
+    options: CnLabManagerComposeUpOptions
+  ): Promise<void> {
+    return this.labManagerApiService.upAllServices(
+      lab.getLabManagerApiInfo(),
+      brickName,
+      uniqueName,
+      options
+    );
+  }
+
+  public async restartServices(
+    lab: CnLab,
+    brickName: string,
+    uniqueName: string,
+    options: CnManagerLabComposeRestartOptions
+  ): Promise<void> {
+    return this.labManagerApiService.restartServices(
+      lab.getLabManagerApiInfo(),
+      brickName,
+      uniqueName,
+      options
+    );
+  }
+
+  public async stopServices(lab: CnLab, brickName: string, uniqueName: string): Promise<void> {
+    return this.labManagerApiService.stopServices(lab.getLabManagerApiInfo(), brickName, uniqueName);
+  }
+
+  public async deleteServices(lab: CnLab, brickName: string, uniqueName: string): Promise<void> {
+    return this.labManagerApiService.deleteServices(lab.getLabManagerApiInfo(), brickName, uniqueName);
+  }
+
+  public async pullServices(lab: CnLab, brickName: string, uniqueName: string): Promise<void> {
+    return this.labManagerApiService.pullServices(lab.getLabManagerApiInfo(), brickName, uniqueName);
+  }
+
+  public async getComposeContent(lab: CnLab, brickName: string, uniqueName: string): Promise<string> {
+    return this.labManagerApiService.getComposeContent(lab.getLabManagerApiInfo(), brickName, uniqueName);
+  }
+
+  public async unregisterSubCompose(lab: CnLab, brickName: string, uniqueName: string): Promise<void> {
+    return this.labManagerApiService.unregisterSubCompose(lab.getLabManagerApiInfo(), brickName, uniqueName);
+  }
+
+  ////////////////////////////////////////// CONTAINERS //////////////////////////////////////////
+
+  public async getContainerDetails(lab: CnLab, containerName: string): Promise<CnLabManagerDockerPsFull> {
+    return this.labManagerApiService.getContainerDetails(lab.getLabManagerApiInfo(), containerName);
+  }
+
+  public async getContainerSize(lab: CnLab, containerName: string): Promise<CnLabManagerContainerSize> {
+    return this.labManagerApiService.getContainerSize(lab.getLabManagerApiInfo(), containerName);
+  }
+
+  public async stopContainer(lab: CnLab, containerName: string): Promise<boolean> {
+    return this.labManagerApiService.stopContainer(lab.getLabManagerApiInfo(), containerName);
+  }
+
+  public async deleteContainer(lab: CnLab, containerName: string): Promise<boolean> {
+    return this.labManagerApiService.deleteContainer(lab.getLabManagerApiInfo(), containerName);
+  }
+
+  public async getLogs(lab: CnLab, containerName: string): Promise<CnLabManagerDockerLogs> {
+    return this.labManagerApiService.getLogs(lab.getLabManagerApiInfo(), containerName);
+  }
+
+  public async getErrorLogs(lab: CnLab, containerName: string): Promise<CnLabManagerDockerLogs> {
+    return this.labManagerApiService.getErrorLogs(lab.getLabManagerApiInfo(), containerName);
+  }
+
+  public async exportLogs(lab: CnLab, containerName: string): Promise<string> {
+    return this.labManagerApiService.exportLogs(lab.getLabManagerApiInfo(), containerName);
+  }
+
+  public async systemPrune(lab: CnLab): Promise<void> {
+    return this.labManagerApiService.systemPrune(lab.getLabManagerApiInfo());
+  }
+
+  ////////////////////////////////////////// ADMINER //////////////////////////////////////////
+
+  public async startAdminer(lab: CnLab): Promise<boolean> {
+    return this.labManagerApiService.startAdminer(lab.getLabManagerApiInfo());
+  }
+
+  public async stopAdminer(lab: CnLab): Promise<boolean> {
+    return this.labManagerApiService.stopAdminer(lab.getLabManagerApiInfo());
+  }
+
+  public async getAdminerInfo(lab: CnLab): Promise<CnLabManagerAdminerInfo> {
+    return this.labManagerApiService.getAdminerInfo(lab.getLabManagerApiInfo());
+  }
+
+  ////////////////////////////////////////// BACKUP //////////////////////////////////////////
 
   public async createProdBackup(lab: CnLab, backup: CnLabManagerBackupInfoDTO): Promise<CnLabBackupsHistory> {
     return this.labManagerApiService.createProdBackup(lab.getLabManagerApiInfo(), backup);

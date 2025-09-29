@@ -10,6 +10,14 @@ export interface CnLabManagerDockerPs {
   state: 'running' | 'exited';
 }
 
+export interface CnLabManagerDockerInspect {
+  names: string;
+  status: 'running' | 'stopped' | 'error' | 'none';
+  exitCode: number;
+  image: string;
+  startedAt: string;
+}
+
 export interface CnLabManagerDockerPsFull extends CnLabManagerDockerPs {
   command: string;
   createdAt: string;
@@ -22,6 +30,17 @@ export interface CnLabManagerDockerPsFull extends CnLabManagerDockerPs {
   runningFor: string;
   state: 'running' | 'exited';
   status: string;
+}
+
+export interface CnLabManagerComposeInfo {
+  brickName: string;
+  uniqueName: string;
+  composeFilePath: string;
+  description?: string;
+}
+
+export interface CnLabManagerComposeList {
+  composes: CnLabManagerComposeInfo[];
 }
 
 export interface CnLabManagerContainerSize {
@@ -46,8 +65,6 @@ export interface CnManagerLabPullBiotaOptions {
  */
 export interface CnLabManagerInitConfig {
   space: {
-    // TODO To remove on all lab manager are on v 1.13.0
-    apiKey: string;
     prodApiKey: string;
     devApiKey: string;
     frontUrl: string;

@@ -24,11 +24,12 @@ import {
 import {
   CnLabManagerAdminerInfo,
   CnLabManagerBackupInfoDTO,
+  CnLabManagerComposeList,
   CnLabManagerComposeUpOptions,
   CnLabManagerContainerSize,
   CnLabManagerCreateDnsChallenge,
+  CnLabManagerDockerInspect,
   CnLabManagerDockerLogs,
-  CnLabManagerDockerPs,
   CnLabManagerDockerPsFull,
   CnLabManagerErrorLogs,
   CnLabManagerInitConfig,
@@ -858,6 +859,8 @@ export class CnLabAggregateService {
 
   //////////////////////////// LAB MANAGER ////////////////////////////////
 
+  /////////////////////// LAB MANAGER - STATUS & HEALTH ///////////////////////
+
   public async getLabManagerStatus(labId: string): Promise<any> {
     const lab = await this.getAndCheckAuthorizationToManageLab(labId);
     return this.labManagerService.getLabStatus(lab);
@@ -868,10 +871,121 @@ export class CnLabAggregateService {
     return this.labManagerService.getStartingError(lab);
   }
 
-  public async listContainers(labId: string): Promise<CnLabManagerDockerPs[]> {
-    const lab = await this.getAndCheckAuthorizationToManageLab(labId);
-    return this.labManagerService.listContainers(lab);
+  public getLabManagerRecommendedVersion(): string {
+    return this.labManagerService.getLabManagerRecommendedVersion();
   }
+
+  public async stopCurrentTask(labId: string): Promise<void> {
+    const lab = await this.getAndCheckAuthorizationToManageLab(labId);
+    this.checkServerIsRunning(lab);
+    return this.labManagerService.stopCurrentTask(lab);
+  }
+
+  /////////////////////// LAB MANAGER - INITIALIZATION ///////////////////////
+
+  public async initAll(labId: string): Promise<void> {
+    const lab = await this.getAndCheckServerStatusBeforeAction(labId);
+    this.checkServerIsRunning(lab);
+    await this.labManagerService.initAll(lab, lab.space.domain);
+    await this.refreshLabStatus(lab.id);
+  }
+
+  public async configureLabManager(labId: string): Promise<void> {
+    const lab = await this.getAndCheckServerStatusBeforeAction(labId);
+    this.checkServerIsRunning(lab);
+    return this.labManagerService.configureLabManager(lab, lab.space.domain);
+  }
+
+  public async pullBiota(labId: string, options: CnManagerLabPullBiotaOptions): Promise<void> {
+    const lab = await this.getAndCheckAuthorizationToManageLab(labId);
+    this.checkServerIsRunning(lab);
+    return this.labManagerService.pullBiota(lab, options);
+  }
+
+  //////////////////////////////// LAB MANAGER - CONFIGURATION /////////////////////////////////
+
+  public async getLabManagerConfig(labId: string): Promise<CnLabConfigDTO> {
+    const lab = await this.getAndCheckAuthorizationToManageLab(labId);
+    return this.labManagerService.getConfig(lab);
+  }
+
+  //////////////////////////// LAB MANAGER - DOCKER COMPOSE ///////////////////////////////
+
+  public async getAllComposes(labId: string): Promise<CnLabManagerComposeList> {
+    const lab = await this.getAndCheckAuthorizationToManageLab(labId);
+    return this.labManagerService.getAllComposes(lab);
+  }
+
+  public async listServices(
+    labId: string,
+    brickName: string,
+    uniqueName: string
+  ): Promise<CnLabManagerDockerInspect[]> {
+    const lab = await this.getAndCheckAuthorizationToManageLab(labId);
+    return this.labManagerService.listServices(lab, brickName, uniqueName);
+  }
+
+  public async startComposeService(
+    labId: string,
+    brickName: string,
+    uniqueName: string,
+    serviceNames: string[]
+  ): Promise<void> {
+    const lab = await this.getAndCheckAuthorizationToManageLab(labId);
+    return this.labManagerService.startComposeService(lab, brickName, uniqueName, serviceNames);
+  }
+
+  public async upServices(
+    labId: string,
+    brickName: string,
+    uniqueName: string,
+    options: CnLabManagerComposeUpOptions
+  ): Promise<void> {
+    const lab = await this.getAndCheckAuthorizationToManageLab(labId);
+    this.checkServerIsRunning(lab);
+    return this.labManagerService.upServices(lab, brickName, uniqueName, options);
+  }
+
+  public async restartServices(
+    labId: string,
+    brickName: string,
+    uniqueName: string,
+    options: CnManagerLabComposeRestartOptions
+  ): Promise<void> {
+    const lab = await this.getAndCheckAuthorizationToManageLab(labId);
+    this.checkServerIsRunning(lab);
+    return this.labManagerService.restartServices(lab, brickName, uniqueName, options);
+  }
+
+  public async stopServices(labId: string, brickName: string, uniqueName: string): Promise<void> {
+    const lab = await this.getAndCheckAuthorizationToManageLab(labId);
+    this.checkServerIsRunning(lab);
+    return this.labManagerService.stopServices(lab, brickName, uniqueName);
+  }
+
+  public async deleteServices(labId: string, brickName: string, uniqueName: string): Promise<void> {
+    const lab = await this.getAndCheckAuthorizationToManageLab(labId);
+    this.checkServerIsRunning(lab);
+    return this.labManagerService.deleteServices(lab, brickName, uniqueName);
+  }
+
+  public async pullServices(labId: string, brickName: string, uniqueName: string): Promise<void> {
+    const lab = await this.getAndCheckAuthorizationToManageLab(labId);
+    this.checkServerIsRunning(lab);
+    return this.labManagerService.pullServices(lab, brickName, uniqueName);
+  }
+
+  public async getComposeContent(labId: string, brickName: string, uniqueName: string): Promise<string> {
+    const lab = await this.getAndCheckAuthorizationToManageLab(labId);
+    return this.labManagerService.getComposeContent(lab, brickName, uniqueName);
+  }
+
+  public async unregisterSubCompose(labId: string, brickName: string, uniqueName: string): Promise<void> {
+    const lab = await this.getAndCheckAuthorizationToManageLab(labId);
+    return this.labManagerService.unregisterSubCompose(lab, brickName, uniqueName);
+  }
+
+  /////////////////////// LAB MANAGER - CONTAINERS //////////////////////////////
 
   public async getContainerDetails(labId: string, containerName: string): Promise<CnLabManagerDockerPsFull> {
     const lab = await this.getAndCheckAuthorizationToManageLab(labId);
@@ -881,11 +995,6 @@ export class CnLabAggregateService {
   public async getContainerSize(labId: string, containerName: string): Promise<CnLabManagerContainerSize> {
     const lab = await this.getAndCheckAuthorizationToManageLab(labId);
     return this.labManagerService.getContainerSize(lab, containerName);
-  }
-
-  public async startComposeContainer(labId: string, serviceName: string): Promise<void> {
-    const lab = await this.getAndCheckAuthorizationToManageLab(labId);
-    return this.labManagerService.startComposeContainer(lab, serviceName);
   }
 
   public async stopContainer(labId: string, containerName: string): Promise<boolean> {
@@ -913,75 +1022,13 @@ export class CnLabAggregateService {
     return this.labManagerService.exportLogs(lab, containerName);
   }
 
-  public async initAll(labId: string): Promise<void> {
-    const lab = await this.getAndCheckServerStatusBeforeAction(labId);
-    this.checkServerIsRunning(lab);
-    await this.labManagerService.initAll(lab, lab.space.domain);
-    await this.refreshLabStatus(lab.id);
-  }
-
-  public async configureLabManager(labId: string): Promise<void> {
-    const lab = await this.getAndCheckServerStatusBeforeAction(labId);
-    this.checkServerIsRunning(lab);
-    return this.labManagerService.configureLabManager(lab, lab.space.domain);
-  }
-
-  public async upContainers(labId: string, options?: CnLabManagerComposeUpOptions): Promise<void> {
-    const lab = await this.getAndCheckServerStatusBeforeAction(labId);
-    this.checkServerIsRunning(lab);
-    await this.labManagerService.upContainers(lab, options);
-    await this.refreshLabStatus(lab.id);
-  }
-
-  public async restartContainers(labId: string, options?: CnManagerLabComposeRestartOptions): Promise<void> {
-    const lab = await this.getAndCheckServerStatusBeforeAction(labId);
-    this.checkServerIsRunning(lab);
-    await this.labManagerService.restartContainers(lab, options);
-    await this.refreshLabStatus(lab.id);
-  }
-
-  public async stopContainers(labId: string): Promise<void> {
-    const lab = await this.getAndCheckServerStatusBeforeAction(labId);
-    this.checkServerIsRunning(lab);
-    await this.labManagerService.stopContainers(lab);
-    await this.refreshLabStatus(lab.id);
-  }
-
-  public async deleteContainers(labId: string): Promise<void> {
-    const lab = await this.getAndCheckServerStatusBeforeAction(labId);
-    this.checkServerIsRunning(lab);
-    await this.labManagerService.deleteContainers(lab);
-    await this.refreshLabStatus(lab.id);
-  }
-
-  public async pullContainers(labId: string): Promise<void> {
-    const lab = await this.getAndCheckAuthorizationToManageLab(labId);
-    this.checkServerIsRunning(lab);
-    return this.labManagerService.pullContainers(lab);
-  }
-
-  public async pullBiota(labId: string, options: CnManagerLabPullBiotaOptions): Promise<void> {
-    const lab = await this.getAndCheckAuthorizationToManageLab(labId);
-    this.checkServerIsRunning(lab);
-    return this.labManagerService.pullBiota(lab, options);
-  }
-
-  public async stopCurrentTask(labId: string): Promise<void> {
-    const lab = await this.getAndCheckAuthorizationToManageLab(labId);
-    this.checkServerIsRunning(lab);
-    return this.labManagerService.stopCurrentTask(lab);
-  }
-
   public async systemPrune(labId: string): Promise<void> {
     const lab = await this.getAndCheckAuthorizationToManageLab(labId);
     this.checkServerIsRunning(lab);
     return this.labManagerService.systemPrune(lab);
   }
 
-  public async getLabManagerConfig(labId: string): Promise<CnLabConfigDTO> {
-    const lab = await this.getAndCheckAuthorizationToManageLab(labId);
-    return this.labManagerService.getConfig(lab);
-  }
+  ////////////////////////////////////////// LAB MANAGER - ADMINER //////////////////////////////////////////
 
   public async startAdminer(labId: string): Promise<boolean> {
     const lab = await this.getAndCheckAuthorizationToManageLab(labId);
@@ -999,10 +1046,6 @@ export class CnLabAggregateService {
     const lab = await this.getAndCheckAuthorizationToManageLab(labId);
     this.checkServerIsRunning(lab);
     return this.labManagerService.getAdminerInfo(lab);
-  }
-
-  public getLabManagerRecommendedVersion(): string {
-    return this.labManagerService.getLabManagerRecommendedVersion();
   }
 
   /////////////////////////// BACKUP ////////////////////////////////
