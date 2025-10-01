@@ -317,3 +317,7 @@ alter table folder drop column leaderId;
 
 alter table notification modify column `objectType` enum('USER','FOLDER','SCENARIO','NOTE','DOCUMENT','MESSAGE', 'RESOURCE', 'LAB') NOT NULL;
 alter table activity modify column `entityType` enum('FOLDER','SCENARIO','NOTE','DOCUMENT','RESOURCE', 'MESSAGE') NOT NULL;
+
+
+########################### 2.10.0 ##########################
+ -- Add REFLEX_ACCESS_TOKEN
