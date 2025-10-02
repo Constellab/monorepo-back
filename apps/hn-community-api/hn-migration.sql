@@ -421,3 +421,10 @@ CREATE TABLE `app_co_author_invite` (
                                       CONSTRAINT `FK_eba150aa7061205b7a775864b2a` FOREIGN KEY (`communityAppId`) REFERENCES `app` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
                                       CONSTRAINT `FK_fe25581e89d690b22a942e39ef4` FOREIGN KEY (`createdById`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+#1.9.3
+ALTER TABLE `app`
+ADD COLUMN `video` varchar(255) DEFAULT NULL;
+
+ALTER TABLE `app`
+ADD COLUMN `figures` text DEFAULT NULL;

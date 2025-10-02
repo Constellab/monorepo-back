@@ -45,6 +45,12 @@ export class HnCommunityAppEntity extends HnBaseEntity {
     onDelete: 'CASCADE',
   })
   communityAppCoAuthors: HnCommunityAppCoAuthor[];
+
+  @Column({ nullable: true })
+  video?: string;
+
+  @Column('simple-array', { nullable: true })
+  figures?: string[];
 }
 
 export type HnCommunityApp = Omit<HnCommunityAppEntity, 'appFiles' | 'appUsers'>;

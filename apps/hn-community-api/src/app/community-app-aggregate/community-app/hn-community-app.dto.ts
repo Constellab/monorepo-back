@@ -18,6 +18,8 @@ export class HnCommunityAppDto {
   executions: number;
   picture?: string;
   space?: HnSpaceDto;
+  video?: string;
+  figures?: string[];
 
   constructor(app: HnCommunityApp) {
     if (!app) return;
@@ -34,6 +36,8 @@ export class HnCommunityAppDto {
     this.description = new TeRichText(app.description).toJson();
     this.picture = app.picture;
     this.space = app.space ? new HnSpaceDto(app.space) : null;
+    this.video = app.video;
+    this.figures = app.figures;
   }
 }
 

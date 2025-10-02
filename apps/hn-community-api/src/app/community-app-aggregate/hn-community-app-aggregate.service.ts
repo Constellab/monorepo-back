@@ -226,6 +226,14 @@ export class HnCommunityAppAggregateService {
     return this.communityAppService.updateDescription(app, newDescription);
   }
 
+  async updateMedia(appId: string, video: string, figures: string[]): Promise<HnCommunityApp> {
+    const app = await this.communityAppService.findOneById(appId);
+    if (!app) {
+      throw new BlBadRequestException('App not found');
+    }
+    return this.communityAppService.updateMedia(app, video, figures);
+  }
+
   public async getAppPicture(filename: string): Promise<BlFileResponse> {
     return this.objectStorageService.downloadObject(this.fileAppService.getBucketConfig(), filename);
   }
