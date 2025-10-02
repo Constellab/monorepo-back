@@ -140,6 +140,15 @@ export class HnCommunityAppController extends HnAbstractFileController<HnCommuni
     );
   }
 
+  @Put('media/:appId')
+  async updateMedia(
+    @Param('appId', new ParseUUIDPipe()) appId: string,
+    @Body('video') video: string,
+    @Body('figures') figures: string[]
+  ): Promise<HnCommunityAppDto> {
+    return new HnCommunityAppDto(await this.communityAppAggregateService.updateMedia(appId, video, figures));
+  }
+
   @UseInterceptors(FileInterceptor('file'))
   @Post('app-picture')
   async saveAppPicture(@BlUploadedFile() file: BlFile): Promise<any> {

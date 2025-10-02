@@ -85,6 +85,12 @@ export class HnCommunityAppService {
     return this.communityAppRepository.save(app);
   }
 
+  async updateMedia(app: HnCommunityApp, video: string, figures: string[]): Promise<HnCommunityApp> {
+    app.video = video;
+    app.figures = figures;
+    return this.communityAppRepository.save(app);
+  }
+
   async incrementExecutions(app: HnCommunityApp, entityManager: EntityManager): Promise<void> {
     app.executions++;
     await entityManager.save(app, { listeners: false });
