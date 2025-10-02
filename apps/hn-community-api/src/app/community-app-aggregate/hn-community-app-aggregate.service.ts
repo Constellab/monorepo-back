@@ -116,7 +116,7 @@ export class HnCommunityAppAggregateService {
   ): Promise<ClPage<HnCommunityApp>> {
     const whereConditions: FindOptionsWhere<HnCommunityApp>[] | FindOptionsWhere<HnCommunityApp> = [];
 
-    if (commonSpacesIds?.length > 0) {
+    if (commonSpacesIds?.length > 0 && HnCurrentUserHelper.getCurrentUser()) {
       whereConditions.push({
         createdBy: {
           id: user.id,
@@ -144,14 +144,16 @@ export class HnCommunityAppAggregateService {
       space: IsNull(),
     });
 
-    whereConditions.push({
-      communityAppCoAuthors: {
-        user: {
-          id: HnCurrentUserHelper.getCurrentUser().id,
+    if (HnCurrentUserHelper.getCurrentUser()) {
+      whereConditions.push({
+        communityAppCoAuthors: {
+          user: {
+            id: HnCurrentUserHelper.getCurrentUser().id,
+          },
         },
-      },
-      space: IsNull(),
-    });
+        space: IsNull(),
+      });
+    }
 
     return this.communityAppService.findAllPaginated(whereConditions, sortsCriteria, page, size);
   }
