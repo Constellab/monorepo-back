@@ -68,11 +68,7 @@ export class CnLabMigrateService {
     this.checkServerIsRunning(lab);
 
     // Delete main services
-    await this.labManagerService.deleteServices(
-      lab,
-      CnLabMigrateService.LAB_MANAGER_MAIN_COMPOSE_BRICK_NAME,
-      CnLabMigrateService.LAB_MANAGER_MAIN_COMPOSE_UNIQUE_NAME
-    );
+    await this.labManagerService.oldDeleteContainers(lab);
 
     // Update the brick version
     const brickVersions: CnBrickVersionDTO[] = [
