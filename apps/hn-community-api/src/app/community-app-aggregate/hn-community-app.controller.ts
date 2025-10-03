@@ -89,6 +89,11 @@ export class HnCommunityAppController extends HnAbstractFileController<HnCommuni
     return result.map((communityApp) => new HnCommunityAppDto(communityApp));
   }
 
+  @Delete(':id')
+  async delete(@Param('id', new ParseUUIDPipe()) id: string): Promise<boolean> {
+    return this.communityAppAggregateService.delete(id);
+  }
+
   /**
    * Get all community apps with filters
    * @param spacesFilter

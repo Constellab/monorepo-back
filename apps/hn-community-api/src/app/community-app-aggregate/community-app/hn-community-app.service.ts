@@ -62,6 +62,11 @@ export class HnCommunityAppService {
     return this.communityAppRepository.save(updatedApp);
   }
 
+  async delete(id: string): Promise<boolean> {
+    const result = await this.communityAppRepository.delete({ id: id });
+    return result.affected > 0;
+  }
+
   async update(id: string, dto: HnCommunityAppEditDto, space: HnSpace = null): Promise<HnCommunityApp> {
     const app = await this.findOneById(id);
     if (app == null) {
@@ -75,7 +80,6 @@ export class HnCommunityAppService {
     app.title = dto.title;
     app.appUrl = dto.appUrl;
     app.picture = dto.picture;
-    app.description = dto.description;
     app.space = space;
     return app;
   }

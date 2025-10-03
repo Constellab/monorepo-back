@@ -77,6 +77,15 @@ export class HnCommunityAppAggregateService {
   }
 
   ////////////////////////////////////// APP ////////////////////////////////////////
+
+  async delete(id: string): Promise<boolean> {
+    const communityApp = await this.getAndCheckCommunityApp(id);
+    if (communityApp.createdBy.id != HnCurrentUserHelper.getCurrentUser().id) {
+      throw new BlUnauthorizedException('You are not authorized to perform this action');
+    }
+    return this.communityAppService.delete(id);
+  }
+
   async getAndCheckCommunityApp(id: string): Promise<HnCommunityApp> {
     const communityApp = await this.communityAppService.findOneById(id);
     if (!communityApp) throw new BlNotFoundException('Community App not found');
@@ -425,18 +434,11 @@ export class HnCommunityAppAggregateService {
 
     const domain = urlFragment[0].split('?')[0];
 
-    if (this.coreConfigService.isProduction()) {
-      if (!domain.endsWith('.constellab.app')) {
-        throw new Error(
-          "The app url must be a valid Constellab app url, the domain must end with '.constellab.app'"
-        );
-      }
-    } else {
-      if (!domain.endsWith('.gencovery.io')) {
-        throw new Error(
-          "The app url must be a valid Constellab app url, the domain must end with '.gencovery.io'"
-        );
-      }
+    if (!domain.endsWith('.constellab.app') && !domain.endsWith('.gencovery.io')) {
+      throw new BlBadRequestException(
+        'The app url must be a valid Constellab app url' +
+          ", the domain must end with '.constellab.app' or '.gencovery.io'"
+      );
     }
   }
 
