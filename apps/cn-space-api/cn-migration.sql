@@ -312,12 +312,12 @@ alter table folder_user add foreign key FK_folder_user_shared_by
 alter table folder drop foreign key FK_34673de22eda86531dd8ab2ce22;
 alter table folder drop column leaderId;
 
-########################### 2.9.0 ##########################
+########################### 2.8.11 ##########################
 -- Add LAB_MANAGER_STANDALONE_FRONT_VERSION=latest env variable
 
 alter table notification modify column `objectType` enum('USER','FOLDER','SCENARIO','NOTE','DOCUMENT','MESSAGE', 'RESOURCE', 'LAB') NOT NULL;
 alter table activity modify column `entityType` enum('FOLDER','SCENARIO','NOTE','DOCUMENT','RESOURCE', 'MESSAGE') NOT NULL;
 
 
-########################### 2.10.0 ##########################
+########################### 2.9.0 ##########################
  -- Add REFLEX_ACCESS_TOKEN

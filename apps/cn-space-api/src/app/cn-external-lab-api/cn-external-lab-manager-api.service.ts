@@ -293,6 +293,12 @@ export class CnExternalLabManagerApiService {
     return lastValueFrom(this.post(apiInfo, `${this.baseBackupRoute}/restore`, restoreBackupDTO));
   }
 
+  ///////////////////////////////////// OLD METHODS /////////////////////////////////////
+
+  public async oldDeleteContainers(apiInfo: CnExternalApiInfo): Promise<void> {
+    return lastValueFrom(this.post(apiInfo, `${this.baseLabRoute}/delete-containers`, null));
+  }
+
   ///////////////////////////////////// GENERIC METHODS /////////////////////////////////////
 
   /**

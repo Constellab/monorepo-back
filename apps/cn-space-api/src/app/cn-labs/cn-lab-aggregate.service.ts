@@ -5,6 +5,7 @@ import {
   BlSearchParams,
   BlTranslateService,
   BlUnauthorizedException,
+  BlVersion,
 } from '@monorepo/back-core-lib';
 import { ClDateHelper, ClPage, ClPageI, ClStringHelper } from '@monorepo/core-lib';
 import { Injectable, Logger } from '@nestjs/common';
@@ -420,6 +421,42 @@ export class CnLabAggregateService {
 
       await this.updateLabConfig(lab, labConfig);
     }
+  }
+
+  /**
+   * Update bricks in the current config to minimum versions from the new config
+   * @param labId
+   * @param newConfig Config containing minimum versions to apply
+   */
+  public async updateBricksToMinimumVersion(labId: string, newConfig: CnLabConfigDTO): Promise<void> {
+    // Get the current config from the database
+    const currentLabConfig = await this.getConfig(labId);
+    const currentConfig = currentLabConfig.toLabConfigDTO();
+
+    const updatedBrickVersions = currentConfig.brickVersions.map((currentBrick) => {
+      // Find the brick in the new config
+      const newBrick = newConfig.brickVersions.find(
+        (brick) => brick.name.toLowerCase() === currentBrick.name.toLowerCase()
+      );
+
+      // If brick exists in new config and has a higher version, update it
+      if (newBrick) {
+        const currentVersion = BlVersion.fromString(currentBrick.version);
+        const newVersion = BlVersion.fromString(newBrick.version);
+
+        if (newVersion.isGreaterThanOrEqualTo(currentVersion)) {
+          return { ...currentBrick, version: newBrick.version };
+        }
+      }
+
+      return currentBrick;
+    });
+
+    const updatedConfig: CnLabConfigDTO = {
+      brickVersions: updatedBrickVersions,
+    };
+
+    await this.updateConfig(labId, updatedConfig);
   }
 
   private async updateLabConfig(lab: CnLab, labConfig: CnLabConfig): Promise<CnLab> {
@@ -1396,22 +1433,6 @@ export class CnLabAggregateService {
     this.checkServerIsRunning(lab);
 
     await this.labConfigurerService.composeDown(lab);
-    return this.getStatus(lab);
-  }
-
-  public async migrateToGithub(labId: string): Promise<CnLabStatusDTO> {
-    const lab = await this.getAndCheckAuthorizationToManageLab(labId);
-    this.checkServerIsRunning(lab);
-
-    await this.labConfigurerService.migrateToGithub(lab);
-    return this.getStatus(lab);
-  }
-
-  public async migrateToDnsChallenge(labId: string): Promise<CnLabStatusDTO> {
-    const lab = await this.getAndCheckAuthorizationToManageLab(labId);
-    this.checkServerIsRunning(lab);
-
-    await this.labConfigurerService.migrateToDnsChallenge(lab);
     return this.getStatus(lab);
   }
 

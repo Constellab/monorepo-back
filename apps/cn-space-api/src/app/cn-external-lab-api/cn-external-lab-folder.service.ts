@@ -51,14 +51,16 @@ export class CnExternalLabFolderService {
   ): Promise<void> {
     const requiredVersion = BlVersion.fromString(this.syncFolderRouteVersion);
 
-    if (glabApiInfo.gwsCoreVersion.isLower(requiredVersion)) {
+    if (glabApiInfo.gwsCoreVersion.isLowerThan(requiredVersion)) {
       throw new BlBadRequestException(
         `The lab version is too old to sync all folders. ` +
-          `Please update the lab to version ${requiredVersion} or more`
+          `Please update the lab to version ${requiredVersion.toString()} or more`
       );
     }
 
-    const labInfoDto: CnLabFolderDTO[] = rootFolders.map(CnFolderDtoHelper.convertToLabFolderDto);
+    const labInfoDto: CnLabFolderDTO[] = rootFolders.map((rootFolder) =>
+      CnFolderDtoHelper.convertToLabFolderDto(rootFolder)
+    );
     return lastValueFrom(
       this.externalLabApiService.post(glabApiInfo.apiInfo, `${this.route}/sync`, { folders: labInfoDto })
     );
@@ -71,7 +73,7 @@ export class CnExternalLabFolderService {
    */
   private getRoute(gwsCoreVersion: BlVersion): string {
     const newRouteVersion = BlVersion.fromString(this.newRouteVersion);
-    if (gwsCoreVersion.isEqualOrHigher(newRouteVersion)) {
+    if (gwsCoreVersion.isGreaterThanOrEqualTo(newRouteVersion)) {
       return this.route;
     }
     return this.oldRoute;

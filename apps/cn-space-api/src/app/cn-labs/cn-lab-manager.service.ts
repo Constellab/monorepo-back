@@ -289,4 +289,10 @@ export class CnLabManagerService {
   public async restoreBackup(lab: CnLab, restoreBackupDTO: CnLabManagerRestoreBackupDTO): Promise<void> {
     return this.labManagerApiService.restoreBackup(lab.getLabManagerApiInfo(), restoreBackupDTO);
   }
+
+  ///////////////////////////////////// OLD METHODS /////////////////////////////////////
+
+  public async oldDeleteContainers(lab: CnLab): Promise<void> {
+    return this.labManagerApiService.oldDeleteContainers(lab.getLabManagerApiInfo());
+  }
 }

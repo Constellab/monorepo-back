@@ -31,6 +31,7 @@ import { CnLabListener } from './cn-lab.listener';
 import { CnLabAggregateService } from './cn-lab-aggregate.service';
 import { CnLabFactoryService } from './cn-lab-factory.service';
 import { CnLabManagerService } from './cn-lab-manager.service';
+import { CnLabMigrateService } from './cn-lab-migrate.service';
 import { CnLabsController } from './cn-labs.controller';
 import { CnLabsSecurity } from './cn-labs.security';
 import { CnLabsService } from './cn-labs.service';
@@ -102,6 +103,7 @@ import { CnLabVolumeEntity } from './volume/cn-lab-volume-entity';
     CnLabsService,
     CnLabAggregateService,
     CnLabManagerService,
+    CnLabMigrateService,
     CnLabMailService,
     CnLabNotificationService,
     CnLabsSecurity,
