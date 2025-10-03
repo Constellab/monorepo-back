@@ -13,6 +13,7 @@ export enum CnBrickGWS {
   GWS_CORE = 'gws_core',
   GWS_BIOTA = 'gws_biota',
   GWS_UBIOME = 'gws_ubiome',
+  GWS_OMIX = 'gws_omix',
   GWS_ACADEMY = 'gws_academy',
 }
 

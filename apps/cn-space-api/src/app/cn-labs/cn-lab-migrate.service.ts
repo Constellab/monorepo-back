@@ -51,6 +51,7 @@ export class CnLabMigrateService {
       { name: CnBrickGWS.GWS_CORE, version: '0.17.0' },
       { name: CnBrickGWS.GWS_BIOTA, version: '0.9.0' },
       { name: CnBrickGWS.GWS_UBIOME, version: '0.13.0' },
+      { name: CnBrickGWS.GWS_OMIX, version: '0.12.0' },
     ];
     await this.labAggregateService.updateBricksToMinimumVersion(labId, {
       brickVersions,
