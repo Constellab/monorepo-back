@@ -228,23 +228,31 @@ export class CnLabConfigurerService {
     await this.labService.updateServerTask(lab.id, `Lab manager updated`, CnLabServerTaskStatus.SUCCESS);
   }
 
+  public async composeUp(lab: CnLab): Promise<void> {
+    const labSshService = await this.cloudProviderFactory.getSshLabService(lab);
+
+    try {
+      await this.callDockerComposeUp(labSshService, lab.id);
+    } catch (e: any) {
+      const error = `Error while starting containers. Error : ${e}`;
+      await this.labService.updateServerTask(lab.id, error, CnLabServerTaskStatus.ERROR);
+      throw new BlBadRequestException(error);
+    }
+
+    await this.labService.updateServerTask(lab.id, `Lab manager started`, CnLabServerTaskStatus.SUCCESS);
+  }
+
   public async composeDown(lab: CnLab): Promise<void> {
     const labSshService = await this.cloudProviderFactory.getSshLabService(lab);
 
-    // execute docker compose down
-    await this.labService.updateServerTask(lab.id, `Destroying containers`, CnLabServerTaskStatus.RUNNING);
-
     try {
-      await labSshService.execSshCommand([
-        `cd ${CnLabSshService.LAB_CONFIGURER_FOLDER}`,
-        'docker compose down',
-      ]);
+      await this.callDockerComposeDown(labSshService, lab.id);
     } catch (e: any) {
       const error = `Error while destroying containers. Error : ${e}`;
       await this.labService.updateServerTask(lab.id, error, CnLabServerTaskStatus.ERROR);
       throw new BlBadRequestException(error);
     }
-    await this.labService.updateServerTask(lab.id, `Container destroyed`, CnLabServerTaskStatus.SUCCESS);
+    await this.labService.updateServerTask(lab.id, `Lab manager destroyed`, CnLabServerTaskStatus.SUCCESS);
   }
 
   // TODO TO REMOVE ONCE ALL LABS ARE MIGRATED
@@ -255,7 +263,7 @@ export class CnLabConfigurerService {
     await this.labService.updateServerTask(lab.id, `Clearing old image`, CnLabServerTaskStatus.RUNNING);
 
     try {
-      await labSshService.execSshCommand([`cd dockerlab`, 'docker compose down']);
+      await this.callDockerComposeDown(labSshService, lab.id);
 
       await labSshService.execSshCommand([`rm -rf dockerlab`]);
     } catch (e: any) {
@@ -300,6 +308,52 @@ export class CnLabConfigurerService {
     await this.labService.updateServerTask(
       lab.id,
       `Migrating to DNS Challenge Success`,
+      CnLabServerTaskStatus.SUCCESS
+    );
+  }
+
+  public async migrateAccessRight(lab: CnLab): Promise<void> {
+    const labSshService = await this.cloudProviderFactory.getSshLabService(lab);
+
+    await this.labService.updateServerTask(lab.id, `Migrating access rights`, CnLabServerTaskStatus.RUNNING);
+
+    try {
+      // Update lab configurer repository
+      await this.refreshLabConfigurerRepo(labSshService, lab.id);
+
+      // Call migrate_access_right.sh script
+      await this.labService.updateServerTask(
+        lab.id,
+        `Running migrate_access_right.sh`,
+        CnLabServerTaskStatus.RUNNING
+      );
+      await labSshService.execSshCommand([
+        `cd ${CnLabSshService.LAB_CONFIGURER_FOLDER}`,
+        'bash migrate_access_right.sh',
+      ]);
+
+      // Update gws_core version to 0.17.0
+      await this.labService.updateServerTask(
+        lab.id,
+        `Updating gws_core to 0.17.0`,
+        CnLabServerTaskStatus.RUNNING
+      );
+      await labSshService.execSshCommand([
+        `cd ${CnLabSshService.LAB_CONFIGURER_FOLDER}`,
+        '. update_brick.sh gws_core 0.17.0',
+      ]);
+
+      // Update lab manager to v2.0.0
+      await this.updateLabManager(lab, '2.0.0');
+    } catch (e: any) {
+      const error = `Error while migrating access rights. Error : ${e}`;
+      await this.labService.updateServerTask(lab.id, error, CnLabServerTaskStatus.ERROR);
+      throw new BlBadRequestException(error);
+    }
+
+    await this.labService.updateServerTask(
+      lab.id,
+      `Access rights migration successful`,
       CnLabServerTaskStatus.SUCCESS
     );
   }

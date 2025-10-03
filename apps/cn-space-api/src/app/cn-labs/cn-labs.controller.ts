@@ -58,6 +58,7 @@ import {
 } from './cn-lab.dto';
 import { CnLabEntity } from './cn-lab.entity';
 import { CnLabAggregateService } from './cn-lab-aggregate.service';
+import { CnLabMigrateService } from './cn-lab-migrate.service';
 import { CnLabDesktopGenerateConfig } from './desktop/cn-lab-desktop.class';
 import { CnLabGreenOptionFormDto } from './green-option/cn-lab-green-option.dto';
 import { CnLabGreenOption } from './green-option/cn-lab-green-option.entity';
@@ -76,7 +77,8 @@ import { CnLabVolume } from './volume/cn-lab-volume-entity';
 export class CnLabsController {
   constructor(
     private aggregateService: CnLabAggregateService,
-    private labFreeAggregateService: CnLabFreeAggregateService
+    private labFreeAggregateService: CnLabFreeAggregateService,
+    private migrateService: CnLabMigrateService
   ) {}
 
   @Post('cloud')
@@ -188,12 +190,17 @@ export class CnLabsController {
 
   @Put(':id/lab-configurer/migrate')
   public migrateToGithub(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabStatusDTO> {
-    return this.aggregateService.migrateToGithub(id);
+    return this.migrateService.migrateToGithub(id);
   }
 
   @Put(':id/lab-configurer/migrate-dns-challenge')
   public migrateToDnsChallenge(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabStatusDTO> {
-    return this.aggregateService.migrateToDnsChallenge(id);
+    return this.migrateService.migrateToDnsChallenge(id);
+  }
+
+  @Put(':id/lab-configurer/migrate-lab-manager-v2')
+  public migrateToLabManagerV2(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabStatusDTO> {
+    return this.migrateService.migrateToLabManagerV2(id);
   }
 
   @Put(':id/lab-configurer/destroy-containers')
