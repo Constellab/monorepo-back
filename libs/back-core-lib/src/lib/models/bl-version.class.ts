@@ -51,7 +51,7 @@ export class BlVersion {
     return new BlVersion(major, minor, patch, subPatch);
   }
 
-  public isEqualOrHigher(other: BlVersion): boolean {
+  public isGreaterThanOrEqualTo(other: BlVersion): boolean {
     return this.getDif(other) >= 0;
   }
 
@@ -59,7 +59,7 @@ export class BlVersion {
     return this.getDif(other) === 0;
   }
 
-  public isLower(other: BlVersion): boolean {
+  public isLowerThan(other: BlVersion): boolean {
     return this.getDif(other) < 0;
   }
   /**

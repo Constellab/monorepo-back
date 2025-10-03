@@ -1,6 +1,8 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { BlVersion } from '@monorepo/back-core-lib';
+import { Injectable } from '@nestjs/common';
 
 import { CnBrickGWS, CnBrickVersionDTO } from '../cn-bricks/cn-brick.dto';
+import { CnLabManagerStatus } from '../cn-external-lab-api/model/cn-lab-manager.class';
 import { CnLabStatusDTO } from './cn-lab.dto';
 import { CnLab } from './cn-lab.entity';
 import { CnLabAggregateService } from './cn-lab-aggregate.service';
@@ -11,13 +13,39 @@ import { CnLabConfigurerService } from './server/cn-lab-configurer.service';
 export class CnLabMigrateService {
   private static readonly LAB_MANAGER_MAIN_COMPOSE_BRICK_NAME = 'gws_core';
   private static readonly LAB_MANAGER_MAIN_COMPOSE_UNIQUE_NAME = 'main';
+  private static readonly LAB_MANAGER_MIGRATION_VERSION = '2.0.0';
 
   constructor(
     private labManagerService: CnLabManagerService,
     private labConfigurerService: CnLabConfigurerService,
-    @Inject(forwardRef(() => CnLabAggregateService))
     private labAggregateService: CnLabAggregateService
   ) {}
+
+  public async updateLabManager(labId: string, version: string): Promise<CnLabStatusDTO> {
+    const lab = await this.labAggregateService.getAndCheckAuthorizationToManageLab(labId);
+
+    let labManagerStatus: CnLabManagerStatus;
+    try {
+      labManagerStatus = await this.labManagerService.getLabStatus(lab);
+    } catch {
+      return this.labAggregateService.updateLabManager(labId, version);
+    }
+
+    const currentVersion = BlVersion.fromString(labManagerStatus.version);
+    const newVersion = BlVersion.fromString(version);
+    const migrationVersionObject = BlVersion.fromString(CnLabMigrateService.LAB_MANAGER_MIGRATION_VERSION);
+
+    // if the lab manager version is lower than the migration version
+    // and the desired version is at least the migration version
+    if (
+      currentVersion.isLowerThan(migrationVersionObject) &&
+      newVersion.isGreaterThanOrEqualTo(migrationVersionObject)
+    ) {
+      return this.migrateToLabManagerV2(labId, version);
+    } else {
+      return this.labAggregateService.updateLabManager(labId, version);
+    }
+  }
 
   public async migrateToGithub(labId: string): Promise<CnLabStatusDTO> {
     const lab = await this.labAggregateService.getAndCheckAuthorizationToManageLab(labId);
@@ -35,7 +63,7 @@ export class CnLabMigrateService {
     return this.getStatus(lab);
   }
 
-  public async migrateToLabManagerV2(labId: string): Promise<CnLabStatusDTO> {
+  public async migrateToLabManagerV2(labId: string, version?: string): Promise<CnLabStatusDTO> {
     const lab = await this.labAggregateService.getAndCheckAuthorizationToManageLab(labId);
     this.checkServerIsRunning(lab);
 
@@ -67,7 +95,10 @@ export class CnLabMigrateService {
     await this.labConfigurerService.composeUp(lab);
 
     // Update lab manager to latest version
-    await this.labAggregateService.updateLabManager(labId, '2.0.0');
+    await this.labAggregateService.updateLabManager(
+      labId,
+      version ?? CnLabMigrateService.LAB_MANAGER_MIGRATION_VERSION
+    );
 
     return this.getStatus(lab);
   }

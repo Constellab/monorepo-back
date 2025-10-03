@@ -17,7 +17,7 @@ export class CnExternalLabObjectService {
     glabApiInfo: CnLabGlabApiInfo,
     note: CnExternalLabSyncedObjectDTO
   ): Promise<void> {
-    if (glabApiInfo.gwsCoreVersion.isLower(BlVersion.fromString(this.syncRouteAvailability))) {
+    if (glabApiInfo.gwsCoreVersion.isLowerThan(BlVersion.fromString(this.syncRouteAvailability))) {
       return;
     }
     return lastValueFrom(this.externalLabApiService.put(glabApiInfo.apiInfo, `note/sync`, note));
@@ -27,7 +27,7 @@ export class CnExternalLabObjectService {
     glabApiInfo: CnLabGlabApiInfo,
     scenario: CnExternalLabSyncedObjectDTO
   ): Promise<void> {
-    if (glabApiInfo.gwsCoreVersion.isLower(BlVersion.fromString(this.syncRouteAvailability))) {
+    if (glabApiInfo.gwsCoreVersion.isLowerThan(BlVersion.fromString(this.syncRouteAvailability))) {
       return;
     }
     return lastValueFrom(this.externalLabApiService.put(glabApiInfo.apiInfo, `scenario/sync`, scenario));

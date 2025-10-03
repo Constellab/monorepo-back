@@ -444,7 +444,7 @@ export class CnLabAggregateService {
         const currentVersion = BlVersion.fromString(currentBrick.version);
         const newVersion = BlVersion.fromString(newBrick.version);
 
-        if (newVersion.isEqualOrHigher(currentVersion)) {
+        if (newVersion.isGreaterThanOrEqualTo(currentVersion)) {
           return { ...currentBrick, version: newBrick.version };
         }
       }

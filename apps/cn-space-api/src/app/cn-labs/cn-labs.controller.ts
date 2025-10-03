@@ -371,7 +371,7 @@ export class CnLabsController {
     @Param('id', new ParseUUIDPipe()) id: string,
     @Param('version') version: string
   ): Promise<CnLabStatusDTO> {
-    return this.aggregateService.updateLabManager(id, version);
+    return this.migrateService.updateLabManager(id, version);
   }
 
   @Get(':id/lab-manager/status')
