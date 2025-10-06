@@ -21,6 +21,7 @@ import {
   CnLabManagerComposeList,
   CnLabManagerComposeUpOptions,
   CnLabManagerContainerSize,
+  CnLabManagerDockerComposeUniqueId,
   CnLabManagerDockerInspect,
   CnLabManagerDockerLogs,
   CnLabManagerDockerPsFull,
@@ -103,103 +104,76 @@ export class CnExternalLabManagerApiService {
 
   public async listServices(
     apiInfo: CnExternalApiInfo,
-    brickName: string,
-    uniqueName: string
+    composeId: CnLabManagerDockerComposeUniqueId
   ): Promise<CnLabManagerDockerInspect[]> {
-    return lastValueFrom(
-      this.get(apiInfo, `${this.baseDockerComposeRoute}/${brickName}/${uniqueName}/services`)
-    );
+    return lastValueFrom(this.get(apiInfo, `${this.getComposeRoute(composeId)}/services`));
   }
 
   public async upServices(
     apiInfo: CnExternalApiInfo,
-    brickName: string,
-    uniqueName: string,
+    composeId: CnLabManagerDockerComposeUniqueId,
     serviceNames: string[]
   ): Promise<void> {
     return lastValueFrom(
-      this.put(
-        apiInfo,
-        `${this.baseDockerComposeRoute}/${brickName}/${uniqueName}/services/${serviceNames[0]}/start`,
-        null
-      )
+      this.put(apiInfo, `${this.getComposeRoute(composeId)}/services/${serviceNames[0]}/start`, null)
     );
   }
 
   public async upAllServices(
     apiInfo: CnExternalApiInfo,
-    brickName: string,
-    uniqueName: string,
+    composeId: CnLabManagerDockerComposeUniqueId,
     options: CnLabManagerComposeUpOptions
   ): Promise<void> {
-    return lastValueFrom(
-      this.post(apiInfo, `${this.baseDockerComposeRoute}/${brickName}/${uniqueName}/up-services`, options)
-    );
+    return lastValueFrom(this.post(apiInfo, `${this.getComposeRoute(composeId)}/up-services`, options));
   }
 
   public async restartServices(
     apiInfo: CnExternalApiInfo,
-    brickName: string,
-    uniqueName: string,
+    composeId: CnLabManagerDockerComposeUniqueId,
     options: CnManagerLabComposeRestartOptions
   ): Promise<void> {
-    return lastValueFrom(
-      this.post(
-        apiInfo,
-        `${this.baseDockerComposeRoute}/${brickName}/${uniqueName}/restart-services`,
-        options
-      )
-    );
+    return lastValueFrom(this.post(apiInfo, `${this.getComposeRoute(composeId)}/restart-services`, options));
   }
 
   public async stopServices(
     apiInfo: CnExternalApiInfo,
-    brickName: string,
-    uniqueName: string
+    composeId: CnLabManagerDockerComposeUniqueId
   ): Promise<void> {
-    return lastValueFrom(
-      this.post(apiInfo, `${this.baseDockerComposeRoute}/${brickName}/${uniqueName}/stop-services`, null)
-    );
+    return lastValueFrom(this.post(apiInfo, `${this.getComposeRoute(composeId)}/stop-services`, null));
   }
 
   public async deleteServices(
     apiInfo: CnExternalApiInfo,
-    brickName: string,
-    uniqueName: string
+    composeId: CnLabManagerDockerComposeUniqueId
   ): Promise<void> {
-    return lastValueFrom(
-      this.post(apiInfo, `${this.baseDockerComposeRoute}/${brickName}/${uniqueName}/delete-services`, null)
-    );
+    return lastValueFrom(this.post(apiInfo, `${this.getComposeRoute(composeId)}/delete-services`, null));
   }
 
   public async pullServices(
     apiInfo: CnExternalApiInfo,
-    brickName: string,
-    uniqueName: string
+    composeId: CnLabManagerDockerComposeUniqueId
   ): Promise<void> {
-    return lastValueFrom(
-      this.post(apiInfo, `${this.baseDockerComposeRoute}/${brickName}/${uniqueName}/pull-services`, null)
-    );
+    return lastValueFrom(this.post(apiInfo, `${this.getComposeRoute(composeId)}/pull-services`, null));
   }
 
   public async getComposeContent(
     apiInfo: CnExternalApiInfo,
-    brickName: string,
-    uniqueName: string
+    composeId: CnLabManagerDockerComposeUniqueId
   ): Promise<string> {
-    return lastValueFrom(
-      this.get(apiInfo, `${this.baseDockerComposeRoute}/${brickName}/${uniqueName}/content`)
-    ).then((res) => res.content);
+    return lastValueFrom(this.get(apiInfo, `${this.getComposeRoute(composeId)}/content`)).then(
+      (res) => res.content
+    );
   }
 
   public async unregisterSubCompose(
     apiInfo: CnExternalApiInfo,
-    brickName: string,
-    uniqueName: string
+    composeId: CnLabManagerDockerComposeUniqueId
   ): Promise<void> {
-    return lastValueFrom(
-      this.delete(apiInfo, `${this.baseDockerComposeRoute}/sub-compose/${brickName}/${uniqueName}/unregister`)
-    );
+    return lastValueFrom(this.delete(apiInfo, `${this.getComposeRoute(composeId)}/unregister`));
+  }
+
+  private getComposeRoute(composeId: CnLabManagerDockerComposeUniqueId): string {
+    return `${this.getComposeRoute(composeId)}`;
   }
 
   ////////////////////////////////////////// CONTAINERS //////////////////////////////////////////

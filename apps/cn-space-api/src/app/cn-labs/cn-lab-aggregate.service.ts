@@ -29,6 +29,7 @@ import {
   CnLabManagerComposeUpOptions,
   CnLabManagerContainerSize,
   CnLabManagerCreateDnsChallenge,
+  CnLabManagerDockerComposeUniqueId,
   CnLabManagerDockerInspect,
   CnLabManagerDockerLogs,
   CnLabManagerDockerPsFull,
@@ -955,71 +956,73 @@ export class CnLabAggregateService {
 
   public async listServices(
     labId: string,
-    brickName: string,
-    uniqueName: string
+    composeId: CnLabManagerDockerComposeUniqueId
   ): Promise<CnLabManagerDockerInspect[]> {
     const lab = await this.getAndCheckAuthorizationToManageLab(labId);
-    return this.labManagerService.listServices(lab, brickName, uniqueName);
+    return this.labManagerService.listServices(lab, composeId);
   }
 
   public async startComposeService(
     labId: string,
-    brickName: string,
-    uniqueName: string,
+    composeId: CnLabManagerDockerComposeUniqueId,
     serviceNames: string[]
   ): Promise<void> {
     const lab = await this.getAndCheckAuthorizationToManageLab(labId);
-    return this.labManagerService.startComposeService(lab, brickName, uniqueName, serviceNames);
+    return this.labManagerService.startComposeService(lab, composeId, serviceNames);
   }
 
   public async upServices(
     labId: string,
-    brickName: string,
-    uniqueName: string,
+    composeId: CnLabManagerDockerComposeUniqueId,
     options: CnLabManagerComposeUpOptions
   ): Promise<void> {
     const lab = await this.getAndCheckAuthorizationToManageLab(labId);
     this.checkServerIsRunning(lab);
-    return this.labManagerService.upServices(lab, brickName, uniqueName, options);
+    return this.labManagerService.upServices(lab, composeId, options);
   }
 
   public async restartServices(
     labId: string,
-    brickName: string,
-    uniqueName: string,
+    composeId: CnLabManagerDockerComposeUniqueId,
     options: CnManagerLabComposeRestartOptions
   ): Promise<void> {
     const lab = await this.getAndCheckAuthorizationToManageLab(labId);
     this.checkServerIsRunning(lab);
-    return this.labManagerService.restartServices(lab, brickName, uniqueName, options);
+    return this.labManagerService.restartServices(lab, composeId, options);
   }
 
-  public async stopServices(labId: string, brickName: string, uniqueName: string): Promise<void> {
+  public async stopServices(labId: string, composeId: CnLabManagerDockerComposeUniqueId): Promise<void> {
     const lab = await this.getAndCheckAuthorizationToManageLab(labId);
     this.checkServerIsRunning(lab);
-    return this.labManagerService.stopServices(lab, brickName, uniqueName);
+    return this.labManagerService.stopServices(lab, composeId);
   }
 
-  public async deleteServices(labId: string, brickName: string, uniqueName: string): Promise<void> {
+  public async deleteServices(labId: string, composeId: CnLabManagerDockerComposeUniqueId): Promise<void> {
     const lab = await this.getAndCheckAuthorizationToManageLab(labId);
     this.checkServerIsRunning(lab);
-    return this.labManagerService.deleteServices(lab, brickName, uniqueName);
+    return this.labManagerService.deleteServices(lab, composeId);
   }
 
-  public async pullServices(labId: string, brickName: string, uniqueName: string): Promise<void> {
+  public async pullServices(labId: string, composeId: CnLabManagerDockerComposeUniqueId): Promise<void> {
     const lab = await this.getAndCheckAuthorizationToManageLab(labId);
     this.checkServerIsRunning(lab);
-    return this.labManagerService.pullServices(lab, brickName, uniqueName);
+    return this.labManagerService.pullServices(lab, composeId);
   }
 
-  public async getComposeContent(labId: string, brickName: string, uniqueName: string): Promise<string> {
+  public async getComposeContent(
+    labId: string,
+    composeId: CnLabManagerDockerComposeUniqueId
+  ): Promise<string> {
     const lab = await this.getAndCheckAuthorizationToManageLab(labId);
-    return this.labManagerService.getComposeContent(lab, brickName, uniqueName);
+    return this.labManagerService.getComposeContent(lab, composeId);
   }
 
-  public async unregisterSubCompose(labId: string, brickName: string, uniqueName: string): Promise<void> {
+  public async unregisterSubCompose(
+    labId: string,
+    composeId: CnLabManagerDockerComposeUniqueId
+  ): Promise<void> {
     const lab = await this.getAndCheckAuthorizationToManageLab(labId);
-    return this.labManagerService.unregisterSubCompose(lab, brickName, uniqueName);
+    return this.labManagerService.unregisterSubCompose(lab, composeId);
   }
 
   /////////////////////// LAB MANAGER - CONTAINERS //////////////////////////////

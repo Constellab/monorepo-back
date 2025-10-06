@@ -32,9 +32,26 @@ export interface CnLabManagerDockerPsFull extends CnLabManagerDockerPs {
   status: string;
 }
 
+export enum CnLabManagerComposeEnv {
+  DEV = 'dev',
+  PROD = 'prod',
+  ALL = 'all',
+  NONE = 'none',
+}
+
+/*
+ * Object to uniquely identify a docker-compose instance
+ */
+export interface CnLabManagerDockerComposeUniqueId {
+  brickName: string;
+  uniqueName: string;
+  env: CnLabManagerComposeEnv;
+}
+
 export interface CnLabManagerComposeInfo {
   brickName: string;
   uniqueName: string;
+  env: CnLabManagerComposeEnv;
   composeFilePath: string;
   description?: string;
 }

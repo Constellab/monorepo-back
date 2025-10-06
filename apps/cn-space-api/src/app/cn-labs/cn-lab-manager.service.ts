@@ -9,6 +9,7 @@ import {
   CnLabManagerComposeList,
   CnLabManagerComposeUpOptions,
   CnLabManagerContainerSize,
+  CnLabManagerDockerComposeUniqueId,
   CnLabManagerDockerInspect,
   CnLabManagerDockerLogs,
   CnLabManagerDockerPsFull,
@@ -152,72 +153,53 @@ export class CnLabManagerService {
 
   public async listServices(
     lab: CnLab,
-    brickName: string,
-    uniqueName: string
+    composeId: CnLabManagerDockerComposeUniqueId
   ): Promise<CnLabManagerDockerInspect[]> {
-    return this.labManagerApiService.listServices(lab.getLabManagerApiInfo(), brickName, uniqueName);
+    return this.labManagerApiService.listServices(lab.getLabManagerApiInfo(), composeId);
   }
 
   public async startComposeService(
     lab: CnLab,
-    brickName: string,
-    uniqueName: string,
+    composeId: CnLabManagerDockerComposeUniqueId,
     serviceNames: string[]
   ): Promise<void> {
-    return this.labManagerApiService.upServices(
-      lab.getLabManagerApiInfo(),
-      brickName,
-      uniqueName,
-      serviceNames
-    );
+    return this.labManagerApiService.upServices(lab.getLabManagerApiInfo(), composeId, serviceNames);
   }
 
   public async upServices(
     lab: CnLab,
-    brickName: string,
-    uniqueName: string,
+    composeId: CnLabManagerDockerComposeUniqueId,
     options: CnLabManagerComposeUpOptions
   ): Promise<void> {
-    return this.labManagerApiService.upAllServices(
-      lab.getLabManagerApiInfo(),
-      brickName,
-      uniqueName,
-      options
-    );
+    return this.labManagerApiService.upAllServices(lab.getLabManagerApiInfo(), composeId, options);
   }
 
   public async restartServices(
     lab: CnLab,
-    brickName: string,
-    uniqueName: string,
+    composeId: CnLabManagerDockerComposeUniqueId,
     options: CnManagerLabComposeRestartOptions
   ): Promise<void> {
-    return this.labManagerApiService.restartServices(
-      lab.getLabManagerApiInfo(),
-      brickName,
-      uniqueName,
-      options
-    );
+    return this.labManagerApiService.restartServices(lab.getLabManagerApiInfo(), composeId, options);
   }
 
-  public async stopServices(lab: CnLab, brickName: string, uniqueName: string): Promise<void> {
-    return this.labManagerApiService.stopServices(lab.getLabManagerApiInfo(), brickName, uniqueName);
+  public async stopServices(lab: CnLab, composeId: CnLabManagerDockerComposeUniqueId): Promise<void> {
+    return this.labManagerApiService.stopServices(lab.getLabManagerApiInfo(), composeId);
   }
 
-  public async deleteServices(lab: CnLab, brickName: string, uniqueName: string): Promise<void> {
-    return this.labManagerApiService.deleteServices(lab.getLabManagerApiInfo(), brickName, uniqueName);
+  public async deleteServices(lab: CnLab, composeId: CnLabManagerDockerComposeUniqueId): Promise<void> {
+    return this.labManagerApiService.deleteServices(lab.getLabManagerApiInfo(), composeId);
   }
 
-  public async pullServices(lab: CnLab, brickName: string, uniqueName: string): Promise<void> {
-    return this.labManagerApiService.pullServices(lab.getLabManagerApiInfo(), brickName, uniqueName);
+  public async pullServices(lab: CnLab, composeId: CnLabManagerDockerComposeUniqueId): Promise<void> {
+    return this.labManagerApiService.pullServices(lab.getLabManagerApiInfo(), composeId);
   }
 
-  public async getComposeContent(lab: CnLab, brickName: string, uniqueName: string): Promise<string> {
-    return this.labManagerApiService.getComposeContent(lab.getLabManagerApiInfo(), brickName, uniqueName);
+  public async getComposeContent(lab: CnLab, composeId: CnLabManagerDockerComposeUniqueId): Promise<string> {
+    return this.labManagerApiService.getComposeContent(lab.getLabManagerApiInfo(), composeId);
   }
 
-  public async unregisterSubCompose(lab: CnLab, brickName: string, uniqueName: string): Promise<void> {
-    return this.labManagerApiService.unregisterSubCompose(lab.getLabManagerApiInfo(), brickName, uniqueName);
+  public async unregisterSubCompose(lab: CnLab, composeId: CnLabManagerDockerComposeUniqueId): Promise<void> {
+    return this.labManagerApiService.unregisterSubCompose(lab.getLabManagerApiInfo(), composeId);
   }
 
   ////////////////////////////////////////// CONTAINERS //////////////////////////////////////////

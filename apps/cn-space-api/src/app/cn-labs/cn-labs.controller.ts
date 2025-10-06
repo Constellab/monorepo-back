@@ -24,6 +24,7 @@ import { Response } from 'express';
 
 import {
   CnLabManagerAdminerInfo,
+  CnLabManagerComposeEnv,
   CnLabManagerComposeList,
   CnLabManagerComposeUpOptions,
   CnLabManagerContainerSize,
@@ -430,90 +431,99 @@ export class CnLabsController {
     return this.aggregateService.getAllComposes(id);
   }
 
-  @Get(':id/lab-manager/docker-compose/:brickName/:uniqueName/services')
+  @Get(':id/lab-manager/docker-compose/:brickName/:uniqueName/:env/services')
   listServices(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Param('brickName') brickName: string,
-    @Param('uniqueName') uniqueName: string
+    @Param('uniqueName') uniqueName: string,
+    @Param('env', new BlParseEnumPipe(CnLabManagerComposeEnv)) env: CnLabManagerComposeEnv
   ): Promise<CnLabManagerDockerInspect[]> {
-    return this.aggregateService.listServices(id, brickName, uniqueName);
+    return this.aggregateService.listServices(id, { brickName, uniqueName, env });
   }
 
-  @Put(':id/lab-manager/docker-compose/:brickName/:uniqueName/services/:serviceName/start')
+  @Put(':id/lab-manager/docker-compose/:brickName/:uniqueName/:env/services/:serviceName/start')
   startComposeService(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Param('brickName') brickName: string,
     @Param('uniqueName') uniqueName: string,
+    @Param('env', new BlParseEnumPipe(CnLabManagerComposeEnv)) env: CnLabManagerComposeEnv,
     @Param('serviceName') serviceName: string
   ): Promise<void> {
-    return this.aggregateService.startComposeService(id, brickName, uniqueName, [serviceName]);
+    return this.aggregateService.startComposeService(id, { brickName, uniqueName, env }, [serviceName]);
   }
 
-  @Post(':id/lab-manager/docker-compose/:brickName/:uniqueName/up-services')
+  @Post(':id/lab-manager/docker-compose/:brickName/:uniqueName/:env/up-services')
   async upServices(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Param('brickName') brickName: string,
     @Param('uniqueName') uniqueName: string,
+    @Param('env', new BlParseEnumPipe(CnLabManagerComposeEnv)) env: CnLabManagerComposeEnv,
     @Body() options: CnLabManagerComposeUpOptions
   ): Promise<void> {
-    return await this.aggregateService.upServices(id, brickName, uniqueName, options);
+    return await this.aggregateService.upServices(id, { brickName, uniqueName, env }, options);
   }
 
-  @Post(':id/lab-manager/docker-compose/:brickName/:uniqueName/restart-services')
+  @Post(':id/lab-manager/docker-compose/:brickName/:uniqueName/:env/restart-services')
   restartServices(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Param('brickName') brickName: string,
     @Param('uniqueName') uniqueName: string,
+    @Param('env', new BlParseEnumPipe(CnLabManagerComposeEnv)) env: CnLabManagerComposeEnv,
     @Body() options: CnManagerLabComposeRestartOptions
   ): Promise<void> {
-    return this.aggregateService.restartServices(id, brickName, uniqueName, options);
+    return this.aggregateService.restartServices(id, { brickName, uniqueName, env }, options);
   }
 
-  @Post(':id/lab-manager/docker-compose/:brickName/:uniqueName/stop-services')
+  @Post(':id/lab-manager/docker-compose/:brickName/:uniqueName/:env/stop-services')
   stopServices(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Param('brickName') brickName: string,
-    @Param('uniqueName') uniqueName: string
+    @Param('uniqueName') uniqueName: string,
+    @Param('env', new BlParseEnumPipe(CnLabManagerComposeEnv)) env: CnLabManagerComposeEnv
   ): Promise<void> {
-    return this.aggregateService.stopServices(id, brickName, uniqueName);
+    return this.aggregateService.stopServices(id, { brickName, uniqueName, env });
   }
 
-  @Post(':id/lab-manager/docker-compose/:brickName/:uniqueName/delete-services')
+  @Post(':id/lab-manager/docker-compose/:brickName/:uniqueName/:env/delete-services')
   deleteServices(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Param('brickName') brickName: string,
-    @Param('uniqueName') uniqueName: string
+    @Param('uniqueName') uniqueName: string,
+    @Param('env', new BlParseEnumPipe(CnLabManagerComposeEnv)) env: CnLabManagerComposeEnv
   ): Promise<void> {
-    return this.aggregateService.deleteServices(id, brickName, uniqueName);
+    return this.aggregateService.deleteServices(id, { brickName, uniqueName, env });
   }
 
-  @Post(':id/lab-manager/docker-compose/:brickName/:uniqueName/pull-services')
+  @Post(':id/lab-manager/docker-compose/:brickName/:uniqueName/:env/pull-services')
   pullServices(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Param('brickName') brickName: string,
-    @Param('uniqueName') uniqueName: string
+    @Param('uniqueName') uniqueName: string,
+    @Param('env', new BlParseEnumPipe(CnLabManagerComposeEnv)) env: CnLabManagerComposeEnv
   ): Promise<void> {
-    return this.aggregateService.pullServices(id, brickName, uniqueName);
+    return this.aggregateService.pullServices(id, { brickName, uniqueName, env });
   }
 
-  @Get(':id/lab-manager/docker-compose/:brickName/:uniqueName/content')
+  @Get(':id/lab-manager/docker-compose/:brickName/:uniqueName/:env/content')
   getComposeContent(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Param('brickName') brickName: string,
-    @Param('uniqueName') uniqueName: string
+    @Param('uniqueName') uniqueName: string,
+    @Param('env', new BlParseEnumPipe(CnLabManagerComposeEnv)) env: CnLabManagerComposeEnv
   ): Promise<{ content: string }> {
     return this.aggregateService
-      .getComposeContent(id, brickName, uniqueName)
+      .getComposeContent(id, { brickName, uniqueName, env })
       .then((content) => ({ content }));
   }
 
-  @Delete(':id/lab-manager/sub-compose/:brickName/:uniqueName/unregister')
+  @Delete(':id/lab-manager/sub-compose/:brickName/:uniqueName/:env/unregister')
   unregisterSubCompose(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Param('brickName') brickName: string,
-    @Param('uniqueName') uniqueName: string
+    @Param('uniqueName') uniqueName: string,
+    @Param('env', new BlParseEnumPipe(CnLabManagerComposeEnv)) env: CnLabManagerComposeEnv
   ): Promise<void> {
-    return this.aggregateService.unregisterSubCompose(id, brickName, uniqueName);
+    return this.aggregateService.unregisterSubCompose(id, { brickName, uniqueName, env });
   }
 
   /////////////////////////// LAB MANAGER - CONTAINERS ///////////////////////////
