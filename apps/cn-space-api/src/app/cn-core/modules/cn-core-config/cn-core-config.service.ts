@@ -333,4 +333,9 @@ export class CnCoreConfigService {
   public getReflexAccessToken(): string {
     return this.configService.get('REFLEX_ACCESS_TOKEN');
   }
+
+  // Max duration to keep a running server in temporary status (not fully started)
+  public getStartedServerTempStatusMaxDurationMinutes(): number {
+    return this.getConfigNumber('STARTED_SERVER_TEMP_STATUS_MAX_DURATION_MINUTES');
+  }
 }

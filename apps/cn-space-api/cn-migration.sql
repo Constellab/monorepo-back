@@ -320,4 +320,6 @@ alter table activity modify column `entityType` enum('FOLDER','SCENARIO','NOTE',
 
 
 ########################### 2.9.0 ##########################
- -- Add REFLEX_ACCESS_TOKEN
+ -- Add REFLEX_ACCESS_TOKEN, 
+########################### 2.9.2 ##########################
+--  STARTED_SERVER_TEMP_STATUS_MAX_DURATION_MINUTES

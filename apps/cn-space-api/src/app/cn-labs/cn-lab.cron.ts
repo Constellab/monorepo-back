@@ -3,6 +3,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { DateTime } from 'luxon';
 
+import { CnCoreConfigService } from '../cn-core/modules/cn-core-config/cn-core-config.service';
 import { CnExternalLabApiService } from '../cn-external-lab-api/cn-external-lab-api.service';
 import { CnLabBackupsHistory, CnLabBackupStatus } from './backup/cn-lab-backup.dto';
 import { CnLab } from './cn-lab.entity';
@@ -32,7 +33,6 @@ export class CnLabCron {
   // statuses that are considered as half temp
   // if there stay
   private readonly SERVER_HALF_TEMP_STATUSES = [CnLabStatus.SERVER_RUNNING, CnLabStatus.SERVER_CONFIGURED];
-  private readonly SERVER_HALF_TEMP_STATUS_MAX_DURATION = 30; // 30 minutes
 
   constructor(
     private labServerService: CnLabServerService,
@@ -42,7 +42,8 @@ export class CnLabCron {
     private externalLabApiService: CnExternalLabApiService,
     private labAggregateService: CnLabAggregateService,
     private labFreeService: CnLabFreeService,
-    private labMailService: CnLabMailService
+    private labMailService: CnLabMailService,
+    private configService: CnCoreConfigService
   ) {}
 
   /**
@@ -81,13 +82,12 @@ export class CnLabCron {
   private async refreshLabTempStatus(): Promise<void> {
     const labs = await this.labService.getLabsWithTempStatus();
 
+    const tempMaxDuration = this.configService.getStartedServerTempStatusMaxDurationMinutes();
+
     for (const lab of labs) {
       // If the status of the lab is temp for more than 30 minutes,
       // we send a mail to the support and stop the lab if it is in a half temp status
-      if (
-        Math.abs(lab.currentStatus.createdAt.diffNow('minutes').minutes) >
-        this.SERVER_HALF_TEMP_STATUS_MAX_DURATION
-      ) {
+      if (Math.abs(lab.currentStatus.createdAt.diffNow('minutes').minutes) > tempMaxDuration) {
         this.labMailService.sendLabTempStatusLimitReachedMail(lab).catch((error) => {
           this.logger.error(
             `Error sending lab temp status limit reached mail for lab ${lab.id}: ${error.message}`
@@ -98,7 +98,7 @@ export class CnLabCron {
         if (this.SERVER_HALF_TEMP_STATUSES.includes(lab.currentStatus.status)) {
           this.logger.warn(
             `Lab ${lab.id} is in status ${lab.currentStatus.status} for more than` +
-              ` ${this.SERVER_HALF_TEMP_STATUS_MAX_DURATION} minutes, stopping it`
+              ` ${tempMaxDuration} minutes, stopping it`
           );
           this.labServerService
             .stopLab(lab)
