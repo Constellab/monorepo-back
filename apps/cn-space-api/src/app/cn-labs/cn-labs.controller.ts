@@ -516,7 +516,7 @@ export class CnLabsController {
       .then((content) => ({ content }));
   }
 
-  @Delete(':id/lab-manager/sub-compose/:brickName/:uniqueName/:env/unregister')
+  @Delete(':id/lab-manager/docker-compose/:brickName/:uniqueName/:env/unregister')
   unregisterSubCompose(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Param('brickName') brickName: string,
