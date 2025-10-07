@@ -533,7 +533,7 @@ export class CnLabAggregateService {
    * Lab is considered busy if an action on server or lab manager is running
    */
   public async getLabBusyStatus(id: string): Promise<CnLabBusyStatusDTO> {
-    let lab: CnLab = await this.getAndCheckAuthorizationToFindById(id);
+    const lab: CnLab = await this.getAndCheckAuthorizationToFindById(id);
 
     if (lab.serverTaskIsRunning()) {
       let mainText: string;
@@ -564,18 +564,6 @@ export class CnLabAggregateService {
         mainText: await this.translateService.translateIfExists('message.lab_busy_server_starting'),
       });
     }
-
-    if (lab.isHttpAccessible()) {
-      const labIsRunning = await this.externalLabApiService.healthCheck(lab.getGlabSpaceApiInfo());
-      // if the lab is marked as stopped but the glab is accessible force refresh status
-      if (labIsRunning) {
-        if (!lab.isRunning()) {
-          lab = await this.refreshLabStatus(lab.id);
-        }
-        return new CnLabBusyStatusDTO(lab, false);
-      }
-    }
-
     // if there is not running task and the lab is running or stopped, there is no busy status
     if (lab.serverIsStopped()) {
       return new CnLabBusyStatusDTO(lab, false);
@@ -587,32 +575,34 @@ export class CnLabAggregateService {
       });
     }
 
-    // case of the lab starting without a task running
-    // we need to check the lab manager status
-    try {
-      const labManagerStatus = await this.labManagerService.getLabStatus(lab);
+    if (lab.isHttpAccessible()) {
+      // case of the lab starting without a task running
+      // we need to check the lab manager status
+      try {
+        const labManagerStatus = await this.labManagerService.getLabStatus(lab);
 
-      if (labManagerStatus.labStatus === 'STARTING') {
-        return new CnLabBusyStatusDTO(lab, true, {
-          mainText: await this.translateService.translateIfExists('message.lab_busy_lab_starting'),
-          progress: labManagerStatus.glabStatus?.startProgress,
-        });
-      }
-
-      if (labManagerStatus.currentTask?.status === 'RUNNING') {
-        let subText = labManagerStatus.currentTask.name;
-        if (labManagerStatus.currentTask?.info) {
-          subText += ' ' + labManagerStatus.currentTask?.info;
+        if (labManagerStatus.labStatus === 'STARTING') {
+          return new CnLabBusyStatusDTO(lab, true, {
+            mainText: await this.translateService.translateIfExists('message.lab_busy_lab_starting'),
+            progress: labManagerStatus.glabStatus?.startProgress,
+          });
         }
+
+        if (labManagerStatus.currentTask?.status === 'RUNNING') {
+          let subText = labManagerStatus.currentTask.name;
+          if (labManagerStatus.currentTask?.info) {
+            subText += ' ' + labManagerStatus.currentTask?.info;
+          }
+          return new CnLabBusyStatusDTO(lab, true, {
+            mainText: await this.translateService.translateIfExists('message.lab_busy_manager_task_running'),
+            subText,
+          });
+        }
+      } catch {
         return new CnLabBusyStatusDTO(lab, true, {
-          mainText: await this.translateService.translateIfExists('message.lab_busy_manager_task_running'),
-          subText,
+          mainText: await this.translateService.translateIfExists('message.lab_busy_starting_wait'),
         });
       }
-    } catch {
-      return new CnLabBusyStatusDTO(lab, true, {
-        mainText: await this.translateService.translateIfExists('message.lab_busy_starting_wait'),
-      });
     }
 
     return new CnLabBusyStatusDTO(lab, false);
@@ -926,7 +916,6 @@ export class CnLabAggregateService {
     const lab = await this.getAndCheckServerStatusBeforeAction(labId);
     this.checkServerIsRunning(lab);
     await this.labManagerService.initAll(lab, lab.space.domain);
-    await this.refreshLabStatus(lab.id);
   }
 
   public async configureLabManager(labId: string): Promise<void> {
@@ -1044,12 +1033,12 @@ export class CnLabAggregateService {
     return this.labManagerService.getContainerSize(lab, containerName);
   }
 
-  public async stopContainer(labId: string, containerName: string): Promise<boolean> {
+  public async stopContainer(labId: string, containerName: string): Promise<void> {
     const lab = await this.getAndCheckAuthorizationToManageLab(labId);
     return this.labManagerService.stopContainer(lab, containerName);
   }
 
-  public async deleteContainer(labId: string, containerName: string): Promise<boolean> {
+  public async deleteContainer(labId: string, containerName: string): Promise<void> {
     const lab = await this.getAndCheckAuthorizationToManageLab(labId);
     return this.labManagerService.deleteContainer(lab, containerName);
   }
@@ -1071,13 +1060,13 @@ export class CnLabAggregateService {
 
   ////////////////////////////////////////// LAB MANAGER - ADMINER //////////////////////////////////////////
 
-  public async startAdminer(labId: string): Promise<boolean> {
+  public async startAdminer(labId: string): Promise<void> {
     const lab = await this.getAndCheckAuthorizationToManageLab(labId);
     this.checkServerIsRunning(lab);
     return this.labManagerService.startAdminer(lab);
   }
 
-  public async stopAdminer(labId: string): Promise<boolean> {
+  public async stopAdminer(labId: string): Promise<void> {
     const lab = await this.getAndCheckAuthorizationToManageLab(labId);
     this.checkServerIsRunning(lab);
     return this.labManagerService.stopAdminer(lab);

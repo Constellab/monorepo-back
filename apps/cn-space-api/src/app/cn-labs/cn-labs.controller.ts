@@ -557,7 +557,7 @@ export class CnLabsController {
   async stopContainer(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Param('containerName') containerName: string
-  ): Promise<boolean> {
+  ): Promise<void> {
     return await this.aggregateService.stopContainer(id, containerName);
   }
 
@@ -565,7 +565,7 @@ export class CnLabsController {
   async deleteContainer(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Param('containerName') containerName: string
-  ): Promise<boolean> {
+  ): Promise<void> {
     return await this.aggregateService.deleteContainer(id, containerName);
   }
 
@@ -597,12 +597,12 @@ export class CnLabsController {
   /////////////////////////// LAB MANAGER - ADMINER ///////////////////////////
 
   @Put(':id/lab-manager/adminer/start')
-  async startAdminer(@Param('id', new ParseUUIDPipe()) id: string): Promise<boolean> {
+  async startAdminer(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
     return await this.aggregateService.startAdminer(id);
   }
 
   @Put(':id/lab-manager/adminer/stop')
-  async stopAdminer(@Param('id', new ParseUUIDPipe()) id: string): Promise<boolean> {
+  async stopAdminer(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
     return await this.aggregateService.stopAdminer(id);
   }
 

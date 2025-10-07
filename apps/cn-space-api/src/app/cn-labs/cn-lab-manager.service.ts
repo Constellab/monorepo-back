@@ -217,11 +217,11 @@ export class CnLabManagerService {
     return this.labManagerApiService.getContainerSize(lab.getLabManagerApiInfo(), containerName);
   }
 
-  public async stopContainer(lab: CnLab, containerName: string): Promise<boolean> {
+  public async stopContainer(lab: CnLab, containerName: string): Promise<void> {
     return this.labManagerApiService.stopContainer(lab.getLabManagerApiInfo(), containerName);
   }
 
-  public async deleteContainer(lab: CnLab, containerName: string): Promise<boolean> {
+  public async deleteContainer(lab: CnLab, containerName: string): Promise<void> {
     return this.labManagerApiService.deleteContainer(lab.getLabManagerApiInfo(), containerName);
   }
 
@@ -239,11 +239,11 @@ export class CnLabManagerService {
 
   ////////////////////////////////////////// ADMINER //////////////////////////////////////////
 
-  public async startAdminer(lab: CnLab): Promise<boolean> {
+  public async startAdminer(lab: CnLab): Promise<void> {
     return this.labManagerApiService.startAdminer(lab.getLabManagerApiInfo());
   }
 
-  public async stopAdminer(lab: CnLab): Promise<boolean> {
+  public async stopAdminer(lab: CnLab): Promise<void> {
     return this.labManagerApiService.stopAdminer(lab.getLabManagerApiInfo());
   }
 

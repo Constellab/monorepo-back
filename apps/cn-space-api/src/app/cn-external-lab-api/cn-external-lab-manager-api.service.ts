@@ -63,7 +63,7 @@ export class CnExternalLabManagerApiService {
   ////////////////////////////////////////// LAB //////////////////////////////////////////
 
   public async getStatus(apiInfo: CnExternalApiInfo): Promise<CnLabManagerStatus> {
-    return lastValueFrom(this.get(apiInfo, `${this.baseLabRoute}/status`));
+    return lastValueFrom(this.get(apiInfo, `${this.baseLabRoute}/status`, null, { timeout: 10000 }));
   }
 
   public async getStartingError(apiInfo: CnExternalApiInfo): Promise<CnLabManagerErrorLogs> {
@@ -196,11 +196,11 @@ export class CnExternalLabManagerApiService {
     return lastValueFrom(this.get(apiInfo, `${this.baseContainersRoute}/${containerName}/size`));
   }
 
-  public async stopContainer(apiInfo: CnExternalApiInfo, containerName: string): Promise<boolean> {
+  public async stopContainer(apiInfo: CnExternalApiInfo, containerName: string): Promise<void> {
     return lastValueFrom(this.put(apiInfo, `${this.baseContainersRoute}/${containerName}/stop`, null));
   }
 
-  public async deleteContainer(apiInfo: CnExternalApiInfo, containerName: string): Promise<boolean> {
+  public async deleteContainer(apiInfo: CnExternalApiInfo, containerName: string): Promise<void> {
     return lastValueFrom(this.put(apiInfo, `${this.baseContainersRoute}/${containerName}/delete`, null));
   }
 
@@ -225,11 +225,11 @@ export class CnExternalLabManagerApiService {
 
   ////////////////////////////////////////// ADMINER //////////////////////////////////////////
 
-  public async startAdminer(apiInfo: CnExternalApiInfo): Promise<boolean> {
+  public async startAdminer(apiInfo: CnExternalApiInfo): Promise<void> {
     return lastValueFrom(this.put(apiInfo, `${this.baseAdminerRoute}/start`, null));
   }
 
-  public async stopAdminer(apiInfo: CnExternalApiInfo): Promise<boolean> {
+  public async stopAdminer(apiInfo: CnExternalApiInfo): Promise<void> {
     return lastValueFrom(this.put(apiInfo, `${this.baseAdminerRoute}/stop`, null));
   }
 
