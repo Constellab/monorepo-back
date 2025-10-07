@@ -18,6 +18,7 @@ import { CnLabBackupsHistory } from '../cn-labs/backup/cn-lab-backup.dto';
 import {
   CnLabManagerAdminerInfo,
   CnLabManagerBackupInfoDTO,
+  CnLabManagerCleanOptions,
   CnLabManagerComposeList,
   CnLabManagerComposeUpOptions,
   CnLabManagerContainerSize,
@@ -86,6 +87,10 @@ export class CnExternalLabManagerApiService {
 
   public async pullBiota(apiInfo: CnExternalApiInfo, options: CnManagerLabPullBiotaOptions): Promise<void> {
     return lastValueFrom(this.post(apiInfo, `${this.baseLabRoute}/pull-biota-db`, options));
+  }
+
+  public async cleanLabManager(apiInfo: CnExternalApiInfo, options: CnLabManagerCleanOptions): Promise<void> {
+    return lastValueFrom(this.post(apiInfo, `${this.baseLabRoute}/system/clean`, options));
   }
 
   public async updateConfig(apiInfo: CnExternalApiInfo, config: CnLabConfigFile): Promise<void> {
@@ -218,9 +223,6 @@ export class CnExternalLabManagerApiService {
     );
   }
 
-  public async systemPrune(apiInfo: CnExternalApiInfo): Promise<void> {
-    return lastValueFrom(this.post(apiInfo, `${this.baseContainersRoute}/system-prune`, null));
-  }
   ////////////////////////////////////////// ADMINER //////////////////////////////////////////
 
   public async startAdminer(apiInfo: CnExternalApiInfo): Promise<boolean> {

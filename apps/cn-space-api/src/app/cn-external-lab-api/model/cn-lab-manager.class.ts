@@ -77,6 +77,11 @@ export interface CnManagerLabPullBiotaOptions {
   forceUpdate?: boolean;
 }
 
+export interface CnLabManagerCleanOptions {
+  removeErrorSubComposes: boolean;
+  pruneSystem: boolean;
+}
+
 /**
  * Object to config the lab manager required on init
  */

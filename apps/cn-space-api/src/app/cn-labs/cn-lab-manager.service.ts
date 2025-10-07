@@ -6,6 +6,7 @@ import { CnExternalLabManagerApiService } from '../cn-external-lab-api/cn-extern
 import {
   CnLabManagerAdminerInfo,
   CnLabManagerBackupInfoDTO,
+  CnLabManagerCleanOptions,
   CnLabManagerComposeList,
   CnLabManagerComposeUpOptions,
   CnLabManagerContainerSize,
@@ -98,6 +99,10 @@ export class CnLabManagerService {
   public configureLabManager(lab: CnLab, spaceDomain: string): Promise<void> {
     const initConfig: CnLabManagerInitConfig = this.getLabManagerInitConfig(lab, spaceDomain);
     return this.labManagerApiService.configureLabManager(lab.getLabManagerApiInfo(), initConfig);
+  }
+
+  public cleanLabManager(lab: CnLab, options: CnLabManagerCleanOptions): Promise<void> {
+    return this.labManagerApiService.cleanLabManager(lab.getLabManagerApiInfo(), options);
   }
 
   public getLabManagerInitConfig(lab: CnLab, spaceDomain: string): CnLabManagerInitConfig {
@@ -230,10 +235,6 @@ export class CnLabManagerService {
 
   public async exportLogs(lab: CnLab, containerName: string): Promise<string> {
     return this.labManagerApiService.exportLogs(lab.getLabManagerApiInfo(), containerName);
-  }
-
-  public async systemPrune(lab: CnLab): Promise<void> {
-    return this.labManagerApiService.systemPrune(lab.getLabManagerApiInfo());
   }
 
   ////////////////////////////////////////// ADMINER //////////////////////////////////////////

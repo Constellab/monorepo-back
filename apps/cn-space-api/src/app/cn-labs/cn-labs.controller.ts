@@ -24,6 +24,7 @@ import { Response } from 'express';
 
 import {
   CnLabManagerAdminerInfo,
+  CnLabManagerCleanOptions,
   CnLabManagerComposeEnv,
   CnLabManagerComposeList,
   CnLabManagerComposeUpOptions,
@@ -417,6 +418,14 @@ export class CnLabsController {
     return this.aggregateService.pullBiota(id, options);
   }
 
+  @Post(':id/lab-manager/clean')
+  cleanLabManager(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() options: CnLabManagerCleanOptions
+  ): Promise<void> {
+    return this.aggregateService.cleanLabManager(id, options);
+  }
+
   /////////////////////////// LAB MANAGER - CONFIGURATION ///////////////////////////
 
   @Get(':id/lab-manager/config')
@@ -583,11 +592,6 @@ export class CnLabsController {
   ): Promise<StreamableFile> {
     const fileContent = await this.aggregateService.exportLogs(id, containerName);
     return BlResponseHelper.streamableFileFromString(fileContent);
-  }
-
-  @Post(':id/lab-manager/system-prune')
-  public systemPrune(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
-    return this.aggregateService.systemPrune(id);
   }
 
   /////////////////////////// LAB MANAGER - ADMINER ///////////////////////////

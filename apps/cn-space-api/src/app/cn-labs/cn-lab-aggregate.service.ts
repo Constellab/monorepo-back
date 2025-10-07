@@ -25,6 +25,7 @@ import {
 import {
   CnLabManagerAdminerInfo,
   CnLabManagerBackupInfoDTO,
+  CnLabManagerCleanOptions,
   CnLabManagerComposeList,
   CnLabManagerComposeUpOptions,
   CnLabManagerContainerSize,
@@ -940,6 +941,12 @@ export class CnLabAggregateService {
     return this.labManagerService.pullBiota(lab, options);
   }
 
+  public async cleanLabManager(labId: string, options: CnLabManagerCleanOptions): Promise<void> {
+    const lab = await this.getAndCheckAuthorizationToManageLab(labId);
+    this.checkServerIsRunning(lab);
+    return this.labManagerService.cleanLabManager(lab, options);
+  }
+
   //////////////////////////////// LAB MANAGER - CONFIGURATION /////////////////////////////////
 
   public async getLabManagerConfig(labId: string): Promise<CnLabConfigDTO> {
@@ -1060,12 +1067,6 @@ export class CnLabAggregateService {
   public async exportLogs(labId: string, containerName: string): Promise<string> {
     const lab = await this.getAndCheckAuthorizationToManageLab(labId);
     return this.labManagerService.exportLogs(lab, containerName);
-  }
-
-  public async systemPrune(labId: string): Promise<void> {
-    const lab = await this.getAndCheckAuthorizationToManageLab(labId);
-    this.checkServerIsRunning(lab);
-    return this.labManagerService.systemPrune(lab);
   }
 
   ////////////////////////////////////////// LAB MANAGER - ADMINER //////////////////////////////////////////
