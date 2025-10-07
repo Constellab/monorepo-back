@@ -173,7 +173,7 @@ export class CnExternalLabManagerApiService {
   }
 
   private getComposeRoute(composeId: CnLabManagerDockerComposeUniqueId): string {
-    return `${this.getComposeRoute(composeId)}`;
+    return `${this.baseDockerComposeRoute}/${composeId.brickName}/${composeId.uniqueName}/${composeId.env}`;
   }
 
   ////////////////////////////////////////// CONTAINERS //////////////////////////////////////////
