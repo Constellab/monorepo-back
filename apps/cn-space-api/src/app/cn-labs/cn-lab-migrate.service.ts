@@ -76,7 +76,10 @@ export class CnLabMigrateService {
 
     try {
       // Delete main services
-      await this.labManagerService.oldDeleteContainers(lab);
+      await this.labManagerService.oldDeleteContainers(lab).catch((error) => {
+        // log the error but continue the migration
+        console.error(`Error deleting old containers: ${error}, continuing migration...`);
+      });
 
       // Update the brick version
       const brickVersions: CnBrickVersionDTO[] = [
