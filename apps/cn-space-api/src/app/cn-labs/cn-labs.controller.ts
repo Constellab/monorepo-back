@@ -202,7 +202,7 @@ export class CnLabsController {
 
   @Put(':id/lab-configurer/migrate-lab-manager-v2')
   public migrateToLabManagerV2(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabStatusDTO> {
-    return this.migrateService.migrateToLabManagerV2(id);
+    return this.migrateService.migrateToLabManagerV2Async(id);
   }
 
   @Put(':id/lab-configurer/destroy-containers')
