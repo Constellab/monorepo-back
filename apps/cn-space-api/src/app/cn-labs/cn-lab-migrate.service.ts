@@ -125,8 +125,8 @@ export class CnLabMigrateService {
         `Updating lab manager to version ${version}`,
         CnLabServerTaskStatus.RUNNING
       );
-      await this.labAggregateService.updateLabManager(
-        labId,
+      await this.labConfigurerService.updateLabManager(
+        lab,
         version ?? CnLabMigrateService.LAB_MANAGER_MIGRATION_VERSION
       );
 

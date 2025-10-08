@@ -1409,7 +1409,24 @@ export class CnLabAggregateService {
     const lab = await this.getAndCheckServerStatusBeforeAction(labId);
     this.checkServerIsRunning(lab);
 
-    await this.labConfigurerService.updateLabManager(lab, labManagerVersion);
+    await this.labsService.updateServerTask(
+      lab.id,
+      `Updating lab manager to version ${labManagerVersion}`,
+      CnLabServerTaskStatus.RUNNING
+    );
+
+    this.labConfigurerService
+      .updateLabManager(lab, labManagerVersion)
+      .then(() =>
+        this.labsService.updateServerTask(
+          lab.id,
+          `Lab manager updated to version ${labManagerVersion}`,
+          CnLabServerTaskStatus.SUCCESS
+        )
+      )
+      .catch((error: Error) =>
+        this.onError(lab.id, `Error during lab manager update: ${error.message}`, error)
+      );
     return this.getStatus(lab);
   }
 

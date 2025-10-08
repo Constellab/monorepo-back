@@ -209,23 +209,10 @@ export class CnLabConfigurerService {
   public async updateLabManager(lab: CnLab, labManagerVersion: string): Promise<void> {
     const labSshService = await this.cloudProviderFactory.getSshLabService(lab);
 
-    await this.labService.updateServerTask(
-      lab.id,
-      `Updating lab manager to version ${labManagerVersion}`,
-      CnLabServerTaskStatus.RUNNING
-    );
-
-    try {
-      await labSshService.execSshCommand([
-        `cd ${CnLabSshService.LAB_CONFIGURER_FOLDER}`,
-        `. update_lab_manager.sh ${labManagerVersion}`,
-      ]);
-    } catch (e: any) {
-      const error = `Error while updating lab manager. Error : ${e}`;
-      await this.labService.updateServerTask(lab.id, error, CnLabServerTaskStatus.ERROR);
-      throw new BlBadRequestException(error);
-    }
-    await this.labService.updateServerTask(lab.id, `Lab manager updated`, CnLabServerTaskStatus.SUCCESS);
+    await labSshService.execSshCommand([
+      `cd ${CnLabSshService.LAB_CONFIGURER_FOLDER}`,
+      `. update_lab_manager.sh ${labManagerVersion}`,
+    ]);
   }
 
   public async composeUp(lab: CnLab): Promise<void> {
