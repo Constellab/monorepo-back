@@ -7,18 +7,19 @@ import { CnLabStatusDTO } from './cn-lab.dto';
 import { CnLab } from './cn-lab.entity';
 import { CnLabAggregateService } from './cn-lab-aggregate.service';
 import { CnLabManagerService } from './cn-lab-manager.service';
+import { CnLabsService } from './cn-labs.service';
 import { CnLabConfigurerService } from './server/cn-lab-configurer.service';
+import { CnLabServerTaskStatus } from './status/cn-lab-status.enum';
 
 @Injectable()
 export class CnLabMigrateService {
-  private static readonly LAB_MANAGER_MAIN_COMPOSE_BRICK_NAME = 'gws_core';
-  private static readonly LAB_MANAGER_MAIN_COMPOSE_UNIQUE_NAME = 'main';
   private static readonly LAB_MANAGER_MIGRATION_VERSION = '2.0.0';
 
   constructor(
     private labManagerService: CnLabManagerService,
     private labConfigurerService: CnLabConfigurerService,
-    private labAggregateService: CnLabAggregateService
+    private labAggregateService: CnLabAggregateService,
+    private labService: CnLabsService
   ) {}
 
   public async updateLabManager(labId: string, version: string): Promise<CnLabStatusDTO> {
@@ -67,36 +68,83 @@ export class CnLabMigrateService {
     const lab = await this.labAggregateService.getAndCheckAuthorizationToManageLab(labId);
     this.checkServerIsRunning(lab);
 
-    // Delete main services
-    await this.labManagerService.oldDeleteContainers(lab);
-
-    // Update the brick version
-    const brickVersions: CnBrickVersionDTO[] = [
-      { name: CnBrickGWS.GWS_CORE, version: '0.17.0' },
-      { name: CnBrickGWS.GWS_BIOTA, version: '0.9.0' },
-      { name: CnBrickGWS.GWS_UBIOME, version: '0.13.0' },
-      { name: CnBrickGWS.GWS_OMIX, version: '0.12.0' },
-    ];
-    await this.labAggregateService.updateBricksToMinimumVersion(labId, {
-      brickVersions,
-    });
-
-    // Stop the lab
-    await this.labConfigurerService.composeDown(lab);
-
-    // Run migration
-    await this.labConfigurerService.migrateAccessRight(lab);
-
-    // Start the lab
-    await this.labConfigurerService.composeUp(lab);
-
-    // Update lab manager to latest version
-    await this.labAggregateService.updateLabManager(
-      labId,
-      version ?? CnLabMigrateService.LAB_MANAGER_MIGRATION_VERSION
+    await this.labService.updateServerTask(
+      lab.id,
+      `Migrating to Lab Manager v2`,
+      CnLabServerTaskStatus.RUNNING
     );
 
-    return this.getStatus(lab);
+    try {
+      // Delete main services
+      await this.labManagerService.oldDeleteContainers(lab);
+
+      // Update the brick version
+      const brickVersions: CnBrickVersionDTO[] = [
+        { name: CnBrickGWS.GWS_CORE, version: '0.17.0' },
+        { name: CnBrickGWS.GWS_BIOTA, version: '0.9.0' },
+        { name: CnBrickGWS.GWS_UBIOME, version: '0.13.0' },
+        { name: CnBrickGWS.GWS_OMIX, version: '0.12.0' },
+      ];
+
+      await this.labService.updateServerTask(
+        lab.id,
+        `Updating brick versions`,
+        CnLabServerTaskStatus.RUNNING
+      );
+      await this.labAggregateService.updateBricksToMinimumVersion(labId, {
+        brickVersions,
+      });
+
+      // Stop the lab
+      await this.labService.updateServerTask(
+        lab.id,
+        `Stopping global docker container`,
+        CnLabServerTaskStatus.RUNNING
+      );
+      await this.labConfigurerService.composeDown(lab);
+
+      // Run migration
+      await this.labService.updateServerTask(
+        lab.id,
+        `Running permission migration`,
+        CnLabServerTaskStatus.RUNNING
+      );
+      await this.labConfigurerService.migrateAccessRight(lab);
+
+      // Start the lab
+      await this.labService.updateServerTask(
+        lab.id,
+        `Starting global docker container`,
+        CnLabServerTaskStatus.RUNNING
+      );
+      await this.labConfigurerService.composeUp(lab);
+
+      // Update lab manager to latest version
+      await this.labService.updateServerTask(
+        lab.id,
+        `Updating lab manager to version ${version}`,
+        CnLabServerTaskStatus.RUNNING
+      );
+      await this.labAggregateService.updateLabManager(
+        labId,
+        version ?? CnLabMigrateService.LAB_MANAGER_MIGRATION_VERSION
+      );
+
+      await this.labService.updateServerTask(
+        lab.id,
+        `Migration to lab manager v2 successfull`,
+        CnLabServerTaskStatus.SUCCESS
+      );
+
+      return this.getStatus(lab);
+    } catch (error: any) {
+      await this.labService.updateServerTask(
+        lab.id,
+        `Migration to lab manager v2 failed: ${error}`,
+        CnLabServerTaskStatus.ERROR
+      );
+      throw error;
+    }
   }
 
   private async getStatus(lab: CnLab): Promise<CnLabStatusDTO> {

@@ -315,46 +315,18 @@ export class CnLabConfigurerService {
   public async migrateAccessRight(lab: CnLab): Promise<void> {
     const labSshService = await this.cloudProviderFactory.getSshLabService(lab);
 
-    await this.labService.updateServerTask(lab.id, `Migrating access rights`, CnLabServerTaskStatus.RUNNING);
+    // Update lab configurer repository
+    await this.refreshLabConfigurerRepo(labSshService, lab.id);
 
-    try {
-      // Update lab configurer repository
-      await this.refreshLabConfigurerRepo(labSshService, lab.id);
-
-      // Call migrate_access_right.sh script
-      await this.labService.updateServerTask(
-        lab.id,
-        `Running migrate_access_right.sh`,
-        CnLabServerTaskStatus.RUNNING
-      );
-      await labSshService.execSshCommand([
-        `cd ${CnLabSshService.LAB_CONFIGURER_FOLDER}`,
-        'bash migrate_access_right.sh',
-      ]);
-
-      // Update gws_core version to 0.17.0
-      await this.labService.updateServerTask(
-        lab.id,
-        `Updating gws_core to 0.17.0`,
-        CnLabServerTaskStatus.RUNNING
-      );
-      await labSshService.execSshCommand([
-        `cd ${CnLabSshService.LAB_CONFIGURER_FOLDER}`,
-        '. update_brick.sh gws_core 0.17.0',
-      ]);
-
-      // Update lab manager to v2.0.0
-      await this.updateLabManager(lab, '2.0.0');
-    } catch (e: any) {
-      const error = `Error while migrating access rights. Error : ${e}`;
-      await this.labService.updateServerTask(lab.id, error, CnLabServerTaskStatus.ERROR);
-      throw new BlBadRequestException(error);
-    }
-
+    // Call migrate_access_right.sh script
     await this.labService.updateServerTask(
       lab.id,
-      `Access rights migration successful`,
-      CnLabServerTaskStatus.SUCCESS
+      `Running migrate_access_right.sh`,
+      CnLabServerTaskStatus.RUNNING
     );
+    await labSshService.execSshCommand([
+      `cd ${CnLabSshService.LAB_CONFIGURER_FOLDER}`,
+      'bash migrate_access_right.sh',
+    ]);
   }
 }
