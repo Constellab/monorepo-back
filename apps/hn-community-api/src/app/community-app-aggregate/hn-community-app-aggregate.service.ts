@@ -64,13 +64,6 @@ export class HnCommunityAppAggregateService {
         changefreq: HnSiteMapEnumChangefreq.MONTHLY,
         lastmod: app.lastModifiedAt.toFormat('yyyy-MM-dd'),
       });
-
-      appsMap.push({
-        url: this.frontService.getAppDetailUrl(app.id, app.title),
-        priority: 0.8,
-        changefreq: HnSiteMapEnumChangefreq.MONTHLY,
-        lastmod: app.lastModifiedAt.toFormat('yyyy-MM-dd'),
-      });
     }
 
     return appsMap;

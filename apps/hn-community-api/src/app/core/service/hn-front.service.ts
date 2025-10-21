@@ -101,10 +101,6 @@ export class HnFrontService {
     return `${this.getAppsUrl()}/${appId}/${appTitlePath}`;
   }
 
-  public getAppDetailUrl(appId: string, appTitlePath: string): string {
-    return `${this.getAppUrl(appId, appTitlePath)}/detail`;
-  }
-
   public getAppInviteUrl(token: string): string {
     return `${this.getAppsUrl()}/invite/${token}`;
   }
