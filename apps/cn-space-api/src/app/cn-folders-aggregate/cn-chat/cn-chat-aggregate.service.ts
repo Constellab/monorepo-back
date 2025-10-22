@@ -67,7 +67,11 @@ export class CnChatAggregateService {
 
     const message = await this.chatMessageService.createMessage(newMessageDTO, folder);
 
-    this.folderEventService.emitFolderEvent('CREATE_FOLDER_MESSAGE', folder, message);
+    this.folderEventService.emitFolderEvent({
+      type: 'CREATE_FOLDER_MESSAGE',
+      entity: message,
+      parentFolder: folder,
+    });
     return message;
   }
 
@@ -84,7 +88,11 @@ export class CnChatAggregateService {
     }
 
     const newMessage = await this.chatMessageService.updateMessage(message, messageDTO.content);
-    this.folderEventService.emitFolderEvent('UPDATE_FOLDER_MESSAGE', folder, message);
+    this.folderEventService.emitFolderEvent({
+      type: 'UPDATE_FOLDER_MESSAGE',
+      entity: message,
+      parentFolder: folder,
+    });
     return newMessage;
   }
 
@@ -97,7 +105,11 @@ export class CnChatAggregateService {
     }
 
     await this.chatMessageService.deleteMessage(message, folderId);
-    this.folderEventService.emitFolderEvent('DELETE_FOLDER_MESSAGE', folder, message);
+    this.folderEventService.emitFolderEvent({
+      type: 'DELETE_FOLDER_MESSAGE',
+      entity: message,
+      parentFolder: folder,
+    });
   }
 
   public async getFolderMessages(

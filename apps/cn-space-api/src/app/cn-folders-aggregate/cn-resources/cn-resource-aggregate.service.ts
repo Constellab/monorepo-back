@@ -46,11 +46,11 @@ export class CnResourceAggregateService {
     const hierarchyObject = await this.securityService.getAndCheckAuthorizationForUpdate(resourceId);
     const resource = await this.resourceService.renameResource(resourceId, name);
 
-    this.eventService.emitFolderEvent(
-      'RENAME_RESOURCE',
-      await this.hierarchyObjectService.findByIdAndCheck(hierarchyObject.parentId),
-      resource
-    );
+    this.eventService.emitFolderEvent({
+      type: 'RENAME_RESOURCE',
+      entity: resource,
+      parentFolder: await this.hierarchyObjectService.findByIdAndCheck(hierarchyObject.parentId),
+    });
 
     return resource;
   }

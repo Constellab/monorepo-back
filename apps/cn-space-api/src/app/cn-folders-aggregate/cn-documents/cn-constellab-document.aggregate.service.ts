@@ -33,7 +33,11 @@ export class CnConstellabDocumentAggregateService {
     const parentFolder = await this.securityService.getAndCheckAuthorizationForUpdate(parentFolderId);
 
     const doc = await this.documentService.createConstellabDocument(parentFolder, filename);
-    this.folderEventService.emitFolderEvent('CREATE_CONSTELLAB_DOCUMENT', parentFolder, doc.document);
+    this.folderEventService.emitFolderEvent({
+      type: 'CREATE_CONSTELLAB_DOCUMENT',
+      entity: doc.document,
+      parentFolder,
+    });
     return doc;
   }
 
@@ -63,11 +67,11 @@ export class CnConstellabDocumentAggregateService {
       richText
     );
 
-    this.folderEventService.emitFolderEvent(
-      'UPDATE_CONSTELLAB_DOCUMENT',
-      await this.hierarchyObjectService.findByIdAndCheck(folder.parentId),
-      newDoc
-    );
+    this.folderEventService.emitFolderEvent({
+      type: 'UPDATE_CONSTELLAB_DOCUMENT',
+      entity: newDoc,
+      parentFolder: await this.hierarchyObjectService.findByIdAndCheck(folder.parentId),
+    });
     return newDoc;
   }
 

@@ -186,6 +186,12 @@ export class CnGroupsAggregateService {
     return await this.groupsService.getUserSingleGroup(userId);
   }
 
+  public async getCurrentLabAllGroups(): Promise<CnGroup[]> {
+    const lab = CnCurrentUserHelper.getAndCheckCurrentLab();
+    const spaceUserIds = await this.spaceUserService.findAllSpaceUserIds(lab.spaceId);
+    return await this.groupsService.getAllGroupsInSpace(lab.spaceId, spaceUserIds);
+  }
+
   /////////////////////////////// AUTHORIZATION ///////////////////////////////
 
   private async getAndCheckCurrentAuthorizationToGetTeam(groupId: string): Promise<CnGroupTeam> {

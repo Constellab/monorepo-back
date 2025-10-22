@@ -167,7 +167,18 @@ export class CnHierarchyObjectAggregateService {
       ? await this.hierarchyObjectService.findByIdAndCheck(hierarchyObject.parentId)
       : null;
 
-    this.eventService.emitFolderEvent('MOVE_OBJECT_TO_TRASH', parentFolder, newHierarchyObject);
+    if (parentFolder) {
+      this.eventService.emitFolderEvent({
+        type: 'MOVE_OBJECT_TO_TRASH',
+        entity: newHierarchyObject,
+        parentFolder: parentFolder,
+      });
+    } else {
+      this.eventService.emitFolderEvent({
+        type: 'MOVE_OBJECT_TO_TRASH',
+        entity: newHierarchyObject,
+      });
+    }
 
     return newHierarchyObject;
   }
@@ -210,7 +221,18 @@ export class CnHierarchyObjectAggregateService {
       ? await this.hierarchyObjectService.findByIdAndCheck(hierarchyObject.parentId)
       : null;
 
-    this.eventService.emitFolderEvent('RESTORE_OBJECT_FROM_TRASH', parentFolder, newHierarchyObject);
+    if (parentFolder) {
+      this.eventService.emitFolderEvent({
+        type: 'RESTORE_OBJECT_FROM_TRASH',
+        entity: newHierarchyObject,
+        parentFolder: parentFolder,
+      });
+    } else {
+      this.eventService.emitFolderEvent({
+        type: 'RESTORE_OBJECT_FROM_TRASH',
+        entity: newHierarchyObject,
+      });
+    }
 
     return newHierarchyObject;
   }
@@ -264,7 +286,11 @@ export class CnHierarchyObjectAggregateService {
       newParentFolder: newParentFolder,
     };
 
-    this.eventService.emitFolderEvent('MOVE_OBJECT_TO_FOLDER', newParentFolder, data);
+    this.eventService.emitFolderEvent({
+      type: 'MOVE_OBJECT_TO_FOLDER',
+      entity: data,
+      parentFolder: newParentFolder,
+    });
     return newHierarchyObject;
   }
 
@@ -279,7 +305,18 @@ export class CnHierarchyObjectAggregateService {
         ? await this.hierarchyObjectService.findByIdAndCheck(hierarchyObject.parentId)
         : null;
 
-      this.eventService.emitFolderEvent('DELETE_OBJECT', parentFolder, hierarchyObject);
+      if (parentFolder) {
+        this.eventService.emitFolderEvent({
+          type: 'DELETE_OBJECT',
+          entity: hierarchyObject,
+          parentFolder: parentFolder,
+        });
+      } else {
+        this.eventService.emitFolderEvent({
+          type: 'DELETE_OBJECT',
+          entity: hierarchyObject,
+        });
+      }
     }
   }
 
@@ -363,7 +400,11 @@ export class CnHierarchyObjectAggregateService {
       await this.deleteHierarchyObjectAndChildren(child);
     }
 
-    this.eventService.emitFolderEvent('EMPTY_TRASH', folder, folder);
+    this.eventService.emitFolderEvent({
+      type: 'EMPTY_TRASH',
+      entity: folder,
+      parentFolder: folder,
+    });
   }
 
   /////////////////////////////////////// TAG //////////////////////////////////

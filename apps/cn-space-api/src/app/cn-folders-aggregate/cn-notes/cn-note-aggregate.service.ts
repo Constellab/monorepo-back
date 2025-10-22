@@ -71,9 +71,17 @@ export class CnNoteAggregateService {
     const noteResult = await this.noteService.saveNote(createNoteDto, scenarios, parentFolder, files);
 
     if (noteResult.mode === 'create') {
-      this.eventService.emitFolderEvent('CREATE_NOTE', parentFolder, noteResult.note);
+      this.eventService.emitFolderEvent({
+        type: 'CREATE_NOTE',
+        entity: noteResult.note,
+        parentFolder: parentFolder,
+      });
     } else {
-      this.eventService.emitFolderEvent('UPDATE_NOTE', parentFolder, noteResult.note);
+      this.eventService.emitFolderEvent({
+        type: 'UPDATE_NOTE',
+        entity: noteResult.note,
+        parentFolder: parentFolder,
+      });
     }
 
     return this.hierarchyObjectService.findByIdAndCheck(noteResult.note.id);

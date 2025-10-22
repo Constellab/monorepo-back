@@ -55,7 +55,11 @@ export class CnDocumentAggregateService {
       { documentName: file.originalname, overrideMode: overrideMode }
     );
 
-    this.eventService.emitFolderEvent('UPLOAD_FOLDER_DOCUMENT', folder, doc);
+    this.eventService.emitFolderEvent({
+      type: 'UPLOAD_FOLDER_DOCUMENT',
+      entity: doc,
+      parentFolder: folder,
+    });
 
     return this.hierarchyObjectService.findByIdAndCheck(doc.id);
   }
@@ -106,11 +110,13 @@ export class CnDocumentAggregateService {
 
     const doc = await this.documentService.renameDocument(folder.getRootFolderId(), document, newName);
 
-    this.eventService.emitFolderEvent(
-      'RENAME_DOCUMENT',
-      await this.hierarchyObjectService.findByIdAndCheck(document.hierarchyRepresentation.parentId),
-      document
-    );
+    this.eventService.emitFolderEvent({
+      type: 'RENAME_DOCUMENT',
+      entity: document,
+      parentFolder: await this.hierarchyObjectService.findByIdAndCheck(
+        document.hierarchyRepresentation.parentId
+      ),
+    });
 
     return doc;
   }
@@ -199,7 +205,11 @@ export class CnDocumentAggregateService {
       );
     }
 
-    this.eventService.emitFolderEvent('UPLOAD_FOLDER', parentFolder, parentFolder);
+    this.eventService.emitFolderEvent({
+      type: 'UPLOAD_FOLDER',
+      entity: parentFolder,
+      parentFolder: parentFolder,
+    });
   }
 
   private async getOrCreateChildFolder(

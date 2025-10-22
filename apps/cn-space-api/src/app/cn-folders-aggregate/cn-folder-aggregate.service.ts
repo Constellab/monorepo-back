@@ -126,7 +126,10 @@ export class CnFolderAggregateService {
       return dbFolder;
     });
 
-    this.folderEventService.emitFolderEvent('CREATE_ROOT_FOLDER', null, newFolder);
+    this.folderEventService.emitFolderEvent({
+      type: 'CREATE_ROOT_FOLDER',
+      entity: newFolder,
+    });
     return this.foldersService.findByIdAndCheckWithFolder(newFolder.id);
   }
 
@@ -134,7 +137,11 @@ export class CnFolderAggregateService {
     const parentFolder = await this.securityService.getAndCheckAuthorizationForUpdate(parentFolderId);
     const newFolder = await this.createSubFolderEntity(folderDto, parentFolder);
 
-    this.folderEventService.emitFolderEvent('CREATE_SUB_FOLDER', parentFolder, newFolder);
+    this.folderEventService.emitFolderEvent({
+      type: 'CREATE_SUB_FOLDER',
+      entity: newFolder,
+      parentFolder,
+    });
     return this.foldersService.findByIdAndCheckWithFolder(newFolder.id);
   }
 
@@ -209,18 +216,26 @@ export class CnFolderAggregateService {
     dbFolder.endingDate = entity.endingDate;
 
     const newFolder = await this.foldersService.update(dbFolder);
-    this.folderEventService.emitFolderEvent('UPDATE_FOLDER', null, newFolder);
+    this.folderEventService.emitFolderEvent({
+      type: 'UPDATE_FOLDER',
+      entity: newFolder,
+      folderHierarchyObject: folder,
+    });
     return this.foldersService.findByIdAndCheckWithFolder(newFolder.id);
   }
 
   async renameFolder(id: string, name: string): Promise<CnFolderWithHierarchy> {
-    await this.securityService.getAndCheckAuthorizationForUpdate(id);
+    const folder = await this.securityService.getAndCheckAuthorizationForUpdate(id);
     const dbFolder = await this.foldersService.findByIdAndCheck(id);
 
     dbFolder.name = name;
 
     const newFolder = await this.foldersService.update(dbFolder);
-    this.folderEventService.emitFolderEvent('UPDATE_FOLDER', null, newFolder);
+    this.folderEventService.emitFolderEvent({
+      type: 'UPDATE_FOLDER',
+      entity: newFolder,
+      folderHierarchyObject: folder,
+    });
     return this.foldersService.findByIdAndCheckWithFolder(newFolder.id);
   }
 
@@ -397,7 +412,10 @@ export class CnFolderAggregateService {
     await this.hierarchyObjectService.update(folder as CnHierarchyObjectEntity);
 
     // for this event we send the description
-    this.folderEventService.emitFolderEvent('UPDATE_FOLDER_DESCRIPTION', null, description);
+    this.folderEventService.emitFolderEvent({
+      type: 'UPDATE_FOLDER_DESCRIPTION',
+      entity: description,
+    });
   }
 
   public async saveDescriptionImage(folderId: string, file: BlFile): Promise<TeBlockFigureUploadedResponse> {
@@ -437,7 +455,11 @@ export class CnFolderAggregateService {
 
     const newUsers = await this.folderUserService.shareRootFolderToGroup(folder.id, groupId, role);
 
-    this.folderEventService.emitFolderEvent('SHARE_FOLDER', folder, newUsers);
+    this.folderEventService.emitFolderEvent({
+      type: 'SHARE_FOLDER',
+      entity: newUsers,
+      parentFolder: folder,
+    });
 
     return this.folderUserService.findByRootFolderIdWithSharedBy(rootFolderId);
   }
@@ -454,7 +476,11 @@ export class CnFolderAggregateService {
     }
 
     const updatedUser = await this.folderUserService.updateRootFolderUserRole(folder.id, userId, role);
-    this.folderEventService.emitFolderEvent('UPDATE_FOLDER_USER_ROLE', folder, updatedUser);
+    this.folderEventService.emitFolderEvent({
+      type: 'UPDATE_FOLDER_USER_ROLE',
+      entity: updatedUser,
+      parentFolder: folder,
+    });
 
     return this.folderUserService.findByRootFolderIdAndUserIdAndCheckWithSharedBy(folder.id, userId);
   }
@@ -465,7 +491,11 @@ export class CnFolderAggregateService {
     await this.folderUserService.unshareRootFolderFromUser(folderHierarchy.id, userId);
 
     const user = await this.userService.findByIdAndCheck(userId);
-    this.folderEventService.emitFolderEvent('UNSHARE_FOLDER', folderHierarchy, user);
+    this.folderEventService.emitFolderEvent({
+      type: 'UNSHARE_FOLDER',
+      entity: user,
+      parentFolder: folderHierarchy,
+    });
   }
 
   public async unshareAllFolderForUser(userId: string, spaceId: string): Promise<void> {

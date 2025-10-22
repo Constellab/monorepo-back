@@ -29,38 +29,40 @@ export class CnLabFolderListener {
   @OnEvent(cnFolderEventName)
   async handleCnFolderEvent(event: CnFolderEvent): Promise<void> {
     try {
-      switch (event.type) {
+      switch (event.payload.type) {
         case 'CREATE_ROOT_FOLDER':
-          await this.handleCreateRootFolder(event.entity);
+          await this.handleCreateRootFolder(event.payload.entity);
+          break;
+        case 'UPDATE_FOLDER':
+          await this.syncFolderWithLabs(event.payload.folderHierarchyObject.getRootFolderId());
           break;
         case 'CREATE_SUB_FOLDER':
-        case 'UPDATE_FOLDER':
-          await this.syncFolderWithLabs(event.parentFolder.getRootFolderId());
+          await this.syncFolderWithLabs(event.payload.parentFolder.getRootFolderId());
           break;
         case 'UPLOAD_FOLDER':
           // on a folder upload, we sync the root folder
-          await this.syncFolderWithLabs(event.parentFolder.getRootFolderId());
+          await this.syncFolderWithLabs(event.payload.parentFolder.getRootFolderId());
           break;
         case 'MOVE_OBJECT_TO_TRASH':
-          await this.handleMoveToTrash(event.entity);
+          await this.handleMoveToTrash(event.payload.entity);
           break;
         case 'DELETE_OBJECT':
-          await this.handleDelete(event.entity);
+          await this.handleDelete(event.payload.entity);
           break;
         case 'RESTORE_OBJECT_FROM_TRASH':
-          const restoredObject: CnHierarchyObject = event.entity;
+          const restoredObject: CnHierarchyObject = event.payload.entity;
           // if the root folder was restored, do nothing
           if (restoredObject.isFolder() && !restoredObject.isRootFolder()) {
             await this.syncFolderWithLabs(restoredObject.getRootFolderId());
           }
           break;
         case 'MOVE_OBJECT_TO_FOLDER':
-          await this.handleMoveObject(event.entity);
+          await this.handleMoveObject(event.payload.entity);
           break;
       }
     } catch (error: any) {
       this.logger.error(
-        `[CnLabFolderListener] Error while handling folder event ${event.type}. Error ${error}`
+        `[CnLabFolderListener] Error while handling folder event ${event.payload.type}. Error ${error}`
       );
       if (error.stack) {
         this.logger.error(error.stack);

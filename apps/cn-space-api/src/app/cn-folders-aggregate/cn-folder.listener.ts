@@ -59,15 +59,17 @@ export class CnFolderListener {
       const activity = await this.createActivity(activityAndNotif.activity, event);
 
       // specific case for message to handle mentions
-      if (event.type === 'CREATE_FOLDER_MESSAGE') {
-        await this.handleMessageCreated(activity, event.entity, event.parentFolder);
-      } else if (event.type === 'DELETE_FOLDER_MESSAGE') {
-        await this.handleMessageDeleted(activity, event.entity);
+      if (event.payload.type === 'CREATE_FOLDER_MESSAGE') {
+        await this.handleMessageCreated(activity, event.payload.entity, event.payload.parentFolder);
+      } else if (event.payload.type === 'DELETE_FOLDER_MESSAGE') {
+        await this.handleMessageDeleted(activity, event.payload.entity);
       } else if (activityAndNotif.notif) {
-        await this.createNotification(activity, activityAndNotif.notif, event.parentFolder);
+        await this.createNotification(activity, activityAndNotif.notif, event.payload.parentFolder);
       }
     } catch (error: any) {
-      this.logger.error(`[CnFolderListener] Error while handling folder event ${event.type}. Error ${error}`);
+      this.logger.error(
+        `[CnFolderListener] Error while handling folder event ${event.payload.type}. Error ${error}`
+      );
       if (error.stack) {
         this.logger.error(error.stack);
       }
@@ -78,7 +80,7 @@ export class CnFolderListener {
   private async createActivity(activityDTO: CnActivityCreateDTO, event: CnFolderEvent): Promise<CnActivity> {
     activityDTO.user = event.user;
     activityDTO.space = event.space;
-    activityDTO.parentEntityId = event.parentFolder?.id;
+    activityDTO.parentEntityId = event.payload.parentFolder?.id;
 
     return await this.activityService.create(activityDTO);
   }
@@ -183,41 +185,41 @@ export class CnFolderListener {
   }
 
   private getActivityDTO(event: CnFolderEvent): CnActivityAndNotif {
-    switch (event.type) {
+    switch (event.payload.type) {
       case 'CREATE_SUB_FOLDER':
-        return this.subFolderCreated(event.entity, event.parentFolder);
+        return this.subFolderCreated(event.payload.entity, event.payload.parentFolder);
       case 'UPDATE_FOLDER':
-        return this.folderUpdated(event.entity);
+        return this.folderUpdated(event.payload.entity);
       case 'SHARE_FOLDER':
-        return this.folderShared(event.entity, event.parentFolder);
+        return this.folderShared(event.payload.entity, event.payload.parentFolder);
       case 'UNSHARE_FOLDER':
-        return this.folderUnshared(event.entity, event.parentFolder);
+        return this.folderUnshared(event.payload.entity, event.payload.parentFolder);
       case 'MOVE_OBJECT_TO_FOLDER':
-        return this.hierarchyObjectMovedToFolder(event.entity, event.parentFolder);
+        return this.hierarchyObjectMovedToFolder(event.payload.entity, event.payload.parentFolder);
       case 'MOVE_OBJECT_TO_TRASH':
-        return this.hierarchyObjectMovedToTrash(event.entity, event.parentFolder);
+        return this.hierarchyObjectMovedToTrash(event.payload.entity, event.payload.parentFolder);
       case 'RESTORE_OBJECT_FROM_TRASH':
-        return this.hierarchyObjectRestoredFromTrash(event.entity, event.parentFolder);
+        return this.hierarchyObjectRestoredFromTrash(event.payload.entity, event.payload.parentFolder);
       case 'DELETE_OBJECT':
-        return this.hierarchyObjectDeleted(event.entity, event.parentFolder);
+        return this.hierarchyObjectDeleted(event.payload.entity, event.payload.parentFolder);
       case 'EMPTY_TRASH':
-        return this.emptyFolderTrash(event.parentFolder);
+        return this.emptyFolderTrash(event.payload.parentFolder);
       case 'CREATE_SCENARIO':
-        return this.scenarioCreated(event.entity, event.parentFolder);
+        return this.scenarioCreated(event.payload.entity, event.payload.parentFolder);
       case 'UPDATE_SCENARIO':
-        return this.scenarioUpdated(event.entity, event.parentFolder);
+        return this.scenarioUpdated(event.payload.entity, event.payload.parentFolder);
       case 'CREATE_NOTE':
-        return this.noteCreated(event.entity, event.parentFolder);
+        return this.noteCreated(event.payload.entity, event.payload.parentFolder);
       case 'UPDATE_NOTE':
-        return this.noteUpdated(event.entity, event.parentFolder);
+        return this.noteUpdated(event.payload.entity, event.payload.parentFolder);
       case 'CREATE_CONSTELLAB_DOCUMENT':
-        return this.constellabDocCreated(event.entity);
+        return this.constellabDocCreated(event.payload.entity);
       case 'UPLOAD_FOLDER_DOCUMENT':
-        return this.documentCreated(event.entity, event.parentFolder);
+        return this.documentCreated(event.payload.entity, event.payload.parentFolder);
       case 'CREATE_FOLDER_MESSAGE':
-        return this.messageCreated(event.entity, event.parentFolder);
+        return this.messageCreated(event.payload.entity, event.payload.parentFolder);
       case 'DELETE_FOLDER_MESSAGE':
-        return this.messageDeleted(event.entity, event.parentFolder);
+        return this.messageDeleted(event.payload.entity, event.payload.parentFolder);
       default:
         return null;
     }
@@ -622,11 +624,11 @@ export class CnFolderListener {
       'UPDATE_CONSTELLAB_DOCUMENT',
     ];
 
-    if (!events.includes(event.type)) return;
-    if (!(event.entity instanceof CnHierarchyRepresentation)) return;
+    if (!events.includes(event.payload.type)) return;
+    if (!(event.payload.entity instanceof CnHierarchyRepresentation)) return;
 
-    const objectInfo = event.entity.getHierarchyObjectInfo();
-    const folderObjectDb = await this.hierarchyObjectService.findByIdAndCheck(event.entity.id);
+    const objectInfo = event.payload.entity.getHierarchyObjectInfo();
+    const folderObjectDb = await this.hierarchyObjectService.findByIdAndCheck(event.payload.entity.id);
 
     folderObjectDb.setObjectInfo(objectInfo);
     await this.hierarchyObjectService.update(folderObjectDb);
@@ -634,8 +636,8 @@ export class CnFolderListener {
 
   @OnEvent(cnFolderEventName)
   async handleHierarchyObjectEvent(event: CnFolderEvent): Promise<void> {
-    if (event.type === 'OBJECT_TAG_MODIFIED') {
-      await this.refreshHierarchyObjectLastTags(event.entity);
+    if (event.payload.type === 'OBJECT_TAG_MODIFIED') {
+      await this.refreshHierarchyObjectLastTags(event.payload.entity);
     }
   }
 

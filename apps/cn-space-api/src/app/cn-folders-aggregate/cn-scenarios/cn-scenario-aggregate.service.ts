@@ -48,9 +48,17 @@ export class CnScenarioAggregateService {
     const result = await this.scenarioService.saveLabScenario(parentFolder, createLabScenarioDto);
 
     if (result.mode === 'create') {
-      this.eventService.emitFolderEvent('CREATE_SCENARIO', parentFolder, result.scenario);
+      this.eventService.emitFolderEvent({
+        type: 'CREATE_SCENARIO',
+        entity: result.scenario,
+        parentFolder: parentFolder,
+      });
     } else {
-      this.eventService.emitFolderEvent('UPDATE_SCENARIO', parentFolder, result.scenario);
+      this.eventService.emitFolderEvent({
+        type: 'UPDATE_SCENARIO',
+        entity: result.scenario,
+        parentFolder: parentFolder,
+      });
     }
 
     return this.hierarchyObjectService.findByIdAndCheck(result.scenario.id);

@@ -1,5 +1,6 @@
 import {
   BlCredentials,
+  BlDtoHelper,
   BlFile,
   BlParseEnumPipe,
   BlParsePipe,
@@ -36,6 +37,7 @@ import {
   CnExternalLabUser,
 } from '../cn-external-lab-api/model/cn-external-lab-api.class';
 import { CnFolderAggregateService } from '../cn-folders-aggregate/cn-folder-aggregate.service';
+import { CnFolderUserDTO } from '../cn-folders-aggregate/cn-folder-user/cn-folder-user.dto';
 import { CnRootFolderUserRole } from '../cn-folders-aggregate/cn-folder-user/cn-folder-user.entity';
 import { CnSaveFolderDTO } from '../cn-folders-aggregate/cn-folders/cn-folder.dto';
 import { CnFolderWithHierarchy } from '../cn-folders-aggregate/cn-folders/cn-folder.entity';
@@ -53,6 +55,8 @@ import { CnShareResourceRequestDTO } from '../cn-folders-aggregate/cn-resources/
 import { CnResourceAggregateService } from '../cn-folders-aggregate/cn-resources/cn-resource-aggregate.service';
 import { CnCreateLabScenarioDto } from '../cn-folders-aggregate/cn-scenarios/cn-scenario.dto';
 import { CnScenarioAggregateService } from '../cn-folders-aggregate/cn-scenarios/cn-scenario-aggregate.service';
+import { CnGroup } from '../cn-groups/cn-group.entity';
+import { CnGroupsAggregateService } from '../cn-groups/cn-groups-aggregate.service';
 import { CnLabFolderAggregateService } from '../cn-lab-folder-aggregate/cn-lab-folder-aggregate.service';
 import { CnLabStartDTO } from '../cn-labs/cn-lab.dto';
 import { CnLabAggregateService } from '../cn-labs/cn-lab-aggregate.service';
@@ -60,6 +64,7 @@ import { CnLabSendMailDto, CnLabSendMailToMailsDto } from '../cn-labs/mail/cn-la
 import { CnLabMailService } from '../cn-labs/mail/cn-lab-mail.service';
 import { CnLabNotificationCreateDTO } from '../cn-labs/notification/cn-lab-notification.dto';
 import { CnLabNotificationService } from '../cn-labs/notification/cn-lab-notification.service';
+import { CnUser } from '../cn-users/cn-user.entity';
 import {
   CnExternalLabTagsDTO,
   CnRichTextCompareRequestDTO,
@@ -82,7 +87,8 @@ export class CnExternalLabsController {
     private noteAggregateService: CnNoteAggregateService,
     private labMailService: CnLabMailService,
     private labNotificationService: CnLabNotificationService,
-    private configService: CnCoreConfigService
+    private configService: CnCoreConfigService,
+    private groupsAggregateService: CnGroupsAggregateService
   ) {}
 
   // route called on the lab start
@@ -226,6 +232,14 @@ export class CnExternalLabsController {
     return this.labAggregator.getUserInfoForCurrentLab(userId);
   }
 
+  //////////////////////////// GROUPS //////////////////////////
+
+  @CnLabAllowDev()
+  @Get('groups/all')
+  getCurrentLabAllGroups(): Promise<CnGroup[]> {
+    return this.groupsAggregateService.getCurrentLabAllGroups();
+  }
+
   //////////////////////////// FOLDER //////////////////////////
   @CnLabAllowDev()
   @Get('folder/:id')
@@ -263,21 +277,58 @@ export class CnExternalLabsController {
     return this.folderAggregateService.updateFolder(id, folder);
   }
 
+  /**
+   * Share a folder to a group (team or user)
+   * @param id The ID of the folder to share
+   * @param groupId The ID of the group to share the folder with
+   * @param role The role to assign to the group
+   * @returns All the users shared with the folder
+   */
   @CnLabAllowDev()
   @Put(['folder/:id/share/:groupId/role/:role', 'folder/:id/share/:groupId'])
   async shareFolderToGroup(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Param('groupId', new ParseUUIDPipe()) groupId: string,
     @Param('role', new BlParseEnumPipe(CnRootFolderUserRole)) role?: CnRootFolderUserRole
-  ): Promise<void> {
-    await this.folderAggregateService.shareFolder(id, groupId, role ?? CnRootFolderUserRole.USER);
+  ): Promise<CnFolderUserDTO[]> {
+    const folderUsers = await this.folderAggregateService.shareFolder(
+      id,
+      groupId,
+      role ?? CnRootFolderUserRole.USER
+    );
+    return BlDtoHelper.listToDto(CnFolderUserDTO, folderUsers);
   }
 
   @CnLabAllowDev()
-  @Put(['folder/:id/lab/current'])
+  @Delete('folder/:id/share/:groupId')
+  async unshareFolderToGroup(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('groupId', new ParseUUIDPipe()) groupId: string
+  ): Promise<void> {
+    await this.folderAggregateService.unshareFolder(id, groupId);
+  }
+
+  @CnLabAllowDev()
+  @Put('folder/:id/user/:userId/role/:role')
+  async updateFolderUserRole(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('userId', new ParseUUIDPipe()) userId: string,
+    @Param('role', new BlParseEnumPipe(CnRootFolderUserRole)) role: CnRootFolderUserRole
+  ): Promise<void> {
+    await this.folderAggregateService.updateFolderUserRole(id, userId, role);
+  }
+
+  @CnLabAllowDev()
+  @Put('folder/:id/lab/current')
   async shareFolderWithCurrentLab(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabFolderDTO> {
     const folder = await this.labFolderAggregateService.shareFolderWithCurrentLab(id);
     return CnFolderDtoHelper.convertToLabFolderDto(folder);
+  }
+
+  @CnLabAllowDev()
+  @Get('folder/:id/users')
+  async getFolderUsers(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnUser[]> {
+    return this.folderAggregateService.getUsersOfFolder(id);
   }
 
   @CnLabAllowDev()

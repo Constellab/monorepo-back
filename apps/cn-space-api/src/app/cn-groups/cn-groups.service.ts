@@ -140,6 +140,25 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
     });
   }
 
+  public async getAllGroupsInSpace(spaceId: string, userIds: string[]): Promise<CnGroup[]> {
+    const teamWhere: FindOptionsWhere<CnGroupTeam> = {
+      type: CnGroupType.TEAM,
+      spaceId: spaceId,
+    };
+
+    const userWhere: FindOptionsWhere<CnGroupSingleUser> = {
+      userId: In(userIds),
+    };
+
+    return this.repository.find({
+      where: [teamWhere, userWhere],
+      order: {
+        type: 'DESC', // have TEAM before SINGLE_USER
+        label: 'ASC',
+      },
+    });
+  }
+
   private getSmartSearchNameFilters(name: string): FindOptionsWhere<CnUser>[] {
     const findByFirstNameOrLastName: FindOptionsWhere<CnUser>[] = [
       { lastname: Like(`%${name}%`) },
