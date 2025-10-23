@@ -195,7 +195,10 @@ export class CnFolderListener {
       case 'UNSHARE_FOLDER':
         return this.folderUnshared(event.payload.entity, event.payload.parentFolder);
       case 'MOVE_OBJECT_TO_FOLDER':
-        return this.hierarchyObjectMovedToFolder(event.payload.entity, event.payload.parentFolder);
+        return this.hierarchyObjectMovedToFolder(
+          event.payload.entity.hierarchyObject,
+          event.payload.parentFolder
+        );
       case 'MOVE_OBJECT_TO_TRASH':
         return this.hierarchyObjectMovedToTrash(event.payload.entity, event.payload.parentFolder);
       case 'RESTORE_OBJECT_FROM_TRASH':

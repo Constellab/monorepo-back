@@ -60,12 +60,14 @@ export interface CnFolderEventMoveObjectToFolderData {
 type CnFolderEventPayloadRootFolder = {
   type: 'CREATE_ROOT_FOLDER';
   entity: CnFolder;
+  parentFolder?: null;
 };
 
 type CnFolderEventPayloadUpdateFolder = {
   type: 'UPDATE_FOLDER';
   entity: CnFolder;
   folderHierarchyObject: CnHierarchyObject;
+  parentFolder?: null;
 };
 
 // Folder events with parentFolder
@@ -79,13 +81,14 @@ type CnFolderEventPayloadSubFolder = {
 type CnFolderEventPayloadDescription = {
   type: 'UPDATE_FOLDER_DESCRIPTION';
   entity: TeRichText;
+  parentFolder?: null;
 };
 
 // Folder user events with parentFolder
 type CnFolderEventPayloadFolderUsers =
   | {
       type: 'SHARE_FOLDER';
-      entity: CnFolderUser[];
+      entity: CnUser[];
       parentFolder: CnHierarchyObject;
     }
   | {
@@ -147,13 +150,14 @@ type CnFolderEventPayloadHierarchyObject = {
     | 'DELETE_OBJECT'
     | 'EMPTY_TRASH';
   entity: CnHierarchyObject;
-  parentFolder: CnHierarchyObject;
+  parentFolder: CnHierarchyObject | null;
 };
 
 // Hierarchy object events without parentFolder
 type CnFolderEventPayloadHierarchyObjectNoParent = {
   type: 'OBJECT_TAG_MODIFIED';
   entity: CnHierarchyObject;
+  parentFolder?: null;
 };
 
 // Move event with special structure

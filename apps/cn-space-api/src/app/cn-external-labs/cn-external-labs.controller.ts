@@ -5,9 +5,12 @@ import {
   BlParseEnumPipe,
   BlParsePipe,
   BlPublic,
+  BlResponseHelper,
+  BlSearchParams,
+  BlUploadedFile,
   BlUploadedFiles,
 } from '@monorepo/back-core-lib';
-import { ClCoreJsonConvert, ClPageI } from '@monorepo/core-lib';
+import { ClCoreJsonConvert, ClPage, ClPageI } from '@monorepo/core-lib';
 import { TeRichTextBlockModificationsDTO, TeRichTextDTO, TeRichTextHelper } from '@monorepo/te-text-editor';
 import {
   Body,
@@ -20,9 +23,11 @@ import {
   Post,
   Put,
   Query,
+  Res,
   UseInterceptors,
 } from '@nestjs/common';
-import { FilesInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { Response } from 'express';
 
 import { CnExternalCheckCredentialResponse } from '../cn-auth/cn-auth.service';
 import {
@@ -36,6 +41,9 @@ import {
   CnExternalLabSyncedObjectDTO,
   CnExternalLabUser,
 } from '../cn-external-lab-api/model/cn-external-lab-api.class';
+import { CnDocument } from '../cn-folders-aggregate/cn-documents/cn-document.entity';
+import { CnDocumentAggregateService } from '../cn-folders-aggregate/cn-documents/cn-document-aggregate.service';
+import { CnDocumentUploadOverrideMode } from '../cn-folders-aggregate/cn-documents/cn-document-dto.class';
 import { CnFolderAggregateService } from '../cn-folders-aggregate/cn-folder-aggregate.service';
 import { CnFolderUserDTO } from '../cn-folders-aggregate/cn-folder-user/cn-folder-user.dto';
 import { CnRootFolderUserRole } from '../cn-folders-aggregate/cn-folder-user/cn-folder-user.entity';
@@ -85,6 +93,7 @@ export class CnExternalLabsController {
     private resourceAggregateService: CnResourceAggregateService,
     private scenarioAggregateService: CnScenarioAggregateService,
     private noteAggregateService: CnNoteAggregateService,
+    private documentAggregateService: CnDocumentAggregateService,
     private labMailService: CnLabMailService,
     private labNotificationService: CnLabNotificationService,
     private configService: CnCoreConfigService,
@@ -199,6 +208,68 @@ export class CnExternalLabsController {
     return this.resourceAggregateService.shareResourceToFolder(parentFolderId, body);
   }
 
+  //////////////////////////// DOCUMENT ////////////////////////////
+
+  /**
+   * Upload a document to a folder
+   * @param parentFolderId The folder to upload the document to
+   * @param file The file to upload
+   * @param overrideMode How to handle existing files with the same name
+   */
+  @UseInterceptors(FileInterceptor('file'))
+  @Put(['folder/:parentFolderId/document/upload/:overrideMode'])
+  @CnLabAllowDev()
+  uploadDocument(
+    @Param('parentFolderId', new ParseUUIDPipe()) parentFolderId: string,
+    @BlUploadedFile() file: BlFile,
+    @Param('overrideMode') overrideMode: CnDocumentUploadOverrideMode
+  ): Promise<CnHierarchyObject> {
+    return this.documentAggregateService.uploadDocument(parentFolderId, file, overrideMode);
+  }
+
+  /**
+   * Download a document
+   * @param documentId The ID of the document to download
+   * @param filename The filename (for URL readability, not used in logic)
+   * @param response Express response object
+   */
+  @CnLabAllowDev()
+  @Get(['document/:documentId/download/:filename(*)'])
+  async downloadDocument(
+    @Param('documentId', new ParseUUIDPipe()) documentId: string,
+    @Param('filename') _: string,
+    @Res() response: Response
+  ): Promise<void> {
+    const file = await this.documentAggregateService.getUploadedDocument(documentId);
+    BlResponseHelper.setFileResponse(response, file, 'download');
+  }
+
+  /**
+   * Rename a document
+   * @param documentId The ID of the document to rename
+   * @param name The new name for the document
+   */
+  @CnLabAllowDev()
+  @Put(['document/:documentId/rename'])
+  renameDocument(
+    @Param('documentId', new ParseUUIDPipe()) documentId: string,
+    @Body() name: { name: string }
+  ): Promise<CnDocument> {
+    return this.documentAggregateService.renameDocument(documentId, name.name);
+  }
+
+  /**
+   * Delete a document by moving it to trash
+   * @param documentId The ID of the document to delete
+   */
+  @CnLabAllowDev()
+  @Delete(['document/:documentId'])
+  async deleteDocument(
+    @Param('documentId', new ParseUUIDPipe()) documentId: string
+  ): Promise<CnHierarchyObject> {
+    return this.hierarchyObjectAggregateService.moveToTrash(documentId);
+  }
+
   /////////////////////////////// SYNCHRONIZATION ///////////////////////////////
   // those routes does not require user authentication
   // because they are called by the lab server and are just get
@@ -245,6 +316,24 @@ export class CnExternalLabsController {
   @Get('folder/:id')
   getFolder(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnHierarchyObject[]> {
     return this.hierarchyObjectAggregateService.getObjectAncestors(id);
+  }
+
+  /**
+   * Get paginated children of a folder with search capabilities
+   * @param id The folder ID to get children from
+   * @param searchParam Search and filter parameters
+   * @param page Page number (0-indexed)
+   * @param size Page size
+   */
+  @CnLabAllowDev()
+  @Post('folder/:id/children/paginated')
+  getChildrenPaginated(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body(new BlParsePipe(BlSearchParams)) searchParam: BlSearchParams,
+    @Query('page', new ParseIntPipe()) page: number,
+    @Query('size', new ParseIntPipe()) size: number
+  ): Promise<ClPage<CnHierarchyObject>> {
+    return this.hierarchyObjectAggregateService.searchVisibleInFolderChildren(id, searchParam, page, size);
   }
 
   @CnLabAllowDev()

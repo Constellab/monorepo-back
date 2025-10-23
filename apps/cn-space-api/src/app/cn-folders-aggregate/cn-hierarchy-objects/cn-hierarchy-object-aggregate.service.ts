@@ -177,6 +177,7 @@ export class CnHierarchyObjectAggregateService {
       this.eventService.emitFolderEvent({
         type: 'MOVE_OBJECT_TO_TRASH',
         entity: newHierarchyObject,
+        parentFolder: null,
       });
     }
 
@@ -231,6 +232,7 @@ export class CnHierarchyObjectAggregateService {
       this.eventService.emitFolderEvent({
         type: 'RESTORE_OBJECT_FROM_TRASH',
         entity: newHierarchyObject,
+        parentFolder: null,
       });
     }
 
@@ -315,6 +317,7 @@ export class CnHierarchyObjectAggregateService {
         this.eventService.emitFolderEvent({
           type: 'DELETE_OBJECT',
           entity: hierarchyObject,
+          parentFolder: null,
         });
       }
     }

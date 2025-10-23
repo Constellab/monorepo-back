@@ -214,7 +214,7 @@ export class CnHierarchyObjectTagAggregateService {
   }
 
   private emitTagModifiedEvent(hierarchyObject: CnHierarchyObject): void {
-    this.folderEventService.emitFolderEvent('OBJECT_TAG_MODIFIED', undefined, hierarchyObject);
+    this.folderEventService.emitFolderEvent({ type: 'OBJECT_TAG_MODIFIED', entity: hierarchyObject });
   }
 
   /////////////////////////////////////////// FIND ///////////////////////////////////////////

@@ -69,7 +69,7 @@ export class CnConstellabDocumentAggregateService {
 
     this.folderEventService.emitFolderEvent({
       type: 'UPDATE_CONSTELLAB_DOCUMENT',
-      entity: newDoc,
+      entity: newDoc.document,
       parentFolder: await this.hierarchyObjectService.findByIdAndCheck(folder.parentId),
     });
     return newDoc;
