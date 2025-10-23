@@ -234,9 +234,8 @@ export class CnLabAggregateService {
           entityManager
         );
       }
+      await this.labVolumeService.createVolume(labDb, labDb.createdAt, volumeSize, volumeType, entityManager);
     }
-
-    await this.labVolumeService.createVolume(labDb, labDb.createdAt, volumeSize, volumeType, entityManager);
 
     return labDb;
   }
