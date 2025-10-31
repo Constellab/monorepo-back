@@ -109,13 +109,13 @@ export class CnFoldersController {
     return this.folderAggregateService.renameFolder(id, body.name);
   }
 
-  @Post(':id/share/:groupId/role/:role')
+  @Post(':id/share/:groupOrUserId/role/:role')
   async shareFolder(
     @Param('id', new ParseUUIDPipe()) id: string,
-    @Param('groupId', new ParseUUIDPipe()) groupId: string,
+    @Param('groupOrUserId', new ParseUUIDPipe()) groupOrUserId: string,
     @Param('role', new BlParseEnumPipe(CnRootFolderUserRole)) role: CnRootFolderUserRole
   ): Promise<CnFolderUserDTO[]> {
-    const folderUsers = await this.folderAggregateService.shareFolder(id, groupId, role);
+    const folderUsers = await this.folderAggregateService.shareFolder(id, groupOrUserId, role);
     return BlDtoHelper.listToDto(CnFolderUserDTO, folderUsers);
   }
 

@@ -8,6 +8,7 @@ import { CnErrorText } from '../../cn-core/model/config/cn-error-text.class';
 import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
 import { CnGroupsService } from '../../cn-groups/cn-groups.service';
 import { CnUser } from '../../cn-users/cn-user.entity';
+import { CnUsersService } from '../../cn-users/cn-users.service';
 import {
   CnFolderUser,
   CnFolderUserEntity,
@@ -20,17 +21,28 @@ import { CnFolderUserSearch } from './cn-folder-user-search.class';
 export class CnFolderUserService extends BlAbstractPaginatedService<CnFolderUserEntity> {
   constructor(
     @InjectRepository(CnFolderUserEntity) private repository: Repository<CnFolderUserEntity>,
-    private groupService: CnGroupsService
+    private groupService: CnGroupsService,
+    private userService: CnUsersService
   ) {
     super(repository, CnFolderUserEntity);
   }
 
-  public async shareRootFolderToGroup(
+  public async shareRootFolderToGroupOrUser(
     rootFolderId: string,
-    groupId: string,
+    groupOrUserId: string,
     role: CnRootFolderUserRole
   ): Promise<CnUser[]> {
-    const users = await this.groupService.getUsersOfGroups([groupId]);
+    const users = await this.groupService.getUsersOfGroups([groupOrUserId]);
+
+    if (users.length === 0) {
+      const user = await this.userService.findById(groupOrUserId);
+      if (user) {
+        await this.shareRootFolderToUserIfNot(rootFolderId, user.id, role);
+        return [user];
+      } else {
+        throw new Error('The group or user does not exist');
+      }
+    }
 
     for (const user of users) {
       await this.shareRootFolderToUserIfNot(rootFolderId, user.id, role);
@@ -111,11 +123,11 @@ export class CnFolderUserService extends BlAbstractPaginatedService<CnFolderUser
     });
   }
 
-  public findByRootFolderIdAndUserIdAndCheckWithSharedBy(
+  public async findByRootFolderIdAndUserIdAndCheckWithSharedBy(
     rootFolderId: string,
     userId: string
   ): Promise<CnFolderUserWithSharedBy> {
-    const userFolder = this.repository.findOne({
+    const userFolder = await this.repository.findOne({
       where: { rootFolderId: rootFolderId, userId: userId },
       relations: { sharedBy: true },
     });
@@ -129,8 +141,11 @@ export class CnFolderUserService extends BlAbstractPaginatedService<CnFolderUser
     return this.repository.findOne({ where: { rootFolderId: rootFolderId, userId: userId } });
   }
 
-  public findByRootFolderIdAndUserIdAndCheck(rootFolderId: string, userId: string): Promise<CnFolderUser> {
-    const userFolder = this.findByRootFolderIdAndUserId(rootFolderId, userId);
+  public async findByRootFolderIdAndUserIdAndCheck(
+    rootFolderId: string,
+    userId: string
+  ): Promise<CnFolderUser> {
+    const userFolder = await this.findByRootFolderIdAndUserId(rootFolderId, userId);
     if (!userFolder) {
       throw new BlBadRequestException('The user is not a member of the folder');
     }

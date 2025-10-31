@@ -444,7 +444,7 @@ export class CnFolderAggregateService {
 
   public async shareFolder(
     rootFolderId: string,
-    groupId: string,
+    groupOrUserId: string,
     role: CnRootFolderUserRole
   ): Promise<CnFolderUserWithSharedBy[]> {
     const folder = await this.securityService.getAndCheckAuthorizationForOwner(rootFolderId);
@@ -453,7 +453,11 @@ export class CnFolderAggregateService {
       throw new BlBadRequestException('Only root folders can be shared');
     }
 
-    const newUsers = await this.folderUserService.shareRootFolderToGroup(folder.id, groupId, role);
+    const newUsers = await this.folderUserService.shareRootFolderToGroupOrUser(
+      folder.id,
+      groupOrUserId,
+      role
+    );
 
     this.folderEventService.emitFolderEvent({
       type: 'SHARE_FOLDER',

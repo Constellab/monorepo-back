@@ -369,32 +369,32 @@ export class CnExternalLabsController {
   /**
    * Share a folder to a group (team or user)
    * @param id The ID of the folder to share
-   * @param groupId The ID of the group to share the folder with
+   * @param groupOrUserId The ID of the group or user to share the folder with
    * @param role The role to assign to the group
    * @returns All the users shared with the folder
    */
   @CnLabAllowDev()
-  @Put(['folder/:id/share/:groupId/role/:role', 'folder/:id/share/:groupId'])
+  @Put(['folder/:id/share/:groupOrUserId/role/:role', 'folder/:id/share/:groupOrUserId'])
   async shareFolderToGroup(
     @Param('id', new ParseUUIDPipe()) id: string,
-    @Param('groupId', new ParseUUIDPipe()) groupId: string,
+    @Param('groupOrUserId', new ParseUUIDPipe()) groupOrUserId: string,
     @Param('role', new BlParseEnumPipe(CnRootFolderUserRole)) role?: CnRootFolderUserRole
   ): Promise<CnFolderUserDTO[]> {
     const folderUsers = await this.folderAggregateService.shareFolder(
       id,
-      groupId,
+      groupOrUserId,
       role ?? CnRootFolderUserRole.USER
     );
     return BlDtoHelper.listToDto(CnFolderUserDTO, folderUsers);
   }
 
   @CnLabAllowDev()
-  @Delete('folder/:id/share/:groupId')
+  @Delete('folder/:id/share/:userId')
   async unshareFolderToGroup(
     @Param('id', new ParseUUIDPipe()) id: string,
-    @Param('groupId', new ParseUUIDPipe()) groupId: string
+    @Param('userId', new ParseUUIDPipe()) userId: string
   ): Promise<void> {
-    await this.folderAggregateService.unshareFolder(id, groupId);
+    await this.folderAggregateService.unshareFolder(id, userId);
   }
 
   @CnLabAllowDev()
