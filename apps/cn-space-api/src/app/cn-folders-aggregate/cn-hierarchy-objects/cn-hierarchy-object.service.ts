@@ -18,6 +18,7 @@ import {
   CnHierarchyObjectWithChildren,
   CnHierarchyObjectWithParent,
 } from './cn-hierarchy-object.entity';
+import { CnHierarchyObjectSearchBuilder } from './cn-hierarchy-object-search-builder';
 
 @Injectable()
 export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjectEntity> {
@@ -187,22 +188,25 @@ export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjec
     page: number,
     size: number
   ): Promise<ClPage<CnHierarchyObjectWithParent>> {
-    const searchBuilder: BlSearchBuilder<CnHierarchyObjectEntity> = new BlSearchBuilder();
-    // force the sort by objectType first
-    searchBuilder.mergeOrderOptions({ objectTypeOrder: 'ASC' });
-    searchBuilder.addSearchParams(searchParam);
-    searchBuilder.mergeWhereOptions({
-      visibility: visibility,
-      spaceId: spaceId,
-    });
-    searchBuilder.addOrOption({
-      rootParentId: In(rootFoldersIds),
-    });
-    searchBuilder.addOrOption({
-      id: In(rootFoldersIds),
-    });
+    const searchBuilder = new CnHierarchyObjectSearchBuilder();
+    searchBuilder.addSearchInRootFolderAndChildrenOption(rootFoldersIds, spaceId, visibility, searchParam);
 
     searchBuilder.setRelations({ parent: true });
+    return await this.findPaginated(page, size, searchBuilder.build());
+  }
+
+  public async searchInRootFoldersAndChildrenByType(
+    rootFoldersIds: string[],
+    spaceId: string,
+    visibility: CnHierarchyObjectVisibility,
+    objectType: CnHierarchyObjectType,
+    searchParam: BlSearchParams,
+    page: number,
+    size: number
+  ): Promise<ClPage<CnHierarchyObject>> {
+    const searchBuilder = new CnHierarchyObjectSearchBuilder();
+    searchBuilder.addSearchInRootFolderAndChildrenOption(rootFoldersIds, spaceId, visibility, searchParam);
+    searchBuilder.mergeWhereOptions({ objectType: objectType });
     return await this.findPaginated(page, size, searchBuilder.build());
   }
 

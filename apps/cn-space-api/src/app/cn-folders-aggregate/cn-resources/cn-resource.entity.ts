@@ -10,6 +10,11 @@ import { CnHierarchyRepresentation } from '../cn-hierarchy-objects/cn-hierarchy-
 
 @Entity('resource')
 export class CnResourceEntity extends CnHierarchyRepresentation {
+  public static readonly APPLICATION_TYPING_NAMES = [
+    'RESOURCE.gws_core.StreamlitResource',
+    'RESOURCE.gws_core.ReflexResource',
+  ];
+
   @Column({ nullable: false, length: 36 })
   resourceId: string;
 
@@ -25,6 +30,9 @@ export class CnResourceEntity extends CnHierarchyRepresentation {
   @Column({ nullable: false, length: 255 })
   token: string;
 
+  @Column({ nullable: false, default: false })
+  isApplication: boolean;
+
   @BlNotUpdatable()
   @Type(() => CnLabEntity)
   @ManyToOne(() => CnLabEntity, { nullable: false, eager: false })
@@ -32,7 +40,7 @@ export class CnResourceEntity extends CnHierarchyRepresentation {
 
   getHierarchyObjectInfo(): CnHierarchyObjectInfo {
     return {
-      objectType: CnHierarchyObjectType.RESOURCE,
+      objectType: this.isApplication ? CnHierarchyObjectType.APPLICATION : CnHierarchyObjectType.RESOURCE,
       name: this.name,
       lastModifiedAt: this.createdAt,
       user: this.createdBy,

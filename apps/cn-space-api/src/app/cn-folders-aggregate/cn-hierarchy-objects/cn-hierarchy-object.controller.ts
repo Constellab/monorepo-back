@@ -83,6 +83,19 @@ export class CnHierarchyObjectController {
     );
   }
 
+  @Post('/root/search-applications')
+  public async searchApplicationsInRootFolders(
+    @Body(new BlParsePipe(BlSearchParams)) searchParam: BlSearchParams,
+    @Query('page', ParseIntPipe) page: number,
+    @Query('size', ParseIntPipe) size: number
+  ): Promise<ClPageI<CnHierarchyObject>> {
+    return await this.hierarchyObjectAggregateService.searchApplicationsForCurrentUser(
+      searchParam,
+      page,
+      size
+    );
+  }
+
   @Post('current-space/search')
   async searchInCurrentSpace(
     @Body(new BlParsePipe(BlSearchParams)) searchParam: BlSearchParams,

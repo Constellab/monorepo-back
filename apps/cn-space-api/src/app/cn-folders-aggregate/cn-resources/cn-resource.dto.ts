@@ -10,6 +10,7 @@ export class CnShareResourceRequestDTO {
   typing_name: string;
   style: CnTypeStyle;
   token: string;
+  is_application?: boolean;
 }
 
 export class CnResourceAccessDTO {

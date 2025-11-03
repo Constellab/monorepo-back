@@ -323,3 +323,21 @@ alter table activity modify column `entityType` enum('FOLDER','SCENARIO','NOTE',
  -- Add REFLEX_ACCESS_TOKEN, 
 ########################### 2.9.2 ##########################
 --  STARTED_SERVER_TEMP_STATUS_MAX_DURATION_MINUTES
+
+
+############################ 2.10.0 ##########################
+alter table resource
+  add column isApplication boolean not null default false;
+
+update resource
+set isApplication = true
+where typingName IN ('RESOURCE.gws_core.StreamlitResource', 'RESOURCE.gws_core.ReflexResource'); 
+
+alter table hierarchy_object
+  modify column objectType enum ('FOLDER', 'DOCUMENT', 'CONSTELLAB_DOCUMENT', 'HIDDEN_DOCUMENT', 'NOTE', 'SCENARIO', 'RESOURCE', 'APPLICATION') not null;
+
+-- Update hierarchy_object to set objectType to 'APPLICATION' for Streamlit and Reflex resources
+UPDATE hierarchy_object ho
+INNER JOIN resource r ON ho.id = r.id
+SET ho.objectType = 'APPLICATION'
+WHERE r.typingName IN ('RESOURCE.gws_core.StreamlitResource', 'RESOURCE.gws_core.ReflexResource');

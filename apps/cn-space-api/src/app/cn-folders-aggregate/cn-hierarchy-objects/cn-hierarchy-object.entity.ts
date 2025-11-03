@@ -31,6 +31,7 @@ export enum CnHierarchyObjectType {
   NOTE = 'NOTE',
   SCENARIO = 'SCENARIO',
   RESOURCE = 'RESOURCE',
+  APPLICATION = 'APPLICATION',
 }
 
 export enum CnHierarchyObjectVisibility {
@@ -276,6 +277,8 @@ export class CnHierarchyObjectEntity extends BlEntityWithId {
         return 'note';
       case CnHierarchyObjectType.RESOURCE:
         return 'resource';
+      case CnHierarchyObjectType.APPLICATION:
+        return 'application';
     }
   }
 
@@ -292,6 +295,7 @@ export class CnHierarchyObjectEntity extends BlEntityWithId {
       case CnHierarchyObjectType.SCENARIO:
         return CnActivityEntityType.SCENARIO;
       case CnHierarchyObjectType.RESOURCE:
+      case CnHierarchyObjectType.APPLICATION:
         return CnActivityEntityType.RESOURCE;
     }
   }
@@ -310,6 +314,7 @@ export class CnHierarchyObjectEntity extends BlEntityWithId {
       case CnHierarchyObjectType.DOCUMENT:
         return CnFrontService.getFolderRoute(this.parentId);
       case CnHierarchyObjectType.RESOURCE:
+      case CnHierarchyObjectType.APPLICATION:
         return CnFrontService.getResourceRoute(this.id);
     }
   }

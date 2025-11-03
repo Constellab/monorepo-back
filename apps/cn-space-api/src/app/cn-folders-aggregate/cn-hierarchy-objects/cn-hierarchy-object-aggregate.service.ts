@@ -136,6 +136,28 @@ export class CnHierarchyObjectAggregateService {
     );
   }
 
+  public async searchApplicationsForCurrentUser(
+    searchParam: BlSearchParams,
+    page: number,
+    size: number
+  ): Promise<ClPageI<CnHierarchyObject>> {
+    const spaceId = CnCurrentUserHelper.getAndCheckCurrentSpace().id;
+    const rootFolders = await this.hierarchyObjectService.getAllRootFoldersOfUser(
+      CnCurrentUserHelper.getAndCheckCurrentUser().id,
+      spaceId
+    );
+
+    return this.hierarchyObjectService.searchInRootFoldersAndChildrenByType(
+      rootFolders.map((folder) => folder.id),
+      spaceId,
+      CnHierarchyObjectVisibility.VISIBLE,
+      CnHierarchyObjectType.APPLICATION,
+      searchParam,
+      page,
+      size
+    );
+  }
+
   ////////////////////// UPDATE ////////////////////
 
   /**
@@ -271,6 +293,7 @@ export class CnHierarchyObjectAggregateService {
         );
         break;
       case CnHierarchyObjectType.RESOURCE:
+      case CnHierarchyObjectType.APPLICATION:
       case CnHierarchyObjectType.SCENARIO:
         // simple case where we only need to update the parent
         newHierarchyObject = await this.hierarchyObjectService.updateLeafParent(
@@ -360,6 +383,7 @@ export class CnHierarchyObjectAggregateService {
       case CnHierarchyObjectType.DOCUMENT:
         return await this.documentAggregateService.deleteDocument(hierarchyObject.id);
       case CnHierarchyObjectType.RESOURCE:
+      case CnHierarchyObjectType.APPLICATION:
         return await this.resourceAggregateService.deleteResource(hierarchyObject.id);
       case CnHierarchyObjectType.NOTE:
         return await this.noteAggregateService.deleteNote(hierarchyObject.id);

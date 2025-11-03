@@ -36,6 +36,14 @@ export class CnResourcesService extends BlAbstractService<CnResourceEntity> {
     resourceEntity.lastModifiedAt = ClDateHelper.getDate();
     resourceEntity.lastModifiedBy = CnCurrentUserHelper.getAndCheckCurrentUser();
 
+    if (shareResourceDTO.is_application != null) {
+      resourceEntity.isApplication = shareResourceDTO.is_application;
+    } else {
+      resourceEntity.isApplication = CnResourceEntity.APPLICATION_TYPING_NAMES.includes(
+        shareResourceDTO.typing_name
+      );
+    }
+
     if (resourceDb) {
       // update
       resourceEntity.id = resourceDb.id;
