@@ -14,7 +14,7 @@
 -- ALTER TABLE `space` CHANGE `storageUsage` `cloudStorageUsage` bigint(20) NOT NULL;
 -- RENAME TABLE old_table_name TO new_table_name;
 --
-
+  
 ######## 2.0.11 ########
 update scenario
 SET protocol = REPLACE(protocol, 'TASK.gws_core.Source', 'TASK.gws_core.InputTask');
@@ -341,3 +341,6 @@ UPDATE hierarchy_object ho
 INNER JOIN resource r ON ho.id = r.id
 SET ho.objectType = 'APPLICATION'
 WHERE r.typingName IN ('RESOURCE.gws_core.StreamlitResource', 'RESOURCE.gws_core.ReflexResource');
+
+alter table settings 
+  add column constellabSuite text null;

@@ -2,18 +2,32 @@ import {
   BlAbstractService,
   BlBadRequestException,
   BlFile,
+  BlMailService,
   BlUnauthorizedException,
 } from '@monorepo/back-core-lib';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
+import { CnMailTemplate } from '../cn-core/model/config/cn-mail-template.class';
+import { CnCoreConfigService } from '../cn-core/modules/cn-core-config/cn-core-config.service';
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
-import { CnServerDecisionTreeDTO, CnServerDecisionTreeOptionDTO, CnSettings } from './cn-settings.entity';
+import {
+  CnConstellabSuiteAppDTO,
+  CnConstellabSuiteDTO,
+  CnRequestAppDTO,
+  CnServerDecisionTreeDTO,
+  CnServerDecisionTreeOptionDTO,
+  CnSettings,
+} from './cn-settings.entity';
 
 @Injectable()
 export class CnSettingsService extends BlAbstractService<CnSettings> {
-  constructor(@InjectRepository(CnSettings) private repository: Repository<CnSettings>) {
+  constructor(
+    @InjectRepository(CnSettings) private repository: Repository<CnSettings>,
+    private mailService: BlMailService,
+    private configService: CnCoreConfigService
+  ) {
     super(repository, CnSettings);
   }
 
@@ -31,7 +45,7 @@ export class CnSettingsService extends BlAbstractService<CnSettings> {
 
     try {
       tree = JSON.parse(file.buffer.toString());
-    } catch (e) {
+    } catch {
       throw new BlBadRequestException('Invalid JSON file');
     }
 
@@ -59,6 +73,73 @@ export class CnSettingsService extends BlAbstractService<CnSettings> {
     });
   }
 
+  ///////////////////////////////// CONSTELLAB SUITE /////////////////////////////////
+
+  public async getConstellabSuite(): Promise<CnConstellabSuiteDTO> {
+    const settings = await this.getSettingsAndCheck();
+
+    return settings.constellabSuite;
+  }
+
+  public async updateConstellabSuite(file: BlFile): Promise<void> {
+    // read the file
+    let constellabSuite: CnConstellabSuiteDTO;
+
+    try {
+      constellabSuite = JSON.parse(file.buffer.toString());
+    } catch {
+      throw new BlBadRequestException('Invalid JSON file');
+    }
+
+    // check the constellab suite
+    this.checkConstellabSuite(constellabSuite.apps);
+
+    await this.updateSettings({ constellabSuite });
+  }
+
+  private checkConstellabSuite(apps: CnConstellabSuiteAppDTO[]): void {
+    if (!apps || apps.length === 0) {
+      throw new BlBadRequestException('Invalid constellab suite, empty apps list');
+    }
+
+    apps.forEach((app) => {
+      if (!app.name || !app.emoji || !app.background || !app.shortDescription) {
+        throw new BlBadRequestException(
+          'Invalid constellab suite, missing name, emoji, background or shortDescription '
+        );
+      }
+    });
+  }
+
+  ///////////////////////////////// REQUEST APP /////////////////////////////////
+
+  public async requestApp(requestAppDto: CnRequestAppDTO): Promise<void> {
+    const user = CnCurrentUserHelper.getAndCheckCurrentUser();
+    const space = CnCurrentUserHelper.getAndCheckCurrentSpace();
+
+    const customerSuccessMail = this.configService.getCustomerSuccessMail();
+    if (!customerSuccessMail) {
+      throw new BlBadRequestException('No customer success email configured');
+    }
+
+    const data = {
+      user: {
+        firstname: user.firstname,
+        lastname: user.lastname,
+        email: user.email,
+      },
+      spaceName: space.name,
+      appName: requestAppDto.appName,
+    };
+
+    await this.mailService.sendMailAndCheck({
+      templateName: CnMailTemplate.request_app,
+      recipients: customerSuccessMail,
+      lang: user.lang,
+      data: data,
+    });
+  }
+
   ///////////////////////////////// GENERIC /////////////////////////////////
 
   public async updateSettings(settings: Partial<CnSettings>): Promise<CnSettings> {
@@ -72,7 +153,8 @@ export class CnSettingsService extends BlAbstractService<CnSettings> {
     const settings = await this.repository.find({});
 
     if (settings.length === 0) {
-      throw new BlBadRequestException('Settings not found');
+      const settings = CnSettings.createDefault();
+      return await this.repository.save(settings);
     }
 
     return settings[0];

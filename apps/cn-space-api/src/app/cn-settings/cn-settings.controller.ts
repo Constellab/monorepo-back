@@ -1,8 +1,8 @@
 import { BlFile, BlPublic, BlUploadedFile } from '@monorepo/back-core-lib';
-import { Controller, Get, Put, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Post, Put, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 
-import { CnServerDecisionTreeDTO } from './cn-settings.entity';
+import { CnConstellabSuiteDTO, CnRequestAppDTO, CnServerDecisionTreeDTO } from './cn-settings.entity';
 import { CnSettingsService } from './cn-settings.service';
 import { CnYoutubeService } from './cn-youtube.service';
 
@@ -26,6 +26,25 @@ export class CnSettingsController {
   @Put('server-decision-tree')
   saveNewPhoto(@BlUploadedFile() file: BlFile): Promise<void> {
     return this.settingsService.updateServerDecisionTree(file);
+  }
+
+  /////////////////////////////// CONSTELLAB SUITE /////////////////////////////////
+
+  @BlPublic()
+  @Get('constellab-suite')
+  public async getConstellabSuite(): Promise<CnConstellabSuiteDTO> {
+    return this.settingsService.getConstellabSuite();
+  }
+
+  @UseInterceptors(FileInterceptor('file'))
+  @Put('constellab-suite')
+  updateConstellabSuite(@BlUploadedFile() file: BlFile): Promise<void> {
+    return this.settingsService.updateConstellabSuite(file);
+  }
+
+  @Post('request-app')
+  requestApp(@Body() requestAppDto: CnRequestAppDTO): Promise<void> {
+    return this.settingsService.requestApp(requestAppDto);
   }
 
   @Get('tutorial-videos')

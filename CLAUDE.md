@@ -43,43 +43,6 @@ npm run cn-space-api:serve-nest
 npm run hn-community-api:serve-nest
 ```
 
-### Testing
-
-```bash
-# Run tests for cn-space-api (default test command)
-npm test
-
-# E2E tests for cn-space-api
-npm run cn-space-api:test-e2e
-```
-
-### Linting and Formatting
-
-```bash
-# Lint specific application
-npm run cn-space-api:lint
-
-# Format code
-npm run format
-
-# Check formatting
-npm run format:check
-```
-
-### Docker Operations
-
-```bash
-# Build Docker images
-npm run cn-space-api:build-image
-npm run hn-community-api:build-image
-
-# Deploy to environments (requires proper configuration)
-npm run cn-space-api:caprover-deploy-preprod
-npm run cn-space-api:caprover-deploy-prod
-npm run hn-community-api:caprover-deploy-pre-prod
-npm run hn-community-api:caprover-deploy-prod
-```
-
 ## Architecture Guidelines
 
 ### Naming Conventions
@@ -130,21 +93,6 @@ Both applications follow a similar modular structure:
 4. **Environment Setup**: Configure `.env` files in `environments/` directories
 5. **Deployment**: Use Docker builds and CapRover deployment scripts
 
-## Build Configuration
+## Good practices
 
-- **TypeScript**: Configured with multiple tsconfig files for different build targets
-- **Webpack**: Custom webpack configuration in each app directory
-- **Assets**: Templates, i18n files, and static resources in `assets/` directories
-
-## Key Dependencies
-
-- **NestJS**: Core framework (v10.x)
-- **TypeORM**: Database ORM with MySQL
-- **BullMQ**: Queue processing
-- **Winston**: Logging
-- **JWT**: Authentication
-- **i18n**: Internationalization
-- **Luxon**: Date/time handling
-- **Class-transformer/validator**: DTO validation
-
-When working with this codebase, always follow the established naming conventions, module structure, and architectural patterns. Pay attention to the prefix system for easy component identification and maintain consistency with existing code patterns.
+- For email, use template in `assets/templates/[lang]` folder. Define the template in sub folder `en` and `fr` for localization. For email subject, define it in `assets/i18n/[lang]/mail-subject.json` for each language. And provide it in the enum file `*-mail-template.class.ts`.
