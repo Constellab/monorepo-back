@@ -166,7 +166,7 @@ export class CnFolderListener {
       notifMode === CnRootFolderNotifOptions.NOTIF_AND_EMAIL ||
       notifMode === CnRootFolderNotifOptions.EMAIL_ONLY
     ) {
-      const fullLink = this.frontService.getBaseWebsiteURL() + '/' + appRoute;
+      const fullLink = (await this.frontService.getSpaceWebsiteURLFromId(spaceId)) + '/' + appRoute;
       await this.mailService.sendMailToUser(
         CnMailTemplate.folder_notification,
         [folderUser.user],
@@ -179,7 +179,7 @@ export class CnFolderListener {
           title: parentFolder.name,
           link: fullLink,
         },
-        text
+        { text: text, translate: false }
       );
     }
   }

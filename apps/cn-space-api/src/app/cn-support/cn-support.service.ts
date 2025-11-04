@@ -12,11 +12,7 @@ export class CnSupportService {
     private coreConfigService: CnCoreConfigService
   ) {}
 
-  public async sendMailToSupport(
-    template: string,
-    data?: Record<string, any>,
-    subject?: string
-  ): Promise<void> {
+  public async sendMailToSupport(template: string, data?: Record<string, any>): Promise<void> {
     const email = this.coreConfigService.getSupportMail();
     if (!email) {
       throw new BlBadRequestException('No support email configured');
@@ -26,7 +22,6 @@ export class CnSupportService {
       recipients: email,
       lang: ClSupportedLanguage.en,
       data,
-      subject,
     });
   }
 

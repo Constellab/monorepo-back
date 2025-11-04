@@ -3,11 +3,11 @@ import * as fs from 'node:fs';
 import { ClSupportedLanguage } from '@monorepo/core-lib';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import * as handlebars from 'handlebars';
-import { Exception } from 'handlebars';
 import * as nodemailer from 'nodemailer';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import { join } from 'path';
 
+import { BlTranslatableText } from '../../..';
 import { BlTranslateService } from '../bl-translate/bl-translate.service';
 import { BL_MAIL_CONFIG_PROVIDER, BlMailModuleConfig, BlMailQueue } from './bl-mail.class';
 import { BlMailEntity, BlMailStatus } from './bl-mail.entity';
@@ -43,7 +43,7 @@ export class BlMailSenderService {
     }
 
     if (mailEntity.subject == null || mailEntity.mail === null) {
-      throw new Exception(`Mail has no subject or mail`);
+      throw new Error(`Mail has no subject or mail`);
     }
 
     await this.sendMail(mailEntity).catch(async (error) => {
@@ -82,7 +82,7 @@ export class BlMailSenderService {
           const strError =
             `Error while sending mail ${mailEntity.id} to ${mailEntity.recipients}.` + ` ${error}`;
           this.logger.error(strError);
-          reject(strError);
+          reject(new Error(strError));
         }
         resolve();
       });
@@ -112,18 +112,18 @@ export class BlMailSenderService {
    * @param lang
    * @param data
    */
-  public async generateMailHTML(
+  public generateMailHTML(
     templateName: string,
     lang: ClSupportedLanguage,
     data: Record<string, any>
-  ): Promise<string> {
+  ): string {
     let body: string;
     try {
       body = this.compileTemplate(templateName, lang, data);
-    } catch (e) {
+    } catch (e: any) {
       const error = `Error while generating mail ${templateName} in ${lang}. ${e}`;
       this.logger.error(error);
-      throw new Exception(error);
+      throw new Error(error);
     }
 
     // if the default layout is set, we use it
@@ -131,12 +131,12 @@ export class BlMailSenderService {
     if (this.moduleConfig.defaultLayout) {
       try {
         return this.compileTemplate(this.moduleConfig.defaultLayout, lang, { body: body });
-      } catch (e) {
+      } catch (e: any) {
         const error =
           `Error while generating mail layout ${this.moduleConfig.defaultLayout} in ${lang}.` +
           ` Error: ${e}`;
         this.logger.error(error);
-        throw new Exception(error);
+        throw new Error(error);
       }
     }
 
@@ -160,7 +160,13 @@ export class BlMailSenderService {
   }
 
   // get the translation for the subject form the template name
-  public generateSubject(template: string, lang: ClSupportedLanguage): Promise<string> {
-    return this.translateService.translateIfExists(this.subjectI18nBase + template, { lang: lang });
+  public async generateSubject(template: BlTranslatableText, lang: ClSupportedLanguage): Promise<string> {
+    if (!template.translate) {
+      return template.text;
+    }
+    const result = await this.translateService.translateIfExists(this.subjectI18nBase + template.text, {
+      lang: lang,
+    });
+    return result;
   }
 }

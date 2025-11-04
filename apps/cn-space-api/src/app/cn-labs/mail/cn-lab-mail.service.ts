@@ -43,7 +43,10 @@ export class CnLabMailService {
           mail: user.email,
         },
       });
-      await this.mailService.sendMailToUser(template, user, data, sendMailDTO.subject);
+      await this.mailService.sendMailToUser(template, user, data, {
+        text: sendMailDTO.subject,
+        translate: false,
+      });
     }
   }
 
@@ -98,11 +101,9 @@ export class CnLabMailService {
   }
 
   public async sendLabStartedMail(lab: CnLab): Promise<void> {
-    const space = await this.spaceService.findByIdAndCheck(lab.spaceId);
-
     const owners = await this.labUserService.findLabOwner(lab.id);
 
-    const labUrl = this.frontService.getLabUrl(space.domain, lab.id);
+    const labUrl = this.frontService.getLabUrl(lab.spaceId, lab.id);
 
     for (const owner of owners) {
       await this.mailService.sendMailToUser(CnMailTemplate.lab_started, owner.user, {
@@ -120,7 +121,7 @@ export class CnLabMailService {
 
   public async sendLabStartErrorMail(lab: CnLab): Promise<void> {
     const space = await this.spaceService.findByIdAndCheck(lab.spaceId);
-    const labUrl = this.frontService.getLabUrl(space.domain, lab.id);
+    const labUrl = this.frontService.getLabUrl(lab.spaceId, lab.id);
     await this.supportService.sendMailToSupport(CnMailTemplate.support_lab_start_error, {
       lab: {
         name: lab.name,
@@ -134,7 +135,7 @@ export class CnLabMailService {
 
   public async sendLabBackupErrorMail(lab: CnLab): Promise<void> {
     const space = await this.spaceService.findByIdAndCheck(lab.spaceId);
-    const labUrl = this.frontService.getLabUrl(space.domain, lab.id);
+    const labUrl = this.frontService.getLabUrl(lab.spaceId, lab.id);
     await this.supportService.sendMailToSupport(CnMailTemplate.support_lab_backup_error, {
       lab: {
         name: lab.name,
@@ -148,7 +149,7 @@ export class CnLabMailService {
 
   public async sendLabTempStatusLimitReachedMail(lab: CnLab): Promise<void> {
     const space = await this.spaceService.findByIdAndCheck(lab.spaceId);
-    const labUrl = this.frontService.getLabUrl(space.domain, lab.id);
+    const labUrl = this.frontService.getLabUrl(lab.spaceId, lab.id);
     await this.supportService.sendMailToSupport(CnMailTemplate.support_lab_temp_status_limit_reached, {
       lab: {
         name: lab.name,

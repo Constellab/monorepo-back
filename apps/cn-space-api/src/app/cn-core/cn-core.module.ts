@@ -6,7 +6,6 @@ import { MulterModule } from '@nestjs/platform-express';
 import { CnDbBackupCron } from './cron/cn-db-backup.cron';
 import { CnConfigEntitySecurity } from './security/cn-config-entity.security';
 import { CnCommandService } from './services/cn-command.service';
-import { CnFrontService } from './services/cn-front.service';
 
 /**
  * Core module of the app, export all modules
@@ -26,15 +25,13 @@ import { CnFrontService } from './services/cn-front.service';
       limits: { fieldSize: 25 * 1024 * 1024, fileSize: 100 * 1024 * 1024 },
     }),
   ],
-  providers: [CnFrontService, CnConfigEntitySecurity, CnCommandService, CnDbBackupCron],
+  providers: [CnConfigEntitySecurity, CnCommandService, CnDbBackupCron],
   exports: [
     BlRequestContextModule,
     BlTranslateModule,
     BlExternalApiModule,
     MulterModule,
 
-    // Providers
-    CnFrontService,
     CnConfigEntitySecurity,
     CnCommandService,
   ],

@@ -1,9 +1,9 @@
 import { ClHelpService, ClSupportedLanguage } from '@monorepo/core-lib';
 import { Inject, Logger } from '@nestjs/common';
 import { Queue } from 'bullmq';
-import { Exception } from 'handlebars';
 
 import { BlUser } from '../../models/bl-user/bl-user.class';
+import { BlTranslatableText } from '../public-api';
 import { BlMailQueue } from './bl-mail.class';
 import { BlMailEntity, BlMailStatus } from './bl-mail.entity';
 import { BlMailEntityService } from './bl-mail-entity.service';
@@ -14,7 +14,7 @@ export interface BlSendMailDTO {
   recipients: string;
   lang: ClSupportedLanguage;
   data?: Record<string, any>;
-  subject?: string | { text: string; translate: boolean };
+  subject?: BlTranslatableText;
 }
 
 /**
@@ -42,7 +42,7 @@ export class BlMailService {
     template: string,
     receiver: BlUser | BlUser[],
     data?: Record<string, any>,
-    subject?: string
+    subject?: BlTranslatableText
   ): Promise<boolean> {
     const receivers: BlUser[] = ClHelpService.convertObjectOrArrayToArray(receiver);
 
@@ -74,7 +74,7 @@ export class BlMailService {
     mailEntity.status = BlMailStatus.PENDING;
 
     try {
-      mailEntity.mail = await this.mailService.generateMailHTML(mail.templateName, mail.lang, mail.data);
+      mailEntity.mail = this.mailService.generateMailHTML(mail.templateName, mail.lang, mail.data);
     } catch (e) {
       mailEntity.status = BlMailStatus.ERROR;
       mailEntity.error = e.toString();
@@ -84,13 +84,11 @@ export class BlMailService {
 
     try {
       // generate the subject
-      const subject = mail.subject ?? mail.templateName;
-      // if the subject is a string or object with translate, translate it:
-      if (typeof subject === 'object' && !subject.translate) {
-        mailEntity.subject = subject.text;
+      if (mail.subject) {
+        mailEntity.subject = await this.mailService.generateSubject(mail.subject, mail.lang);
       } else {
         mailEntity.subject = await this.mailService.generateSubject(
-          typeof subject === 'string' ? subject : subject.text,
+          { text: mail.templateName, translate: true },
           mail.lang
         );
       }
@@ -113,7 +111,7 @@ export class BlMailService {
       mailEntity.status = BlMailStatus.ERROR;
       mailEntity.error = strError;
       await this.mailEntityService.save(mailEntity);
-      throw new Exception(strError);
+      throw new Error(strError);
     });
   }
 }

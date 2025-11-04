@@ -9,7 +9,6 @@ import { DataSource } from 'typeorm';
 
 import { CnFrontService } from '../../cn-core/services/cn-front.service';
 import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
-import { CnSpaceService } from '../../cn-spaces/cn-space.service';
 import { CnFolderEventService } from '../cn-folder.event';
 import { CnFolderAggregateService } from '../cn-folder-aggregate.service';
 import { CnSaveFolderDTO } from '../cn-folders/cn-folder.dto';
@@ -35,7 +34,6 @@ export class CnDocumentAggregateService {
     private folderAggregateService: CnFolderAggregateService,
     private eventService: CnFolderEventService,
     private datasource: DataSource,
-    private spaceService: CnSpaceService,
     private frontService: CnFrontService,
     private noteService: CnNotesService
   ) {}
@@ -137,17 +135,16 @@ export class CnDocumentAggregateService {
 
   public async findDocumentUrlByFilename(filename: string): Promise<string> {
     const document = await this.documentService.findDocumentByFilename(filename);
-    const space = await this.spaceService.findByIdAndCheck(document.hierarchyRepresentation.spaceId);
 
     if (document.type === CnDocumentType.NOTE) {
       const note = await this.noteService.findByDocumentId(document.id);
       if (note == null) {
         throw new BlBadRequestException('Note not found');
       }
-      return this.frontService.getNoteUrl(space.domain, note.id);
+      return this.frontService.getNoteUrl(document.hierarchyRepresentation.spaceId, note.id);
     }
     return this.frontService.getDocumentUrl(
-      space.domain,
+      document.hierarchyRepresentation.spaceId,
       document.id,
       document.type === CnDocumentType.CONSTELLAB_DOCUMENT
     );

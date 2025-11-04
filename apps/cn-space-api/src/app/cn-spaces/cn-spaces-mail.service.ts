@@ -58,7 +58,7 @@ export class CnSpacesMailService {
         lastname: invit.createdBy.lastname,
       },
       validityInDays: validityInDays,
-      url: this.frontService.getSignupSpaceUrl(invit.space.domain, invit.code),
+      url: await this.frontService.getSignupSpaceUrl(invit.space.id, invit.code),
       user: null as any,
       spaceName: invit.space.name,
     };

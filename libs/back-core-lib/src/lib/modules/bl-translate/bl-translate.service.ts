@@ -4,7 +4,7 @@ import { I18nService } from 'nestjs-i18n';
 import { from, Observable } from 'rxjs';
 
 import { BlRequestContextHelper } from '../bl-request-context/bl-request-context.helper';
-import { BL_TRANSLATE_CONFIG_PROVIDER, BlTranslateConfig } from './bl-translate.class';
+import { BL_TRANSLATE_CONFIG_PROVIDER, BlTranslatableText, BlTranslateConfig } from './bl-translate.class';
 import { BlTranslateOptions } from './bl-translate-options.class';
 
 /**
@@ -16,6 +16,14 @@ export class BlTranslateService {
     private i18nService: I18nService,
     @Inject(BL_TRANSLATE_CONFIG_PROVIDER) private moduleConfig: BlTranslateConfig
   ) {}
+
+  public async translatableText(text: BlTranslatableText, options: BlTranslateOptions = {}): Promise<string> {
+    if (!text.translate) {
+      return text.text;
+    }
+
+    return this.translateIfExists(text.text, options);
+  }
 
   public translateIfExists(key: string, options: BlTranslateOptions = {}): Promise<string> {
     const lang: ClSupportedLanguage =

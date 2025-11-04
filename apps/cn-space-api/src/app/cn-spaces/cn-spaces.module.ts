@@ -5,6 +5,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { CnCoreModule } from '../cn-core/cn-core.module';
+import { CnFrontService } from '../cn-core/services/cn-front.service';
 import { CnDocumentModule } from '../cn-folders-aggregate/cn-documents/cn-document.module';
 import { CnObjectStoragesModule } from '../cn-object-storages/cn-object-storages.module';
 import { CnUsersModule } from '../cn-users/cn-users.module';
@@ -47,7 +48,8 @@ import { CnSpacesMailService } from './cn-spaces-mail.service';
     CnSpaceInvitService,
     CnSpacesMailService,
     CnSpaceListener,
+    CnFrontService,
   ],
-  exports: [CnSpaceAggregateService, CnSpaceService, CnSpaceUserService],
+  exports: [CnSpaceAggregateService, CnSpaceService, CnSpaceUserService, CnFrontService],
 })
 export class CnSpacesModule {}

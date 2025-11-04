@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
+import { CnSpaceService } from '../../cn-spaces/cn-space.service';
 import { CnCoreConfigService } from '../modules/cn-core-config/cn-core-config.service';
 
 /**
@@ -7,7 +8,10 @@ import { CnCoreConfigService } from '../modules/cn-core-config/cn-core-config.se
  */
 @Injectable()
 export class CnFrontService {
-  constructor(private configService: CnCoreConfigService) {}
+  constructor(
+    private configService: CnCoreConfigService,
+    private spaceService: CnSpaceService
+  ) {}
 
   private static appRoute = 'app';
 
@@ -31,10 +35,6 @@ export class CnFrontService {
     return `${CnFrontService.appRoute}/folder/note/${folderId}`;
   }
 
-  public getNoteUrl(spaceDomain: string, noteId: string): string {
-    return this.getSpaceWebsiteURL(spaceDomain) + '/' + CnFrontService.getNoteRoute(noteId);
-  }
-
   public static getScenarioRoute(folderId: string): string {
     return `${CnFrontService.appRoute}/folder/scenario/${folderId}`;
   }
@@ -47,13 +47,6 @@ export class CnFrontService {
     return `${CnFrontService.appRoute}/folder/document/${documentId}/preview`;
   }
 
-  public getDocumentUrl(spaceDomain: string, documentId: string, isConstellabDocument: boolean): string {
-    const route = isConstellabDocument
-      ? CnFrontService.getConstellabDocRoute(documentId)
-      : CnFrontService.getDocumentRoute(documentId);
-    return this.getSpaceWebsiteURL(spaceDomain) + '/' + route;
-  }
-
   public static getResourceRoute(resourceId: string): string {
     return `${CnFrontService.appRoute}/folder/resource/${resourceId}`;
   }
@@ -61,17 +54,32 @@ export class CnFrontService {
   public static getLabRoute(labId: string): string {
     return `${CnFrontService.appRoute}/labs/${labId}`;
   }
-
+  ///////////////////////////// URLS //////////////////////////////
   public getLoginUrl(): string {
     return this.getBaseWebsiteURL() + '/login';
   }
 
-  public getSignupSpaceUrl(spaceDomain: string, invitationCode: string): string {
-    return this.getSpaceWebsiteURL(spaceDomain) + '/signup-space/' + invitationCode;
+  public async getDocumentUrl(
+    spaceId: string,
+    documentId: string,
+    isConstellabDocument: boolean
+  ): Promise<string> {
+    const route = isConstellabDocument
+      ? CnFrontService.getConstellabDocRoute(documentId)
+      : CnFrontService.getDocumentRoute(documentId);
+    return (await this.getSpaceWebsiteURLFromId(spaceId)) + '/' + route;
   }
 
-  public getLabUrl(spaceDomain: string, labId: string): string {
-    return this.getSpaceWebsiteURL(spaceDomain) + '/' + CnFrontService.getLabRoute(labId);
+  public async getSignupSpaceUrl(spaceId: string, invitationCode: string): Promise<string> {
+    return (await this.getSpaceWebsiteURLFromId(spaceId)) + '/signup-space/' + invitationCode;
+  }
+
+  public async getLabUrl(spaceId: string, labId: string): Promise<string> {
+    return (await this.getSpaceWebsiteURLFromId(spaceId)) + '/' + CnFrontService.getLabRoute(labId);
+  }
+
+  public async getNoteUrl(spaceId: string, noteId: string): Promise<string> {
+    return (await this.getSpaceWebsiteURLFromId(spaceId)) + '/' + CnFrontService.getNoteRoute(noteId);
   }
 
   ////////////////////////// PUBLIC ROUTES ////////////////////////////
@@ -101,7 +109,11 @@ export class CnFrontService {
     }
   }
 
-  //////////////////////////// COMMUNITY ////////////////////////////
+  public async getSpaceWebsiteURLFromId(spaceId: string): Promise<string> {
+    const space = await this.spaceService.findByIdAndCheck(spaceId);
+    return this.getSpaceWebsiteURL(space.domain);
+  }
+
   //////////////////////////// COMMUNITY ////////////////////////////
   public getCommunityUrl(): string {
     return this.configService.getCommunityFrontUrl();
