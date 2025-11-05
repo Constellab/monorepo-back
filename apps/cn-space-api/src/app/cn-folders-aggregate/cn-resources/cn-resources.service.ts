@@ -9,7 +9,7 @@ import {
   CnHierarchyObject,
   CnHierarchyObjectEntity,
 } from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
-import { CnShareResourceRequestDTO } from './cn-resource.dto';
+import { CnSaveResourceResultDTO, CnShareResourceRequestDTO } from './cn-resource.dto';
 import { CnResource, CnResourceEntity, CnResourceWithLab } from './cn-resource.entity';
 
 @Injectable()
@@ -21,7 +21,7 @@ export class CnResourcesService extends BlAbstractService<CnResourceEntity> {
   public async saveResource(
     parentFolder: CnHierarchyObject,
     shareResourceDTO: CnShareResourceRequestDTO
-  ): Promise<CnResource> {
+  ): Promise<CnSaveResourceResultDTO> {
     const resourceDb = await this.findByParentFolderIdAndResourceId(
       parentFolder.id,
       shareResourceDTO.resource_id
@@ -47,7 +47,8 @@ export class CnResourcesService extends BlAbstractService<CnResourceEntity> {
     if (resourceDb) {
       // update
       resourceEntity.id = resourceDb.id;
-      return this.updateWithCompare(resourceEntity, resourceDb as CnResourceEntity);
+      const resource = await this.updateWithCompare(resourceEntity, resourceDb as CnResourceEntity);
+      return { mode: 'update', resource };
     } else {
       // create
       resourceEntity.createdAt = ClDateHelper.getDate();
@@ -58,7 +59,8 @@ export class CnResourcesService extends BlAbstractService<CnResourceEntity> {
       );
       resourceEntity.lab = CnCurrentUserHelper.getAndCheckCurrentLab();
 
-      return this.create(resourceEntity);
+      const resource = await this.create(resourceEntity);
+      return { mode: 'create', resource };
     }
   }
 

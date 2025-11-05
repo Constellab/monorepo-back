@@ -45,6 +45,8 @@ export type CnFolderEventType =
   | 'CREATE_FOLDER_MESSAGE'
   | 'UPDATE_FOLDER_MESSAGE'
   | 'DELETE_FOLDER_MESSAGE'
+  | 'CREATE_RESOURCE'
+  | 'UPDATE_RESOURCE'
   | 'RENAME_RESOURCE'
   | 'EMPTY_TRASH';
 
@@ -136,7 +138,7 @@ type CnFolderEventPayloadChatMessage = {
 
 // Resource events with parentFolder
 type CnFolderEventPayloadResource = {
-  type: 'RENAME_RESOURCE';
+  type: 'CREATE_RESOURCE' | 'UPDATE_RESOURCE' | 'RENAME_RESOURCE';
   entity: CnResource;
   parentFolder: CnHierarchyObject;
 };

@@ -622,6 +622,7 @@ export class CnFolderListener {
       'UPDATE_FOLDER',
       'UPDATE_SCENARIO',
       'UPDATE_NOTE',
+      'UPDATE_RESOURCE',
       'RENAME_DOCUMENT',
       'RENAME_RESOURCE',
       'UPDATE_CONSTELLAB_DOCUMENT',

@@ -139,7 +139,7 @@ export class CnExternalLabsController {
     @Param('parentFolderId', new ParseUUIDPipe()) parentFolderId: string,
     @Body(new BlParsePipe(CnCreateLabScenarioDto)) createLabScenarioDto: CnCreateLabScenarioDto
   ): Promise<CnHierarchyObject> {
-    return this.scenarioAggregateService.createLabScenario(parentFolderId, createLabScenarioDto);
+    return this.hierarchyObjectAggregateService.saveLabScenario(parentFolderId, createLabScenarioDto);
   }
 
   @Delete(['folder/:parentFolderId/scenario/:scenarioId'])
@@ -175,7 +175,7 @@ export class CnExternalLabsController {
       JSON.parse(body.body),
       CnCreateNoteWithConfigDto
     );
-    return this.noteAggregateService.createLabNote(createNoteDto, parentFolderId, files);
+    return this.hierarchyObjectAggregateService.saveLabNote(createNoteDto, parentFolderId, files);
   }
 
   @Delete(['folder/:parentFolderId/note/:noteId'])
@@ -205,7 +205,7 @@ export class CnExternalLabsController {
     @Param('parentFolderId', new ParseUUIDPipe()) parentFolderId: string,
     @Body() body: CnShareResourceRequestDTO
   ): Promise<CnHierarchyObject> {
-    return this.resourceAggregateService.shareResourceToFolder(parentFolderId, body);
+    return this.hierarchyObjectAggregateService.shareResourceToFolder(parentFolderId, body);
   }
 
   //////////////////////////// DOCUMENT ////////////////////////////

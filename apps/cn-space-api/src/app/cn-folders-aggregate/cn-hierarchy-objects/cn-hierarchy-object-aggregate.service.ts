@@ -1,4 +1,4 @@
-import { BlBadRequestException, BlSearchParams } from '@monorepo/back-core-lib';
+import { BlBadRequestException, BlFile, BlSearchParams } from '@monorepo/back-core-lib';
 import { ClPage, ClPageI } from '@monorepo/core-lib';
 import { Injectable } from '@nestjs/common';
 
@@ -10,8 +10,11 @@ import { CnRootFolderUserRole } from '../cn-folder-user/cn-folder-user.entity';
 import { CnAvailableTags, CnTag } from '../cn-hierarchy-object-tags/cn-hierarchy-object-tag.dto';
 import { CnHierarchyObjectTag } from '../cn-hierarchy-object-tags/cn-hierarchy-object-tag.entity';
 import { CnHierarchyObjectTagAggregateService } from '../cn-hierarchy-object-tags/cn-hierarchy-object-tag-aggregate.service';
+import { CnCreateNoteWithConfigDto } from '../cn-notes/cn-note.dto';
 import { CnNoteAggregateService } from '../cn-notes/cn-note-aggregate.service';
+import { CnShareResourceRequestDTO } from '../cn-resources/cn-resource.dto';
 import { CnResourceAggregateService } from '../cn-resources/cn-resource-aggregate.service';
+import { CnCreateLabScenarioDto } from '../cn-scenarios/cn-scenario.dto';
 import { CnScenarioAggregateService } from '../cn-scenarios/cn-scenario-aggregate.service';
 import { CnFoldersSecurityService } from '../cn-security/cn-folders-security.service';
 import { CnHierarchyObjectFindOneDTO } from './cn-hierarchy-object.dto';
@@ -501,5 +504,59 @@ export class CnHierarchyObjectAggregateService {
       CnCurrentUserHelper.getAndCheckCurrentSpace().id,
       CnCurrentUserHelper.getAndCheckCurrentUser().id
     );
+  }
+
+  ///////////////////////////////// SCENARIO /////////////////////////////
+
+  async saveLabScenario(
+    parentFolderId: string,
+    createLabScenarioDto: CnCreateLabScenarioDto
+  ): Promise<CnHierarchyObject> {
+    const hierarchyObject = await this.scenarioAggregateService.saveLabScenario(
+      parentFolderId,
+      createLabScenarioDto
+    );
+
+    // If the object is in trash, restore it
+    if (hierarchyObject.isInTrash()) {
+      await this.restoreFromTrash(hierarchyObject.id);
+    }
+
+    return hierarchyObject;
+  }
+
+  //////////////////////////////// LAB NOTE /////////////////////////////
+
+  async saveLabNote(
+    createNoteDto: CnCreateNoteWithConfigDto,
+    parentFolderId: string,
+    files: BlFile[]
+  ): Promise<CnHierarchyObject> {
+    const hierarchyObject = await this.noteAggregateService.saveLabNote(createNoteDto, parentFolderId, files);
+
+    // If the object is in trash, restore it
+    if (hierarchyObject.isInTrash()) {
+      await this.restoreFromTrash(hierarchyObject.id);
+    }
+
+    return hierarchyObject;
+  }
+
+  //////////////////////////////// RESOURCE /////////////////////////////
+
+  public async shareResourceToFolder(
+    parentFolderId: string,
+    requestDTO: CnShareResourceRequestDTO
+  ): Promise<CnHierarchyObject> {
+    const hierarchyObject = await this.resourceAggregateService.shareResourceToFolder(
+      parentFolderId,
+      requestDTO
+    );
+
+    // If the object is in trash, restore it
+    if (hierarchyObject.isInTrash()) {
+      await this.restoreFromTrash(hierarchyObject.id);
+    }
+    return hierarchyObject;
   }
 }

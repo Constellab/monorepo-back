@@ -34,3 +34,8 @@ export class CnResourceAccessDTO {
     this.validUntil = validUntil;
   }
 }
+
+export interface CnSaveResourceResultDTO {
+  mode: 'create' | 'update';
+  resource: CnResource;
+}

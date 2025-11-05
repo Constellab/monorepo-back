@@ -259,6 +259,14 @@ export class CnHierarchyObjectEntity extends BlEntityWithId {
     return this.objectType === CnHierarchyObjectType.FOLDER;
   }
 
+  public isVisible(): boolean {
+    return this.visibility === CnHierarchyObjectVisibility.VISIBLE;
+  }
+
+  public isInTrash(): boolean {
+    return this.visibility === CnHierarchyObjectVisibility.TRASH;
+  }
+
   public getObjectTypeName(): string {
     switch (this.objectType) {
       case CnHierarchyObjectType.FOLDER:

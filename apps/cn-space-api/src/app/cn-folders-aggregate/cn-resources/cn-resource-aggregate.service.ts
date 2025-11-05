@@ -26,7 +26,22 @@ export class CnResourceAggregateService {
     const parentFolder = await this.securityService.getAndCheckAuthorizationForUpdate(parentFolderId);
 
     const resource = await this.resourceService.saveResource(parentFolder, requestDTO);
-    return this.hierarchyObjectService.findByIdAndCheck(resource.id);
+
+    if (resource.mode === 'create') {
+      this.eventService.emitFolderEvent({
+        type: 'CREATE_RESOURCE',
+        entity: resource.resource,
+        parentFolder: parentFolder,
+      });
+    } else {
+      this.eventService.emitFolderEvent({
+        type: 'UPDATE_RESOURCE',
+        entity: resource.resource,
+        parentFolder: parentFolder,
+      });
+    }
+
+    return this.hierarchyObjectService.findByIdAndCheck(resource.resource.id);
   }
 
   public async deleteResource(resourceId: string): Promise<boolean> {

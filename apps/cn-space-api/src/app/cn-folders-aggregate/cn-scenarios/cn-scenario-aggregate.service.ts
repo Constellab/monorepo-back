@@ -38,7 +38,7 @@ export class CnScenarioAggregateService {
     return (await this.noteService.findByIdAndCheckWithScenarios(noteId)).scenarios;
   }
 
-  async createLabScenario(
+  async saveLabScenario(
     parentFolderId: string,
     createLabScenarioDto: CnCreateLabScenarioDto
   ): Promise<CnHierarchyObject> {

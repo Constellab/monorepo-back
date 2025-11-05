@@ -42,7 +42,7 @@ export class CnNoteAggregateService {
     return await this.noteService.getNoteContent(parentFolder, id);
   }
 
-  async createLabNote(
+  async saveLabNote(
     createNoteDto: CnCreateNoteWithConfigDto,
     parentFolderId: string,
     files: BlFile[]
