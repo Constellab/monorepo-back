@@ -90,6 +90,7 @@ export class CnLabUserService {
         labId: labId,
       },
       relations: { user: true },
+      order: { user: { firstname: 'ASC', lastname: 'ASC' } },
     });
   }
 

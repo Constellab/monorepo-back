@@ -223,6 +223,7 @@ export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjec
       where: {
         spaceId: spaceId,
         parentId: IsNull(),
+        visibility: CnHierarchyObjectVisibility.VISIBLE,
       },
       order: { name: 'ASC' },
     });

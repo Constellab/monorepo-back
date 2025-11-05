@@ -68,6 +68,11 @@ export class CnLabFolderService {
       relations: {
         rootFolder: true,
       },
+      order: {
+        rootFolder: {
+          name: 'ASC',
+        },
+      },
     });
   }
 
