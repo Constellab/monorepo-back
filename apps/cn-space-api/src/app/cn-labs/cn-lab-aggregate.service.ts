@@ -1020,6 +1020,19 @@ export class CnLabAggregateService {
     return this.labManagerService.unregisterSubCompose(lab, composeId);
   }
 
+  public async getComposeStatus(labId: string, composeId: CnLabManagerDockerComposeUniqueId): Promise<any> {
+    const lab = await this.getAndCheckAuthorizationToManageLab(labId);
+    return this.labManagerService.getComposeStatus(lab, composeId);
+  }
+
+  public async stopSubComposeProcess(
+    labId: string,
+    composeId: CnLabManagerDockerComposeUniqueId
+  ): Promise<any> {
+    const lab = await this.getAndCheckAuthorizationToManageLab(labId);
+    return this.labManagerService.stopSubComposeProcess(lab, composeId);
+  }
+
   /////////////////////// LAB MANAGER - CONTAINERS //////////////////////////////
 
   public async getContainerDetails(labId: string, containerName: string): Promise<CnLabManagerDockerPsFull> {

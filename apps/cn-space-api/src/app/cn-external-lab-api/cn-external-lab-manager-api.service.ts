@@ -177,6 +177,22 @@ export class CnExternalLabManagerApiService {
     return lastValueFrom(this.delete(apiInfo, `${this.getComposeRoute(composeId)}/unregister`));
   }
 
+  public async getComposeStatus(
+    apiInfo: CnExternalApiInfo,
+    composeId: CnLabManagerDockerComposeUniqueId
+  ): Promise<any> {
+    return lastValueFrom(this.get(apiInfo, `${this.getComposeRoute(composeId)}/status`));
+  }
+
+  public async stopSubComposeProcess(
+    apiInfo: CnExternalApiInfo,
+    composeId: CnLabManagerDockerComposeUniqueId
+  ): Promise<any> {
+    return lastValueFrom(
+      this.put(apiInfo, `${this.getComposeRoute(composeId)}/stop-sub-compose-process`, null)
+    );
+  }
+
   private getComposeRoute(composeId: CnLabManagerDockerComposeUniqueId): string {
     return `${this.baseDockerComposeRoute}/${composeId.brickName}/${composeId.uniqueName}/${composeId.env}`;
   }

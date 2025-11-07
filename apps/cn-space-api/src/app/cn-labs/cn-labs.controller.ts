@@ -535,6 +535,26 @@ export class CnLabsController {
     return this.aggregateService.unregisterSubCompose(id, { brickName, uniqueName, env });
   }
 
+  @Get(':id/lab-manager/docker-compose/:brickName/:uniqueName/:env/status')
+  getComposeStatus(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('brickName') brickName: string,
+    @Param('uniqueName') uniqueName: string,
+    @Param('env', new BlParseEnumPipe(CnLabManagerComposeEnv)) env: CnLabManagerComposeEnv
+  ): Promise<any> {
+    return this.aggregateService.getComposeStatus(id, { brickName, uniqueName, env });
+  }
+
+  @Put(':id/lab-manager/docker-compose/:brickName/:uniqueName/:env/stop-sub-compose-process')
+  stopSubComposeProcess(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('brickName') brickName: string,
+    @Param('uniqueName') uniqueName: string,
+    @Param('env', new BlParseEnumPipe(CnLabManagerComposeEnv)) env: CnLabManagerComposeEnv
+  ): Promise<any> {
+    return this.aggregateService.stopSubComposeProcess(id, { brickName, uniqueName, env });
+  }
+
   /////////////////////////// LAB MANAGER - CONTAINERS ///////////////////////////
 
   @Get(':id/lab-manager/containers/:containerName')

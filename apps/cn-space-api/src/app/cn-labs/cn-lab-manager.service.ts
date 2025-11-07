@@ -207,6 +207,14 @@ export class CnLabManagerService {
     return this.labManagerApiService.unregisterSubCompose(lab.getLabManagerApiInfo(), composeId);
   }
 
+  public async getComposeStatus(lab: CnLab, composeId: CnLabManagerDockerComposeUniqueId): Promise<any> {
+    return this.labManagerApiService.getComposeStatus(lab.getLabManagerApiInfo(), composeId);
+  }
+
+  public async stopSubComposeProcess(lab: CnLab, composeId: CnLabManagerDockerComposeUniqueId): Promise<any> {
+    return this.labManagerApiService.stopSubComposeProcess(lab.getLabManagerApiInfo(), composeId);
+  }
+
   ////////////////////////////////////////// CONTAINERS //////////////////////////////////////////
 
   public async getContainerDetails(lab: CnLab, containerName: string): Promise<CnLabManagerDockerPsFull> {
