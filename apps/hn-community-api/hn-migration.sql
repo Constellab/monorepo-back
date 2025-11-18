@@ -428,3 +428,81 @@ ADD COLUMN `video` varchar(255) DEFAULT NULL;
 
 ALTER TABLE `app`
 ADD COLUMN `figures` text DEFAULT NULL;
+
+#1.10.0
+DROP TABLE IF EXISTS `comment_partner`;
+CREATE TABLE `comment_partner` (
+                                 `id` varchar(36) NOT NULL,
+                                 `createdAt` datetime DEFAULT NULL,
+                                 `lastModifiedAt` datetime DEFAULT NULL,
+                                 `content` text NOT NULL,
+                                 `createdById` varchar(36) DEFAULT NULL,
+                                 `lastModifiedById` varchar(36) DEFAULT NULL,
+                                 `entityId` varchar(36) DEFAULT NULL,
+                                 PRIMARY KEY (`id`),
+                                 KEY `FK_4abd8fda2dc997a9892d8d936a3` (`createdById`),
+                                 KEY `FK_b9ff27c7dfea554f872932e5048` (`lastModifiedById`),
+                                 KEY `FK_e8edeca8bda00edf21dd6165368` (`entityId`),
+                                 CONSTRAINT `FK_4abd8fda2dc997a9892d8d936a3` FOREIGN KEY (`createdById`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+                                 CONSTRAINT `FK_b9ff27c7dfea554f872932e5048` FOREIGN KEY (`lastModifiedById`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+                                 CONSTRAINT `FK_e8edeca8bda00edf21dd6165368` FOREIGN KEY (`entityId`) REFERENCES `partner` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+DROP TABLE IF EXISTS `file_partner`;
+CREATE TABLE `file_partner` (
+                              `id` varchar(36) NOT NULL,
+                              `type` enum('FILE','IMAGE','RESOURCE_VIEW') NOT NULL DEFAULT 'FILE',
+                              `fileName` varchar(255) NOT NULL,
+                              `name` varchar(255) NOT NULL,
+                              `createdAt` datetime DEFAULT NULL,
+                              `size` int(11) DEFAULT NULL,
+                              `createdById` varchar(36) DEFAULT NULL,
+                              `entityId` varchar(36) NOT NULL,
+                              PRIMARY KEY (`id`),
+                              UNIQUE KEY `IDX_bbb3bf15eee111f377ab392767` (`fileName`),
+                              UNIQUE KEY `IDX_4916b162a292a40a7118caa202` (`entityId`,`name`),
+                              KEY `FK_82715771f52861dbb71db62a638` (`createdById`),
+                              CONSTRAINT `FK_82715771f52861dbb71db62a638` FOREIGN KEY (`createdById`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+                              CONSTRAINT `FK_b80c4c187e9d45f938fa4286c5c` FOREIGN KEY (`entityId`) REFERENCES `partner` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+DROP TABLE IF EXISTS `like_partner`;
+CREATE TABLE `like_partner` (
+                              `id` varchar(36) NOT NULL,
+                              `likedAt` datetime NOT NULL,
+                              `likedById` varchar(36) DEFAULT NULL,
+                              `entityId` varchar(36) DEFAULT NULL,
+                              PRIMARY KEY (`id`),
+                              KEY `FK_1259e892f169ba025052b387b71` (`likedById`),
+                              KEY `FK_fa8a7860d15e07c1226d3c73204` (`entityId`),
+                              CONSTRAINT `FK_1259e892f169ba025052b387b71` FOREIGN KEY (`likedById`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+                              CONSTRAINT `FK_fa8a7860d15e07c1226d3c73204` FOREIGN KEY (`entityId`) REFERENCES `partner` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+DROP TABLE IF EXISTS `partner`;
+CREATE TABLE `partner` (
+                         `id` varchar(36) NOT NULL,
+                         `createdAt` datetime DEFAULT NULL,
+                         `lastModifiedAt` datetime DEFAULT NULL,
+                         `certified` tinyint(4) NOT NULL DEFAULT 0,
+                         `info` text NOT NULL,
+                         `createdById` varchar(36) DEFAULT NULL,
+                         `lastModifiedById` varchar(36) DEFAULT NULL,
+                         `userId` varchar(36) DEFAULT NULL,
+                         `name` varchar(255) NOT NULL,
+                         `logo` varchar(255) DEFAULT NULL,
+                         `likes` int(11) NOT NULL DEFAULT 0,
+                         `comments` int(11) NOT NULL DEFAULT 0,
+                         PRIMARY KEY (`id`),
+                         UNIQUE KEY `IDX_9af6a8bd7cac55b61babc75385` (`name`),
+                         UNIQUE KEY `REL_17701946f05279c9fe1a05cccf` (`userId`),
+                         KEY `FK_a7c3976f93f13ed6eb0bafd7366` (`createdById`),
+                         KEY `FK_2079d73d63eb4789c064e494348` (`lastModifiedById`),
+                         CONSTRAINT `FK_17701946f05279c9fe1a05cccf5` FOREIGN KEY (`userId`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+                         CONSTRAINT `FK_2079d73d63eb4789c064e494348` FOREIGN KEY (`lastModifiedById`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+                         CONSTRAINT `FK_a7c3976f93f13ed6eb0bafd7366` FOREIGN KEY (`createdById`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
