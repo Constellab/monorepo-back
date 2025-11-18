@@ -5,4 +5,5 @@ export enum HnEntityType {
   APP = 'app',
   DOC = 'doc',
   TAG = 'tag',
+  PARTNER = 'partner',
 }

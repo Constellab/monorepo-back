@@ -19,8 +19,12 @@ export class HnCommentTagService extends HnAbstractCommentService<HnTagKey> {
     super(commentTagRepository, eventEmitter);
   }
 
-  async getEntityAndCheckRightsById(entityId: string): Promise<HnTagKey> {
-    return this.tagKeyService.getTagKeyById(entityId);
+  async getEntityByIdAndCheck(entityId: string): Promise<HnTagKey> {
+    const tagKey = await this.tagKeyService.getTagKeyById(entityId);
+    if (!tagKey) {
+      throw new Error(`TagKey with id ${entityId} not found`);
+    }
+    return tagKey;
   }
 
   getEntityClass(): typeof HnCommentTag {

@@ -11,6 +11,7 @@ import { HnAbstractCommentService } from './comment-core/hn-abstract-comment.ser
 import { HnCommentEntity } from './comment-core/hn-comment.entity';
 import { HnCommentStoryService } from './comment-story/hn-comment-story.service';
 import { HnCommentTagService } from './comment-tag/hn-comment-tag.service';
+import { HnCommentPartnerService } from './comment-partner/hn-comment-partner.service';
 
 @Injectable()
 export class HnCommentAggregateService {
@@ -18,7 +19,8 @@ export class HnCommentAggregateService {
     private readonly commentStoryService: HnCommentStoryService,
     private readonly commentAgentService: HnCommentAgentService,
     private readonly commentAppService: HnCommentAppService,
-    private readonly commentTagService: HnCommentTagService
+    private readonly commentTagService: HnCommentTagService,
+    private readonly commentPartnerService: HnCommentPartnerService
   ) {}
 
   async getCommentsCount(entityId: string, commentType: HnEntityType): Promise<number> {
@@ -54,6 +56,8 @@ export class HnCommentAggregateService {
         return this.commentAppService;
       case HnEntityType.TAG:
         return this.commentTagService; // Assuming you have a commentTagService similar to the others
+      case HnEntityType.PARTNER:
+        return this.commentPartnerService;
       default:
         throw new Error('Unknown comment type');
     }

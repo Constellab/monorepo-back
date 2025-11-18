@@ -138,7 +138,7 @@ export class HnBrickAggregateService {
     const whereConditions: FindOptionsWhere<HnBrick>[] | FindOptionsWhere<HnBrick> = myBricks
       ? await this.getMyBricksWhereBrickConditions(publicSelected, spacesFilter, user)
       : await this.getUserBasedWhereBrickConditions(publicSelected, {
-        spacesFilter: spacesFilter,
+          spacesFilter: spacesFilter,
           user: user,
         });
 
@@ -224,6 +224,16 @@ export class HnBrickAggregateService {
     return this.brickService.findOne(whereConditions);
   }
 
+  async findBrickByIdAndCheck(id: string, user: HnUser = null): Promise<HnBrick> {
+    const brick = await this.findBrickById(id, user);
+    if (brick == null) {
+      throw new BlBadRequestException(HnErrorText.BRICK_NOT_FOUND, {
+        detailArgs: { id: id },
+      });
+    }
+    return brick;
+  }
+
   async findBrickByName(name: string, userId: string = null, strict: boolean = true): Promise<HnBrick> {
     let whereConditions: FindOptionsWhere<HnBrick>[] | FindOptionsWhere<HnBrick> = {};
 
@@ -285,7 +295,7 @@ export class HnBrickAggregateService {
           url: this.frontService.getBrickVersionUrl(brick.name, 'latest'),
           lastmod: brick.lastModifiedAt.toFormat('yyyy-MM-dd'),
           changefreq: HnSiteMapEnumChangefreq.MONTHLY,
-          priority: 1,
+          priority: 0.8,
         });
 
         brickMap.push({
@@ -314,7 +324,7 @@ export class HnBrickAggregateService {
               // last mode with format YYYY-MM-DD
               lastmod: doc.lastModifiedAt.toFormat('yyyy-MM-dd'),
               changefreq: HnSiteMapEnumChangefreq.MONTHLY,
-              priority: brickMajorVersion.isLatest ? 0.8 : 0.3,
+              priority: brickMajorVersion.isLatest ? 0.8 : 0.2,
             });
           }
 
@@ -334,7 +344,7 @@ export class HnBrickAggregateService {
               // last mode with format YYYY-MM-DD
               lastmod: technicalFolder.lastModifiedAt.toFormat('yyyy-MM-dd'),
               changefreq: HnSiteMapEnumChangefreq.MONTHLY,
-              priority: brickMajorVersion.isLatest ? 0.5 : 0.1,
+              priority: brickMajorVersion.isLatest ? 0.7 : 0.1,
             });
           }
         }
@@ -376,11 +386,11 @@ export class HnBrickAggregateService {
       const version: BlVersion =
         body.version.subPatch != null
           ? new BlVersion(
-              +body.version.major,
-              +body.version.minor,
-              +body.version.patch,
-              +body.version.subPatch
-            )
+            +body.version.major,
+            +body.version.minor,
+            +body.version.patch,
+            +body.version.subPatch
+          )
           : new BlVersion(+body.version.major, +body.version.minor, +body.version.patch);
 
       // TODO: Improve brick version creation (simplify in the aggregate)

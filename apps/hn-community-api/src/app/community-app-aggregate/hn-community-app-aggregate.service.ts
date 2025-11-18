@@ -31,7 +31,9 @@ import { HnCommunityApp } from './community-app/hn-community-app.entity';
 import { HnCommunityAppService } from './community-app/hn-community-app.service';
 import { HnCommunityAppCoAuthor } from './community-app-co-author/hn-community-app-co-author.entity';
 import { HnCommunityAppCoAuthorService } from './community-app-co-author/hn-community-app-co-author.service';
-import { HnCommunityAppCoAuthorInvite } from './community-app-co-author-invite/hn-community-app-co-author-invite.entity';
+import {
+  HnCommunityAppCoAuthorInvite
+} from './community-app-co-author-invite/hn-community-app-co-author-invite.entity';
 import { HnCommunityAppStatLabDto } from './community-app-stat/hn-community-app-stat.dto';
 import { HnCommunityAppStatService } from './community-app-stat/hn-community-app-stat.service';
 import { HnCommunityAppUser } from './community-app-user/hn-community-app-user.entity';
@@ -79,9 +81,14 @@ export class HnCommunityAppAggregateService {
     return this.communityAppService.delete(id);
   }
 
-  async getAndCheckCommunityApp(id: string): Promise<HnCommunityApp> {
+  async getById(id: string): Promise<HnCommunityApp> {
     const communityApp = await this.communityAppService.findOneById(id);
     if (!communityApp) throw new BlNotFoundException('Community App not found');
+    return communityApp;
+  }
+
+  async getAndCheckCommunityApp(id: string): Promise<HnCommunityApp> {
+    const communityApp = await this.getById(id);
     if (communityApp.space) {
       const currentUser = HnCurrentUserHelper.getCurrentUser();
       if (!currentUser) throw new BlNotFoundException('Community App not found');

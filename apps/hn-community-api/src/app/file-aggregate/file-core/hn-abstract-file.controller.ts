@@ -74,8 +74,8 @@ export abstract class HnAbstractFileController<T extends BlEntityWithId> {
    */
   @Delete(':entityId/file/:name')
   async deleteFile(
-    @Param('entityId', ParseUUIDPipe) entityId: string,
-    @Param('name', new ParseUUIDPipe()) name: string
+    @Param('entityId', new ParseUUIDPipe()) entityId: string,
+    @Param('name') name: string
   ): Promise<void> {
     return this.fileService.deleteFile(entityId, name);
   }

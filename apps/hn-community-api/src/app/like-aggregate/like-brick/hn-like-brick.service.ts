@@ -18,8 +18,8 @@ export class HnLikeBrickService extends HnAbstractLikeService<HnBrick> {
     super(likeBrickRepository, eventEmitter);
   }
 
-  async getEntityAndCheckRightsById(entityId: string): Promise<HnBrick> {
-    return this.brickAggregateService.findBrickById(entityId);
+  async getEntityAndCheckById(entityId: string): Promise<HnBrick> {
+    return this.brickAggregateService.findBrickByIdAndCheck(entityId);
   }
 
   createLike(entity: HnBrick): HnLikeBrick {

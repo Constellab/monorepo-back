@@ -5,6 +5,8 @@ import { Injectable } from '@nestjs/common';
 import { DateTime } from 'luxon';
 import { DataSource } from 'typeorm';
 
+import { HnSiteMapEnumChangefreq, HnSitemapItemBase } from '../core/model/config/hn-site-map.class';
+import { HnFrontService } from '../core/service/hn-front.service';
 import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
 import { HnSpaceAggregateService } from '../space-aggregate/hn-space-aggregate.service';
 import { HnSpace } from '../space-aggregate/space/hn-space.entity';
@@ -29,8 +31,21 @@ export class HnTagAggregateService {
     private readonly tagCoAuthorService: HnTagCoAuthorService,
     private readonly tagKeyService: HnTagKeyService,
     private readonly tagValueService: HnTagValueService,
+    private readonly frontService: HnFrontService,
     private dataSource: DataSource
   ) {}
+
+  async findAllMap(): Promise<HnSitemapItemBase[]> {
+    const tagKeys = await this.tagKeyService.findAllPublishedTagKeys();
+    return tagKeys.map((tagKey) => {
+      return {
+        url: this.frontService.getTagUrl(tagKey.id, tagKey.technicalName),
+        lastmod: tagKey.lastModifiedAt.toFormat('yyyy-MM-dd'),
+        changefreq: HnSiteMapEnumChangefreq.MONTHLY,
+        priority: 0.7,
+      };
+    });
+  }
 
   async getAllTagKeysWithFiltersForLab(
     spacesFilter: string[],

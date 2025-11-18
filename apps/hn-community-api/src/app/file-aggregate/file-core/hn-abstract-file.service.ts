@@ -95,7 +95,7 @@ export abstract class HnAbstractFileService<T extends BlEntityWithId> {
     if (
       await this.objectStorageService.deleteObjectIfExist(
         [this.getBucketConfig(), this.getBackupBucketConfig()],
-        file.name
+        file.fileName
       )
     ) {
       await this.deleteEntityFile(file);

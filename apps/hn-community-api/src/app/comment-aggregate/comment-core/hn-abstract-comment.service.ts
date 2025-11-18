@@ -17,7 +17,7 @@ export abstract class HnAbstractCommentService<T extends BlEntityWithId> {
     this.eventEmitter = _eventEmitter;
   }
 
-  abstract getEntityAndCheckRightsById(entityId: string): Promise<T>;
+  abstract getEntityByIdAndCheck(entityId: string): Promise<T>;
 
   abstract getEntityClass(): typeof HnCommentEntity<T>;
 
@@ -51,7 +51,7 @@ export abstract class HnAbstractCommentService<T extends BlEntityWithId> {
     entityId: string,
     commentData: TeRichText
   ): Promise<HnCommentEntity<T>> {
-    const entity: T = await this.getEntityAndCheckRightsById(entityId);
+    const entity: T = await this.getEntityByIdAndCheck(entityId);
     if (!entity) {
       throw new Error('Entity not found');
     }
@@ -92,6 +92,8 @@ export abstract class HnAbstractCommentService<T extends BlEntityWithId> {
         return HnEventType.STORY_COMMENT;
       case HnEntityType.TAG:
         return HnEventType.TAG_COMMENT;
+      case HnEntityType.PARTNER:
+        return HnEventType.PARTNER_COMMENT;
       default:
         throw new Error('Unknown comment type');
     }

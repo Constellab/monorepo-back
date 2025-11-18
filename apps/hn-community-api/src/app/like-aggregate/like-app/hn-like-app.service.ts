@@ -18,7 +18,7 @@ export class HnLikeAppService extends HnAbstractLikeService<HnCommunityApp> {
     super(likeAppRepository, eventEmitter);
   }
 
-  getEntityAndCheckRightsById(entityId: string): Promise<HnCommunityApp> {
+  getEntityAndCheckById(entityId: string): Promise<HnCommunityApp> {
     return this.communityAppAggregateService.getAndCheckCommunityApp(entityId);
   }
 

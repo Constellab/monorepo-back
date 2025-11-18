@@ -11,6 +11,8 @@ import {
   HN_BUCKET_DOCUMENTATION_KEY,
   HN_BUCKET_ICON_BACKUP_KEY,
   HN_BUCKET_ICON_KEY,
+  HN_BUCKET_PARTNERS_BACKUP_KEY,
+  HN_BUCKET_PARTNERS_KEY,
   HN_BUCKET_STORIES_BACKUP_KEY,
   HN_BUCKET_STORIES_KEY,
   HN_DIFY_API_KEY,
@@ -134,6 +136,14 @@ export class HnCoreConfigService {
 
   public getAppFilesObjectStorageBackupBucket(): string {
     return this.configService.get(HN_BUCKET_APPS_BACKUP_KEY);
+  }
+
+  public getPartnerFilesObjectStorageBucket(): string {
+    return this.configService.get(HN_BUCKET_PARTNERS_KEY);
+  }
+
+  public getPartnerFilesObjectStorageBackupBucket(): string {
+    return this.configService.get(HN_BUCKET_PARTNERS_BACKUP_KEY);
   }
 
   public getGencoverySpaceId(): string {

@@ -47,6 +47,7 @@ import { HnBrickAggregateModule } from './app/brick-aggregate/hn-brick-aggregate
 import { HnBrickVersionReferenceModule } from './app/brick-version-reference/hn-brick-version-reference.module';
 import { HnCommentAgentModule } from './app/comment-aggregate/comment-agent/hn-comment-agent.module';
 import { HnCommentAppModule } from './app/comment-aggregate/comment-app/hn-comment-app.module';
+import { HnCommentPartnerModule } from './app/comment-aggregate/comment-partner/hn-comment-partner.module';
 import { HnCommentStoryModule } from './app/comment-aggregate/comment-story/hn-comment-story.module';
 import { HnCommentTagModule } from './app/comment-aggregate/comment-tag/hn-comment-tag.module';
 import { HnCommentAggregateModule } from './app/comment-aggregate/hn-comment-aggregate.module';
@@ -70,6 +71,7 @@ import { HnDifyModule } from './app/dify/hn-dify.module';
 import { HnFileAgentModule } from './app/file-aggregate/file-agent/hn-file-agent.module';
 import { HnFileAppModule } from './app/file-aggregate/file-app/hn-file-app.module';
 import { HnFileDocumentationModule } from './app/file-aggregate/file-documentation/hn-file-documentation.module';
+import { HnFilePartnerModule } from './app/file-aggregate/file-partner/hn-file-partner.module';
 import { HnFileStoryModule } from './app/file-aggregate/file-story/hn-file-story.module';
 import { HnFileAggregateModule } from './app/file-aggregate/hn-file-aggregate.module';
 import { HnIconModule } from './app/icon/hn-icon.module';
@@ -77,8 +79,10 @@ import { HnLikeAggregateModule } from './app/like-aggregate/hn-like-aggregate.mo
 import { HnLikeAgentModule } from './app/like-aggregate/like-agent/hn-like-agent.module';
 import { HnLikeAppModule } from './app/like-aggregate/like-app/hn-like-app.module';
 import { HnLikeBrickModule } from './app/like-aggregate/like-brick/hn-like-brick.module';
+import { HnLikePartnerModule } from './app/like-aggregate/like-partner/hn-like-partner.module';
 import { HnLikeStoryModule } from './app/like-aggregate/like-story/hn-like-story.module';
 import { HnLikeTagModule } from './app/like-aggregate/like-tag/hn-like-tag.module';
+import { HnPartnerModule } from './app/partner/hn-partner.module';
 import { HnProtocolModule } from './app/protocol/hn-protocol.module';
 import { HnPublicModule } from './app/public/hn-public.module';
 import { HnResourceModule } from './app/resource/hn-resource.module';
@@ -267,18 +271,21 @@ TeRichTextModifications.setBackTimeDifference();
     HnLikeBrickModule,
     HnLikeAppModule,
     HnLikeTagModule,
+    HnLikePartnerModule,
 
     HnCommentAggregateModule,
     HnCommentStoryModule,
     HnCommentAgentModule,
     HnCommentAppModule,
     HnCommentTagModule,
+    HnCommentPartnerModule,
 
     HnFileAggregateModule,
     HnFileStoryModule,
     HnFileDocumentationModule,
     HnFileAgentModule,
     HnFileAppModule,
+    HnFilePartnerModule,
 
     HnRunStatAgModule,
     HnRunStatModule,
@@ -298,6 +305,8 @@ TeRichTextModifications.setBackTimeDifference();
     HnTagAggregateModule,
 
     HnPublicModule,
+
+    HnPartnerModule,
 
     HnDifyModule,
   ],

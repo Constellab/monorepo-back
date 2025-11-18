@@ -18,7 +18,7 @@ export class HnLikeAgentService extends HnAbstractLikeService<HnAgent> {
     super(likeAgentRepository, eventEmitter);
   }
 
-  async getEntityAndCheckRightsById(entityId: string): Promise<HnAgent> {
+  async getEntityAndCheckById(entityId: string): Promise<HnAgent> {
     return this.agentAggregateService.findAgentById(entityId);
   }
 

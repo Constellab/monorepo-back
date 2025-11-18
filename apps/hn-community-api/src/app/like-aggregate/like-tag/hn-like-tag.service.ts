@@ -18,8 +18,12 @@ export class HnLikeTagService extends HnAbstractLikeService<HnTagKey> {
     super(likeTagRepository, eventEmitter);
   }
 
-  async getEntityAndCheckRightsById(entityId: string): Promise<HnTagKey> {
-    return this.tagKeyService.getTagKeyById(entityId);
+  async getEntityAndCheckById(entityId: string): Promise<HnTagKey> {
+    const tagKey = await this.tagKeyService.getTagKeyById(entityId);
+    if (!tagKey) {
+      throw new Error(`TagKey with id ${entityId} not found`);
+    }
+    return tagKey;
   }
 
   createLike(entity: HnTagKey): HnLikeTag {

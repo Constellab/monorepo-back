@@ -18,8 +18,8 @@ export class HnLikeStoryService extends HnAbstractLikeService<HnStory> {
     super(likeStoryRepository, eventEmitter);
   }
 
-  async getEntityAndCheckRightsById(entityId: string): Promise<HnStory> {
-    return this.storyService.findById(entityId);
+  async getEntityAndCheckById(entityId: string): Promise<HnStory> {
+    return this.storyService.findByIdAndCheck(entityId);
   }
 
   createLike(entity: HnStory): HnLikeStory {

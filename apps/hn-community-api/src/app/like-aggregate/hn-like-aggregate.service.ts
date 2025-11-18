@@ -7,6 +7,7 @@ import { HnLikeAgentService } from './like-agent/hn-like-agent.service';
 import { HnLikeAppService } from './like-app/hn-like-app.service';
 import { HnLikeBrickService } from './like-brick/hn-like-brick.service';
 import { HnAbstractLikeService } from './like-core/hn-abstract-like.service';
+import { HnLikePartnerService } from './like-partner/hn-like-partner.service';
 import { HnLikeStoryService } from './like-story/hn-like-story.service';
 import { HnLikeTagService } from './like-tag/hn-like-tag.service';
 
@@ -17,7 +18,8 @@ export class HnLikeAggregateService {
     private readonly likeAgentService: HnLikeAgentService,
     private readonly likeBrickService: HnLikeBrickService,
     private readonly likeAppService: HnLikeAppService,
-    private readonly likeTagService: HnLikeTagService
+    private readonly likeTagService: HnLikeTagService,
+    private readonly likePartnerService: HnLikePartnerService
   ) {}
 
   async checkIfIsLiked(entityId: string, likeType: HnEntityType): Promise<boolean> {
@@ -51,6 +53,8 @@ export class HnLikeAggregateService {
         return this.likeAppService;
       case HnEntityType.TAG:
         return this.likeTagService;
+      case HnEntityType.PARTNER:
+        return this.likePartnerService;
       default:
         throw new Error('Unknown like type');
     }

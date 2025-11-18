@@ -8,6 +8,8 @@ export enum HnEventType {
   BRICK_LIKE = 'BRICK_LIKE',
   STORY_LIKE = 'STORY_LIKE',
   TAG_LIKE = 'TAG_LIKE',
+  PARTNER_COMMENT = 'PARTNER_COMMENT',
+  PARTNER_LIKE = 'PARTNER_LIKE',
 }
 
 export interface HnCommentEventData {

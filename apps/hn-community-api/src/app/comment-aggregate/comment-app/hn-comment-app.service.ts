@@ -19,8 +19,8 @@ export class HnCommentAppService extends HnAbstractCommentService<HnCommunityApp
     super(commentAppRepository, eventEmitter);
   }
 
-  async getEntityAndCheckRightsById(entityId: string): Promise<HnCommunityApp> {
-    return this.communityAppAggregateService.getAndCheckCommunityApp(entityId);
+  async getEntityByIdAndCheck(entityId: string): Promise<HnCommunityApp> {
+    return this.communityAppAggregateService.getById(entityId);
   }
 
   getEntityClass(): typeof HnCommentApp {

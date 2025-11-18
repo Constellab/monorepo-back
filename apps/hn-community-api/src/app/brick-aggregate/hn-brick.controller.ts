@@ -303,8 +303,7 @@ export class HnBrickController {
 
   @Post('is-actual-brick-and-new-version')
   async isActualBrickAndNewVersion(
-    @Body(new BlParsePipe(HnIsActualBrickAndNewVersionDTO))
-    content: HnIsActualBrickAndNewVersionDTO
+    @Body(new BlParsePipe(HnIsActualBrickAndNewVersionDTO)) content: HnIsActualBrickAndNewVersionDTO
   ): Promise<[boolean, boolean]> {
     return this.brickAggregateService.isActualBrickAndNewVersion(content);
   }

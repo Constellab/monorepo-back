@@ -110,12 +110,21 @@ export class HnFrontService {
     return `${this.getBaseWebsiteURL()}/tags`;
   }
 
-  public getTagUrl(tagTechnicalName: string): string {
-    return `${this.getTagsUrl()}/${tagTechnicalName}`;
+  public getTagUrl(tagKeyId: string, tagKeyTechnicalName: string): string {
+    return `${this.getTagsUrl()}/${tagKeyId}/${tagKeyTechnicalName}`;
   }
 
   public getTagInviteUrl(token: string): string {
     return `${this.getTagsUrl()}/invite/${token}`;
+  }
+
+  ///////////////////////////// PARTNERS ///////////////////////////////////////////
+  public getPartnersUrl(): string {
+    return `${this.getBaseWebsiteURL()}/partners`;
+  }
+
+  public getPartnerUrl(partnerId: string, partnerNamePath: string): string {
+    return `${this.getPartnersUrl()}/${partnerId}/${partnerNamePath}`;
   }
 
   ///////////////////////////// USERS ///////////////////////////////////////////

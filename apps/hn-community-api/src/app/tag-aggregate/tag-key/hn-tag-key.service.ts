@@ -23,6 +23,17 @@ export class HnTagKeyService {
   ) {}
 
   /**
+   * Find all published tag keys
+   */
+  async findAllPublishedTagKeys(): Promise<HnTagKey[]> {
+    return this.tagKeyRepository.find({
+      where: {
+        publishedAt: Not(IsNull()),
+      },
+    });
+  }
+
+  /**
    * Simple get tag key by id method
    * @param id
    */

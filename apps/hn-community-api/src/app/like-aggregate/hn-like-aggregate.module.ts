@@ -8,6 +8,7 @@ import { HnLikeAppModule } from './like-app/hn-like-app.module';
 import { HnLikeBrickModule } from './like-brick/hn-like-brick.module';
 import { HnLikeStoryModule } from './like-story/hn-like-story.module';
 import { HnLikeTagModule } from './like-tag/hn-like-tag.module';
+import { HnLikePartnerModule } from './like-partner/hn-like-partner.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { HnLikeTagModule } from './like-tag/hn-like-tag.module';
     HnLikeBrickModule,
     HnLikeAppModule,
     HnLikeTagModule,
+    HnLikePartnerModule
   ],
   controllers: [HnLikeController],
   providers: [HnLikeAggregateService],

@@ -48,3 +48,4 @@ export class HnUserEditDetailDto {
   xLink: string;
   interests: string;
 }
+

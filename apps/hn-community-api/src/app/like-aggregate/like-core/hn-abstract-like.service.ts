@@ -19,7 +19,7 @@ export abstract class HnAbstractLikeService<T extends BlEntityWithId> {
     this.eventEmitter = _eventEmitter;
   }
 
-  abstract getEntityAndCheckRightsById(entityId: string): Promise<T>;
+  abstract getEntityAndCheckById(entityId: string): Promise<T>;
 
   abstract createLike(entity: T): HnAbstractLikeEntity<T>;
 
@@ -46,7 +46,7 @@ export abstract class HnAbstractLikeService<T extends BlEntityWithId> {
       throw new Error('Entity already liked');
     }
 
-    const entity: T = await this.getEntityAndCheckRightsById(entityId);
+    const entity: T = await this.getEntityAndCheckById(entityId);
 
     if (!entity) {
       throw new Error('Entity not found');
@@ -58,7 +58,7 @@ export abstract class HnAbstractLikeService<T extends BlEntityWithId> {
     if (!newLike) {
       return null;
     }
-    await this.emitLikeEvent(entityType, newLike.entity.id, numberOfLikes);
+    this.emitLikeEvent(entityType, newLike.entity.id, numberOfLikes);
 
     return numberOfLikes;
   }
@@ -75,7 +75,7 @@ export abstract class HnAbstractLikeService<T extends BlEntityWithId> {
       return null;
     }
 
-    await this.emitLikeEvent(entityType, removedLike.entity.id, numberOfLikes);
+    this.emitLikeEvent(entityType, removedLike.entity.id, numberOfLikes);
 
     return numberOfLikes;
   }
@@ -84,11 +84,7 @@ export abstract class HnAbstractLikeService<T extends BlEntityWithId> {
     return await this.repository.countBy({ entity: { id: entityId } });
   }
 
-  private async emitLikeEvent(
-    entityType: HnEntityType,
-    entityId: string,
-    numberOfLikes: number
-  ): Promise<void> {
+  private emitLikeEvent(entityType: HnEntityType, entityId: string, numberOfLikes: number): void {
     this.eventEmitter.emit(this.getEvent(entityType), {
       entityId: entityId,
       numberOfLikes: numberOfLikes,
@@ -107,6 +103,8 @@ export abstract class HnAbstractLikeService<T extends BlEntityWithId> {
         return HnEventType.STORY_LIKE;
       case HnEntityType.TAG:
         return HnEventType.TAG_LIKE;
+      case HnEntityType.PARTNER:
+        return HnEventType.PARTNER_LIKE;
       default:
         throw new Error('Unknown like type');
     }

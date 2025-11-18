@@ -19,7 +19,7 @@ export class HnCommentAgentService extends HnAbstractCommentService<HnAgent> {
     super(commentAgentRepository, eventEmitter);
   }
 
-  async getEntityAndCheckRightsById(entityId: string): Promise<HnAgent> {
+  async getEntityByIdAndCheck(entityId: string): Promise<HnAgent> {
     return this.agentAggregateService.findAgentById(entityId);
   }
 
