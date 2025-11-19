@@ -286,7 +286,7 @@ export class HnStoryService extends BlAbstractService<HnStory> {
   ): Promise<ClPage<HnStoryDto>> {
     const where: FindOptionsWhere<HnStory> = {};
 
-    const order: any = {};
+    const order: any = sortsCriteria?.length > 0 ? {} : { createdAt: 'DESC' };
     for (const sortCriteria of sortsCriteria) {
       order[sortCriteria.key] = sortCriteria.direction;
     }
