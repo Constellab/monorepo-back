@@ -1446,7 +1446,7 @@ export class CnLabAggregateService {
     const lab = await this.getAndCheckServerStatusBeforeAction(labId);
     this.checkServerIsRunning(lab);
 
-    await this.labConfigurerService.updateLabConfigurerRepo(lab);
+    await this.labConfigurerService.updateLabConfigurerRepoWithTask(lab);
     return this.getStatus(lab);
   }
 
