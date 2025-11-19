@@ -108,7 +108,7 @@ export class HnPartnerService extends BlAbstractService<HnPartner> {
 
     where.certified = true;
 
-    const order: any = {};
+    const order: any = sortsCriteria?.length > 0 ? {} : { createdAt: 'DESC' };
     for (const sort of sortsCriteria) {
       order[sort.key] = sort.direction;
     }

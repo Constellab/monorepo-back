@@ -151,7 +151,8 @@ export class HnTagKeyService {
       coAuthorTagKeysIds
     );
 
-    const order: any = { deprecated: 'ASC' };
+    const order: any =
+      sortsCriteria?.length > 0 ? { deprecated: 'ASC' } : { deprecated: 'ASC', createdAt: 'DESC' };
     for (const sortCriteria of sortsCriteria) {
       if (sortCriteria.key === 'title') {
         order['label'] = sortCriteria.direction;

@@ -35,7 +35,7 @@ export class HnCommunityAppService {
     page: number,
     size: number
   ): Promise<ClPage<HnCommunityApp>> {
-    const order: any = {};
+    const order: any = sortsCriteria?.length > 0 ? {} : { createdAt: 'DESC' };
     for (const criteria of sortsCriteria) {
       order[criteria.key] = criteria.direction;
     }

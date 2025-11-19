@@ -51,7 +51,7 @@ export class HnBrickService extends BlAbstractService<HnBrick> {
     page: number,
     size: number
   ): Promise<ClPage<HnBrickDto>> {
-    const order: any = {};
+    const order: any = sortsCriteria?.length > 0 ? {} : { createdAt: 'DESC' };
     for (const sortCriteria of sortsCriteria) {
       if (sortCriteria.key === 'title') {
         order['name'] = sortCriteria.direction;
