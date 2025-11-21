@@ -509,3 +509,5 @@ CREATE TABLE `like_partner` (
 #1.10.1
 ALTER TABLE `app`
   ADD COLUMN `contact_mail` varchar(255) DEFAULT NULL;
+ALTER TABLE `app`
+  CHANGE `app_url` `app_url` varchar(255) COLLATE 'utf8mb4_unicode_ci' NULL;
