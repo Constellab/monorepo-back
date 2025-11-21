@@ -79,6 +79,7 @@ export class HnCommunityAppService {
   updateFromDto(app: HnCommunityApp, dto: HnCommunityAppEditDto, space: HnSpace = null): HnCommunityApp {
     app.title = dto.title;
     app.appUrl = dto.appUrl;
+    app.contactMail = dto.contactMail;
     app.picture = dto.picture;
     app.space = space;
     return app;

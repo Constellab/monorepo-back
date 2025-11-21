@@ -12,6 +12,7 @@ export class HnCommunityAppDto {
   lastModifiedBy: HnUserDto;
   title: string;
   appUrl: string;
+  contactMail?: string;
   description?: TeRichTextDTO;
   likes: number;
   comments: number;
@@ -30,6 +31,7 @@ export class HnCommunityAppDto {
     this.lastModifiedBy = new HnUserDto(app.lastModifiedBy);
     this.title = app.title;
     this.appUrl = app.appUrl;
+    this.contactMail = app.contactMail;
     this.likes = app.likes;
     this.comments = app.comments;
     this.executions = app.executions;
@@ -43,7 +45,8 @@ export class HnCommunityAppDto {
 
 export class HnCommunityAppEditDto {
   title: string;
-  appUrl: string;
+  appUrl?: string;
+  contactMail?: string;
   picture?: string;
   description?: TeRichTextDTO;
   spaceId?: string;

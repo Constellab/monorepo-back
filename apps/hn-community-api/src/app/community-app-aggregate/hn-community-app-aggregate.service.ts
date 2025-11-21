@@ -31,9 +31,7 @@ import { HnCommunityApp } from './community-app/hn-community-app.entity';
 import { HnCommunityAppService } from './community-app/hn-community-app.service';
 import { HnCommunityAppCoAuthor } from './community-app-co-author/hn-community-app-co-author.entity';
 import { HnCommunityAppCoAuthorService } from './community-app-co-author/hn-community-app-co-author.service';
-import {
-  HnCommunityAppCoAuthorInvite
-} from './community-app-co-author-invite/hn-community-app-co-author-invite.entity';
+import { HnCommunityAppCoAuthorInvite } from './community-app-co-author-invite/hn-community-app-co-author-invite.entity';
 import { HnCommunityAppStatLabDto } from './community-app-stat/hn-community-app-stat.dto';
 import { HnCommunityAppStatService } from './community-app-stat/hn-community-app-stat.service';
 import { HnCommunityAppUser } from './community-app-user/hn-community-app-user.entity';
@@ -208,7 +206,7 @@ export class HnCommunityAppAggregateService {
   }
 
   async create(dto: HnCommunityAppEditDto): Promise<HnCommunityApp> {
-    this.checkCommunityAppUrl(dto.appUrl);
+    this.checkCommunityAppUrl(dto);
 
     let space: HnSpace = null;
     if (dto.spaceId) {
@@ -220,7 +218,7 @@ export class HnCommunityAppAggregateService {
 
   async update(dto: HnCommunityAppEditDto): Promise<HnCommunityApp> {
     if (dto.id == null) throw new BlBadRequestException('Id is required');
-    this.checkCommunityAppUrl(dto.appUrl);
+    this.checkCommunityAppUrl(dto);
     let space: HnSpace = null;
     if (dto.spaceId) {
       await this.spaceAggregateService.checkIfSpaceExists(dto.spaceId);
@@ -424,7 +422,17 @@ export class HnCommunityAppAggregateService {
     return whereConditions;
   }
 
-  private checkCommunityAppUrl(appUrl: string): void {
+  private checkCommunityAppUrl(dto: HnCommunityAppEditDto): void {
+    const appUrl: string = dto.appUrl;
+
+    if (!appUrl || appUrl.trim().length === 0) {
+      if (!dto.contactMail || dto.contactMail.trim().length === 0)
+        throw new BlBadRequestException(
+          'At least one contact information (app url or contact mail) is required'
+        );
+      else return;
+    }
+
     if (!ClStringHelper.isHttpLink(appUrl))
       throw new Error('The app url must be a valid URL starting with http:// or https://');
 

@@ -18,9 +18,12 @@ export class HnCommunityAppEntity extends HnBaseEntity {
   @Column({ nullable: true })
   picture?: string;
 
-  @Column({ name: 'app_url' })
+  @Column({ name: 'app_url', nullable: true })
   @Index({ unique: true })
   appUrl: string;
+
+  @Column({ name: 'contact_mail', nullable: true })
+  contactMail?: string;
 
   @Column({ default: 0 })
   likes: number;
