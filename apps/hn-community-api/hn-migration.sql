@@ -505,3 +505,7 @@ CREATE TABLE `like_partner` (
                               CONSTRAINT `FK_fa8a7860d15e07c1226d3c73204` FOREIGN KEY (`entityId`) REFERENCES `partner` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+
+#1.10.1
+ALTER TABLE `app`
+  ADD COLUMN `contact_mail` varchar(255) DEFAULT NULL;
