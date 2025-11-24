@@ -59,7 +59,7 @@ export class HnCommunityAppAggregateService {
     const appsMap: HnSitemapItemBase[] = [];
     for (const app of apps) {
       appsMap.push({
-        url: this.frontService.getAppUrl(app.id, app.title),
+        url: this.frontService.getAppUrl(app.id, ClStringHelper.getCleanUrlPath(app.title)),
         priority: 0.8,
         changefreq: HnSiteMapEnumChangefreq.MONTHLY,
         lastmod: app.lastModifiedAt.toFormat('yyyy-MM-dd'),
