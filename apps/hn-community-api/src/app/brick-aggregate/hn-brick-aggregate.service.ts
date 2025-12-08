@@ -369,6 +369,10 @@ export class HnBrickAggregateService {
       const newBrick = new HnBrick();
       newBrick.initialize(body);
 
+      if (newBrick.visibility === HnBrickVisibility.PRIVATE && !newBrick.space) {
+        throw new BlBadRequestException('Private bricks must belong to a space');
+      }
+
       // Create brick
       brick = await this.brickService.create(newBrick, entityManager);
 

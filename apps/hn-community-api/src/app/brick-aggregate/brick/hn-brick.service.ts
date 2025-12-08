@@ -1,6 +1,7 @@
 import {
   BlAbstractPaginatedService,
   BlAbstractService,
+  BlBadRequestException,
   BlBucketConfig,
   BlBucketType,
   BlFile,
@@ -140,6 +141,9 @@ export class HnBrickService extends BlAbstractService<HnBrick> {
     if (brick.visibility == HnBrickVisibility.PUBLIC) {
       brick.space = null;
     } else {
+      if (!editedBrick.space) {
+        throw new BlBadRequestException('Private bricks must belong to a space');
+      }
       brick.space = editedBrick.space;
     }
     brick.credentialUsername = editedBrick.credentialUsername;
