@@ -66,7 +66,7 @@ export interface CnLabManagerContainerSize {
 
 export interface CnLabManagerComposeUpOptions {
   updateContainers?: boolean;
-  pruneSystem?: string;
+  services?: string[];
 }
 
 export interface CnManagerLabComposeRestartOptions extends CnLabManagerComposeUpOptions {
