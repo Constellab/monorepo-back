@@ -154,6 +154,14 @@ export class HnCommunityAppController extends HnAbstractFileController<HnCommuni
     return new HnCommunityAppDto(await this.communityAppAggregateService.updateMedia(appId, video, figures));
   }
 
+  @Put('rearrange-medias/:appId')
+  async rearrangeMedias(
+    @Param('appId', new ParseUUIDPipe()) appId: string,
+    @Body('figures') figures: string[]
+  ): Promise<HnCommunityAppDto> {
+    return new HnCommunityAppDto(await this.communityAppAggregateService.rearrangeMedias(appId, figures));
+  }
+
   @UseInterceptors(FileInterceptor('file'))
   @Post('app-picture')
   async saveAppPicture(@BlUploadedFile() file: BlFile): Promise<any> {

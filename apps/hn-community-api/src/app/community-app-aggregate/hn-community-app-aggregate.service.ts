@@ -235,6 +235,14 @@ export class HnCommunityAppAggregateService {
     return this.communityAppService.updateDescription(app, newDescription);
   }
 
+  async rearrangeMedias(appId: string, figures: string[]): Promise<HnCommunityApp> {
+    const app = await this.communityAppService.findOneById(appId);
+    if (!app) {
+      throw new BlBadRequestException('App not found');
+    }
+    return this.communityAppService.rearrangeMedias(app, figures);
+  }
+
   async updateMedia(appId: string, video: string, figures: string[]): Promise<HnCommunityApp> {
     const app = await this.communityAppService.findOneById(appId);
     if (!app) {
