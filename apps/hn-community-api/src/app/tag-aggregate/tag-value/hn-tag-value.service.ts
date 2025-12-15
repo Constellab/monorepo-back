@@ -103,6 +103,10 @@ export class HnTagValueService {
     );
   }
 
+  async getTagValuesCountByTagKeyId(tagKeyId: string): Promise<number> {
+    return this.tagValueRepository.count({ where: { tagKey: { id: tagKeyId } } });
+  }
+
   async deleteTagValue(tagValueID: string): Promise<HnTagValue> {
     const tagValue = await this.tagValueRepository.findOneBy({ id: tagValueID });
     if (!tagValue) {

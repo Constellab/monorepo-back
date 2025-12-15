@@ -310,6 +310,14 @@ export class HnTagAggregateService {
     return this.tagValueService.getTagValuesByTagKeyId(tagKey.id, page, size);
   }
 
+  async getTagValuesCountByTagKeyId(tagKeyId: string): Promise<number> {
+    const tagKey = await this.getTagKeyById(tagKeyId);
+    if (!tagKey) {
+      throw new Error('Tag key not found');
+    }
+    return this.tagValueService.getTagValuesCountByTagKeyId(tagKey.id);
+  }
+
   async getAllTagValuesByTagKeyTechnicalName(technicalName: string): Promise<HnTagValue[]> {
     const tagKey = await this.getTagKeyByTechnicalName(technicalName);
     if (!tagKey) {

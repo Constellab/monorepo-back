@@ -59,6 +59,12 @@ export class HnTagAggregateController {
   }
 
   @BlPublic()
+  @Get(':tagKeyId/value/count')
+  getTagValuesCountByTagKeyId(@Param('tagKeyId') tagKeyId: string): Promise<number> {
+    return this.tagAggregateService.getTagValuesCountByTagKeyId(tagKeyId);
+  }
+
+  @BlPublic()
   @Get(':id')
   async getTagKeyById(@Param('id', new ParseUUIDPipe()) id: string): Promise<HnTagKeyDto> {
     const tagKey = await this.tagAggregateService.getTagKeyById(id);
