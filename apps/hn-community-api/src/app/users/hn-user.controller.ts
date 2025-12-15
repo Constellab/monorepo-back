@@ -2,6 +2,7 @@ import { BlParseEnumPipe, BlPublic } from '@monorepo/back-core-lib';
 import { ClPage, ClSupportedLanguage, ClTheme } from '@monorepo/core-lib';
 import { Body, Controller, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, Put, Query } from '@nestjs/common';
 
+import { IsAdmin } from '../core/decorators/hn-is-admin.decorator';
 import { HnSitemapItemBase } from '../core/model/config/hn-site-map.class';
 import { HnUserDetailDto, HnUserDto, HnUserEditDetailDto } from './hn-user.dto';
 import { HnUser, HnUserSearchFilters } from './hn-user.entity';
@@ -26,6 +27,12 @@ export class HnUserController {
   @Get('all-map')
   async getAllAgentsMap(): Promise<HnSitemapItemBase[]> {
     return this.userService.getAllUsersMap();
+  }
+
+  @IsAdmin()
+  @Get('check-status/all')
+  async checkAllStatus(): Promise<void> {
+    return this.userService.checkAllStatus();
   }
 
   @BlPublic()

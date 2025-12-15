@@ -12,6 +12,7 @@ import {
   blTransportSpaceUserQueue,
   BlUnauthorizedException,
   BlUserService,
+  BlUserStatus,
 } from '@monorepo/back-core-lib';
 import { clLangIsSupported, ClPage, ClSupportedLanguage, ClTheme } from '@monorepo/core-lib';
 import { TeUser } from '@monorepo/te-text-editor';
@@ -72,6 +73,10 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
 
   findOne(id: string): Promise<CnUser> {
     return this.repository.findOneBy({ id: id });
+  }
+
+  findOneValid(id: string): Promise<CnUser> {
+    return this.repository.findOneBy({ id: id, status: BlUserStatus.READY });
   }
 
   findByEmail(email: string): Promise<CnUser> {
@@ -196,6 +201,7 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
   }
 
   public sendUserToTransport(user: CnUser): void {
+    console.log('Sending user to transport queue:', user.id);
     const userDTO: CnUserTransportDto = {
       id: user.id,
       firstname: user.firstname,
@@ -209,7 +215,9 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
       biography: user.biography,
       photo: user.photo,
     };
-    this.queue.add(blTransportSpaceUserQueue, userDTO);
+    this.queue.add(blTransportSpaceUserQueue, userDTO).catch((error) => {
+      console.error('Error sending user to transport queue:', error);
+    });
   }
 
   // Search by name

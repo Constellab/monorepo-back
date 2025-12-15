@@ -2,6 +2,7 @@ import {
   BlAbstractPaginatedService,
   BlBadRequestException,
   BlCredentials,
+  BlExternalApiService,
   BlUnauthorizedException,
   BlUserService,
 } from '@monorepo/back-core-lib';
@@ -9,10 +10,12 @@ import { ClPage, ClStringHelper, ClSupportedLanguage, ClTheme } from '@monorepo/
 import { TeUser } from '@monorepo/te-text-editor';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { lastValueFrom } from 'rxjs';
 import { FindOptionsWhere, Like, Repository } from 'typeorm';
 
 import { HnExternalCheckCredentialResponse } from '../auth/hn-space-auth.service';
 import { HnSiteMapEnumChangefreq, HnSitemapItemBase } from '../core/model/config/hn-site-map.class';
+import { HnCoreConfigService } from '../core/modules/core-config/hn-core-config.service';
 import { HnFrontService } from '../core/service/hn-front.service';
 import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
 import { HnUserDetailDto, HnUserEditDetailDto } from './hn-user.dto';
@@ -23,7 +26,9 @@ export class HnUserService implements BlUserService {
   constructor(
     @InjectRepository(HnUser)
     private userRepository: Repository<HnUser>,
-    private frontService: HnFrontService
+    private frontService: HnFrontService,
+    private externalApiService: BlExternalApiService,
+    private configService: HnCoreConfigService
   ) {}
 
   async createOrUpdate(user: HnUserConstellabDTO): Promise<void> {
@@ -164,5 +169,20 @@ export class HnUserService implements BlUserService {
       this.userRepository.manager,
       HnUser
     );
+  }
+
+  //////////////////////////// MIGRATION METHODS ////////////////////////////
+
+  async checkAllStatus(): Promise<void> {
+    const users: HnUser[] = await this.userRepository.find();
+    for (const user of users) {
+      const cnUser: any = await lastValueFrom(
+        this.externalApiService.get(this.configService.getSpaceApiUrl() + `users/valid/${user.id}`)
+      );
+      if (!cnUser) {
+        console.log('Delete', user.id);
+        await this.userRepository.delete({ id: user.id });
+      }
+    }
   }
 }

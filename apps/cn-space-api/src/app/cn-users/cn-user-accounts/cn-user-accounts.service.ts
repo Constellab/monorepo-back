@@ -87,7 +87,7 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
 
         return newUser;
       });
-    } catch (e) {
+    } catch (e: any) {
       if (e instanceof BlHttpException) {
         throw e;
       }
@@ -137,8 +137,6 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
     // create the user personal space
     await this.spaceAggregateService.createPersonalSpace(dbUser, entityManager);
 
-    this.usersService.sendUserToTransport(dbUser);
-
     return dbUser;
   }
 
@@ -181,6 +179,7 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
     // update the user status
     user.status = BlUserStatus.READY;
     await this.usersService.update(user);
+    this.usersService.sendUserToTransport(user);
 
     this.onAccountActivated(user);
   }

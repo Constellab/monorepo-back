@@ -34,7 +34,7 @@ export class CnUsersController {
   constructor(private usersService: CnUsersService) {}
 
   @Get('current')
-  async current(): Promise<CnUser> {
+  current(): CnUser {
     return this.usersService.getAndCheckCurrentUser();
   }
 
@@ -48,6 +48,13 @@ export class CnUsersController {
   @Put('current/theme/:theme')
   updateTheme(@Param('theme', new BlParseEnumPipe(ClTheme)) theme: ClTheme): Promise<void> {
     return this.usersService.updateTheme(theme);
+  }
+
+  // TODO: remove this endpoint when the community user status check is stable
+  @BlPublic()
+  @Get('valid/:id')
+  findOneValid(@Param('id') id: string): Promise<CnUser> {
+    return this.usersService.findOneValid(id);
   }
 
   @CnUserCategories(BlUserCategory.ADMIN)
@@ -83,7 +90,7 @@ export class CnUsersController {
   }
 
   @Get('current/2-fa')
-  public async get2FA(): Promise<{ enabled: boolean }> {
+  public get2FA(): { enabled: boolean } {
     return { enabled: this.usersService.getAndCheckCurrentUser().has2FA };
   }
 
