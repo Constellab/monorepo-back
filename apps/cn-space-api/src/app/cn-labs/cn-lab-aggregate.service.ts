@@ -38,7 +38,6 @@ import {
   CnLabManagerInitConfig,
   CnLabManagerRestoreBackupConfigDTO,
   CnManagerLabComposeRestartOptions,
-  CnManagerLabPullBiotaOptions,
 } from '../cn-external-lab-api/model/cn-lab-manager.class';
 import { CnLabConfigDto } from '../cn-lab-configs/cn-lab-config.dto';
 import { CnLabConfig } from '../cn-lab-configs/cn-lab-config.entity';
@@ -921,12 +920,6 @@ export class CnLabAggregateService {
     const lab = await this.getAndCheckServerStatusBeforeAction(labId);
     this.checkServerIsRunning(lab);
     return this.labManagerService.configureLabManager(lab, lab.space.domain);
-  }
-
-  public async pullBiota(labId: string, options: CnManagerLabPullBiotaOptions): Promise<void> {
-    const lab = await this.getAndCheckAuthorizationToManageLab(labId);
-    this.checkServerIsRunning(lab);
-    return this.labManagerService.pullBiota(lab, options);
   }
 
   public async cleanLabManager(labId: string, options: CnLabManagerCleanOptions): Promise<void> {

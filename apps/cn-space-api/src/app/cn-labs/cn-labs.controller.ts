@@ -35,7 +35,6 @@ import {
   CnLabManagerErrorLogs,
   CnLabManagerRestoreBackupConfigDTO,
   CnManagerLabComposeRestartOptions,
-  CnManagerLabPullBiotaOptions,
 } from '../cn-external-lab-api/model/cn-lab-manager.class';
 import { CnLabConfig } from '../cn-lab-configs/cn-lab-config.entity';
 import { CnUser } from '../cn-users/cn-user.entity';
@@ -408,14 +407,6 @@ export class CnLabsController {
   @Post(':id/lab-manager/configure-lab-manager')
   async configureLabManager(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
     return await this.aggregateService.configureLabManager(id);
-  }
-
-  @Post(':id/lab-manager/pull-biota-db')
-  async pullBiotaDb(
-    @Param('id', new ParseUUIDPipe()) id: string,
-    @Body() options: CnManagerLabPullBiotaOptions
-  ): Promise<void> {
-    return this.aggregateService.pullBiota(id, options);
   }
 
   @Post(':id/lab-manager/clean')

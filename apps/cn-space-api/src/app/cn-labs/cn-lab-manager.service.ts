@@ -19,7 +19,6 @@ import {
   CnLabManagerRestoreBackupDTO,
   CnLabManagerStatus,
   CnManagerLabComposeRestartOptions,
-  CnManagerLabPullBiotaOptions,
 } from '../cn-external-lab-api/model/cn-lab-manager.class';
 import { CnLabConfigFile } from '../cn-lab-configs/cn-lab-config-file.class';
 import { CnLabConfigsService } from '../cn-lab-configs/cn-lab-configs.service';
@@ -130,10 +129,6 @@ export class CnLabManagerService {
       // disable openai on desktop
       openaiApiKey: lab.isDesktop() ? null : this.configService.getOpenaiAPIKey(),
     };
-  }
-
-  public async pullBiota(lab: CnLab, options: CnManagerLabPullBiotaOptions): Promise<void> {
-    return this.labManagerApiService.pullBiota(lab.getLabManagerApiInfo(), options);
   }
 
   ////////////////////////////////////////// CONFIGURATION //////////////////////////////////////////

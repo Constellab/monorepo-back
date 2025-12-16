@@ -11,7 +11,6 @@ export class CnLabDesktopService {
   // list of volume to create
   private static readonly VOLUMES = {
     'lab-manager-config': '/app/conf',
-    'lab-manager-biota': '/app/gws_db/gws_biota/mariadb',
     'lab-manager-prod-db': '/app/gws_db/gws_core/prod/mariadb',
     'lab-manager-dev-db': '/app/gws_db/gws_core/dev/mariadb',
     'lab-manager-prod-lab': '/app/prod/lab',

@@ -24,7 +24,6 @@ export enum CnBrickVersionTechnicalKey {
   // key for gws_core brick containing the front version
   GWS_CORE_FRONT_VERSION = 'FRONT_VERSION',
   GWS_CORE_GLAB_VERSION = 'GLAB_VERSION',
-  GWS_BIOTA_MARIA_DB_URL = 'MARIA_DB_URL',
 }
 
 /**

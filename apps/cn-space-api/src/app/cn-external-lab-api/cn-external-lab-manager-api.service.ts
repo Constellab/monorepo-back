@@ -31,7 +31,6 @@ import {
   CnLabManagerRestoreBackupDTO,
   CnLabManagerStatus,
   CnManagerLabComposeRestartOptions,
-  CnManagerLabPullBiotaOptions,
 } from './model/cn-lab-manager.class';
 
 /**
@@ -83,10 +82,6 @@ export class CnExternalLabManagerApiService {
     initConfig: CnLabManagerInitConfig
   ): Promise<void> {
     return lastValueFrom(this.post(apiInfo, `${this.baseLabRoute}/configure-lab-manager`, initConfig));
-  }
-
-  public async pullBiota(apiInfo: CnExternalApiInfo, options: CnManagerLabPullBiotaOptions): Promise<void> {
-    return lastValueFrom(this.post(apiInfo, `${this.baseLabRoute}/pull-biota-db`, options));
   }
 
   public async cleanLabManager(apiInfo: CnExternalApiInfo, options: CnLabManagerCleanOptions): Promise<void> {
