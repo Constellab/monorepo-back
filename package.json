@@ -113,11 +113,12 @@
     "typescript-eslint": "^8.20.0"
   },
   "lint-staged": {
-    "*.{ts,js,json,md}": [
-      "prettier --write"
+    "*.{json,md}": [
+      "prettier --write --cache"
     ],
-    "*.{ts,js,md}": [
-      "eslint --fix"
+    "*.{ts,js,html}": [
+      "prettier --write --cache",
+      "eslint --fix --cache --max-warnings=0"
     ]
   }
 }
