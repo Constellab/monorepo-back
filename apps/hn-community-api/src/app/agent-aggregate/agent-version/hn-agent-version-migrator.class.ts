@@ -86,8 +86,19 @@ export class HnAgentVersionMigrator {
     }
 
     if (version === 3) {
+      let agentVersionDtoRes: HnAgentVersionDto = null;
       if ((agentVersionDto.params as Record<string, any>)?.specs) {
-        return agentVersionDto;
+        const specs = (agentVersionDto.params as Record<string, any>).specs;
+        for (const key of Object.keys(specs)) {
+          if (specs[key]['type'] == 'string') {
+            specs[key]['type'] = 'str';
+          }
+        }
+        agentVersionDto.params = {
+          specs: specs,
+          values: (agentVersionDto.params as Record<string, any>).values
+        };
+        agentVersionDtoRes = agentVersionDto;
       } else if (agentVersionDto.params instanceof Array) {
         const params: Record<string, any> = {
           specs: {},
@@ -100,7 +111,7 @@ export class HnAgentVersionMigrator {
           params['values'][key] = v;
         }
         agentVersionDto.params = params;
-        return agentVersionDto;
+        agentVersionDtoRes = agentVersionDto;
       } else {
         const params: Record<string, any> = {
           specs: {},
@@ -113,9 +124,44 @@ export class HnAgentVersionMigrator {
           params['values'][key] = v;
         }
         agentVersionDto.params = params;
-        return agentVersionDto;
+        agentVersionDtoRes = agentVersionDto;
       }
+
+      if (agentVersionDtoRes.inputSpecs.specs) {
+        for (const spec of Object.keys(agentVersionDtoRes.inputSpecs.specs)) {
+          if ('is_optional' in agentVersionDtoRes.inputSpecs.specs[spec]) {
+            agentVersionDtoRes.inputSpecs.specs[spec]['optional'] =
+              agentVersionDtoRes.inputSpecs.specs[spec]['is_optional'];
+            delete agentVersionDtoRes.inputSpecs.specs[spec]['is_optional'];
+          }
+
+          if ('is_constant' in agentVersionDtoRes.inputSpecs.specs[spec]) {
+            agentVersionDtoRes.inputSpecs.specs[spec]['constant'] =
+              agentVersionDtoRes.inputSpecs.specs[spec]['is_constant'];
+            delete agentVersionDtoRes.inputSpecs.specs[spec]['is_constant'];
+          }
+        }
+      }
+
+      if (agentVersionDtoRes.outputSpecs.specs) {
+        for (const spec of Object.keys(agentVersionDtoRes.outputSpecs.specs)) {
+          if ('is_optional' in agentVersionDtoRes.outputSpecs.specs[spec]) {
+            agentVersionDtoRes.outputSpecs.specs[spec]['optional'] =
+              agentVersionDtoRes.outputSpecs.specs[spec]['is_optional'];
+            delete agentVersionDtoRes.outputSpecs.specs[spec]['is_optional'];
+          }
+
+          if ('is_constant' in agentVersionDtoRes.outputSpecs.specs[spec]) {
+            agentVersionDtoRes.outputSpecs.specs[spec]['constant'] =
+              agentVersionDtoRes.outputSpecs.specs[spec]['is_constant'];
+            delete agentVersionDtoRes.outputSpecs.specs[spec]['is_constant'];
+          }
+        }
+      }
+
+      return agentVersionDtoRes;
     }
+
     return agentVersionDto;
   }
 
@@ -139,7 +185,7 @@ export class HnAgentVersionMigrator {
   private getBasicParamSpecs(value: any): Record<string, any> {
     return {
       type: this.getValueTypeString(value),
-      optional: false,
+      optional: false
     };
   }
 
