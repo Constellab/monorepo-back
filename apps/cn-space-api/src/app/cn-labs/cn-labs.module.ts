@@ -31,7 +31,6 @@ import { CnLabListener } from './cn-lab.listener';
 import { CnLabAggregateService } from './cn-lab-aggregate.service';
 import { CnLabFactoryService } from './cn-lab-factory.service';
 import { CnLabManagerService } from './cn-lab-manager.service';
-import { CnLabMigrateService } from './cn-lab-migrate.service';
 import { CnLabsController } from './cn-labs.controller';
 import { CnLabsSecurity } from './cn-labs.security';
 import { CnLabsService } from './cn-labs.service';
@@ -42,6 +41,8 @@ import { CnLabFree } from './lab-free/cn-lab-free.entity';
 import { CnLabFreeService } from './lab-free/cn-lab-free.service';
 import { CnLabFreeAggregateService } from './lab-free/cn-lab-free-aggregate.service';
 import { CnLabMailService } from './mail/cn-lab-mail.service';
+import { CnLabMigrateService } from './migration/cn-lab-migrate.service';
+import { CnLabMigrationRegistryService } from './migration/cn-lab-migration-registry.service';
 import { CnLabNotificationService } from './notification/cn-lab-notification.service';
 import { CnAzureService } from './server/azure/cn-azure.service';
 import { CnCloudProviderAzureService } from './server/azure/cn-cloud-provider-azure.service';
@@ -131,6 +132,8 @@ import { CnLabVolumeEntity } from './volume/cn-lab-volume-entity';
     CnLabVolumeService,
     CnLabStatusHistoryService,
     CnLabStatsAggregateService,
+    // Migration system
+    CnLabMigrationRegistryService,
   ],
   exports: [
     CnLabsService,
@@ -138,6 +141,7 @@ import { CnLabVolumeEntity } from './volume/cn-lab-volume-entity';
     CnLabMailService,
     CnLabNotificationService,
     CnLabUserService,
+    CnLabMigrateService,
   ],
   controllers: [CnLabsController],
 })

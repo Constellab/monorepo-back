@@ -59,12 +59,13 @@ import {
 } from './cn-lab.dto';
 import { CnLabEntity } from './cn-lab.entity';
 import { CnLabAggregateService } from './cn-lab-aggregate.service';
-import { CnLabMigrateService } from './cn-lab-migrate.service';
 import { CnLabDesktopGenerateConfig } from './desktop/cn-lab-desktop.class';
 import { CnLabGreenOptionFormDto } from './green-option/cn-lab-green-option.dto';
 import { CnLabGreenOption } from './green-option/cn-lab-green-option.entity';
 import { CnLabFreeCreateDto, CnLabFreeGetDto, CnLabFreeUpdateDto } from './lab-free/cn-lab-free.dto';
 import { CnLabFreeAggregateService } from './lab-free/cn-lab-free-aggregate.service';
+import { CnLabMigrateService } from './migration/cn-lab-migrate.service';
+import { CnLabMigrationPlanDTO } from './migration/cn-lab-migration.dto';
 import { CnCpCompleteInfo } from './server/cn-cloud-provider.class';
 import { CnLabStatsRunningResponseDTO } from './stats/cn-lab-running-stats.dto';
 import { CnLabStatsRequestDTO } from './stats/cn-lab-stats.dto';
@@ -197,11 +198,6 @@ export class CnLabsController {
   @Put(':id/lab-configurer/migrate-dns-challenge')
   public migrateToDnsChallenge(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabStatusDTO> {
     return this.migrateService.migrateToDnsChallenge(id);
-  }
-
-  @Put(':id/lab-configurer/migrate-lab-manager-v2')
-  public migrateToLabManagerV2(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabStatusDTO> {
-    return this.migrateService.migrateToLabManagerV2Async(id);
   }
 
   @Put(':id/lab-configurer/destroy-containers')
@@ -385,16 +381,22 @@ export class CnLabsController {
     return this.aggregateService.getStartingError(id);
   }
 
-  @Get('lab-manager/recommended-version')
-  getLabManagerRecommendedVersion(): { labManagerRecommendedVersion: string } {
-    return {
-      labManagerRecommendedVersion: this.aggregateService.getLabManagerRecommendedVersion(),
-    };
-  }
-
   @Post(':id/lab-manager/stop-current-task')
   public stopCurrentTask(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
     return this.aggregateService.stopCurrentTask(id);
+  }
+
+  @Get(':id/lab-manager/version-upgrade-info')
+  public getVersionUpgradeInfo(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabMigrationPlanDTO> {
+    return this.migrateService.getLabVersionUpgradeInfo(id);
+  }
+
+  @Get(':id/lab-manager/migration-plan/:targetVersion')
+  public getMigrationPlan(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('targetVersion') targetVersion: string
+  ): Promise<CnLabMigrationPlanDTO> {
+    return this.migrateService.getLabMigrationPlan(id, targetVersion);
   }
 
   /////////////////////////// LAB MANAGER - INITIALIZATION ///////////////////////////
