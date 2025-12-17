@@ -7,6 +7,7 @@ export interface CnLabConfigFile {
   front_version: string;
   // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   glab_tag: 'latest' | 'beta' | string;
+  biota_maria_db_url?: string;
   variables: Record<string, string>;
   environment: CnLabConfigFileEnv;
 }

@@ -131,11 +131,14 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
     }
     const glabVersion = gwsCoreBrickVersion.technicalInfo[CnBrickVersionTechnicalKey.GWS_CORE_GLAB_VERSION];
 
+    const biotaMariaDbUrl = await this.getMariaDbUrl(config);
+
     return {
       lab_id: lab.id,
       name: lab.name,
       front_version: frontVersion,
       glab_tag: glabVersion,
+      biota_maria_db_url: biotaMariaDbUrl,
       variables: {},
       environment: await this.brickConfigToConfigEnv(config.brickVersions),
     };
@@ -155,6 +158,24 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
     const gwsCoreVersion = BlVersion.fromString(gwsCore.version);
     // get gws_core version
     return await this.brickService.getBrickVersion(CnBrickGWS.GWS_CORE, gwsCoreVersion);
+  }
+
+  // @deprecated From version 0.11.0 of biota, this is not used anymore
+  private async getMariaDbUrl(config: CnLabConfigDTO): Promise<string> {
+    // get the maria db url
+    const gwsBiota = config.brickVersions.find(
+      (brickVersion) => brickVersion.name.toLowerCase() === CnBrickGWS.GWS_BIOTA.toLowerCase()
+    );
+    if (gwsBiota == null) {
+      return null;
+    }
+    // get gws_core version
+    const gwsBiotaBrickVersion = await this.brickService.getBrickVersion(
+      CnBrickGWS.GWS_BIOTA,
+      BlVersion.fromString(gwsBiota.version)
+    );
+
+    return gwsBiotaBrickVersion.technicalInfo[CnBrickVersionTechnicalKey.GWS_BIOTA_MARIA_DB_URL];
   }
 
   private async brickConfigToConfigEnv(brickVersions: CnBrickVersionDTO[]): Promise<CnLabConfigFileEnv> {
