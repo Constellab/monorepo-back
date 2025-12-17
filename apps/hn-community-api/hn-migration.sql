@@ -511,3 +511,21 @@ ALTER TABLE `app`
   ADD COLUMN `contact_mail` varchar(255) DEFAULT NULL;
 ALTER TABLE `app`
   CHANGE `app_url` `app_url` varchar(255) COLLATE 'utf8mb4_unicode_ci' NULL;
+
+#1.10.2
+-- Set space user id constraint to cascade on delete
+ALTER TABLE `space`
+DROP FOREIGN KEY `FK_527dfe411ef5a7dc258501c09e3`,
+  DROP FOREIGN KEY `FK_747b42c9084735920dac77b8ef3`;
+
+ALTER TABLE `space`
+  ADD CONSTRAINT `FK_527dfe411ef5a7dc258501c09e3`
+    FOREIGN KEY (`lastModifiedById`)
+      REFERENCES `user` (`id`)
+      ON DELETE SET NULL
+      ON UPDATE NO ACTION,
+  ADD CONSTRAINT `FK_747b42c9084735920dac77b8ef3`
+    FOREIGN KEY (`createdById`)
+    REFERENCES `user` (`id`)
+    ON DELETE SET NULL
+    ON UPDATE NO ACTION;

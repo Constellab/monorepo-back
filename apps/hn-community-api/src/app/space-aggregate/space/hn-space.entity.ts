@@ -19,14 +19,14 @@ export class HnSpace extends BlEntityWithId {
   createdAt: DateTime;
 
   @Type(() => HnUser)
-  @ManyToOne(() => HnUser, { eager: true, nullable: true })
+  @ManyToOne(() => HnUser, { eager: true, nullable: true, onDelete: 'SET NULL' })
   createdBy?: HnUser;
 
   @BlLuxonDateTimeColumn({ nullable: true })
   lastModifiedAt: DateTime;
 
   @Type(() => HnUser)
-  @ManyToOne(() => HnUser, { eager: true, nullable: true })
+  @ManyToOne(() => HnUser, { eager: true, nullable: true, onDelete: 'SET NULL' })
   lastModifiedBy: HnUser;
 
   @BeforeInsert()
