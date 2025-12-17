@@ -514,6 +514,7 @@ ALTER TABLE `app`
 
 #1.10.2
 -- Set space user id constraint to cascade on delete
+-- Verify current foreign keys names before running this migration
 ALTER TABLE `space`
 DROP FOREIGN KEY `FK_527dfe411ef5a7dc258501c09e3`,
   DROP FOREIGN KEY `FK_747b42c9084735920dac77b8ef3`;
