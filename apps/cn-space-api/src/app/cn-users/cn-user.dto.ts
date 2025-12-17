@@ -8,7 +8,7 @@ export interface CnCreateUserDto {
   email: string;
   password: string;
   phone?: string;
-  captcha?: string;
+  captcha: string;
 }
 
 /**

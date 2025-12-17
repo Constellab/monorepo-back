@@ -3,7 +3,7 @@ import { Body, Controller, Get, HttpException, Param, ParseUUIDPipe, Post, Put, 
 import { Response } from 'express';
 
 import { CnFrontService } from '../../cn-core/services/cn-front.service';
-import { CnUserUpdateLicenseDTO } from '../cn-user.dto';
+import { CnCreateUserDto, CnUserUpdateLicenseDTO } from '../cn-user.dto';
 import { CnUser, CnUserEntity } from '../cn-user.entity';
 import { CnUserAccountsService } from './cn-user-accounts.service';
 
@@ -19,7 +19,7 @@ export class CnUserAccountsController {
 
   @BlPublicSecure()
   @Post()
-  create(@Body(new BlParsePipe(CnUserEntity)) entity: CnUser): Promise<CnUser> {
+  create(@Body() entity: CnCreateUserDto): Promise<CnUser> {
     return this.userAccountsService.signup(entity);
   }
 
