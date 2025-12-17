@@ -89,7 +89,6 @@ export class CnLabMigration200 extends CnLabMigration {
       `Updating lab manager to version ${targetVersion}`,
       CnLabServerTaskStatus.RUNNING
     );
-    await this.labConfigurerService.updateLabManager(lab, targetVersion);
 
     this.logger.log(`Completed migration to Lab Manager v${CnLabMigration200.VERSION}`);
   }

@@ -34,7 +34,7 @@ export class CnLabConfigurerService {
       const sshService = await this.cloudProviderFactory.getSshLabService(lab);
 
       // get lab configurer repository
-      await this.updateLabConfigurerRepo(sshService, lab.id);
+      await this.callUpdateLabConfigurerRepo(sshService, lab.id);
 
       // mount volume
       await this.mountVolume(lab);
@@ -70,7 +70,7 @@ export class CnLabConfigurerService {
     const sshService = await this.cloudProviderFactory.getSshLabService(lab);
 
     try {
-      await this.updateLabConfigurerRepo(sshService, lab.id);
+      await this.callUpdateLabConfigurerRepo(sshService, lab.id);
     } catch (e: any) {
       await this.labService.updateServerTask(
         lab.id,
@@ -90,7 +90,7 @@ export class CnLabConfigurerService {
    * Method to clone lab-configurer repo if it does not exist or pull if it does
    * @private
    */
-  public async updateLabConfigurerRepo(labSshService: CnLabSshService, labId: string): Promise<void> {
+  public async callUpdateLabConfigurerRepo(labSshService: CnLabSshService, labId: string): Promise<void> {
     const cdResult = await labSshService.execSshCommand([`cd ${CnLabSshService.LAB_CONFIGURER_FOLDER}`], {
       errorMode: CnExecCommandMode.STDERR_AS_SUCCESS,
       ignoreError: true,
@@ -279,7 +279,7 @@ export class CnLabConfigurerService {
 
     try {
       // get lab configurer repository
-      await this.updateLabConfigurerRepo(labSshService, lab.id);
+      await this.callUpdateLabConfigurerRepo(labSshService, lab.id);
 
       // Execute init.sh
       await this.callInitScript(labSshService, lab);
@@ -305,7 +305,7 @@ export class CnLabConfigurerService {
     const labSshService = await this.cloudProviderFactory.getSshLabService(lab);
 
     // Update lab configurer repository
-    await this.updateLabConfigurerRepo(labSshService, lab.id);
+    await this.callUpdateLabConfigurerRepo(labSshService, lab.id);
 
     // Call migrate_access_right.sh script
     await this.labService.updateServerTask(
@@ -322,11 +322,9 @@ export class CnLabConfigurerService {
   /**
    * Migration to 2.3.0. It needs the new lab-configurer repo for the new version of traefik.
    */
-  public async migrateToLabManagerV230(lab: CnLab, targetVersion: string): Promise<void> {
+  public async updateLabConfigurerRepo(lab: CnLab): Promise<void> {
     const labSshService = await this.cloudProviderFactory.getSshLabService(lab);
     // Update lab configurer repository
-    await this.updateLabConfigurerRepo(labSshService, lab.id);
-    // Call migrate_to_lab_manager_v2_3_0.sh script
-    await this.updateLabManager(lab, targetVersion);
+    await this.callUpdateLabConfigurerRepo(labSshService, lab.id);
   }
 }

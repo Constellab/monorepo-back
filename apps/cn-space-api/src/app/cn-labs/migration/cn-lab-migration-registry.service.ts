@@ -4,6 +4,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { CnLabAggregateService } from '../cn-lab-aggregate.service';
 import { CnLabManagerService } from '../cn-lab-manager.service';
 import { CnLabsService } from '../cn-labs.service';
+import { CnCloudProviderFactory } from '../server/cn-cloud-provider.factory';
 import { CnLabConfigurerService } from '../server/cn-lab-configurer.service';
 import { CnLabMigration } from './cn-lab-migration.abstract';
 import { CnLabMigrationDescriptionDTO, CnLabMigrationPlanDTO } from './cn-lab-migration.dto';
@@ -27,7 +28,8 @@ export class CnLabMigrationRegistryService {
     private labManagerService: CnLabManagerService,
     private labConfigurerService: CnLabConfigurerService,
     private labAggregateService: CnLabAggregateService,
-    private labService: CnLabsService
+    private labService: CnLabsService,
+    private cloudProviderFactory: CnCloudProviderFactory
   ) {}
 
   /**
@@ -43,7 +45,7 @@ export class CnLabMigrationRegistryService {
         this.labService
       ),
       new CnLabMigration230(this.labConfigurerService, this.labService),
-      new CnLabMigration280(),
+      new CnLabMigration280(this.cloudProviderFactory, this.labConfigurerService, this.labService),
     ];
     return migrations.sort((a, b) => {
       const versionA = a.getDestinationVersionObject();

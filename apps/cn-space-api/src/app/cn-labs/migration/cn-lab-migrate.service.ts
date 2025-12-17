@@ -153,7 +153,7 @@ export class CnLabMigrateService {
   private async runMigrations(
     lab: CnLab,
     targetVersion: string,
-    migrations: import('./cn-lab-migration.abstract').CnLabMigration[]
+    migrations: CnLabMigration[]
   ): Promise<void> {
     for (const migration of migrations) {
       const migrationVersion = migration.getDestinationVersion();
@@ -167,6 +167,9 @@ export class CnLabMigrateService {
       // Execute the migration
       await migration.migrate(lab, targetVersion);
     }
+
+    // update the version of the lab manager to the target version
+    await this.labConfigurerService.updateLabManager(lab, targetVersion);
   }
 
   private async getStatus(lab: CnLab): Promise<CnLabStatusDTO> {

@@ -44,7 +44,7 @@ export class CnLabMigration230 extends CnLabMigration {
     );
   }
 
-  async migrate(lab: CnLab, targetVersion: string): Promise<void> {
+  async migrate(lab: CnLab): Promise<void> {
     this.logger.log(`Starting migration to Lab Manager v${CnLabMigration230.VERSION}`);
 
     await this.labService.updateServerTask(
@@ -54,7 +54,7 @@ export class CnLabMigration230 extends CnLabMigration {
     );
 
     // Call the configurer service method which handles the migration
-    await this.labConfigurerService.migrateToLabManagerV230(lab, targetVersion);
+    await this.labConfigurerService.updateLabConfigurerRepo(lab);
 
     this.logger.log(`Completed migration to Lab Manager v${CnLabMigration230.VERSION}`);
   }
