@@ -45,6 +45,6 @@ export class CnLabMigration280 extends CnLabMigration {
 - **gws_core**: v0.19.0
 - **gws_biota**: v0.11.0
 
-** Please update only if you currently are on gws_core version 0.18.x or higher **`;
+**Please update only if you currently are on gws_core version 0.18.x or higher**`;
   }
 }

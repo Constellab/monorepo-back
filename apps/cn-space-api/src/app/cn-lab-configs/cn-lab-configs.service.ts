@@ -161,7 +161,7 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
   }
 
   // @deprecated From version 0.11.0 of biota, this is not used anymore
-  private async getMariaDbUrl(config: CnLabConfigDTO): Promise<string> {
+  private async getMariaDbUrl(config: CnLabConfigDTO): Promise<string | null> {
     // get the maria db url
     const gwsBiota = config.brickVersions.find(
       (brickVersion) => brickVersion.name.toLowerCase() === CnBrickGWS.GWS_BIOTA.toLowerCase()
@@ -174,6 +174,10 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
       CnBrickGWS.GWS_BIOTA,
       BlVersion.fromString(gwsBiota.version)
     );
+
+    if (!gwsBiotaBrickVersion.technicalInfo) {
+      return null;
+    }
 
     return gwsBiotaBrickVersion.technicalInfo[CnBrickVersionTechnicalKey.GWS_BIOTA_MARIA_DB_URL];
   }
