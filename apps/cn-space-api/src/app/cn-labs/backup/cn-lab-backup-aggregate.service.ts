@@ -1,7 +1,7 @@
 import { BlBadRequestException, BlObjectStorageService } from '@monorepo/back-core-lib';
 import { ClPageI } from '@monorepo/core-lib';
 import { Injectable, Logger } from '@nestjs/common';
-import { DataSource, EntityManager } from 'typeorm';
+import { EntityManager } from 'typeorm';
 
 import { CnCloudProviderRegion } from '../../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import {
@@ -12,14 +12,12 @@ import {
 import { CnBucket } from '../../cn-object-storages/cn-buckets/cn-bucket.entity';
 import { CnLab } from '../cn-lab.entity';
 import { CnLabManagerService } from '../cn-lab-manager.service';
-import { CnLabMailService } from '../mail/cn-lab-mail.service';
 import {
   CnLabBackupFrequency,
   CnLabBackupsHistory,
   CnLabBackupStatus,
   CnLabBackupStatusDTO,
   CnLabCheckBackupSizeDTO,
-  CnSaveBackupHistoryDTO,
 } from './cn-lab-backup.dto';
 import { CnLabBackupHistory } from './cn-lab-backup-history.entity';
 import { CnLabBackupHistoryService } from './cn-lab-backup-history.service';
@@ -34,9 +32,7 @@ export class CnLabBackupAggregateService {
     private backupHistoryService: CnLabBackupHistoryService,
     private backupOptionService: CnLabBackupOptionService,
     private labManagerService: CnLabManagerService,
-    private objectStorageService: BlObjectStorageService,
-    private datasource: DataSource,
-    private labMailService: CnLabMailService
+    private objectStorageService: BlObjectStorageService
   ) {}
 
   //////////////////////////// BACKUP OPTIONS ////////////////////////////
@@ -130,8 +126,7 @@ export class CnLabBackupAggregateService {
 
   public async syncBackupHistory(lab: CnLab): Promise<void> {
     const backups = await this.labManagerService.getBackupHistory(lab);
-    const histories = await this.backupHistoryService.saveHistories(backups, lab);
-    await this.checkErrorHistory(histories, lab);
+    await this.backupHistoryService.saveHistories(backups, lab);
   }
 
   public async getBackupHistory(
@@ -150,43 +145,26 @@ export class CnLabBackupAggregateService {
     lab: CnLab,
     backupsHistory: CnLabBackupsHistory
   ): Promise<CnLabBackupHistory[]> {
-    const histories = await this.backupHistoryService.saveHistories(backupsHistory, lab);
-    await this.checkErrorHistory(histories, lab);
-    return histories.map((h) => h.history);
-  }
-
-  /**
-   * Once the backup history is saved, we check if there is an error in 1 of the backup.
-   * If there is an error, we email the support
-   * @param histories
-   * @param lab
-   * @private
-   */
-  private async checkErrorHistory(histories: CnSaveBackupHistoryDTO[], lab: CnLab): Promise<void> {
-    for (const history of histories) {
-      if (history.isNew && history.history.status === 'ERROR') {
-        await this.labMailService.sendLabBackupErrorMail(lab);
-        return;
-      }
-    }
+    return await this.backupHistoryService.saveHistories(backupsHistory, lab);
   }
 
   /////////////////////////////// BACKUP ///////////////////////////////
 
   public async stopCurrentBackup(lab: CnLab): Promise<CnLabBackupHistory[]> {
     const backup = await this.labManagerService.stopCurrentBackup(lab);
-    const histories = await this.backupHistoryService.saveHistories(backup, lab);
-    return histories.map((h) => h.history);
+    return await this.backupHistoryService.saveHistories(backup, lab);
   }
 
   public async createProdBackup(lab: CnLab): Promise<CnLabBackupHistory[]> {
     // get or create the bucket associated with this lab
     const backupInfo = await this.getBackupInfo(lab);
 
-    const backups = await this.labManagerService.createProdBackup(lab, backupInfo);
-
-    const histories = await this.backupHistoryService.saveHistories(backups, lab);
-    return histories.map((h) => h.history);
+    // No need to save the backup history here, as the lab manager will
+    // automatically save them
+    // If we save them here, there might be duplicate primary key error
+    // because of parallel backup creation
+    await this.labManagerService.createProdBackup(lab, backupInfo);
+    return [];
   }
 
   public async getBackupInfo(lab: CnLab): Promise<CnLabManagerBackupInfoDTO> {
@@ -277,7 +255,7 @@ export class CnLabBackupAggregateService {
     this.logger.log(`Deleting backup for lab ${lab.id}, bucket : ${bucket.id}`);
     try {
       await this.objectStorageService.deleteObjectsByPrefix(bucket.getBucketConfig(), prefix);
-    } catch (e) {
+    } catch (e: any) {
       Logger.error(
         `Error while deleting the backup file in bucket ${bucket.id} for lab ${lab.id}. Error ${e}`
       );

@@ -13,8 +13,8 @@ import {
   CnLabBackupsHistory,
   CnLabBackupStatus,
   CnLabBackupTriggerMode,
-  CnSaveBackupHistoryDTO,
 } from './cn-lab-backup.dto';
+import { CnLabBackupEventService } from './cn-lab-backup.event';
 import { CnLabBackupHistory, CnLabBackupHistoryEntity } from './cn-lab-backup-history.entity';
 import { CnLabBackupHistoryDetail, CnLabBackupType } from './cn-lab-backup-history-detail.entity';
 
@@ -23,26 +23,29 @@ export class CnLabBackupHistoryService extends BlAbstractService<CnLabBackupHist
   constructor(
     @InjectRepository(CnLabBackupHistoryEntity) repository: Repository<CnLabBackupHistoryEntity>,
     private bucketService: CnBucketsService,
-    private datasource: DataSource
+    private datasource: DataSource,
+    private backupEventService: CnLabBackupEventService
   ) {
     super(repository, CnLabBackupHistoryEntity);
   }
 
-  public async saveHistories(history: CnLabBackupsHistory, lab: CnLab): Promise<CnSaveBackupHistoryDTO[]> {
-    const histories: CnSaveBackupHistoryDTO[] = [];
+  public async saveHistories(history: CnLabBackupsHistory, lab: CnLab): Promise<CnLabBackupHistory[]> {
+    const histories: CnLabBackupHistory[] = [];
     for (const historyDto of history.backups) {
       histories.push(await this.saveHistory(historyDto, lab));
     }
     return histories;
   }
 
-  public async saveHistory(historyDto: CnLabBackupBucket, lab: CnLab): Promise<CnSaveBackupHistoryDTO> {
+  public async saveHistory(historyDto: CnLabBackupBucket, lab: CnLab): Promise<CnLabBackupHistory> {
     let history: CnLabBackupHistoryEntity = await this.repo.findOne({
       where: { backupId: historyDto.id },
       relations: { lab: true },
     });
 
     const isHistoryNew = history == null;
+    const oldStatus = history?.status;
+
     if (history == null) {
       history = new CnLabBackupHistoryEntity();
       history.backupId = historyDto.id;
@@ -87,10 +90,24 @@ export class CnLabBackupHistoryService extends BlAbstractService<CnLabBackupHist
       await entityManager.save(dbDetails);
     });
 
-    return {
-      isNew: isHistoryNew,
-      history: await this.findByIdAndCheck(history.id, CnLabBackupHistoryEntity.defaultRelation),
-    };
+    const savedHistory = await this.findByIdAndCheck(history.id, CnLabBackupHistoryEntity.defaultRelation);
+
+    // Emit event if status is ERROR and it's either a new backup or status changed from non-ERROR to ERROR
+    const isNewErrorStatus = isHistoryNew && historyDto.status === CnLabBackupStatus.ERROR;
+    const isStatusChangedToError =
+      !isHistoryNew && oldStatus !== CnLabBackupStatus.ERROR && historyDto.status === CnLabBackupStatus.ERROR;
+
+    if (isNewErrorStatus || isStatusChangedToError) {
+      this.backupEventService.emitBackupEvent(
+        {
+          type: 'BACKUP_STATUS_ERROR',
+          entity: savedHistory,
+        },
+        lab
+      );
+    }
+
+    return savedHistory;
   }
 
   public markBackupAsDeleted(

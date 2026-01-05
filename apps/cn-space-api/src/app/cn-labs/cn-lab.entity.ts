@@ -286,7 +286,7 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
     if (this.name == 'localhost') {
       // only for local dev
       return {
-        apiKey: '123456',
+        apiKey: '1234',
         apiUrl: 'http://localhost:3080',
       };
     }

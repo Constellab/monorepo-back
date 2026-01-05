@@ -19,6 +19,8 @@ import { CnStoragePriceModule } from '../cn-servers-info/storage-price/cn-storag
 import { CnSpacesModule } from '../cn-spaces/cn-spaces.module';
 import { CnSupportModule } from '../cn-support/cn-support.module';
 import { CnUsersModule } from '../cn-users/cn-users.module';
+import { CnLabBackupEventService } from './backup/cn-lab-backup.event';
+import { CnLabBackupListener } from './backup/cn-lab-backup.listener';
 import { CnLabBackupAggregateService } from './backup/cn-lab-backup-aggregate.service';
 import { CnLabBackupHistoryEntity } from './backup/cn-lab-backup-history.entity';
 import { CnLabBackupHistoryService } from './backup/cn-lab-backup-history.service';
@@ -125,6 +127,8 @@ import { CnLabVolumeEntity } from './volume/cn-lab-volume-entity';
     CnLabFreeAggregateService,
     CnLabListener,
     CnLabBackupOptionService,
+    CnLabBackupEventService,
+    CnLabBackupListener,
     CnLabBackupHistoryService,
     CnLabBackupAggregateService,
     CnCloudProviderOutscaleService,
