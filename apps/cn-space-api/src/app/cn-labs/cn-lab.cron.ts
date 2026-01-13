@@ -37,7 +37,7 @@ export class CnLabCron {
   constructor(
     private labServerService: CnLabServerService,
     private labService: CnLabsService,
-    private labRuleService: CnLabGreenOptionService,
+    private labGreenOptionService: CnLabGreenOptionService,
     private labManagerService: CnLabManagerService,
     private externalLabApiService: CnExternalLabApiService,
     private labAggregateService: CnLabAggregateService,
@@ -121,7 +121,7 @@ export class CnLabCron {
   }
 
   private async checkStopAfterBackup(): Promise<void> {
-    const options = await this.labRuleService.findRulesByType(CnLabGreenOptionType.STOP_AFTER_BACKUP);
+    const options = await this.labGreenOptionService.findRulesByType(CnLabGreenOptionType.STOP_AFTER_BACKUP);
 
     for (const option of options) {
       const lab = await this.labService.findByIdAndCheck(option.labId);
@@ -141,7 +141,9 @@ export class CnLabCron {
   }
 
   private async checkStopAfterScenario(): Promise<void> {
-    const options = await this.labRuleService.findRulesByType(CnLabGreenOptionType.STOP_AFTER_SCENARIO);
+    const options = await this.labGreenOptionService.findRulesByType(
+      CnLabGreenOptionType.STOP_AFTER_SCENARIO
+    );
 
     for (const option of options) {
       const lab = await this.labService.findByIdAndCheck(option.labId);
@@ -164,7 +166,7 @@ export class CnLabCron {
   }
 
   private async checkStopAfterTime(): Promise<void> {
-    const options = await this.labRuleService.findRulesByType(CnLabGreenOptionType.STOP_AFTER_TIME);
+    const options = await this.labGreenOptionService.findRulesByType(CnLabGreenOptionType.STOP_AFTER_TIME);
 
     for (const option of options) {
       const lab = await this.labService.findByIdAndCheck(option.labId);
@@ -190,7 +192,7 @@ export class CnLabCron {
   }
 
   private async checkStopAfterInactivity(): Promise<void> {
-    const options = await this.labRuleService.findRulesByType(
+    const options = await this.labGreenOptionService.findRulesByType(
       CnLabGreenOptionType.STOP_AFTER_INACTIVITY_TIME
     );
 
@@ -232,22 +234,11 @@ export class CnLabCron {
     this.logger.log(
       `[Cron] Stopping lab :${lab.id}, option: ${option.type} ${ruleDetail ? `(${ruleDetail})` : ''}`
     );
-    await this.labServerService
-      .stopLab(lab)
-      .then(async () => {
-        await this.cleanRuleAfterExecution(option);
-      })
-      .catch((err) => {
-        this.logger.error(
-          `Error while stopping the lab : ${lab.id}, option : ${option.type}, error: ${err.message}`
-        );
-      });
-  }
-
-  private async cleanRuleAfterExecution(option: CnLabGreenOption): Promise<void> {
-    if (!option.isPersistent) {
-      await this.labRuleService.deleteById(option.id);
-    }
+    await this.labServerService.stopLab(lab).catch((err) => {
+      this.logger.error(
+        `Error while stopping the lab : ${lab.id}, option : ${option.type}, error: ${err.message}`
+      );
+    });
   }
 
   private async checkFreeLabs(): Promise<void> {

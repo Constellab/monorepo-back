@@ -12,6 +12,7 @@ import {
 import { CnLabAggregateService } from './cn-lab-aggregate.service';
 import { CnLabManagerService } from './cn-lab-manager.service';
 import { CnLabsService } from './cn-labs.service';
+import { CnLabGreenOptionService } from './green-option/cn-lab-green-option.service';
 import { CnLabMailService } from './mail/cn-lab-mail.service';
 import { CnLabServerTaskStatus, CnLabStatus } from './status/cn-lab-status.enum';
 
@@ -24,7 +25,8 @@ export class CnLabListener {
     private labsService: CnLabsService,
     private labConfigService: CnLabConfigsService,
     private labMailService: CnLabMailService,
-    private labAggregateService: CnLabAggregateService
+    private labAggregateService: CnLabAggregateService,
+    private labGreenOptionService: CnLabGreenOptionService
   ) {}
 
   @OnEvent(cnLabEventName)
@@ -61,6 +63,12 @@ export class CnLabListener {
         const lab = await this.labsService.findByIdAndCheck(event.labId);
         await this.labMailService.sendLabStartedMail(lab);
       }
+    }
+
+    if (event.newStatus === CnLabStatus.SERVER_STOPPED) {
+      await this.handleStoppedLab(event.labId).catch((error: Error) =>
+        this.onError(event.labId, `Error during lab stop handling : ${error.message}`)
+      );
     }
   }
 
@@ -129,6 +137,11 @@ export class CnLabListener {
     await this.labsService
       .updateServerTask(labId, message, CnLabServerTaskStatus.ERROR)
       .catch((err) => this.logger.error(err));
+  }
+
+  private async handleStoppedLab(labId: string): Promise<void> {
+    // Delete the non-persistent green option rules
+    await this.labGreenOptionService.deleteNonPersistentRulesByLabId(labId);
   }
 
   @OnEvent(cnSpaceEventName)

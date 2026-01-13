@@ -60,6 +60,10 @@ export class CnLabGreenOptionService extends BlAbstractService<CnLabGreenOption>
     return entity;
   }
 
+  public async deleteNonPersistentRulesByLabId(labId: string): Promise<void> {
+    await this.repository.delete({ labId: labId, isPersistent: false });
+  }
+
   public async findRulesByType(type: CnLabGreenOptionType): Promise<CnLabGreenOption[]> {
     return this.repository.find({
       where: { type: type },
