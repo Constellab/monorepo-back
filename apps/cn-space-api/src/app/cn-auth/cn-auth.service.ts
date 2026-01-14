@@ -13,8 +13,11 @@ import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
 import { CnCoreConfigService } from '../cn-core/modules/cn-core-config/cn-core-config.service';
 import { CnCaptchaService } from '../cn-core/services/cn-captcha.service';
 import { CnUser } from '../cn-users/cn-user.entity';
+import {
+  CnUserAccountEvent,
+  cnUserAccountEventName,
+} from '../cn-users/cn-user-accounts/cn-user-account.event';
 import { CnUsersService } from '../cn-users/cn-users.service';
-import { CnAuthEvent, cnAuthEventName } from './cn-auth-event.class';
 import { CnUser2FAService } from './cn-user-2-f-a/cn-user-2-f-a.service';
 
 export interface CnAuthResponse {
@@ -128,12 +131,12 @@ export class CnAuthService {
 
       // check if user is locked
       if (user.failedLoginCount >= failedLoginLock) {
-        const lockEvent: CnAuthEvent = {
+        const lockEvent: CnUserAccountEvent = {
           type: 'ACCOUNT_LOCKED',
           user: user,
           failedLoginLock,
         };
-        this.eventEmitter.emit(cnAuthEventName, lockEvent);
+        this.eventEmitter.emit(cnUserAccountEventName, lockEvent);
         throw new BlUnauthorizedException(CnErrorText.USER_LOCKED);
       } else {
         throw new BlUnauthorizedException(CnErrorText.WRONG_CREDENTIALS);

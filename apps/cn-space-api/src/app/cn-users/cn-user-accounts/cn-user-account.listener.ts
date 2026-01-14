@@ -1,21 +1,59 @@
-import { Injectable } from '@nestjs/common';
+import { BlMailService } from '@monorepo/back-core-lib';
+import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 
-import { CnAuthEvent, cnAuthEventName } from '../../cn-auth/cn-auth-event.class';
+import { CnMailTemplate } from '../../cn-core/model/config/cn-mail-template.class';
+import { CnCoreConfigService } from '../../cn-core/modules/cn-core-config/cn-core-config.service';
+import { CnFrontService } from '../../cn-core/services/cn-front.service';
+import { CnUser } from '../cn-user.entity';
+import { CnUserAccountEvent, cnUserAccountEventName } from './cn-user-account.event';
 import { CnUserAccountsService } from './cn-user-accounts.service';
 
 @Injectable()
 export class CnUserAccountListener {
-  constructor(private userAccountService: CnUserAccountsService) {}
+  private readonly logger = new Logger(CnUserAccountListener.name);
 
-  @OnEvent(cnAuthEventName)
-  async handleAuthEvent(event: CnAuthEvent): Promise<void> {
+  constructor(
+    private userAccountService: CnUserAccountsService,
+    private mailService: BlMailService,
+    private frontService: CnFrontService,
+    private configService: CnCoreConfigService
+  ) {}
+
+  @OnEvent(cnUserAccountEventName)
+  handleAuthEvent(event: CnUserAccountEvent): void {
     if (event.type === 'ACCOUNT_LOCKED') {
-      this.handleAccountLockedEvent(event);
+      this.handleAccountLockedEvent(event.user, event.failedLoginLock);
+    } else if (event.type === 'ACTIVATE_USER') {
+      this.handleAccountActivated(event.user);
     }
   }
 
-  private handleAccountLockedEvent(event: CnAuthEvent): void {
-    this.userAccountService.sendAccountLockedMail(event.user, event.failedLoginLock);
+  private handleAccountLockedEvent(user: CnUser, failedLoginLock: number): void {
+    this.userAccountService.sendAccountLockedMail(user, failedLoginLock);
+  }
+
+  private handleAccountActivated(user: CnUser): void {
+    // send mail asynchronously
+    this.sendAccountValidatedMail(user).catch((error) =>
+      this.logger.error('Error while sending account validated mail: ' + error)
+    );
+  }
+
+  /**
+   * Send a welcome mail to the user with doc and info links
+   * @param user
+   * @private
+   */
+  private async sendAccountValidatedMail(user: CnUser): Promise<void> {
+    await this.mailService.sendMailToUser(CnMailTemplate.signup_validated, user, {
+      user: {
+        firstname: user.firstname,
+        lastname: user.lastname,
+      },
+      documentationLink: this.frontService.getCommunityProductDocUrl(),
+      communityLink: this.configService.getCommunityFrontUrl(),
+      contactMail: this.configService.getCustomerSuccessMail(),
+    });
   }
 }

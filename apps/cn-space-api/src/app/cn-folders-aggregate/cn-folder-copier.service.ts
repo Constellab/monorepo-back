@@ -7,7 +7,10 @@ import { CnAuthContextUser } from '../cn-core/utils/cn-auth-context.class';
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
 import { CnSpaceAggregateService } from '../cn-spaces/cn-space-aggregate.service';
 import { CnUserSpaceInfo } from '../cn-users/cn-user.dto';
-import { CnUserEvent, cnUserEventName } from '../cn-users/cn-user.event';
+import {
+  CnUserAccountEvent,
+  cnUserAccountEventName,
+} from '../cn-users/cn-user-accounts/cn-user-account.event';
 import { CnDocumentType } from './cn-documents/cn-document.entity';
 import { CnDocumentService } from './cn-documents/cn-document.service';
 import { CnFolderAggregateService } from './cn-folder-aggregate.service';
@@ -35,9 +38,9 @@ export class CnFolderCopierService {
    * Listen to user events to create a default folder on user creation
    * @param userEvent
    */
-  @OnEvent(cnUserEventName)
-  public async onUserEvent(userEvent: CnUserEvent): Promise<void> {
-    if (userEvent.type === 'CREATE_USER') {
+  @OnEvent(cnUserAccountEventName)
+  public async onUserEvent(userEvent: CnUserAccountEvent): Promise<void> {
+    if (userEvent.type === 'ACTIVATE_USER') {
       try {
         const folderToCopy = this.coreConfigService.getFolderIdToCopyOnSignup();
         if (!folderToCopy) return;
@@ -54,7 +57,7 @@ export class CnFolderCopierService {
           new CnAuthContextUser(new CnUserSpaceInfo(userEvent.user, space, spaceUser.role))
         );
         await this.copyRootFolder(folderToCopy);
-      } catch (error) {
+      } catch (error: any) {
         this.logger.error(`Error while creating default folder for user. ${error}`);
       } finally {
         CnCurrentUserHelper.clearAuthOverride();

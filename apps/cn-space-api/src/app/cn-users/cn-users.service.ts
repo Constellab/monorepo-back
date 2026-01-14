@@ -17,7 +17,7 @@ import {
 import { clLangIsSupported, ClPage, ClSupportedLanguage, ClTheme } from '@monorepo/core-lib';
 import { TeUser } from '@monorepo/te-text-editor';
 import { InjectQueue } from '@nestjs/bullmq';
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Queue } from 'bullmq';
 import { In, Repository } from 'typeorm';
@@ -30,6 +30,8 @@ import { CnUserSearch } from './cn-user-search.class';
 
 @Injectable()
 export class CnUsersService extends BlAbstractService<CnUser> implements BlUserService, OnModuleInit {
+  private readonly logger = new Logger(CnUsersService.name);
+
   constructor(
     @InjectRepository(CnUserEntity) private repository: Repository<CnUser>,
     private objectStorageService: BlObjectStorageService,
@@ -201,7 +203,6 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
   }
 
   public sendUserToTransport(user: CnUser): void {
-    console.log('Sending user to transport queue:', user.id);
     const userDTO: CnUserTransportDto = {
       id: user.id,
       firstname: user.firstname,
@@ -216,7 +217,7 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
       photo: user.photo,
     };
     this.queue.add(blTransportSpaceUserQueue, userDTO).catch((error) => {
-      console.error('Error sending user to transport queue:', error);
+      this.logger.error('Error sending user to transport queue:', error);
     });
   }
 

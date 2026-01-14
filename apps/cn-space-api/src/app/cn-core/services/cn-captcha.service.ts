@@ -28,6 +28,10 @@ export class CnCaptchaService {
   }
 
   public async validateCaptcha(token: string, action: string): Promise<boolean> {
+    if (!this.configService.getCaptchaSiteKey()) {
+      this.logger.warn('Captcha site key not configured, skipping captcha validation.');
+      return true;
+    }
     try {
       const projectId = this.configService.getGcpProjectId();
       const projectPath = this.recaptchaClient.projectPath(projectId);

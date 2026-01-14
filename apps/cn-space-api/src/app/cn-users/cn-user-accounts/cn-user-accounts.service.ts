@@ -29,8 +29,8 @@ import { CnSpaceAggregateService } from '../../cn-spaces/cn-space-aggregate.serv
 import { CnSupportService } from '../../cn-support/cn-support.service';
 import { CnCreateUserDto, CnUserUpdateLicenseDTO } from '../cn-user.dto';
 import { CnUser, CnUserEntity, CnUserLicense } from '../cn-user.entity';
-import { CnUserEvent, cnUserEventName, CnUserEventType } from '../cn-user.event';
 import { CnUsersService } from '../cn-users.service';
+import { CnUserAccountEvent, cnUserAccountEventName } from './cn-user-account.event';
 
 /**
  * Service to handle users' account (signup, mail validation, password forgotten, reset password...)
@@ -83,7 +83,7 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
         // await mail send to include it in transaction
         await this.sendSignupEmail(newUser);
 
-        this.emitUserEvent('CREATE_USER', newUser);
+        this.emitUserAccountEvent({ type: 'CREATE_USER', user: newUser });
 
         return newUser;
       });
@@ -181,36 +181,7 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
     await this.usersService.update(user);
     this.usersService.sendUserToTransport(user);
 
-    this.onAccountActivated(user);
-  }
-
-  /**
-   * Actions once the account is activated
-   * @param user
-   * @private
-   */
-  private onAccountActivated(user: CnUser): void {
-    // send mail asynchronously
-    this.sendAccountValidatedMail(user).catch((error) =>
-      this.logger.error('Error while sending account validated mail: ' + error)
-    );
-  }
-
-  /**
-   * Send a welcome mail to the user with doc and info links
-   * @param user
-   * @private
-   */
-  private async sendAccountValidatedMail(user: CnUser): Promise<void> {
-    await this.mailService.sendMailToUser(CnMailTemplate.signup_validated, user, {
-      user: {
-        firstname: user.firstname,
-        lastname: user.lastname,
-      },
-      documentationLink: this.frontService.getCommunityProductDocUrl(),
-      communityLink: this.configService.getCommunityFrontUrl(),
-      contactMail: this.configService.getCustomerSuccessMail(),
-    });
+    this.emitUserAccountEvent({ type: 'ACTIVATE_USER', user });
   }
 
   async unlockAccount(token: string): Promise<void> {
@@ -331,7 +302,8 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
 
       await this.spaceAggregateService.acceptInvitation(invitation, userDb, transaction);
 
-      this.onAccountActivated(userDb);
+      this.emitUserAccountEvent({ type: 'CREATE_USER', user: userDb });
+      this.emitUserAccountEvent({ type: 'ACTIVATE_USER', user: userDb });
 
       return userDb;
     });
@@ -403,9 +375,8 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
     return this.repository.save(user);
   }
 
-  private emitUserEvent(event: CnUserEventType, user: CnUser): void {
-    const userEvent: CnUserEvent = { type: event, user };
-    this.eventEmitter.emit(cnUserEventName, userEvent);
+  private emitUserAccountEvent(userEvent: CnUserAccountEvent): void {
+    this.eventEmitter.emit(cnUserAccountEventName, userEvent);
   }
 
   public async deleteUser(userId: string): Promise<void> {
