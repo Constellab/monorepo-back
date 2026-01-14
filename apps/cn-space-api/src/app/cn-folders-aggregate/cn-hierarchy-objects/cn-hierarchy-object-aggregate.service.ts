@@ -322,12 +322,17 @@ export class CnHierarchyObjectAggregateService {
     return newHierarchyObject;
   }
 
-  public async deleteHierarchyObjectById(hierarchyObjectId: string): Promise<void> {
+  /**
+   * Delete a hierarchy object and its children permanently
+   * @param hierarchyObjectId hierarchy object id to delete
+   * @param force if true, will delete even if not in trash
+   */
+  public async deleteHierarchyObjectById(hierarchyObjectId: string, force: boolean = false): Promise<void> {
     const hierarchyObject = await this.securityService.getAndCheckAuthorizationForUpdate(
       hierarchyObjectId,
       true
     );
-    const objectDelete = await this.deleteHierarchyObjectAndChildren(hierarchyObject);
+    const objectDelete = await this.deleteHierarchyObjectAndChildren(hierarchyObject, force);
     if (objectDelete) {
       const parentFolder = hierarchyObject.parentId
         ? await this.hierarchyObjectService.findByIdAndCheck(hierarchyObject.parentId)
@@ -349,10 +354,13 @@ export class CnHierarchyObjectAggregateService {
     }
   }
 
-  private async deleteHierarchyObjectAndChildren(hierarchyObject: CnHierarchyObject): Promise<boolean> {
+  public async deleteHierarchyObjectAndChildren(
+    hierarchyObject: CnHierarchyObject,
+    force: boolean = false
+  ): Promise<boolean> {
     const objectTree = await this.checkHierarchyObjectBeforeDelete(hierarchyObject, 'delete');
 
-    if (hierarchyObject.visibility === CnHierarchyObjectVisibility.VISIBLE) {
+    if (hierarchyObject.visibility === CnHierarchyObjectVisibility.VISIBLE && !force) {
       throw new BlBadRequestException('The object must be moved to trash before deleting it');
     }
     if (hierarchyObject.isFolder()) {

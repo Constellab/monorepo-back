@@ -74,4 +74,8 @@ export class CnActivityService extends BlAbstractPaginatedService<CnActivity> {
     };
     return this.findPaginated(page, size, findOptions);
   }
+
+  public async deleteBySpaceId(spaceId: string): Promise<void> {
+    await this.repository.delete({ space: { id: spaceId } });
+  }
 }

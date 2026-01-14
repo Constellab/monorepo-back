@@ -68,6 +68,7 @@ import { CnServerAggregateModule } from './app/cn-servers-info/cn-server-aggrega
 import { CnSettingsModule } from './app/cn-settings/cn-settings.module';
 import { CnSpacesModule } from './app/cn-spaces/cn-spaces.module';
 import { CnStatsModule } from './app/cn-stats/cn-stats.module';
+import { CnUserDeletionAggregateModule } from './app/cn-user-deletion-aggregate/cn-user-deletion-aggregate.module';
 import { CnUserAccountModule } from './app/cn-users/cn-user-accounts/cn-user-account.module';
 import { CnUsersModule } from './app/cn-users/cn-users.module';
 import { CnUsersService } from './app/cn-users/cn-users.service';
@@ -198,6 +199,7 @@ TeRichTextModifications.setBackTimeDifference();
     CnUsersModule,
     CnAuthModule,
     CnUserAccountModule,
+    CnUserDeletionAggregateModule,
     CnLabConfigsModule,
     CnFoldersAggregateModule,
     CnScenariosModule,
