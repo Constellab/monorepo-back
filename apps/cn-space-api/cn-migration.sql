@@ -344,3 +344,6 @@ WHERE r.typingName IN ('RESOURCE.gws_core.StreamlitResource', 'RESOURCE.gws_core
 
 alter table settings 
   add column constellabSuite text null;
+
+############################ 2.9.11 ##########################
+-- Update CAPTCHA_SITE_KEY and delete CAPTCHA_SECRET_KEY

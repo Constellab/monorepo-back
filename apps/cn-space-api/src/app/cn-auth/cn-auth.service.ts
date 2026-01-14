@@ -1,5 +1,4 @@
 import {
-  BlCaptchaService,
   BlCredentials,
   BlCredentials2Fa,
   BlJwtService,
@@ -12,6 +11,7 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 
 import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
 import { CnCoreConfigService } from '../cn-core/modules/cn-core-config/cn-core-config.service';
+import { CnCaptchaService } from '../cn-core/services/cn-captcha.service';
 import { CnUser } from '../cn-users/cn-user.entity';
 import { CnUsersService } from '../cn-users/cn-users.service';
 import { CnAuthEvent, cnAuthEventName } from './cn-auth-event.class';
@@ -36,7 +36,7 @@ export class CnAuthService {
     private jwtService: BlJwtService,
     private configService: CnCoreConfigService,
     private user2FaService: CnUser2FAService,
-    private captchaService: BlCaptchaService,
+    private captchaService: CnCaptchaService,
     private eventEmitter: EventEmitter2
   ) {}
 
@@ -94,7 +94,7 @@ export class CnAuthService {
 
   public async checkCredentialsAndUser(credentials: BlCredentials, checkCaptcha: boolean): Promise<CnUser> {
     if (checkCaptcha) {
-      const captchaCheck = await this.captchaService.validateCaptcha(credentials.captcha);
+      const captchaCheck = await this.captchaService.validateCaptcha(credentials.captcha, 'login');
 
       if (!captchaCheck) {
         throw new BlUnauthorizedException(CnErrorText.INVALID_CAPTCHA);

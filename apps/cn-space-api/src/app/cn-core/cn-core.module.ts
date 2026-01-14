@@ -5,6 +5,7 @@ import { MulterModule } from '@nestjs/platform-express';
 
 import { CnDbBackupCron } from './cron/cn-db-backup.cron';
 import { CnConfigEntitySecurity } from './security/cn-config-entity.security';
+import { CnCaptchaService } from './services/cn-captcha.service';
 import { CnCommandService } from './services/cn-command.service';
 
 /**
@@ -25,7 +26,7 @@ import { CnCommandService } from './services/cn-command.service';
       limits: { fieldSize: 25 * 1024 * 1024, fileSize: 100 * 1024 * 1024 },
     }),
   ],
-  providers: [CnConfigEntitySecurity, CnCommandService, CnDbBackupCron],
+  providers: [CnConfigEntitySecurity, CnCommandService, CnDbBackupCron, CnCaptchaService],
   exports: [
     BlRequestContextModule,
     BlTranslateModule,
@@ -34,6 +35,7 @@ import { CnCommandService } from './services/cn-command.service';
 
     CnConfigEntitySecurity,
     CnCommandService,
+    CnCaptchaService,
   ],
 })
 export class CnCoreModule {}

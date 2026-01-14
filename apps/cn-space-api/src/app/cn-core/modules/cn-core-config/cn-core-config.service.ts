@@ -301,10 +301,6 @@ export class CnCoreConfigService {
     return this.configService.get('LAB_MANAGER_STANDALONE_FRONT_VERSION');
   }
 
-  public getCaptchaSecretKey(): string {
-    return this.configService.get('CAPTCHA_SECRET_KEY');
-  }
-
   public getCaptchaSiteKey(): string {
     return this.configService.get('CAPTCHA_SITE_KEY');
   }

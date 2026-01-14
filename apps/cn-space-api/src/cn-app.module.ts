@@ -1,6 +1,4 @@
 import {
-  BlCaptchaModule,
-  BlCaptchaModuleConfig,
   blConfigureLogger,
   BlCookieHelper,
   BlDbBackupModule,
@@ -115,13 +113,6 @@ function configureTransportModule(configService: CnCoreConfigService): BlTranspo
   return configService.getTransportModuleConfig();
 }
 
-function configureCaptchaModule(configService: CnCoreConfigService): BlCaptchaModuleConfig {
-  return {
-    secretKey: configService.getCaptchaSecretKey(),
-    localEnv: configService.isLocal(),
-  };
-}
-
 // configure the text editor
 TeRichTextModifications.setBackTimeDifference();
 
@@ -201,12 +192,6 @@ TeRichTextModifications.setBackTimeDifference();
           limit: 10,
         },
       ],
-    }),
-
-    BlCaptchaModule.forRootAsync({
-      useFactory: configureCaptchaModule,
-      imports: [CnCoreModule],
-      inject: [CnCoreConfigService],
     }),
 
     // Entities module

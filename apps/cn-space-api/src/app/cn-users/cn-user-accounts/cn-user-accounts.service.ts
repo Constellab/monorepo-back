@@ -1,7 +1,6 @@
 import {
   BlAbstractPaginatedService,
   BlBadRequestException,
-  BlCaptchaService,
   BlHttpException,
   BlMailService,
   BlTokenHelper,
@@ -20,6 +19,7 @@ import { CnUserTokenPayload } from '../../cn-core/model/config/cn-config.class';
 import { CnErrorText } from '../../cn-core/model/config/cn-error-text.class';
 import { CnMailTemplate } from '../../cn-core/model/config/cn-mail-template.class';
 import { CnCoreConfigService } from '../../cn-core/modules/cn-core-config/cn-core-config.service';
+import { CnCaptchaService } from '../../cn-core/services/cn-captcha.service';
 import { CnFrontService } from '../../cn-core/services/cn-front.service';
 import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
 import { CnGroupsService } from '../../cn-groups/cn-groups.service';
@@ -54,7 +54,7 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
     private spaceAggregateService: CnSpaceAggregateService,
     private groupService: CnGroupsService,
     private notificationService: CnNotificationService,
-    private captchaService: BlCaptchaService,
+    private captchaService: CnCaptchaService,
     private supportService: CnSupportService,
     private eventEmitter: EventEmitter2
   ) {
@@ -62,7 +62,7 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
   }
 
   async signup(createUser: CnCreateUserDto): Promise<CnUser> {
-    const captchaValid = await this.captchaService.validateCaptcha(createUser.captcha);
+    const captchaValid = await this.captchaService.validateCaptcha(createUser.captcha, 'signup');
 
     if (!captchaValid) {
       throw new BlBadRequestException(CnErrorText.INVALID_CAPTCHA);

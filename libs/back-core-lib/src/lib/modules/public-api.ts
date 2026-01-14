@@ -1,4 +1,3 @@
-export * from './bl-captcha/public-api';
 export * from './bl-db-backup/public-api';
 export * from './bl-external-api/public-api';
 export * from './bl-jwt/public-api';
