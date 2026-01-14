@@ -5,7 +5,10 @@ import { OnEvent } from '@nestjs/event-emitter';
 import { CnMailTemplate } from '../../cn-core/model/config/cn-mail-template.class';
 import { CnCoreConfigService } from '../../cn-core/modules/cn-core-config/cn-core-config.service';
 import { CnFrontService } from '../../cn-core/services/cn-front.service';
+import { CnNotificationType } from '../../cn-notification/cn-notification.entity';
+import { CnNotificationService } from '../../cn-notification/cn-notification.service';
 import { CnUser } from '../cn-user.entity';
+import { CnUsersService } from '../cn-users.service';
 import { CnUserAccountEvent, cnUserAccountEventName } from './cn-user-account.event';
 import { CnUserAccountsService } from './cn-user-accounts.service';
 
@@ -17,7 +20,9 @@ export class CnUserAccountListener {
     private userAccountService: CnUserAccountsService,
     private mailService: BlMailService,
     private frontService: CnFrontService,
-    private configService: CnCoreConfigService
+    private configService: CnCoreConfigService,
+    private notificationService: CnNotificationService,
+    private usersService: CnUsersService
   ) {}
 
   @OnEvent(cnUserAccountEventName)
@@ -38,6 +43,11 @@ export class CnUserAccountListener {
     this.sendAccountValidatedMail(user).catch((error) =>
       this.logger.error('Error while sending account validated mail: ' + error)
     );
+
+    // send notification to admin when user activates their account
+    this.sendCreateAccountNotification(user).catch((error) =>
+      this.logger.error('Error while sending create account notification: ' + error)
+    );
   }
 
   /**
@@ -55,5 +65,29 @@ export class CnUserAccountListener {
       communityLink: this.configService.getCommunityFrontUrl(),
       contactMail: this.configService.getCustomerSuccessMail(),
     });
+  }
+
+  /**
+   * Send notification to admin when a new user activates their account
+   * @param user
+   * @private
+   */
+  private async sendCreateAccountNotification(user: CnUser): Promise<void> {
+    const adminUserMails = this.configService.newUserNotifReceiver();
+
+    for (const adminUserMail of adminUserMails) {
+      const adminUser = await this.usersService.findByEmail(adminUserMail);
+
+      if (adminUser == null) continue;
+      await this.notificationService.createNotification({
+        createdBy: user,
+        objectType: CnNotificationType.USER,
+        objectId: user.id,
+        user: adminUser,
+        text: `New user : ${user.firstname} ${user.lastname}`,
+        text2: user.email,
+        link: CnFrontService.getAdminUsersRoute(),
+      });
+    }
   }
 }

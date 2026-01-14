@@ -122,4 +122,13 @@ export class CnNotificationService extends BlAbstractService<CnNotification> {
   public deleteNotificationByUserAndSpace(userId: string, spaceId: string): Promise<DeleteResult> {
     return this.notificationRepository.delete({ user: { id: userId }, space: { id: spaceId } });
   }
+
+  /**
+   * Delete all notifications linked to a user (createdBy or user)
+   * @param userId user id
+   */
+  public async deleteAllNotificationLinkedToUser(userId: string): Promise<void> {
+    await this.notificationRepository.delete({ createdBy: { id: userId } });
+    await this.notificationRepository.delete({ user: { id: userId } });
+  }
 }

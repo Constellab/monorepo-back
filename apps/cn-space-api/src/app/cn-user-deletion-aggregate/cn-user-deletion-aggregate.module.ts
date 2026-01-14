@@ -4,6 +4,7 @@ import { CnActivityModule } from '../cn-activity/cn-activity.module';
 import { CnFoldersAggregateModule } from '../cn-folders-aggregate/cn-folders-aggregate.module';
 import { CnHierarchyObjectModule } from '../cn-folders-aggregate/cn-hierarchy-objects/cn-hierarchy-object.module';
 import { CnGroupsModule } from '../cn-groups/cn-groups.module';
+import { CnNotificationModule } from '../cn-notification/cn-notification.module';
 import { CnSpacesModule } from '../cn-spaces/cn-spaces.module';
 import { CnUsersModule } from '../cn-users/cn-users.module';
 import { CnUserDeletionAggregateController } from './cn-user-deletion-aggregate.controller';
@@ -21,6 +22,7 @@ import { CnUserDeletionAggregateService } from './cn-user-deletion-aggregate.ser
     CnGroupsModule,
     CnActivityModule,
     CnHierarchyObjectModule,
+    CnNotificationModule,
   ],
   controllers: [CnUserDeletionAggregateController],
   providers: [CnUserDeletionAggregateService],

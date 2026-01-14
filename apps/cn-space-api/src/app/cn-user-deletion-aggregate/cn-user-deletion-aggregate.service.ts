@@ -7,6 +7,7 @@ import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
 import { CnHierarchyObjectService } from '../cn-folders-aggregate/cn-hierarchy-objects/cn-hierarchy-object.service';
 import { CnHierarchyObjectAggregateService } from '../cn-folders-aggregate/cn-hierarchy-objects/cn-hierarchy-object-aggregate.service';
 import { CnGroupsService } from '../cn-groups/cn-groups.service';
+import { CnNotificationService } from '../cn-notification/cn-notification.service';
 import { CnSpaceAggregateService } from '../cn-spaces/cn-space-aggregate.service';
 import { CnUserEntity } from '../cn-users/cn-user.entity';
 import { CnUsersService } from '../cn-users/cn-users.service';
@@ -26,6 +27,7 @@ export class CnUserDeletionAggregateService {
     private spaceAggregateService: CnSpaceAggregateService,
     private groupService: CnGroupsService,
     private activityService: CnActivityService,
+    private notificationService: CnNotificationService,
     private datasource: DataSource
   ) {}
 
@@ -57,6 +59,9 @@ export class CnUserDeletionAggregateService {
 
     // Step 3: Delete all activities associated with the personal space
     await this.deleteUserActivities(personalSpace.id);
+
+    // Step 3.5: Delete all notifications created by the user
+    await this.notificationService.deleteAllNotificationLinkedToUser(userId);
 
     // Step 4: Delete space, group, and user in transaction
     await this.datasource.transaction(async (entityManager) => {

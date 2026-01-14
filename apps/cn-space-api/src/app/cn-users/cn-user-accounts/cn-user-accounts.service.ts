@@ -23,8 +23,6 @@ import { CnCaptchaService } from '../../cn-core/services/cn-captcha.service';
 import { CnFrontService } from '../../cn-core/services/cn-front.service';
 import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
 import { CnGroupsService } from '../../cn-groups/cn-groups.service';
-import { CnNotificationType } from '../../cn-notification/cn-notification.entity';
-import { CnNotificationService } from '../../cn-notification/cn-notification.service';
 import { CnSpaceAggregateService } from '../../cn-spaces/cn-space-aggregate.service';
 import { CnSupportService } from '../../cn-support/cn-support.service';
 import { CnCreateUserDto, CnUserUpdateLicenseDTO } from '../cn-user.dto';
@@ -53,7 +51,6 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
     private frontService: CnFrontService,
     private spaceAggregateService: CnSpaceAggregateService,
     private groupService: CnGroupsService,
-    private notificationService: CnNotificationService,
     private captchaService: CnCaptchaService,
     private supportService: CnSupportService,
     private eventEmitter: EventEmitter2
@@ -128,11 +125,6 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
 
     // create the user own group
     await this.groupService.createOwnGroup(user, entityManager);
-
-    // send notification to gencovery user to warn him that a new user has been created
-    this.sendCreateAccountNotification(dbUser).catch((error) =>
-      this.logger.error('Error while sending create account notification: ' + error)
-    );
 
     // create the user personal space
     await this.spaceAggregateService.createPersonalSpace(dbUser, entityManager);
@@ -307,34 +299,6 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
 
       return userDb;
     });
-  }
-
-  /**
-   * Send notification to admin when a new user is created
-   * @param user
-   * @private
-   */
-  private async sendCreateAccountNotification(user: CnUser): Promise<void> {
-    let adminUserMails = this.configService.newUserNotifReceiver();
-
-    if (this.configService.isLocal()) {
-      adminUserMails = [];
-    }
-
-    for (const adminUserMail of adminUserMails) {
-      const adminUser = await this.usersService.findByEmail(adminUserMail);
-
-      if (adminUser == null) continue;
-      await this.notificationService.createNotification({
-        createdBy: user,
-        objectType: CnNotificationType.USER,
-        objectId: user.id,
-        user: adminUser,
-        text: `New user : ${user.firstname} ${user.lastname}`,
-        text2: user.email,
-        link: CnFrontService.getAdminUsersRoute(),
-      });
-    }
   }
 
   public async lockUser(userId: string): Promise<CnUser> {
