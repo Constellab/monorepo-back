@@ -14,11 +14,6 @@ export class CnCaptchaService {
   }
 
   private initializeClient(): void {
-    // Skip initialization in non-production environments
-    // if (!this.configService.isProduction()) {
-    //   return;
-    // }
-
     // Verify credentials file exists (similar to CnGcpService pattern)
     const credentialsPath = this.configService.getGcpCredentialsFilePath();
     if (!credentialsPath || !existsSync(credentialsPath)) {
@@ -33,11 +28,6 @@ export class CnCaptchaService {
   }
 
   public async validateCaptcha(token: string, action: string): Promise<boolean> {
-    // Skip validation in non-production environments
-    // if (!this.configService.isProduction()) {
-    //   return true;
-    // }
-
     try {
       const projectId = this.configService.getGcpProjectId();
       const projectPath = this.recaptchaClient.projectPath(projectId);
@@ -48,7 +38,6 @@ export class CnCaptchaService {
           event: {
             token: token,
             siteKey: this.configService.getCaptchaSiteKey(),
-            expectedAction: action,
           },
         },
       };
@@ -70,10 +59,9 @@ export class CnCaptchaService {
         return false;
       }
 
-      // Verify the action matches
-      if (response.tokenProperties?.action !== action) {
+      // For now only verify action to log a message, return error once all lab are on v0.20.0 or more
+      if (action && response.tokenProperties?.action !== action) {
         this.logger.warn(`Action mismatch. Expected: ${action}, Got: ${response.tokenProperties?.action}`);
-        return false;
       }
 
       return true;
