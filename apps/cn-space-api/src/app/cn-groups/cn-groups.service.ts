@@ -34,6 +34,20 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
     return entityManager.save(group);
   }
 
+  public async deleteOwnGroup(userId: string, entityManager: EntityManager): Promise<void> {
+    const group = await this.repository.findOne({
+      where: {
+        userId: userId,
+        type: CnGroupType.SINGLE_USER,
+      } as FindOptionsWhere<CnGroupSingleUser>,
+    });
+    if (group == null) {
+      throw new BlBadRequestException(`User ${userId} has no single group to delete`);
+    }
+
+    await entityManager.delete(CnGroup, group.id);
+  }
+
   ////////////////////////////////// GET /////////////////////////
 
   public async getCurrentUserAllGroups(): Promise<CnGroup[]> {

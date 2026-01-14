@@ -1,5 +1,16 @@
 import { BlParsePipe, BlPublicSecure } from '@monorepo/back-core-lib';
-import { Body, Controller, Get, HttpException, Param, ParseUUIDPipe, Post, Put, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpException,
+  Param,
+  ParseUUIDPipe,
+  Post,
+  Put,
+  Res,
+} from '@nestjs/common';
 import { Response } from 'express';
 
 import { CnFrontService } from '../../cn-core/services/cn-front.service';
@@ -106,6 +117,11 @@ export class CnUserAccountsController {
     @Body() licenseDTO: CnUserUpdateLicenseDTO
   ): Promise<CnUser> {
     return this.userAccountsService.updateUserLicense(userId, licenseDTO);
+  }
+
+  @Delete(':userId')
+  deleteUser(@Param('userId', new ParseUUIDPipe()) userId: string): Promise<void> {
+    return this.userAccountsService.deleteUser(userId);
   }
 
   ///////////////////////// SPACE INVITATION /////////////////////////

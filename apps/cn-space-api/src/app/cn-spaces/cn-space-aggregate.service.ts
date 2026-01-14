@@ -543,6 +543,15 @@ export class CnSpaceAggregateService {
     return personalSpace;
   }
 
+  public async deletePersonalSpace(userId: string, entityManager: EntityManager): Promise<void> {
+    const personalSpace = await this.spaceUserService.getUserPersonalSpaceAndCheck(userId);
+
+    if (personalSpace.type !== CnSpaceType.PERSONAL) {
+      throw new BlBadRequestException('Cannot delete an enterprise space');
+    }
+    await this.spaceService.deleteById(personalSpace.id, entityManager);
+  }
+
   public async getAndCheckUser(userId: string): Promise<CnUser> {
     if (
       CnCurrentUserHelper.isAdmin() ||
@@ -636,8 +645,11 @@ export class CnSpaceAggregateService {
     );
   }
 
-  private async checkSpaceAdmin(spaceId: string): Promise<void> {
-    this.spaceAggregateSecurity.checkIsSpaceAdmin(spaceId, CnCurrentUserHelper.getAndCheckCurrentUser());
+  private checkSpaceAdmin(spaceId: string): Promise<void> {
+    return this.spaceAggregateSecurity.checkIsSpaceAdmin(
+      spaceId,
+      CnCurrentUserHelper.getAndCheckCurrentUser()
+    );
   }
 
   private checkAdmin(): void {
@@ -663,7 +675,7 @@ export class CnSpaceAggregateService {
     // if a text is returned, it means an error occurred
     for (const res of results) {
       if (res) {
-        throw res;
+        throw new Error(res);
       }
     }
   }

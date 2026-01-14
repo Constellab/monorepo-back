@@ -15,10 +15,11 @@ export class CnSpaceAggregateSecurity {
     }
   }
 
-  public checkIsSpaceAdmin(spaceId: string, user: CnUser): void {
+  public async checkIsSpaceAdmin(spaceId: string, user: CnUser): Promise<void> {
     if (this.isAdmin(user)) return;
 
-    if (!this.isSpaceAdmin(spaceId, user.id)) {
+    const isSpaceAdmin = await this.isSpaceAdmin(spaceId, user.id);
+    if (!isSpaceAdmin) {
       throw new BlUnauthorizedException();
     }
   }

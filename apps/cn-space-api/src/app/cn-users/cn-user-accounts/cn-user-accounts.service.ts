@@ -407,4 +407,23 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
     const userEvent: CnUserEvent = { type: event, user };
     this.eventEmitter.emit(cnUserEventName, userEvent);
   }
+
+  public async deleteUser(userId: string): Promise<void> {
+    if (!CnCurrentUserHelper.getAndCheckCurrentUser().isAdmin()) throw new BlUnauthorizedException();
+
+    const user: CnUser = await this.usersService.findByIdAndCheck(userId);
+
+    // only delete user with mail not validated
+    if (user.status !== BlUserStatus.WAITING_FOR_EMAIL) {
+      throw new BlBadRequestException('Only users with not validated email can be deleted');
+    }
+
+    await this.datasource.transaction(async (entityManager) => {
+      await this.spaceAggregateService.deletePersonalSpace(userId, entityManager);
+
+      await this.groupService.deleteOwnGroup(userId, entityManager);
+
+      await entityManager.delete(CnUserEntity, userId);
+    });
+  }
 }
