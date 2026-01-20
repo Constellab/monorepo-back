@@ -11,7 +11,7 @@
     "cn-space-api": {
       "type": "application",
       "root": "apps/cn-space-api",
-      "entryFile": "main",
+      "entryFile": "cn-main",
       "sourceRoot": "apps/cn-space-api/src",
       "compilerOptions": {
         "tsConfigPath": "apps/cn-space-api/tsconfig.app-nest.json",
@@ -21,7 +21,7 @@
     "hn-community-api": {
       "type": "application",
       "root": "apps/hn-community-api",
-      "entryFile": "main",
+      "entryFile": "hn-main",
       "sourceRoot": "apps/hn-community-api/src",
       "compilerOptions": {
         "tsConfigPath": "apps/hn-community-api/tsconfig.app-nest.json",

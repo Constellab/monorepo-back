@@ -1,17 +1,60 @@
-// @ts-check
 import eslint from '@eslint/js';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
+import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
-import simpleImportSort from 'eslint-plugin-simple-import-sort';
+
+function getSubConfigs(folder, prefix, isLib, disableModuleBoundary) {
+  const filesPattern = isLib
+    ? [`libs/${folder}/**/*.ts`, `libs/${folder}/**/*.tsx`]
+    : [`apps/${folder}/**/*.ts`, `apps/${folder}/**/*.tsx`];
+
+  const classPrefix = prefix.charAt(0).toUpperCase() + prefix.slice(1);
+
+  const rules = {
+    '@typescript-eslint/naming-convention': [
+      'error',
+      {
+        selector: ['class', 'interface', 'typeAlias'],
+        modifiers: ['exported'],
+        format: ['PascalCase'],
+        prefix: [classPrefix],
+      },
+      {
+        selector: ['function'],
+        modifiers: ['exported'],
+        // define as PascalCase because the prefix is not included in the format check
+        // so if the name is e.g. "flMyFunction" it will still be valid because it checks for "MyFunction"
+        format: ['PascalCase'],
+        prefix: [prefix],
+      },
+      {
+        selector: ['variable'],
+        modifiers: ['exported'],
+        format: ['UPPER_CASE'],
+        prefix: [prefix.toUpperCase() + '_'],
+      },
+    ],
+  };
+
+  return {
+    files: filesPattern,
+    rules: rules,
+  };
+}
 
 export default tseslint.config(
-  {
-    ignores: ['eslint.config.mjs', 'node_modules', 'dist'],
-  },
+  // Base configurations
   eslint.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,
   eslintPluginPrettierRecommended,
+
+  // Ignore patterns
+  {
+    ignores: ['eslint.config.mjs', 'node_modules', 'dist'],
+  },
+
+  // Language and plugins configuration
   {
     languageOptions: {
       globals: {
@@ -29,24 +72,31 @@ export default tseslint.config(
     },
   },
 
+  // Global rules
   {
+    files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
+
     rules: {
       indent: [
         'error',
         2,
         {
           SwitchCase: 1,
+
           FunctionDeclaration: {
             parameters: 'first',
             body: 1,
           },
+
           FunctionExpression: {
             parameters: 'first',
             body: 1,
           },
+
           ignoredNodes: ['PropertyDefinition'],
         },
       ],
+
       'max-len': [
         'error',
         {
@@ -54,6 +104,7 @@ export default tseslint.config(
           ignorePattern: '^(import|\\} from) .*',
         },
       ],
+
       'no-case-declarations': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-inferrable-types': 'off',
@@ -65,20 +116,35 @@ export default tseslint.config(
       '@typescript-eslint/no-unsafe-return': 'off',
       '@typescript-eslint/no-base-to-string': 'off',
       '@typescript-eslint/no-unused-vars': 'error',
+
       '@typescript-eslint/explicit-function-return-type': [
         'error',
         {
           allowExpressions: true,
         },
       ],
+
       'no-extra-semi': 'off',
+
       'prettier/prettier': [
         'error',
         {
           endOfLine: 'auto',
         },
       ],
+
       'simple-import-sort/imports': 'error',
     },
-  }
+  },
+
+  // App and library-specific configurations
+
+  // Apps
+  getSubConfigs('cn-space-api', 'cn', false, false),
+  getSubConfigs('hn-community-api', 'hn', false, false),
+
+  // Libraries
+  getSubConfigs('back-core-lib', 'bcl', true, false),
+  getSubConfigs('core-lib', 'cl', true, false),
+  getSubConfigs('te-text-editor', 'te', true, false)
 );

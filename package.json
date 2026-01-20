@@ -8,7 +8,7 @@
     "version": "nest --version",
     "cn-space-api:serve": "nest start cn-space-api --debug --watch",
     "cn-space-api:build": "nest build cn-space-api",
-    "cn-space-api:serve-prod": "node dist/main",
+    "cn-space-api:serve-prod": "node dist/cn-main",
     "cn-space-api:test-e2e": "set ENVIRONMENT_PROFILE=test&& set DATABASE=gencoveryDbTest&& jest --config ./apps/cn-space-api/test/jest-e2e.json",
     "cn-space-api:caprover-deploy-preprod": "deploy.cmd https://captain.constellab-pre-prod.gencovery.com space-api-pre-prod ghcr.io/constellab/space-api cn_",
     "cn-space-api:caprover-deploy-prod": "deploy.cmd https://captain.constellab.gencovery.com space-api ghcr.io/constellab/space-api cn_",

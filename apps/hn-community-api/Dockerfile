@@ -30,4 +30,4 @@ RUN npm ci --only=production --ignore-scripts
 # copy dist
 COPY --from=builder /app/dist/apps/hn-community-api ./dist
 
-CMD ["node", "dist/main"]
+CMD ["node", "dist/hn-main"]

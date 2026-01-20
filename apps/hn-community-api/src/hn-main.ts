@@ -44,4 +44,7 @@ async function bootstrap(): Promise<void> {
   });
 }
 
-bootstrap();
+bootstrap().catch((err) => {
+  console.error('Error during bootstraping hn-community-api', err);
+  process.exit(1);
+});
