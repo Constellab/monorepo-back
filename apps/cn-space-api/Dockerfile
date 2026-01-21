@@ -35,5 +35,5 @@ RUN npm ci --only=production --ignore-scripts
 # copy dist
 COPY --from=builder /app/dist/apps/cn-space-api ./dist
 
-CMD ["node", "dist/cn-"]
+CMD ["node", "dist/cn-main"]
 
