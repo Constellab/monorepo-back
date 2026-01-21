@@ -7,9 +7,14 @@
   {{space.name}}
   had the status
   {{status}}
-  for too long. This should not happen, please check the lab. If the lab status was SERVER_RUNNING or
-  SERVER_CONFIGURED, it was stopped.
+  for too long. This should not happen, please check the lab.
 </p>
+
+{{#if message}}
+<p>
+  <strong>Details:</strong> {{message}}
+</p>
+{{/if}}
 
 <p>
   Url of the lab :

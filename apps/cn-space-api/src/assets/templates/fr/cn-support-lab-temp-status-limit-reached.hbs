@@ -7,9 +7,14 @@
   {{space.name}}
   a eu le statut
   {{status}}
-  pendant trop longtemps. Cela ne devrait pas arriver, veuillez analyser le lab. Si le statut du laboratoire
-  était SERVER_RUNNING ou SERVER_CONFIGURED, il a été arrêté.
+  pendant trop longtemps. Cela ne devrait pas arriver, veuillez analyser le lab.
 </p>
+
+{{#if message}}
+<p>
+  <strong>Détails :</strong> {{message}}
+</p>
+{{/if}}
 
 <p>
   Url du data lab :

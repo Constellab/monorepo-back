@@ -22,7 +22,7 @@ import { CnScenariosService } from '../cn-folders-aggregate/cn-scenarios/cn-scen
 import { CnLabConfig } from '../cn-lab-configs/cn-lab-config.entity';
 import { CnServerCloud } from '../cn-servers-info/server-cloud/cn-server-cloud.entity';
 import { CnServerStandard } from '../cn-servers-info/server-standard/cn-server-standard.entity';
-import { CnLab, CnLabEntity, CnLabFull, CnLabWithSpace } from './cn-lab.entity';
+import { CnLab, CnLabEntity, CnLabFull, CnLabType, CnLabWithSpace } from './cn-lab.entity';
 import {
   CnLabEvent,
   cnLabEventName,
@@ -400,12 +400,13 @@ export class CnLabsService extends CnAbstractWithStatusService<CnLabEntity, CnLa
    * Retrieve the complete list of labs where current status is
    * temporary (like server starting, stopping, etc...)
    */
-  public async getLabsWithTempStatus(): Promise<CnLab[]> {
+  public async getCloudLabsWithTempStatus(): Promise<CnLab[]> {
     return this.repository.find({
       where: {
         currentStatus: {
           status: In(cnLabTemporaryStatuses),
         },
+        type: CnLabType.CLOUD,
       },
     });
   }

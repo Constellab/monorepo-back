@@ -147,7 +147,7 @@ export class CnLabMailService {
     });
   }
 
-  public async sendLabTempStatusLimitReachedMail(lab: CnLab): Promise<void> {
+  public async sendLabTempStatusLimitReachedMail(lab: CnLab, message?: string): Promise<void> {
     const space = await this.spaceService.findByIdAndCheck(lab.spaceId);
     const labUrl = await this.frontService.getLabUrl(lab.spaceId, lab.id);
     await this.supportService.sendMailToSupport(CnMailTemplate.support_lab_temp_status_limit_reached, {
@@ -159,6 +159,7 @@ export class CnLabMailService {
       },
       status: lab.currentStatus.status,
       labUrl: labUrl,
+      message: message,
     });
   }
 }

@@ -577,25 +577,7 @@ export class CnLabAggregateService {
       // case of the lab starting without a task running
       // we need to check the lab manager status
       try {
-        const labManagerStatus = await this.labManagerService.getLabStatus(lab);
-
-        if (labManagerStatus.labStatus === 'STARTING') {
-          return new CnLabBusyStatusDTO(lab, true, {
-            mainText: await this.translateService.translateIfExists('message.lab_busy_lab_starting'),
-            progress: labManagerStatus.glabStatus?.startProgress,
-          });
-        }
-
-        if (labManagerStatus.currentTask?.status === 'RUNNING') {
-          let subText = labManagerStatus.currentTask.name;
-          if (labManagerStatus.currentTask?.info) {
-            subText += ' ' + labManagerStatus.currentTask?.info;
-          }
-          return new CnLabBusyStatusDTO(lab, true, {
-            mainText: await this.translateService.translateIfExists('message.lab_busy_manager_task_running'),
-            subText,
-          });
-        }
+        return await this.getLabManagerBusyStatus(lab);
       } catch {
         return new CnLabBusyStatusDTO(lab, true, {
           mainText: await this.translateService.translateIfExists('message.lab_busy_starting_wait'),
@@ -603,6 +585,29 @@ export class CnLabAggregateService {
       }
     }
 
+    return new CnLabBusyStatusDTO(lab, false);
+  }
+
+  public async getLabManagerBusyStatus(lab: CnLab): Promise<CnLabBusyStatusDTO> {
+    const labManagerStatus = await this.labManagerService.getLabStatus(lab);
+
+    if (labManagerStatus.labStatus === 'STARTING') {
+      return new CnLabBusyStatusDTO(lab, true, {
+        mainText: await this.translateService.translateIfExists('message.lab_busy_lab_starting'),
+        progress: labManagerStatus.glabStatus?.startProgress,
+      });
+    }
+
+    if (labManagerStatus.currentTask?.status === 'RUNNING') {
+      let subText = labManagerStatus.currentTask.name;
+      if (labManagerStatus.currentTask?.info) {
+        subText += ' ' + labManagerStatus.currentTask?.info;
+      }
+      return new CnLabBusyStatusDTO(lab, true, {
+        mainText: await this.translateService.translateIfExists('message.lab_busy_manager_task_running'),
+        subText,
+      });
+    }
     return new CnLabBusyStatusDTO(lab, false);
   }
 
