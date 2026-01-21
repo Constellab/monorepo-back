@@ -34,7 +34,8 @@ export class CnDocumentController {
   }
 
   @UseInterceptors(FileInterceptor('file'))
-  @BlTimeout(1 * 60 * 1000) // 1 minute timeout for file upload
+  // 1 minute timeout for file upload
+  @BlTimeout(1 * 60 * 1000, 'File upload timed out, the upload continues in the background.')
   @Post('folder/:folderId/upload/files/:overrideMode')
   async uploadDocument(
     @Param('folderId', new ParseUUIDPipe()) folderId: string,
@@ -46,8 +47,9 @@ export class CnDocumentController {
 
   // route to upload documents from a folder
   // Limit the number of files to 1000 for now, this is also defined in the frontend
-  @UseInterceptors(FilesInterceptor('file', 10000, { preservePath: true }))
-  @BlTimeout(10 * 60 * 1000) // 10 minutes timeout for folder upload
+  @UseInterceptors(FilesInterceptor('file', 1000, { preservePath: true }))
+  // 10 minutes timeout for folder upload
+  @BlTimeout(10 * 60 * 1000, 'Folder upload timed out, the upload continues in the background.')
   @Post('folder/:folderId/upload/folder')
   async uploadFolder(
     @Param('folderId', new ParseUUIDPipe()) folderId: string,

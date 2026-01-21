@@ -11,6 +11,13 @@ import { catchError, timeout } from 'rxjs/operators';
 
 export const BL_TIMEOUT_KEY = 'bl_timeout';
 
+export interface BlTimeoutOptions {
+  ms: number;
+  message?: string;
+}
+
+const DEFAULT_TIMEOUT_MESSAGE = 'The request took too long and has been timed out.';
+
 @Injectable()
 export class BlTimeoutInterceptor implements NestInterceptor {
   constructor(
@@ -19,16 +26,15 @@ export class BlTimeoutInterceptor implements NestInterceptor {
   ) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    const timeoutValue =
-      this.reflector.get<number>(BL_TIMEOUT_KEY, context.getHandler()) ?? this.defaultTimeout;
+    const options = this.reflector.get<BlTimeoutOptions>(BL_TIMEOUT_KEY, context.getHandler());
+    const timeoutValue = options?.ms ?? this.defaultTimeout;
+    const timeoutMessage = options?.message ?? DEFAULT_TIMEOUT_MESSAGE;
 
     return next.handle().pipe(
       timeout(timeoutValue),
       catchError((err) => {
         if (err instanceof TimeoutError) {
-          return throwError(
-            () => new RequestTimeoutException('The request took too long and has been timed out.')
-          );
+          return throwError(() => new RequestTimeoutException(timeoutMessage));
         }
         return throwError(() => err);
       })
