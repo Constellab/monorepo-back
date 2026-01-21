@@ -4,7 +4,7 @@ import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
-function getSubConfigs(folder, prefix, isLib, disableModuleBoundary) {
+function getSubConfigs(folder, prefix, isLib) {
   const filesPattern = isLib
     ? [`libs/${folder}/**/*.ts`, `libs/${folder}/**/*.tsx`]
     : [`apps/${folder}/**/*.ts`, `apps/${folder}/**/*.tsx`];
@@ -140,11 +140,11 @@ export default tseslint.config(
   // App and library-specific configurations
 
   // Apps
-  getSubConfigs('cn-space-api', 'cn', false, false),
-  getSubConfigs('hn-community-api', 'hn', false, false),
+  getSubConfigs('cn-space-api', 'cn', false),
+  getSubConfigs('hn-community-api', 'hn', false),
 
   // Libraries
-  getSubConfigs('back-core-lib', 'bcl', true, false),
-  getSubConfigs('core-lib', 'cl', true, false),
-  getSubConfigs('te-text-editor', 'te', true, false)
+  getSubConfigs('back-core-lib', 'bl', true),
+  getSubConfigs('core-lib', 'cl', true),
+  getSubConfigs('te-text-editor', 'te', true)
 );

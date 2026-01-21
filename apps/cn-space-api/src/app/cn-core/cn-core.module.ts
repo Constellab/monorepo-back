@@ -13,19 +13,7 @@ import { CnCommandService } from './services/cn-command.service';
  * required by the app
  */
 @Module({
-  imports: [
-    BlRequestContextModule,
-    BlTranslateModule,
-    BlExternalApiModule,
-    HttpModule,
-
-    // configure the multer module to accept field up to 25MB
-    // to prevent error "Field value too long"
-    // configure the multer module to accept files up to 100MB
-    MulterModule.register({
-      limits: { fieldSize: 25 * 1024 * 1024, fileSize: 100 * 1024 * 1024 },
-    }),
-  ],
+  imports: [BlRequestContextModule, BlTranslateModule, BlExternalApiModule, HttpModule, MulterModule],
   providers: [CnConfigEntitySecurity, CnCommandService, CnDbBackupCron, CnCaptchaService],
   exports: [
     BlRequestContextModule,

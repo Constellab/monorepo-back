@@ -1,4 +1,11 @@
-import { BlFile, BlPublic, BlResponseHelper, BlUploadedFile, BlUploadedFiles } from '@monorepo/back-core-lib';
+import {
+  BlFile,
+  BlPublic,
+  BlResponseHelper,
+  BlTimeout,
+  BlUploadedFile,
+  BlUploadedFiles,
+} from '@monorepo/back-core-lib';
 import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Put, Res, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
@@ -27,6 +34,7 @@ export class CnDocumentController {
   }
 
   @UseInterceptors(FileInterceptor('file'))
+  @BlTimeout(1 * 60 * 1000) // 1 minute timeout for file upload
   @Post('folder/:folderId/upload/files/:overrideMode')
   async uploadDocument(
     @Param('folderId', new ParseUUIDPipe()) folderId: string,
@@ -37,7 +45,9 @@ export class CnDocumentController {
   }
 
   // route to upload documents from a folder
-  @UseInterceptors(FilesInterceptor('file', 1000, { preservePath: true }))
+  // Limit the number of files to 1000 for now, this is also defined in the frontend
+  @UseInterceptors(FilesInterceptor('file', 10000, { preservePath: true }))
+  @BlTimeout(10 * 60 * 1000) // 10 minutes timeout for folder upload
   @Post('folder/:folderId/upload/folder')
   async uploadFolder(
     @Param('folderId', new ParseUUIDPipe()) folderId: string,

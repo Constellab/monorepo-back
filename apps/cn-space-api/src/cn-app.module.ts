@@ -8,6 +8,7 @@ import {
   BlMailModule,
   BlObjectStorageModule,
   BlRequestContextMiddleware,
+  BlTimeoutInterceptor,
   BlTranslateModule,
   BlTransportModuleConfig,
   blTransportRedisForRoot,
@@ -23,8 +24,9 @@ import {
   RequestMethod,
 } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, Reflector } from '@nestjs/core';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { MulterModule } from '@nestjs/platform-express';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -195,6 +197,13 @@ TeRichTextModifications.setBackTimeDifference();
       ],
     }),
 
+    // configure the multer module to accept field up to 25MB
+    // to prevent error "Field value too long"
+    // configure the multer module to accept files up to 100MB
+    MulterModule.register({
+      limits: { fieldSize: 25 * 1024 * 1024, fileSize: 100 * 1024 * 1024 },
+    }),
+
     // Entities module
     CnUsersModule,
     CnAuthModule,
@@ -229,6 +238,12 @@ TeRichTextModifications.setBackTimeDifference();
     {
       provide: APP_INTERCEPTOR,
       useClass: ClassSerializerInterceptor,
+    },
+    // set global timeout interceptor (30 seconds default)
+    {
+      provide: APP_INTERCEPTOR,
+      useFactory: (reflector: Reflector) => new BlTimeoutInterceptor(reflector, 30000),
+      inject: [Reflector],
     },
     // set global exception handler
     {
