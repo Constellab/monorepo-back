@@ -7,5 +7,6 @@
   "brick_name_invalid": "The brick name is invalid",
   "brick_not_found": "The brick '{name}' was not found. Was it declared in Constellab Community ?",
   "brick_version_not_found": "The version '{version}' for brick '{name}' was not found. Was it declared in Constellab Community ?",
-  "documentation_not_found": "The documentation was not found."
+  "documentation_not_found": "The documentation was not found.",
+  "technical_documentation_not_found": "The technical documentation was not found."
 }

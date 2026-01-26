@@ -49,10 +49,14 @@ import { HnBrick } from './brick/hn-brick.entity';
 import { HnBrickUserInviteDto } from './brick-user-invite/hn-brick-user-invite.dto';
 import { HnBrickVersionDto } from './brick-version/hn-brick-version.dto';
 import { HnNewVersionDTO } from './brick-version/hn-brick-version.entity';
-import { HnDocumentationDto } from './documentation/hn-documentation.dto';
-import { HnDocumentationSearchDTO } from './documentation/hn-documentation.entity';
+import { HnDocumentationDto, HnDocumentationShortDto } from './documentation/hn-documentation.dto';
+import { HnDocumentation, HnDocumentationSearchDTO } from './documentation/hn-documentation.entity';
 import { HnNode } from './folder/hn-folder.dto';
 import { HnBrickAggregateService } from './hn-brick-aggregate.service';
+import {
+  HnGeneratedDocEntity,
+  HnGeneratedDocDTO,
+} from '../core/model/entities/hn-generated-doc-typing.entity';
 
 @Controller('brick')
 @UseGuards(HnIsAdminGuard)
@@ -121,11 +125,39 @@ export class HnBrickController {
 
   @BlPublic()
   @Get('docs/:brickId/:version')
-  async findDocsByBrick(
+  async findDocsNodeByBrick(
     @Param('brickId') brickId: string,
     @Param('version') version: string
   ): Promise<HnNode> {
-    return this.brickAggregateService.findDocsByBrick(brickId, version);
+    return this.brickAggregateService.findDocsNodeByBrick(brickId, version);
+  }
+
+  @BlPublic()
+  @Get('all-docs/:brickId/:version')
+  async findAllDocsByBrick(
+    @Param('brickId') brickId: string,
+    @Param('version') version: string
+  ): Promise<HnDocumentationShortDto[]> {
+    const documentations: HnDocumentation[] = await this.brickAggregateService.findAllDocsByBrick(
+      brickId,
+      version
+    );
+    return documentations.map((doc) => new HnDocumentationShortDto(doc));
+  }
+
+  @BlPublic()
+  @Get('all-technical-docs/:brickId/:version')
+  async findAllTechnicalDocsByBrick(
+    @Param('brickId') brickId: string,
+    @Param('version') version: string
+  ): Promise<Record<string, HnGeneratedDocDTO[]>> {
+    const technicalDocumentations: Record<string, HnGeneratedDocEntity[]> =
+      await this.brickAggregateService.findAllTechnicalDocsByBrick(brickId, version);
+    const result: Record<string, HnGeneratedDocDTO[]> = {};
+    for (const key of Object.keys(technicalDocumentations)) {
+      result[key] = technicalDocumentations[key].map((doc) => new HnGeneratedDocDTO(doc));
+    }
+    return result;
   }
 
   @BlPublic()

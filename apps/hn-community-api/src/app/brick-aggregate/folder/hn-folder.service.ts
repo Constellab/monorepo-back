@@ -61,7 +61,7 @@ export class HnFolderService {
 
   async findAll(): Promise<HnFolder[]> {
     const tree = await this.foldersTreeRepository.findTrees();
-    return this.TreeToArray(tree[0]);
+    return this.treeToArray(tree[0]);
   }
 
   async findFolderByBrickMajorVersion(brickMajorVersion: HnBrickMajorVersion): Promise<HnFolder> {
@@ -71,16 +71,32 @@ export class HnFolderService {
     });
   }
 
-  async findBrickDocsTree(mainFolder: HnFolder): Promise<HnNode> {
+  async findBrickDocsNodesTree(mainFolder: HnFolder): Promise<HnNode> {
     const brickDocs: HnFolder = await this.foldersTreeRepository.findDescendantsTree(mainFolder, {
       relations: ['documentations', 'folders', 'folder'],
     });
     return this.createTree(brickDocs);
   }
 
+  async findAllDocsByBrick(mainFolder: HnFolder): Promise<HnDocumentation[]> {
+    const brickDocs: HnFolder = await this.foldersTreeRepository.findDescendantsTree(mainFolder, {
+      relations: ['documentations', 'folders', 'folder'],
+    });
+    return this.collectDocsFromFolder(brickDocs);
+  }
+
+  private collectDocsFromFolder(folder: HnFolder): HnDocumentation[] {
+    let docs: HnDocumentation[] = [];
+    docs = docs.concat(folder.documentations);
+    for (const f of folder.folders) {
+      docs = docs.concat(this.collectDocsFromFolder(f));
+    }
+    return docs;
+  }
+
   async findFirstDocNode(brickMajorVersion: HnBrickMajorVersion): Promise<HnNode> {
     const mainFolder: HnFolder = await this.findFolderByBrickMajorVersion(brickMajorVersion);
-    const tree: HnNode = await this.findBrickDocsTree(mainFolder);
+    const tree: HnNode = await this.findBrickDocsNodesTree(mainFolder);
     return this.findFirstDocNodeInTree(tree);
   }
 
@@ -131,13 +147,13 @@ export class HnFolderService {
     return currentParent;
   }
 
-  private TreeToArray(folder: HnFolder): HnFolder[] {
+  private treeToArray(folder: HnFolder): HnFolder[] {
     let array: HnFolder[] = [folder];
     let arrayChildFolder: HnFolder[] = [];
 
     folder.folders.sort((a, b) => a.order - b.order);
     folder.folders.forEach((f) => {
-      arrayChildFolder = arrayChildFolder.concat(this.TreeToArray(f));
+      arrayChildFolder = arrayChildFolder.concat(this.treeToArray(f));
     });
     array = array.concat(arrayChildFolder);
     return array;

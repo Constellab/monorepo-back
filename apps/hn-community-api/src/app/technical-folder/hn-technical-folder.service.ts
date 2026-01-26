@@ -192,6 +192,23 @@ export class HnTechnicalFolderService {
     }
   }
 
+  async findTechDocByIdAndType(
+    techDocId: string,
+    techDocType: string): Promise<HnGeneratedDocEntity> {
+    switch (techDocType) {
+      case 'resource':
+        return this.resourceService.findTechDocById(techDocId);
+      case 'task':
+        return this.taskService.findTechDocById(techDocId);
+      case 'protocol':
+        return this.protocolService.findTechDocById(techDocId);
+      case 'other-classes':
+        return this.techDocOtherClassService.findTechnicalDocOtherClassById(techDocId);
+      default:
+        return null;
+    }
+  }
+
   async getTechDocsByBrickNameMajor(
     brickMajorVersionId: string,
     majorVersion: string,
@@ -280,5 +297,21 @@ export class HnTechnicalFolderService {
         },
       },
     });
+  }
+
+  async findAllTechnicalDocsByBrick(
+    technicalFolder: HnTechnicalFolder
+  ): Promise<Record<string, HnGeneratedDocEntity[]>> {
+    const resources: HnResource[] = await this.resourceService.findResources(technicalFolder.id);
+    const tasks: HnTask[] = await this.taskService.findTasks(technicalFolder.id);
+    const protocols: HnProtocol[] = await this.protocolService.findProtocols(technicalFolder.id);
+    const otherClasses: HnTechnicalDocOtherClass[] =
+      await this.techDocOtherClassService.findTechnicalDocOtherClasses(technicalFolder.id);
+    return {
+      resources: resources,
+      tasks: tasks,
+      protocols: protocols,
+      'other-classes': otherClasses,
+    };
   }
 }

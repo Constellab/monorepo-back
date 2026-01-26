@@ -26,6 +26,7 @@ import { HnSiteMapEnumChangefreq, HnSitemapItemBase } from '../core/model/config
 import { HnCoreConfigService } from '../core/modules/core-config/hn-core-config.service';
 import { HnFrontService } from '../core/service/hn-front.service';
 import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
+import { HnMarkdownHelper } from '../core/utils/hn-markdown.helper';
 import { HnMarkdownFile, HnZipHelper } from '../core/utils/hn-zip.helper';
 import {
   HnAbstractFileEntityDTO,
@@ -85,6 +86,15 @@ export class HnStoryService extends BlAbstractService<HnStory> {
     }
 
     return HnZipHelper.markdownsToZipFile(storiesMarkDowns, 'stories');
+  }
+
+  public async getStoryMarkdownById(storyId: string): Promise<BlFileResponse> {
+    const story = await this.getStory(storyId, true);
+    const storyUrl = this.frontService.getStoryUrl(story.id, story.cleanTitlePath);
+    return HnMarkdownHelper.createMarkdownResponse(
+      ClStringHelper.getCleanUrlPath(story.title) + '.md',
+      this.getStoryMarkdown(story, storyUrl)
+    );
   }
 
   public getStoryMarkdown(story: HnStory, storyUrl: string): string {

@@ -145,12 +145,27 @@ export class HnDocumentationController extends HnAbstractFileController<HnDocume
   }
 
   ///////////////////////////////////// OTHER METHODS //////////////////////////////////////
+  @BlPublic()
   @Get('download-doc-markdown/:docId')
   async downloadDocMarkdown(
     @Param('docId', new ParseUUIDPipe()) docId: string,
     @Res() res: Response
   ): Promise<any> {
     const md = await this.brickAggregateService.downloadDocMarkdown(docId);
+    res.set({
+      'Content-Disposition': `attachment; filename="${md.name}"`,
+    });
+    BlResponseHelper.setFileResponse(res, md);
+  }
+
+  @BlPublic()
+  @Get('download-tech-doc-markdown/:techDocType/:techDocId')
+  async downloadTechnicalDocMarkdown(
+    @Param('techDocType') techDocType: string,
+    @Param('techDocId', new ParseUUIDPipe()) techDocId: string,
+    @Res() res: Response
+  ): Promise<any> {
+    const md = await this.brickAggregateService.downloadTechnicalDocMarkdown(techDocType, techDocId);
     res.set({
       'Content-Disposition': `attachment; filename="${md.name}"`,
     });

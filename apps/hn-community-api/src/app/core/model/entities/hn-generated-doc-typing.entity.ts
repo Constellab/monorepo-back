@@ -75,3 +75,21 @@ export abstract class HnGeneratedDocTypingEntity extends HnGeneratedDocEntity {
 
   objectType: string;
 }
+
+export class HnGeneratedDocDTO {
+  id: string;
+  brickName: string;
+  brickMajor: number;
+  uniqueName: string;
+  humanName: string;
+  technicalFolder?: HnTechnicalFolderDto;
+
+  constructor(generatedDocEntity: HnGeneratedDocEntity) {
+    this.id = generatedDocEntity.id;
+    this.brickName = generatedDocEntity.brickName;
+    this.brickMajor = generatedDocEntity.brickMajor;
+    this.uniqueName = generatedDocEntity.uniqueName;
+    this.humanName = generatedDocEntity.humanName;
+    this.technicalFolder = new HnTechnicalFolderDto(generatedDocEntity.technicalFolder);
+  }
+}

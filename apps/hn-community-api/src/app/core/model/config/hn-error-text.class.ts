@@ -10,5 +10,6 @@ export enum HnErrorText {
   BRICK_NOT_FOUND = 'error.brick_not_found',
   BRICK_VERSION_NOT_FOUND = 'error.brick_version_not_found',
   DOCUMENTATION_NOT_FOUND = 'error.documentation_not_found',
+  TECHNICAL_DOCUMENTATION_NOT_FOUND = 'error.technical_documentation_not_found',
   WRONG_CREDENTIALS = 'error.wrong_credentials',
 }

@@ -112,6 +112,10 @@ export class HnTaskService {
     return task;
   }
 
+  async findTechDocById(id: string): Promise<HnTask> {
+    return this.tasksRepository.findOneBy({ id });
+  }
+
   //Get a task in the array tasksOfTheDay according to the day number
   async getTaskOfTheDay(): Promise<HnTask> {
     const dayNumber: number = Math.floor(new Date().getTime() / (24 * 60 * 60 * 1000));

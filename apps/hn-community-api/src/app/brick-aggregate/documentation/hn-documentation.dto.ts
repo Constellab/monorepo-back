@@ -19,3 +19,18 @@ export class HnDocumentationDto extends HnBaseDto {
     this.order = documentation.order;
   }
 }
+
+export class HnDocumentationShortDto extends HnBaseDto {
+  title: string;
+  path: string;
+  completePath: string;
+  order: number;
+
+  constructor(documentation: HnDocumentation) {
+    super(documentation);
+    this.title = documentation.title;
+    this.path = documentation.path;
+    this.completePath = documentation.completePath;
+    this.order = documentation.order;
+  }
+}

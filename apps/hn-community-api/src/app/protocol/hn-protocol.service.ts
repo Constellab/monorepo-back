@@ -102,4 +102,8 @@ export class HnProtocolService {
     }
     return proto;
   }
+
+  async findTechDocById(id: string): Promise<HnProtocol> {
+    return this.protocolsRepository.findOneBy({ id });
+  }
 }

@@ -339,6 +339,19 @@ export class HnStoryController extends HnAbstractFileController<HnStory> {
     return this.storyService.getStoryFiles(storyId);
   }
 
+  @BlPublic()
+  @Get('story-markdown/:storyId')
+  async getStoryMarkdown(
+    @Param('storyId', new ParseUUIDPipe()) storyId: string,
+    @Res() res: Response
+  ): Promise<any> {
+    const md = await this.storyService.getStoryMarkdownById(storyId);
+    res.set({
+      'Content-Disposition': `attachment; filename="${md.name}"`,
+    });
+    BlResponseHelper.setFileResponse(res, md);
+  }
+
   ////////////////////////////////// STORY RESOURCE VIEW //////////////////////////////////
   @UseInterceptors(FileInterceptor('file'))
   @Post(':storyId/upload-view')

@@ -89,4 +89,8 @@ export class HnResourceService {
     }
     return resource;
   }
+
+  async findTechDocById(id: string): Promise<HnResource> {
+    return this.resourceRepository.findOneBy({ id });
+  }
 }

@@ -7,5 +7,6 @@
   "brick_not_found": "La brique '{name}' n'a pas été trouvée. A-t-elle été déclarée dans Constellab Community ?",
   "brick_version_not_found": "La version '{version}' pour la brique '{name}' n'a pas été trouvée. A-t-elle été déclarée dans Constellab Community ?",
   "brick_name_invalid": "Le nom de la brique est invalide",
-  "documentation_not_found": "La documentation est introuvable."
+  "documentation_not_found": "La documentation est introuvable.",
+  "technical_documentation_not_found": "La documentation technique est introuvable."
 }
