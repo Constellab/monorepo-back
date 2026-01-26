@@ -9,11 +9,13 @@ export class CnCaptchaService {
   private readonly logger = new Logger(CnCaptchaService.name);
   private recaptchaClient: RecaptchaEnterpriseServiceClient;
 
-  constructor(private configService: CnCoreConfigService) {
-    this.initializeClient();
-  }
+  constructor(private configService: CnCoreConfigService) {}
 
-  private initializeClient(): void {
+  private getClient(): RecaptchaEnterpriseServiceClient {
+    if (this.recaptchaClient) {
+      return this.recaptchaClient;
+    }
+
     // Verify credentials file exists (similar to CnGcpService pattern)
     const credentialsPath = this.configService.getGcpCredentialsFilePath();
     if (!credentialsPath || !existsSync(credentialsPath)) {
@@ -25,6 +27,7 @@ export class CnCaptchaService {
     this.recaptchaClient = new RecaptchaEnterpriseServiceClient({
       keyFilename: credentialsPath,
     });
+    return this.recaptchaClient;
   }
 
   public async validateCaptcha(token: string, action: string): Promise<boolean> {
@@ -34,7 +37,7 @@ export class CnCaptchaService {
     }
     try {
       const projectId = this.configService.getGcpProjectId();
-      const projectPath = this.recaptchaClient.projectPath(projectId);
+      const projectPath = this.getClient().projectPath(projectId);
 
       const request = {
         parent: projectPath,
@@ -46,7 +49,7 @@ export class CnCaptchaService {
         },
       };
 
-      const [response] = await this.recaptchaClient.createAssessment(request);
+      const [response] = await this.getClient().createAssessment(request);
 
       // Check if the token is valid
       if (!response.tokenProperties?.valid) {
