@@ -34,6 +34,10 @@ import { IsAdmin } from '../core/decorators/hn-is-admin.decorator';
 import { HnIsAdminGuard } from '../core/guards/hn-is-admin.guard';
 import { HnSitemapItemBase } from '../core/model/config/hn-site-map.class';
 import { HnGeneratedDocDto } from '../core/model/entities/hn-generated-doc.dto';
+import {
+  HnGeneratedDocDTO,
+  HnGeneratedDocEntity,
+} from '../core/model/entities/hn-generated-doc-typing.entity';
 import { HnCoreConfigService } from '../core/modules/core-config/hn-core-config.service';
 import { HnUserDto } from '../users/hn-user.dto';
 import {
@@ -53,10 +57,6 @@ import { HnDocumentationDto, HnDocumentationShortDto } from './documentation/hn-
 import { HnDocumentation, HnDocumentationSearchDTO } from './documentation/hn-documentation.entity';
 import { HnNode } from './folder/hn-folder.dto';
 import { HnBrickAggregateService } from './hn-brick-aggregate.service';
-import {
-  HnGeneratedDocEntity,
-  HnGeneratedDocDTO,
-} from '../core/model/entities/hn-generated-doc-typing.entity';
 
 @Controller('brick')
 @UseGuards(HnIsAdminGuard)
