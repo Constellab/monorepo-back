@@ -4,11 +4,11 @@ import { Body, Controller, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, Query 
 
 import { HnLabGuard } from '../core/decorators/hn-lab-auth-guard.decorator';
 import {
-  HaCreateAgentVersionFromLabResponseDto,
   HnAgentForLabDto,
   HnAgentVersionFileInput,
   HnAgentVersionForLabDto,
   HnCreateAgentDto,
+  HnCreateAgentVersionFromLabResponseDto,
 } from './agent/hn-agent.dto';
 import { HnAgentVersionMigrator } from './agent-version/hn-agent-version-migrator.class';
 import { HnAgentAggregateService } from './hn-agent-aggregate.service';
@@ -21,7 +21,7 @@ export class HnAgentForLabController {
   @Post()
   async createForLab(
     @Body(new BlParsePipe(HnCreateAgentDto)) createAgentDto: HnCreateAgentDto
-  ): Promise<HaCreateAgentVersionFromLabResponseDto> {
+  ): Promise<HnCreateAgentVersionFromLabResponseDto> {
     const migrator: HnAgentVersionMigrator = new HnAgentVersionMigrator();
     createAgentDto.versionFile = migrator.migrateAgentVersionFile(createAgentDto.versionFile);
     return this.agentAggregateService.createForLab(createAgentDto);
@@ -31,7 +31,7 @@ export class HnAgentForLabController {
   async forkForLab(
     @Param('id', ParseUUIDPipe) agentId: string,
     @Body(new BlParsePipe(HnCreateAgentDto)) createAgentDto: HnCreateAgentDto
-  ): Promise<HaCreateAgentVersionFromLabResponseDto> {
+  ): Promise<HnCreateAgentVersionFromLabResponseDto> {
     const migrator: HnAgentVersionMigrator = new HnAgentVersionMigrator();
     createAgentDto.versionFile = migrator.migrateAgentVersionFile(createAgentDto.versionFile);
     return this.agentAggregateService.forkForLab(agentId, createAgentDto);
@@ -41,7 +41,7 @@ export class HnAgentForLabController {
   async createNewVersionForLab(
     @Param('id', ParseUUIDPipe) agentId: string,
     @Body('versionFile') versionFile: HnAgentVersionFileInput
-  ): Promise<HaCreateAgentVersionFromLabResponseDto> {
+  ): Promise<HnCreateAgentVersionFromLabResponseDto> {
     const migrator: HnAgentVersionMigrator = new HnAgentVersionMigrator();
     versionFile = migrator.migrateAgentVersionFile(versionFile);
     return this.agentAggregateService.createNewVersionForLab(agentId, versionFile);

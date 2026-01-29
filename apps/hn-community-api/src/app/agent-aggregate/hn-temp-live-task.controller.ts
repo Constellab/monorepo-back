@@ -4,11 +4,11 @@ import { Body, Controller, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, Query 
 
 import { HnLabGuard } from '../core/decorators/hn-lab-auth-guard.decorator';
 import {
-  HaCreateAgentVersionFromLabResponseDtoOldFormat,
   HnAgentForLabDto,
   HnAgentVersionFileInput,
   HnAgentVersionForLabDtoOldFormat,
   HnCreateAgentDto,
+  HnCreateAgentVersionFromLabResponseDtoOldFormat,
 } from './agent/hn-agent.dto';
 import { HnAgentVersionMigrator } from './agent-version/hn-agent-version-migrator.class';
 import { HnAgentAggregateService } from './hn-agent-aggregate.service';
@@ -22,10 +22,10 @@ export class HnTempLiveTaskController {
   @Post('/for-lab')
   async createForLab(
     @Body(new BlParsePipe(HnCreateAgentDto)) createAgentDto: HnCreateAgentDto
-  ): Promise<HaCreateAgentVersionFromLabResponseDtoOldFormat> {
+  ): Promise<HnCreateAgentVersionFromLabResponseDtoOldFormat> {
     const migrator: HnAgentVersionMigrator = new HnAgentVersionMigrator();
     createAgentDto.versionFile = migrator.migrateAgentVersionFile(createAgentDto.versionFile);
-    return new HaCreateAgentVersionFromLabResponseDtoOldFormat(
+    return new HnCreateAgentVersionFromLabResponseDtoOldFormat(
       await this.agentAggregateService.createForLab(createAgentDto)
     );
   }
@@ -36,10 +36,10 @@ export class HnTempLiveTaskController {
   async forkForLab(
     @Param('id') agentVersionId: string,
     @Body(new BlParsePipe(HnCreateAgentDto)) createAgentDto: HnCreateAgentDto
-  ): Promise<HaCreateAgentVersionFromLabResponseDtoOldFormat> {
+  ): Promise<HnCreateAgentVersionFromLabResponseDtoOldFormat> {
     const migrator: HnAgentVersionMigrator = new HnAgentVersionMigrator();
     createAgentDto.versionFile = migrator.migrateAgentVersionFile(createAgentDto.versionFile);
-    return new HaCreateAgentVersionFromLabResponseDtoOldFormat(
+    return new HnCreateAgentVersionFromLabResponseDtoOldFormat(
       await this.agentAggregateService.forkForLab(agentVersionId, createAgentDto)
     );
   }
@@ -50,10 +50,10 @@ export class HnTempLiveTaskController {
   async createNewVersionForLab(
     @Param('id', ParseUUIDPipe) agentId: string,
     @Body('versionFile') versionFile: HnAgentVersionFileInput
-  ): Promise<HaCreateAgentVersionFromLabResponseDtoOldFormat> {
+  ): Promise<HnCreateAgentVersionFromLabResponseDtoOldFormat> {
     const migrator: HnAgentVersionMigrator = new HnAgentVersionMigrator();
     versionFile = migrator.migrateAgentVersionFile(versionFile);
-    return new HaCreateAgentVersionFromLabResponseDtoOldFormat(
+    return new HnCreateAgentVersionFromLabResponseDtoOldFormat(
       await this.agentAggregateService.createNewVersionForLab(agentId, versionFile)
     );
   }

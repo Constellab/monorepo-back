@@ -23,13 +23,13 @@ import { HnSpaceDto } from '../space-aggregate/space/hn-space.dto';
 import { HnUser } from '../users/hn-user.entity';
 import { HnUserService } from '../users/hn-user.service';
 import {
-  HaCreateAgentVersionFromLabResponseDto,
   HnAgentDto,
   HnAgentEditStyleData,
   HnAgentForLabDto,
   HnAgentVersionFileInput,
   HnAgentVersionForLabDto,
   HnCreateAgentDto,
+  HnCreateAgentVersionFromLabResponseDto,
 } from './agent/hn-agent.dto';
 import { HnAgent } from './agent/hn-agent.entity';
 import { HnAgentService } from './agent/hn-agent.service';
@@ -94,7 +94,7 @@ export class HnAgentAggregateService {
 
   public async createForLab(
     createAgentDto: HnCreateAgentDto
-  ): Promise<HaCreateAgentVersionFromLabResponseDto> {
+  ): Promise<HnCreateAgentVersionFromLabResponseDto> {
     const user = HnCurrentUserHelper.getAndCheckCurrentUser();
     const agentVersion: HnAgentVersion = await this.create(createAgentDto, null, user);
     return {
@@ -107,7 +107,7 @@ export class HnAgentAggregateService {
   public async forkForLab(
     parentAgentVersionId: string,
     createAgentDto: HnCreateAgentDto
-  ): Promise<HaCreateAgentVersionFromLabResponseDto> {
+  ): Promise<HnCreateAgentVersionFromLabResponseDto> {
     const user = HnCurrentUserHelper.getAndCheckCurrentUser();
     if (parentAgentVersionId == null)
       throw new BlBadRequestException('The parent agent version id is required');
@@ -122,7 +122,7 @@ export class HnAgentAggregateService {
   public async createNewVersionForLab(
     agentId: string,
     newAgentVersionFile: HnAgentVersionFileInput
-  ): Promise<HaCreateAgentVersionFromLabResponseDto> {
+  ): Promise<HnCreateAgentVersionFromLabResponseDto> {
     const user = HnCurrentUserHelper.getAndCheckCurrentUser();
     const agent: HnAgent = await this.agentService.findOne(agentId);
 

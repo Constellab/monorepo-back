@@ -123,26 +123,35 @@ export class HnAgentVersionForLabDto {
     dto.id = agentVersion.id;
     dto.version = agentVersion.version;
     switch (agentVersion.type) {
-      case 'CONDA_R':
+      case HnAgentVersionType.CONDA_R:
         dto.type = HnAgentTyping.CONDA_R;
         break;
-      case 'MAMBA_R':
+      case HnAgentVersionType.MAMBA_R:
         dto.type = HnAgentTyping.MAMBA_R;
         break;
-      case 'CONDA_PYTHON':
+      case HnAgentVersionType.CONDA_PYTHON:
         dto.type = HnAgentTyping.CONDA_PYTHON;
         break;
-      case 'MAMBA_PYTHON':
+      case HnAgentVersionType.MAMBA_PYTHON:
         dto.type = HnAgentTyping.MAMBA_PYTHON;
         break;
-      case 'PIP_PYTHON':
+      case HnAgentVersionType.PIP_PYTHON:
         dto.type = HnAgentTyping.PIP_PYTHON;
         break;
-      case 'PYTHON':
+      case HnAgentVersionType.PYTHON:
         dto.type = HnAgentTyping.PYTHON;
         break;
-      case 'STREAMLIT':
+      case HnAgentVersionType.STREAMLIT:
         dto.type = HnAgentTyping.STREAMLIT;
+        break;
+      case HnAgentVersionType.STREAMLIT_CONDA:
+        dto.type = HnAgentTyping.STREAMLIT_CONDA;
+        break;
+      case HnAgentVersionType.STREAMLIT_PIP:
+        dto.type = HnAgentTyping.STREAMLIT_PIP;
+        break;
+      case HnAgentVersionType.STREAMLIT_MAMBA:
+        dto.type = HnAgentTyping.STREAMLIT_MAMBA;
         break;
     }
     dto.environment = agentVersion.environment ? agentVersion.environment : null;
@@ -169,20 +178,23 @@ export enum HnAgentTyping {
   PIP_PYTHON = 'TASK.gws_core.PyPipenvAgent',
   PYTHON = 'TASK.gws_core.PyAgent',
   STREAMLIT = 'TASK.gws_core.StreamlitAgent',
+  STREAMLIT_CONDA = 'TASK.gws_core.StreamlitCondaAgent',
+  STREAMLIT_PIP = 'TASK.gws_core.StreamlitPipenvAgent',
+  STREAMLIT_MAMBA = 'TASK.gws_core.StreamlitMambaAgent',
 }
 
-export class HaCreateAgentVersionFromLabResponseDto {
+export class HnCreateAgentVersionFromLabResponseDto {
   agent_version: string;
   title: string;
   id: string;
 }
 
-export class HaCreateAgentVersionFromLabResponseDtoOldFormat {
+export class HnCreateAgentVersionFromLabResponseDtoOldFormat {
   live_task_version: string;
   title: string;
   id: string;
 
-  constructor(createAgentVersionResponse: HaCreateAgentVersionFromLabResponseDto) {
+  constructor(createAgentVersionResponse: HnCreateAgentVersionFromLabResponseDto) {
     this.live_task_version = createAgentVersionResponse.agent_version;
     this.title = createAgentVersionResponse.title;
     this.id = createAgentVersionResponse.id;
@@ -222,10 +234,3 @@ export class HnAgentVersionForLabDtoOldFormat {
     this.style = agentVersion.style;
   }
 }
-
-export const baseAgentStyle = {
-  icon_technical_name: 'code',
-  icon_type: 'MATERIAL_ICON',
-  background_color: '#c7c8cc',
-  icon_color: '#000000',
-} as HnTypingStyle;

@@ -21,6 +21,9 @@ export enum HnAgentVersionType {
   CONDA_R = 'CONDA_R',
   MAMBA_R = 'MAMBA_R',
   STREAMLIT = 'STREAMLIT',
+  STREAMLIT_PIP = 'STREAMLIT_PIP',
+  STREAMLIT_CONDA = 'STREAMLIT_CONDA',
+  STREAMLIT_MAMBA = 'STREAMLIT_MAMBA',
 }
 
 @Unique(['version', 'agent'])
