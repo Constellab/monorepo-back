@@ -1,5 +1,5 @@
 import { BlBadRequestException } from '@monorepo/back-core-lib';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
 
@@ -40,14 +40,15 @@ export class HnBrickMajorVersionService {
   ): Promise<HnBrickMajorVersion> {
     let major: number;
 
-    Logger.log('Finding brick major version for brick ID: ' + brick.id + ' and version: ' + version);
-    const versionRegex = /^v\d+\.\d+\.\d+$/;
+    // check if version is in good format 'latest', 'X.X.X' or 'X.X.X-beta.X'
+    const versionRegex = /^\d+\.\d+\.\d+(-beta\.\d+)?$/;
     if (version !== 'latest' && !versionRegex.test(version)) {
-      throw new BlBadRequestException(`Invalid version format: ${version}. Expected 'latest' or 'vX.X.X'`);
+      throw new BlBadRequestException(
+        `Invalid version format: ${version}. Expected 'latest', 'X.X.X' or 'X.X.X-beta.X'`
+      );
     }
 
     if (version !== 'latest') {
-      version = version.slice(1);
       major = +version.split('.')[0];
       return await this.brickMajorVersionsRepository.findOne({
         where: { brick: { id: brick.id }, major: major },
