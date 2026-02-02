@@ -87,33 +87,27 @@ export class CnLabConfigurerService {
   }
 
   /**
-   * Method to clone lab-configurer repo if it does not exist or pull if it does
-   * @private
+   * Method to clone lab-configurer repo. Always deletes existing folder and clones fresh.
    */
   public async callUpdateLabConfigurerRepo(labSshService: CnLabSshService, labId: string): Promise<void> {
-    const cdResult = await labSshService.execSshCommand([`cd ${CnLabSshService.LAB_CONFIGURER_FOLDER}`], {
+    // Always delete the folder if it exists, then clone fresh
+    // rm -rf with -f flag won't fail if folder doesn't exist
+    await this.labService.updateServerTask(
+      labId,
+      `Deleting lab-configurer repository`,
+      CnLabServerTaskStatus.RUNNING
+    );
+    await labSshService.execSshCommand([`rm -rf ${CnLabSshService.LAB_CONFIGURER_FOLDER}`], {
       errorMode: CnExecCommandMode.STDERR_AS_SUCCESS,
       ignoreError: true,
-      timeout: 10000,
     });
 
-    // todo does not work if this is the first time the ssh connection is made
-    // if the repo does exist, delete it to re-clone it
-    if (cdResult === '') {
-      await this.labService.updateServerTask(
-        labId,
-        `Deleting lab-configurer repository`,
-        CnLabServerTaskStatus.RUNNING
-      );
-      await labSshService.execSshCommand([`rm -rf ${CnLabSshService.LAB_CONFIGURER_FOLDER}`]);
-    }
-    // clone the repo
+    // Clone the repo
     await this.labService.updateServerTask(
       labId,
       `Pulling lab-configurer repository`,
       CnLabServerTaskStatus.RUNNING
     );
-    // Git clone
     await labSshService.execSshCommand([
       `git clone -b ${this.coreConfigService.getLabConfigurerRepoBranch()} ` +
         `${this.coreConfigService.getLabConfigurerRepoUrl()}`,
