@@ -16,10 +16,10 @@ export class BlMailEntity extends BlEntityWithId {
   @Column()
   recipients: string;
 
-  @Column({ nullable: true })
+  @Column()
   subject: string;
 
-  @Column({ type: 'text', nullable: true })
+  @Column({ type: 'text' })
   mail: string;
 
   @Column({ type: 'enum', enum: BlMailStatus, default: BlMailStatus.PENDING })

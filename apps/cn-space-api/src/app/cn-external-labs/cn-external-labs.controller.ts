@@ -60,7 +60,6 @@ import { CnHierarchyObjectAggregateService } from '../cn-folders-aggregate/cn-hi
 import { CnCreateNoteWithConfigDto } from '../cn-folders-aggregate/cn-notes/cn-note.dto';
 import { CnNoteAggregateService } from '../cn-folders-aggregate/cn-notes/cn-note-aggregate.service';
 import { CnShareResourceRequestDTO } from '../cn-folders-aggregate/cn-resources/cn-resource.dto';
-import { CnResourceAggregateService } from '../cn-folders-aggregate/cn-resources/cn-resource-aggregate.service';
 import { CnCreateLabScenarioDto } from '../cn-folders-aggregate/cn-scenarios/cn-scenario.dto';
 import { CnScenarioAggregateService } from '../cn-folders-aggregate/cn-scenarios/cn-scenario-aggregate.service';
 import { CnGroup } from '../cn-groups/cn-group.entity';
@@ -90,7 +89,6 @@ export class CnExternalLabsController {
     private folderAggregateService: CnFolderAggregateService,
     private hierarchyObjectAggregateService: CnHierarchyObjectAggregateService,
     private labFolderAggregateService: CnLabFolderAggregateService,
-    private resourceAggregateService: CnResourceAggregateService,
     private scenarioAggregateService: CnScenarioAggregateService,
     private noteAggregateService: CnNoteAggregateService,
     private documentAggregateService: CnDocumentAggregateService,
@@ -496,13 +494,15 @@ export class CnExternalLabsController {
    */
   @CnLabAllowDev()
   @Post('send-mail')
-  sendMail(@Body() body: CnLabSendMailDto): Promise<void> {
+  sendMail(@Body(new BlParsePipe(CnLabSendMailDto)) body: CnLabSendMailDto): Promise<void> {
     return this.labMailService.sendMailFromLab(CnCurrentUserHelper.getAndCheckCurrentLab(), body);
   }
 
   @CnLabAllowDev()
   @Post('send-mail-to-mails')
-  sendMailToMails(@Body() body: CnLabSendMailToMailsDto): Promise<void> {
+  sendMailToMails(
+    @Body(new BlParsePipe(CnLabSendMailToMailsDto)) body: CnLabSendMailToMailsDto
+  ): Promise<void> {
     return this.labMailService.sendMailToMailsFromLab(CnCurrentUserHelper.getAndCheckCurrentLab(), body);
   }
 

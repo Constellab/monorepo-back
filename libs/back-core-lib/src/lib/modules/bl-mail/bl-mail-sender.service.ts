@@ -43,6 +43,9 @@ export class BlMailSenderService {
     }
 
     if (mailEntity.subject == null || mailEntity.mail === null) {
+      mailEntity.status = BlMailStatus.ERROR;
+      mailEntity.error = 'Mail has no subject or mail';
+      await this.mailEntityService.save(mailEntity);
       throw new Error(`Mail has no subject or mail`);
     }
 

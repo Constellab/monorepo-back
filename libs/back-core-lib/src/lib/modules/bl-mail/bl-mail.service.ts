@@ -99,6 +99,15 @@ export class BlMailService {
       throw e;
     }
 
+    // validate before saving
+    if (!mailEntity.subject) {
+      throw new Error('Subject is null');
+    }
+
+    if (!mailEntity.mail) {
+      throw new Error('Mail content is null');
+    }
+
     // save the mail in the database
     await this.mailEntityService.save(mailEntity);
 

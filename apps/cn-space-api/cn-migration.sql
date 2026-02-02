@@ -347,3 +347,12 @@ alter table settings
 
 ############################ 2.9.11 ##########################
 -- Update CAPTCHA_SITE_KEY and delete CAPTCHA_SECRET_KEY
+
+############################ 2.9.14 ##########################
+
+delete from mail where subject is null or mail is null;
+
+-- Modify columns to set NOT NULL constraints
+alter table mail
+  modify column subject varchar(255) not null,
+  modify column mail text not null;

@@ -1,4 +1,4 @@
-import { BlMailService, BlSendMailDTO } from '@monorepo/back-core-lib';
+import { BlMailService, BlSendMailDTO, BlTranslatableText } from '@monorepo/back-core-lib';
 import { ClSupportedLanguage } from '@monorepo/core-lib';
 import { Injectable } from '@nestjs/common';
 
@@ -33,6 +33,8 @@ export class CnLabMailService {
   public async sendMailFromLab(lab: CnLab, sendMailDTO: CnLabSendMailDto): Promise<void> {
     const template = this.getLabTemplate(sendMailDTO.mail_template);
 
+    const subject = this.getAndCheckSubject(sendMailDTO.subject, template);
+
     for (const receiver of sendMailDTO.receiver_ids) {
       const user = await this.userService.findByIdAndCheck(receiver);
       // add the user info to data
@@ -43,10 +45,7 @@ export class CnLabMailService {
           mail: user.email,
         },
       });
-      await this.mailService.sendMailToUser(template, user, data, {
-        text: sendMailDTO.subject,
-        translate: false,
-      });
+      await this.mailService.sendMailToUser(template, user, data, subject);
     }
   }
 
@@ -61,10 +60,7 @@ export class CnLabMailService {
         recipients: email,
         lang: ClSupportedLanguage.en,
         data: sendMailToMailsDTO.data,
-        subject: {
-          translate: false,
-          text: sendMailToMailsDTO.subject,
-        },
+        subject: this.getAndCheckSubject(sendMailToMailsDTO.subject, template),
       };
 
       await this.mailService.sendMailAndCheck(mail);
@@ -91,13 +87,25 @@ export class CnLabMailService {
     });
   }
 
-  private getLabTemplate(type: CnLabMailTemplate): string {
+  private getLabTemplate(type: CnLabMailTemplate): CnMailTemplate {
     switch (type) {
       case 'scenario-finished':
         return CnMailTemplate.scenario_finished;
       default:
         return CnMailTemplate.generic;
     }
+  }
+
+  private getAndCheckSubject(subject: string | undefined, template: CnMailTemplate): BlTranslatableText {
+    if (template === CnMailTemplate.generic && !subject) {
+      throw new Error('Subject is required for generic template');
+    }
+
+    if (!subject) {
+      return null;
+    }
+
+    return { text: subject, translate: false };
   }
 
   public async sendLabStartedMail(lab: CnLab): Promise<void> {
