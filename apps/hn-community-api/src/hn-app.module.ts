@@ -106,6 +106,7 @@ import { HnTechnicalFolderModule } from './app/technical-folder/hn-technical-fol
 import { HnTopicModule } from './app/topic/hn-topic.module';
 import { HnUserModule } from './app/users/hn-user.module';
 import { HnUserService } from './app/users/hn-user.service';
+import { HnRagflowChatbotModule } from './app/ragflow-chatbot/hn-ragflow-chatbot.module';
 
 function typeOrmConfig(configService: HnCoreConfigService): TypeOrmModuleOptions {
   const dbConfig: HnDatabaseConfig = configService.getDatabaseConfig();
@@ -309,6 +310,8 @@ TeRichTextModifications.setBackTimeDifference();
     HnPartnerModule,
 
     HnDifyModule,
+
+    HnRagflowChatbotModule,
   ],
   controllers: [],
   providers: [

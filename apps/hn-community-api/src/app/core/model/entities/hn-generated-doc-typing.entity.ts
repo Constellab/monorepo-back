@@ -1,12 +1,10 @@
-import { BlEntityWithId } from '@monorepo/back-core-lib';
 import { Type } from 'class-transformer';
 import { Column, ManyToOne } from 'typeorm';
 
-import { HnTechnicalFolderDto } from '../../../technical-folder/hn-technical-folder.dto';
 import { HnTechnicalFolder } from '../../../technical-folder/hn-technical-folder.entity';
-import { HnGeneratedDocDto } from './hn-generated-doc.dto';
+import { HnBaseEntity } from './hn-base.entity';
 
-export abstract class HnGeneratedDocEntity extends BlEntityWithId {
+export abstract class HnGeneratedDocEntity extends HnBaseEntity {
   @Column()
   brickName: string;
 
@@ -23,19 +21,13 @@ export abstract class HnGeneratedDocEntity extends BlEntityWithId {
   doc: string;
 
   @Type(() => HnTechnicalFolder)
-  @ManyToOne(() => HnTechnicalFolder, { eager: true, nullable: false })
+  @ManyToOne(() => HnTechnicalFolder, { eager: true, nullable: false, onDelete: 'CASCADE' })
   technicalFolder: HnTechnicalFolder;
 
   abstract getFolderName(): string;
 
   getCompletePath(): string {
     return `${this.getFolderName()}/${this.uniqueName}`;
-  }
-
-  toDto(): HnGeneratedDocDto {
-    const dto: HnGeneratedDocDto = (({ technicalFolder, ...o }) => o)(this);
-    dto.technicalFolder = new HnTechnicalFolderDto(this.technicalFolder);
-    return dto;
   }
 }
 
@@ -74,22 +66,4 @@ export abstract class HnGeneratedDocTypingEntity extends HnGeneratedDocEntity {
   objectSubType: string;
 
   objectType: string;
-}
-
-export class HnGeneratedDocDTO {
-  id: string;
-  brickName: string;
-  brickMajor: number;
-  uniqueName: string;
-  humanName: string;
-  technicalFolder?: HnTechnicalFolderDto;
-
-  constructor(generatedDocEntity: HnGeneratedDocEntity) {
-    this.id = generatedDocEntity.id;
-    this.brickName = generatedDocEntity.brickName;
-    this.brickMajor = generatedDocEntity.brickMajor;
-    this.uniqueName = generatedDocEntity.uniqueName;
-    this.humanName = generatedDocEntity.humanName;
-    this.technicalFolder = new HnTechnicalFolderDto(generatedDocEntity.technicalFolder);
-  }
 }
