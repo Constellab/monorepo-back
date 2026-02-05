@@ -17,7 +17,7 @@ export class CnLabDesktopService {
     'lab-manager-prod-data': '/app/prod/data',
     'lab-manager-dev-lab': '/app/dev/lab',
     'lab-manager-dev-data': '/app/dev/data',
-    'lab-manager-dev-codelab-home:': '/app/dev/home',
+    'lab-manager-dev-codelab-home': '/app/dev/home',
   };
 
   private static readonly NETWORKS = ['gencovery-network-prod', 'gencovery-network-dev'];
