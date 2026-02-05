@@ -109,16 +109,6 @@ export class CnExternalLabManagerApiService {
     return lastValueFrom(this.get(apiInfo, `${this.getComposeRoute(composeId)}/services`));
   }
 
-  public async upServices(
-    apiInfo: CnExternalApiInfo,
-    composeId: CnLabManagerDockerComposeUniqueId,
-    serviceNames: string[]
-  ): Promise<void> {
-    return lastValueFrom(
-      this.put(apiInfo, `${this.getComposeRoute(composeId)}/services/${serviceNames[0]}/start`, null)
-    );
-  }
-
   public async upAllServices(
     apiInfo: CnExternalApiInfo,
     composeId: CnLabManagerDockerComposeUniqueId,
@@ -205,6 +195,10 @@ export class CnExternalLabManagerApiService {
     containerName: string
   ): Promise<CnLabManagerContainerSize> {
     return lastValueFrom(this.get(apiInfo, `${this.baseContainersRoute}/${containerName}/size`));
+  }
+
+  public async startContainer(apiInfo: CnExternalApiInfo, containerName: string): Promise<void> {
+    return lastValueFrom(this.put(apiInfo, `${this.baseContainersRoute}/${containerName}/start`, null));
   }
 
   public async stopContainer(apiInfo: CnExternalApiInfo, containerName: string): Promise<void> {

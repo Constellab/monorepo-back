@@ -443,17 +443,6 @@ export class CnLabsController {
     return this.aggregateService.listServices(id, { brickName, uniqueName, env });
   }
 
-  @Put(':id/lab-manager/docker-compose/:brickName/:uniqueName/:env/services/:serviceName/start')
-  startComposeService(
-    @Param('id', new ParseUUIDPipe()) id: string,
-    @Param('brickName') brickName: string,
-    @Param('uniqueName') uniqueName: string,
-    @Param('env', new BlParseEnumPipe(CnLabManagerComposeEnv)) env: CnLabManagerComposeEnv,
-    @Param('serviceName') serviceName: string
-  ): Promise<void> {
-    return this.aggregateService.startComposeService(id, { brickName, uniqueName, env }, [serviceName]);
-  }
-
   @Post(':id/lab-manager/docker-compose/:brickName/:uniqueName/:env/up-services')
   async upServices(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -564,6 +553,14 @@ export class CnLabsController {
     @Param('containerName') containerName: string
   ): Promise<CnLabManagerContainerSize> {
     return await this.aggregateService.getContainerSize(id, containerName);
+  }
+
+  @Put(':id/lab-manager/containers/:containerName/start')
+  async startContainer(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('containerName') containerName: string
+  ): Promise<void> {
+    return await this.aggregateService.startContainer(id, containerName);
   }
 
   @Put(':id/lab-manager/containers/:containerName/stop')

@@ -964,15 +964,6 @@ export class CnLabAggregateService {
     return this.labManagerService.listServices(lab, composeId);
   }
 
-  public async startComposeService(
-    labId: string,
-    composeId: CnLabManagerDockerComposeUniqueId,
-    serviceNames: string[]
-  ): Promise<void> {
-    const lab = await this.getAndCheckAuthorizationToManageLab(labId);
-    return this.labManagerService.startComposeService(lab, composeId, serviceNames);
-  }
-
   public async upServices(
     labId: string,
     composeId: CnLabManagerDockerComposeUniqueId,
@@ -1050,6 +1041,11 @@ export class CnLabAggregateService {
   public async getContainerSize(labId: string, containerName: string): Promise<CnLabManagerContainerSize> {
     const lab = await this.getAndCheckAuthorizationToManageLab(labId);
     return this.labManagerService.getContainerSize(lab, containerName);
+  }
+
+  public async startContainer(labId: string, containerName: string): Promise<void> {
+    const lab = await this.getAndCheckAuthorizationToManageLab(labId);
+    return this.labManagerService.startContainer(lab, containerName);
   }
 
   public async stopContainer(labId: string, containerName: string): Promise<void> {

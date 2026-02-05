@@ -158,14 +158,6 @@ export class CnLabManagerService {
     return this.labManagerApiService.listServices(lab.getLabManagerApiInfo(), composeId);
   }
 
-  public async startComposeService(
-    lab: CnLab,
-    composeId: CnLabManagerDockerComposeUniqueId,
-    serviceNames: string[]
-  ): Promise<void> {
-    return this.labManagerApiService.upServices(lab.getLabManagerApiInfo(), composeId, serviceNames);
-  }
-
   public async upServices(
     lab: CnLab,
     composeId: CnLabManagerDockerComposeUniqueId,
@@ -218,6 +210,10 @@ export class CnLabManagerService {
 
   public async getContainerSize(lab: CnLab, containerName: string): Promise<CnLabManagerContainerSize> {
     return this.labManagerApiService.getContainerSize(lab.getLabManagerApiInfo(), containerName);
+  }
+
+  public async startContainer(lab: CnLab, containerName: string): Promise<void> {
+    return this.labManagerApiService.startContainer(lab.getLabManagerApiInfo(), containerName);
   }
 
   public async stopContainer(lab: CnLab, containerName: string): Promise<void> {
