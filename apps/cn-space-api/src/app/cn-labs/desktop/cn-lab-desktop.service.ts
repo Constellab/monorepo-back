@@ -17,6 +17,7 @@ export class CnLabDesktopService {
     'lab-manager-prod-data': '/app/prod/data',
     'lab-manager-dev-lab': '/app/dev/lab',
     'lab-manager-dev-data': '/app/dev/data',
+    'lab-manager-dev-codelab-home:': '/app/dev/home',
   };
 
   private static readonly NETWORKS = ['gencovery-network-prod', 'gencovery-network-dev'];
@@ -69,7 +70,7 @@ export class CnLabDesktopService {
     // volume usage in the run command
     const volumesUsage = Object.entries(CnLabDesktopService.VOLUMES)
       .map(([volume, path]) => ` -v ${volume}:${path}`)
-      .join(' ');
+      .join('');
 
     // network usage in the run command
     const networksUsage = CnLabDesktopService.NETWORKS.map((network) => ` --network ${network}`).join('');
@@ -78,16 +79,17 @@ export class CnLabDesktopService {
     return (
       `docker run -d --name ${CnLabDesktopService.CONTAINER_NAME}` +
       networksUsage +
-      ` -e ENVIRONMENT_PROFILE=desktop` +
-      ` -e LAB_MANAGER_API_KEY=${lab.labManagerApiKey}` +
-      ` -e LAB_NAME=${lab.name}` +
-      ` -e LAB_ID=${lab.id}` +
-      ` -e DESKTOP_COMMUNITY_API_URL=${this.coreConfigService.getCommunityApiUrl()}` +
-      ` -e DESKTOP_COMMUNITY_FRONT_URL=${this.coreConfigService.getCommunityFrontUrl()}` +
-      ` -e VOLUME_PATH=/app` +
-      ` -e LAB_AUTO_START=true` +
-      ` -e LAB_MANAGER_STANDALONE_FRONT_VERSION=` +
+      ` -e "ENVIRONMENT_PROFILE=desktop"` +
+      ` -e "LAB_MANAGER_API_KEY=${lab.labManagerApiKey}"` +
+      ` -e "LAB_NAME=${lab.name}"` +
+      ` -e "LAB_ID=${lab.id}"` +
+      ` -e "DESKTOP_COMMUNITY_API_URL=${this.coreConfigService.getCommunityApiUrl()}"` +
+      ` -e "DESKTOP_COMMUNITY_FRONT_URL=${this.coreConfigService.getCommunityFrontUrl()}"` +
+      ` -e "VOLUME_PATH=/app"` +
+      ` -e "LAB_AUTO_START=true"` +
+      ` -e "LAB_MANAGER_STANDALONE_FRONT_VERSION=` +
       this.coreConfigService.getLabManagerStandaloneFrontVersion() +
+      `"` +
       volumesUsage +
       // mount the docker socket to be able to run docker command in the container
       ` -v /var/run/docker.sock:/var/run/docker.sock` +
