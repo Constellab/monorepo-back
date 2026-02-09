@@ -1,3 +1,4 @@
+import { blGetCorsConfig, BlCookieHelper } from '@monorepo/back-core-lib';
 import { Logger } from '@nestjs/common';
 import {
   ConnectedSocket,
@@ -9,8 +10,16 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
+import * as jwt from 'jsonwebtoken';
 import { Server, Socket } from 'socket.io';
 
+import {
+  HN_ENVIRONMENT_PROFILE_KEY,
+  HnEnvironmentProfile,
+} from '../core/model/config/hn-config.class';
+import { HnCoreConfigService } from '../core/modules/core-config/hn-core-config.service';
+import { HnUser } from '../users/hn-user.entity';
+import { HnUserService } from '../users/hn-user.service';
 import {
   HnRagflowJoinConversationDto,
   HnRagflowSendMessageDto,
@@ -19,11 +28,24 @@ import {
 import { HnRagflowMessage } from './hn-ragflow-chatbot.interface';
 import { HnRagflowChatbotService } from './hn-ragflow-chatbot.service';
 
+interface HnRagflowClientSession {
+  sessionId?: string;
+  conversationId?: string;
+  userId?: string;
+}
+
+const env: HnEnvironmentProfile = process.env[HN_ENVIRONMENT_PROFILE_KEY] as HnEnvironmentProfile;
+const isLocal = env === 'dev' || env === 'docker' || env === 'test';
+const corsConfig = blGetCorsConfig(
+  ['constellab.community', 'constellab.space', 'preconstellab.com', 'gencovery.com', 'gencovery.io', 'constellab.app'],
+  isLocal
+);
+
 @WebSocketGateway({
   namespace: '/ragflow-chatbot',
   cors: {
-    origin: '*',
-    credentials: true,
+    origin: corsConfig.origin,
+    credentials: corsConfig.credentials,
   },
 })
 export class HnRagflowChatbotGateway
@@ -33,28 +55,26 @@ export class HnRagflowChatbotGateway
   server: Server;
 
   private readonly logger = new Logger(HnRagflowChatbotGateway.name);
-  private clientSessions: Map<string, { sessionId?: string; conversationId?: string }> = new Map();
+  private clientSessions: Map<string, HnRagflowClientSession> = new Map();
 
-  constructor(private readonly ragflowService: HnRagflowChatbotService) {}
+  /** Maps a Ragflow sessionId to the userId that owns it (null = anonymous session) */
+  private sessionOwnership: Map<string, string | null> = new Map();
 
-  afterInit(): void {
-    this.logger.log('Ragflow Chatbot WebSocket Gateway initialized');
-  }
+  constructor(
+    private readonly ragflowService: HnRagflowChatbotService,
+    private readonly userService: HnUserService,
+    private readonly coreConfigService: HnCoreConfigService
+  ) {}
 
-  handleConnection(client: Socket): void {
-    this.logger.log(`[CONNECT] Client connected: ${client.id}`);
-    this.logger.debug(`[CONNECT] Client handshake auth: ${JSON.stringify(client.handshake.auth)}`);
-    this.logger.debug(`[CONNECT] Client handshake headers: ${JSON.stringify(client.handshake.headers)}`);
-    this.logger.debug(`[CONNECT] Total connected clients: ${this.clientSessions.size + 1}`);
-    this.clientSessions.set(client.id, {});
+  afterInit(): void {}
+
+  async handleConnection(client: Socket): Promise<void> {
+    const user = await this.authenticateClient(client);
+    this.clientSessions.set(client.id, { userId: user?.id ?? null });
   }
 
   handleDisconnect(client: Socket): void {
-    const session = this.clientSessions.get(client.id);
-    this.logger.log(`[DISCONNECT] Client disconnected: ${client.id}`);
-    this.logger.debug(`[DISCONNECT] Client session was: ${JSON.stringify(session)}`);
     this.clientSessions.delete(client.id);
-    this.logger.debug(`[DISCONNECT] Remaining connected clients: ${this.clientSessions.size}`);
   }
 
   @SubscribeMessage(HnRagflowWsEvent.JOIN_CONVERSATION)
@@ -62,8 +82,8 @@ export class HnRagflowChatbotGateway
     @MessageBody() dto: HnRagflowJoinConversationDto,
     @ConnectedSocket() client: Socket
   ): Promise<void> {
-    this.logger.debug(`[JOIN] Client ${client.id} attempting to join conversation`);
-    this.logger.debug(`[JOIN] DTO: ${JSON.stringify(dto)}`);
+    const clientSession = this.clientSessions.get(client.id);
+    const clientUserId = clientSession?.userId;
 
     try {
       let sessionId: string;
@@ -71,48 +91,45 @@ export class HnRagflowChatbotGateway
 
       // conversationId is actually the Ragflow sessionId (they are the same for persistence)
       if (dto.conversationId) {
-        this.logger.debug(`[JOIN] Client provided existing conversationId (sessionId): ${dto.conversationId}`);
+        // Check conversation ownership before allowing access
+        if (!this.canAccessSession(dto.conversationId, clientUserId)) {
+          client.emit(HnRagflowWsEvent.MESSAGE_ERROR, {
+            error: 'Unauthorized: you do not have access to this conversation',
+          });
+          return;
+        }
 
         // Check if the session exists in Ragflow
         const sessionExists = await this.ragflowService.sessionExists(dto.chatId, dto.conversationId);
 
         if (sessionExists) {
-          this.logger.debug(`[JOIN] Session exists in Ragflow, fetching history`);
           sessionId = dto.conversationId;
-
-          // Fetch message history from Ragflow
           messages = await this.ragflowService.getSessionHistory(dto.chatId, sessionId);
-          this.logger.debug(`[JOIN] Retrieved ${messages.length} messages from history`);
         } else {
-          this.logger.warn(`[JOIN] Session not found in Ragflow, creating new session`);
           sessionId = await this.ragflowService.createSession(dto.chatId);
-          this.logger.debug(`[JOIN] New Ragflow session created: ${sessionId}`);
+          this.registerSessionOwnership(sessionId, clientUserId);
         }
       } else {
-        this.logger.debug(`[JOIN] No conversationId provided, creating new session for chat: ${dto.chatId}`);
         sessionId = await this.ragflowService.createSession(dto.chatId);
-        this.logger.debug(`[JOIN] New Ragflow session created: ${sessionId}`);
+        this.registerSessionOwnership(sessionId, clientUserId);
       }
 
       // Use sessionId as conversationId (they are now the same for persistence)
       const conversationId = sessionId;
 
       this.clientSessions.set(client.id, {
+        ...clientSession,
         sessionId,
         conversationId,
       });
 
       client.join(conversationId);
 
-      const response = {
+      client.emit(HnRagflowWsEvent.CONVERSATION_JOINED, {
         conversationId,
         sessionId,
         messages,
-      };
-      this.logger.debug(`[JOIN] Emitting conversation_joined with ${messages.length} messages`);
-      client.emit(HnRagflowWsEvent.CONVERSATION_JOINED, response);
-
-      this.logger.log(`[JOIN] Client ${client.id} joined conversation ${conversationId} with ${messages.length} historical messages`);
+      });
     } catch (error) {
       this.logger.error(`[JOIN] Error joining conversation for client ${client.id}`, error);
       client.emit(HnRagflowWsEvent.MESSAGE_ERROR, {
@@ -123,14 +140,10 @@ export class HnRagflowChatbotGateway
 
   @SubscribeMessage(HnRagflowWsEvent.LEAVE_CONVERSATION)
   handleLeaveConversation(@ConnectedSocket() client: Socket): void {
-    this.logger.debug(`[LEAVE] Client ${client.id} requesting to leave conversation`);
     const session = this.clientSessions.get(client.id);
     if (session?.conversationId) {
       client.leave(session.conversationId);
-      this.clientSessions.set(client.id, {});
-      this.logger.log(`[LEAVE] Client ${client.id} left conversation ${session.conversationId}`);
-    } else {
-      this.logger.debug(`[LEAVE] Client ${client.id} was not in a conversation`);
+      this.clientSessions.set(client.id, { userId: session.userId });
     }
   }
 
@@ -139,14 +152,9 @@ export class HnRagflowChatbotGateway
     @MessageBody() dto: HnRagflowSendMessageDto,
     @ConnectedSocket() client: Socket
   ): Promise<void> {
-    this.logger.debug(`[SEND] Client ${client.id} sending message`);
-    this.logger.debug(`[SEND] DTO: ${JSON.stringify({ ...dto, message: dto.message?.substring(0, 100) })}`);
-
     const session = this.clientSessions.get(client.id);
-    this.logger.debug(`[SEND] Client session: ${JSON.stringify(session)}`);
 
     if (!session?.conversationId || !session?.sessionId) {
-      this.logger.warn(`[SEND] Client ${client.id} not in a conversation`);
       client.emit(HnRagflowWsEvent.MESSAGE_ERROR, {
         error: 'Not in a conversation. Please join first.',
       });
@@ -154,15 +162,11 @@ export class HnRagflowChatbotGateway
     }
 
     try {
-      this.logger.debug(`[SEND] Emitting typing_start to room: ${session.conversationId}`);
       this.server.to(session.conversationId).emit(HnRagflowWsEvent.TYPING_START, {
         conversationId: session.conversationId,
       });
 
       let fullResponse = '';
-      let chunkCount = 0;
-
-      this.logger.debug(`[SEND] Starting stream for chat: ${dto.chatId}, session: ${session.sessionId}`);
 
       for await (const chunk of this.ragflowService.streamMessage(
         dto.chatId,
@@ -170,9 +174,7 @@ export class HnRagflowChatbotGateway
         session.sessionId
       )) {
         if (chunk.type === 'chunk' && chunk.content) {
-          chunkCount++;
           fullResponse += chunk.content;
-          this.logger.debug(`[SEND] Emitting chunk #${chunkCount}: "${chunk.content.substring(0, 50)}"`);
           client.emit(HnRagflowWsEvent.MESSAGE_CHUNK, {
             conversationId: session.conversationId,
             content: chunk.content,
@@ -185,16 +187,13 @@ export class HnRagflowChatbotGateway
           });
           break;
         } else if (chunk.type === 'done') {
-          this.logger.debug(`[SEND] Stream done. Total chunks: ${chunkCount}, Response length: ${fullResponse.length}, References: ${chunk.references?.length || 0}`);
           const assistantMessage = this.ragflowService.createMessage('assistant', fullResponse);
           assistantMessage.references = chunk.references;
 
-          this.logger.debug(`[SEND] Emitting typing_end`);
           this.server.to(session.conversationId).emit(HnRagflowWsEvent.TYPING_END, {
             conversationId: session.conversationId,
           });
 
-          this.logger.debug(`[SEND] Emitting message_complete: ${assistantMessage.id} with ${chunk.references?.length || 0} references`);
           client.emit(HnRagflowWsEvent.MESSAGE_COMPLETE, {
             conversationId: session.conversationId,
             message: assistantMessage,
@@ -202,8 +201,6 @@ export class HnRagflowChatbotGateway
           });
         }
       }
-
-      this.logger.log(`[SEND] Message processed for client ${client.id}. Chunks: ${chunkCount}`);
     } catch (error) {
       this.logger.error(`[SEND] Error sending message for client ${client.id}`, error);
 
@@ -218,9 +215,100 @@ export class HnRagflowChatbotGateway
     }
   }
 
-  private getUserIdFromSocket(client: Socket): string {
-    // TODO: Extract user ID from JWT token in handshake
-    // For now, return a placeholder
-    return client.handshake.auth?.userId || `anonymous-${client.id}`;
+  /**
+   * Attempts to authenticate the client by extracting and verifying a JWT token from the WebSocket handshake.
+   * Returns the user if authenticated, null otherwise (anonymous access is allowed).
+   */
+  private async authenticateClient(client: Socket): Promise<HnUser | null> {
+    try {
+      const token = this.extractTokenFromHandshake(client);
+      if (!token) {
+        return null;
+      }
+
+      const secret = this.coreConfigService.getJwtSecret();
+      const payload = jwt.verify(token, secret) as jwt.JwtPayload;
+
+      if (!payload?.sub) {
+        return null;
+      }
+
+      const user = await this.userService.findOne(payload.sub);
+      return user ?? null;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Extracts the JWT token from the WebSocket handshake.
+   * Checks in order: auth.token, authorization header, cookie.
+   */
+  private extractTokenFromHandshake(client: Socket): string | null {
+    // 1. Check explicit auth payload (socket.io auth)
+    let rawToken = client.handshake.auth?.token;
+
+    // 2. Check authorization header
+    if (!rawToken) {
+      rawToken = client.handshake.headers?.authorization;
+    }
+
+    // 3. Check cookie
+    if (!rawToken) {
+      const cookieHeader = client.handshake.headers?.cookie;
+      if (cookieHeader) {
+        rawToken = BlCookieHelper.getCookieFromHeader(cookieHeader, 'Authorization');
+      }
+    }
+
+    if (!rawToken) {
+      return null;
+    }
+
+    // Decode URI encoding (cookie values may be URL-encoded)
+    let token = decodeURIComponent(rawToken);
+
+    // Strip "Bearer " prefix if present
+    if (token.startsWith('Bearer ')) {
+      token = token.substring(7);
+    }
+
+    return token || null;
+  }
+
+  /**
+   * Checks if a client (identified by userId) can access a given session.
+   * - If the session has no registered owner, it is an anonymous session: anyone can access it.
+   * - If the session has an owner, only that user can access it.
+   * - After server restart, owned sessions are lost: access is denied for safety.
+   */
+  private canAccessSession(sessionId: string, clientUserId: string | null): boolean {
+    const ownerId = this.sessionOwnership.get(sessionId);
+
+    // Session not tracked (created before restart or unknown) -> deny access
+    if (ownerId === undefined) {
+      return false;
+    }
+
+    // Anonymous session (owner is null) -> anyone can access
+    if (ownerId === null) {
+      return true;
+    }
+
+    // Owned session: only the owner can access
+    if (clientUserId == null) {
+      return false;
+    }
+
+    return ownerId === clientUserId;
+  }
+
+  /**
+   * Registers ownership of a session.
+   * For authenticated users, stores their userId.
+   * For anonymous users, stores null (no ownership enforced).
+   */
+  private registerSessionOwnership(sessionId: string, userId: string | null): void {
+    this.sessionOwnership.set(sessionId, userId);
   }
 }

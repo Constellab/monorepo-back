@@ -24,15 +24,10 @@ export class HnRagflowChatbotService {
   async createSession(chatId: string): Promise<string> {
     const baseUrl = this.getRagflowBaseUrl();
     const url = `${baseUrl}/api/v1/chats/${chatId}/sessions`;
-    this.logger.debug(`[createSession] Creating session for chat: ${chatId}`);
-    this.logger.debug(`[createSession] URL: ${url}`);
 
     try {
       const response = await this.httpService.axiosRef.post(url, {}, { headers: this.getRagflowHeaders() });
-      const sessionId = response.data?.data?.id;
-      this.logger.debug(`[createSession] Session created successfully: ${sessionId}`);
-      this.logger.debug(`[createSession] Full response: ${JSON.stringify(response.data)}`);
-      return sessionId;
+      return response.data?.data?.id;
     } catch (error: any) {
       this.logger.error(
         `[createSession] Failed to create session for chat ${chatId}`,
@@ -49,22 +44,17 @@ export class HnRagflowChatbotService {
   async getSessionHistory(chatId: string, sessionId: string): Promise<HnRagflowMessage[]> {
     const baseUrl = this.getRagflowBaseUrl();
     const url = `${baseUrl}/api/v1/chats/${chatId}/sessions?id=${sessionId}`;
-    this.logger.debug(`[getSessionHistory] Fetching history for session: ${sessionId}`);
-    this.logger.debug(`[getSessionHistory] URL: ${url}`);
 
     try {
       const response = await this.httpService.axiosRef.get(url, { headers: this.getRagflowHeaders() });
-      this.logger.debug(`[getSessionHistory] Response: ${JSON.stringify(response.data).substring(0, 500)}`);
 
       const sessions = response.data?.data;
       if (!sessions || !Array.isArray(sessions) || sessions.length === 0) {
-        this.logger.debug(`[getSessionHistory] Session not found: ${sessionId}`);
         return [];
       }
 
       const session = sessions.find((s: any) => s.id === sessionId);
       if (!session) {
-        this.logger.debug(`[getSessionHistory] Session not found in results: ${sessionId}`);
         return [];
       }
 
@@ -91,7 +81,6 @@ export class HnRagflowChatbotService {
         }
       }
 
-      this.logger.debug(`[getSessionHistory] Found ${messages.length} messages in session`);
       return messages;
     } catch (error: any) {
       this.logger.error(
@@ -108,7 +97,6 @@ export class HnRagflowChatbotService {
   async sessionExists(chatId: string, sessionId: string): Promise<boolean> {
     const baseUrl = this.getRagflowBaseUrl();
     const url = `${baseUrl}/api/v1/chats/${chatId}/sessions?id=${sessionId}`;
-    this.logger.debug(`[sessionExists] Checking if session exists: ${sessionId}`);
 
     try {
       const response = await this.httpService.axiosRef.get(url, { headers: this.getRagflowHeaders() });
@@ -118,9 +106,7 @@ export class HnRagflowChatbotService {
         return false;
       }
 
-      const exists = sessions.some((s: any) => s.id === sessionId);
-      this.logger.debug(`[sessionExists] Session ${sessionId} exists: ${exists}`);
-      return exists;
+      return sessions.some((s: any) => s.id === sessionId);
     } catch (error: any) {
       this.logger.error(`[sessionExists] Error checking session`, error?.response?.data || error);
       return false;
@@ -153,21 +139,12 @@ export class HnRagflowChatbotService {
     const baseUrl = this.getRagflowBaseUrl();
     const url = `${baseUrl}/api/v1/chats/${chatId}/completions`;
 
-    this.logger.debug(`[sendMessage] Sending message to chat: ${chatId}`);
-    this.logger.debug(`[sendMessage] URL: ${url}`);
-    this.logger.debug(`[sendMessage] Session ID: ${sessionId || 'none'}`);
-    this.logger.debug(
-      `[sendMessage] Message: "${message.substring(0, 100)}${message.length > 100 ? '...' : ''}"`
-    );
-    this.logger.debug(`[sendMessage] Stream mode: ${!!onChunk}`);
-
     try {
       const payload = {
         question: message,
         session_id: sessionId,
         stream: !!onChunk,
       };
-      this.logger.debug(`[sendMessage] Payload: ${JSON.stringify(payload)}`);
 
       const response = await this.httpService.axiosRef.post<HnRagflowApiResponse>(url, payload, {
         headers: this.getRagflowHeaders(),
@@ -175,12 +152,10 @@ export class HnRagflowChatbotService {
       });
 
       if (onChunk) {
-        this.logger.debug(`[sendMessage] Starting stream response handling`);
         return await this.handleStreamResponse(response.data as any, onChunk);
       }
 
       const apiResponse = response.data;
-      this.logger.debug(`[sendMessage] Response received: ${JSON.stringify(apiResponse).substring(0, 500)}`);
       return this.createMessage('assistant', apiResponse.data.answer);
     } catch (error: any) {
       this.logger.error(`[sendMessage] Error sending message to Ragflow`, error?.response?.data || error);
@@ -196,40 +171,26 @@ export class HnRagflowChatbotService {
     const baseUrl = this.getRagflowBaseUrl();
     const url = `${baseUrl}/api/v1/chats/${chatId}/completions`;
 
-    this.logger.debug(`[streamMessage] Starting stream for chat: ${chatId}`);
-    this.logger.debug(`[streamMessage] URL: ${url}`);
-    this.logger.debug(`[streamMessage] Session ID: ${sessionId || 'none'}`);
-    this.logger.debug(`[streamMessage] Message: "
-    ${message.substring(0, 100)}
-    ${message.length > 100 ? '...' : ''}"`);
-
     try {
       const payload = {
         question: message,
         session_id: sessionId,
         stream: true,
       };
-      this.logger.debug(`[streamMessage] Payload: ${JSON.stringify(payload)}`);
 
       const response = await this.httpService.axiosRef.post(url, payload, {
         headers: this.getRagflowHeaders(),
         responseType: 'stream',
       });
 
-      this.logger.debug(`[streamMessage] Stream connection established`);
-
       const stream = response.data;
       let buffer = '';
-      let chunkCount = 0;
       let previousAnswer = '';
       let lastReferences: HnRagflowReference[] = [];
 
       for await (const chunk of stream) {
         const chunkStr = chunk.toString();
         buffer += chunkStr;
-        this.logger.debug(
-          `[streamMessage] Raw chunk received (${chunkStr.length} bytes): "${chunkStr.substring(0, 200)}"`
-        );
 
         // Ragflow format: data:{...} (no space after data:)
         // Split by 'data:' to handle multiple events in one chunk
@@ -250,14 +211,8 @@ export class HnRagflowChatbotService {
             continue;
           }
 
-          this.logger.debug(`[streamMessage] SSE data part: "${part.substring(0, 200)}"`);
-
           // Check for end signal
           if (part === '{"code": 0, "data": true}') {
-            this.logger.debug(
-              // eslint-disable-next-line max-len
-              `[streamMessage] Stream completed signal received. Total chunks: ${chunkCount}, References: ${lastReferences.length}`
-            );
             yield { type: 'done', references: lastReferences };
             return;
           }
@@ -282,31 +237,23 @@ export class HnRagflowChatbotService {
                   chunkId: ref.chunk_id || ref.id || '',
                   score: ref.score || ref.similarity || 0,
                 }));
-                this.logger.debug(`[streamMessage] Extracted ${lastReferences.length} references`);
               }
 
               if (delta) {
                 previousAnswer = fullAnswer;
-                chunkCount++;
-                this.logger.debug(`[streamMessage] Chunk #${chunkCount} delta: "${delta.substring(0, 100)}"`);
                 yield {
                   type: 'chunk',
                   content: delta,
                 };
               }
             }
-          } catch (parseError) {
-            this.logger.warn(`[streamMessage] Failed to parse JSON: "${part.substring(0, 100)}"`);
+          } catch {
             // Put back in buffer if parse failed (might be incomplete)
             buffer = 'data:' + part;
           }
         }
       }
 
-      this.logger.debug(
-        `[streamMessage] Stream ended naturally. Total chunks: ${chunkCount},
-         References: ${lastReferences.length}`
-      );
       yield { type: 'done', references: lastReferences };
     } catch (error: any) {
       this.logger.error(
@@ -375,14 +322,11 @@ export class HnRagflowChatbotService {
   }
 
   private getRagflowBaseUrl(): string {
-    const url = this.coreConfigService.getRagflowBaseUrl();
-    this.logger.debug(`[config] Ragflow Base URL: ${url}`);
-    return url;
+    return this.coreConfigService.getRagflowBaseUrl();
   }
 
   private getRagflowHeaders(): Record<string, string> {
     const apiKey = this.coreConfigService.getRagflowApiKey();
-    this.logger.debug(`[config] Ragflow API Key: ${apiKey ? apiKey.substring(0, 15) + '...' : 'NOT SET'}`);
     return {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${apiKey}`,

@@ -1,6 +1,9 @@
 {
   "permissions": {
-    "allow": ["Bash(nest build:*)"],
+    "allow": [
+      "Bash(nest build:*)",
+      "Bash(npx nest build:*)"
+    ],
     "deny": [],
     "ask": []
   }
