@@ -1,4 +1,4 @@
-import { blGetCorsConfig, BlCookieHelper } from '@monorepo/back-core-lib';
+import { BlCookieHelper } from '@monorepo/back-core-lib';
 import { Logger } from '@nestjs/common';
 import {
   ConnectedSocket,
@@ -13,10 +13,7 @@ import {
 import * as jwt from 'jsonwebtoken';
 import { Server, Socket } from 'socket.io';
 
-import {
-  HN_ENVIRONMENT_PROFILE_KEY,
-  HnEnvironmentProfile,
-} from '../core/model/config/hn-config.class';
+import { hnCorsConfig } from '../core/config/hn-cors.config';
 import { HnCoreConfigService } from '../core/modules/core-config/hn-core-config.service';
 import { HnUser } from '../users/hn-user.entity';
 import { HnUserService } from '../users/hn-user.service';
@@ -34,23 +31,14 @@ interface HnRagflowClientSession {
   userId?: string;
 }
 
-const env: HnEnvironmentProfile = process.env[HN_ENVIRONMENT_PROFILE_KEY] as HnEnvironmentProfile;
-const isLocal = env === 'dev' || env === 'docker' || env === 'test';
-const corsConfig = blGetCorsConfig(
-  ['constellab.community', 'constellab.space', 'preconstellab.com', 'gencovery.com', 'gencovery.io', 'constellab.app'],
-  isLocal
-);
-
 @WebSocketGateway({
   namespace: '/ragflow-chatbot',
   cors: {
-    origin: corsConfig.origin,
-    credentials: corsConfig.credentials,
+    origin: hnCorsConfig.origin,
+    credentials: hnCorsConfig.credentials,
   },
 })
-export class HnRagflowChatbotGateway
-  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
-{
+export class HnRagflowChatbotGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
 

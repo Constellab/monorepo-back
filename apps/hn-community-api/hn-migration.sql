@@ -530,3 +530,45 @@ ALTER TABLE `space`
     REFERENCES `user` (`id`)
     ON DELETE SET NULL
     ON UPDATE NO ACTION;
+
+#1.10.5
+ALTER TABLE `protocol`
+DROP FOREIGN KEY `FK_4c5fa66e968e7c30d12aebad9b9`;
+
+ALTER TABLE `protocol`
+  ADD CONSTRAINT `FK_8f1002e16009585dc2feae56a70`
+    FOREIGN KEY (`technicalFolderId`)
+      REFERENCES `technical_folder` (`id`)
+      ON DELETE CASCADE
+      ON UPDATE NO ACTION;
+
+ALTER TABLE `resource`
+DROP FOREIGN KEY `FK_091ec1819a0d68e9c9215ee88a0`;
+
+ALTER TABLE `resource`
+  ADD CONSTRAINT `FK_543bb2c6c7d0fa9d3b7d5cfe574`
+    FOREIGN KEY (`technicalFolderId`)
+      REFERENCES `technical_folder` (`id`)
+      ON DELETE CASCADE
+      ON UPDATE NO ACTION;
+
+ALTER TABLE `task`
+DROP FOREIGN KEY `FK_1d912d0746e72de513657229797`;
+
+ALTER TABLE `task`
+  ADD CONSTRAINT `FK_a6b609f3800157eb4d2b5495f87`
+    FOREIGN KEY (`technicalFolderId`)
+      REFERENCES `technical_folder` (`id`)
+      ON DELETE CASCADE
+      ON UPDATE NO ACTION;
+
+ALTER TABLE `technical_doc_other_class`
+DROP FOREIGN KEY `FK_c30cfffb0f55322728317027423`;
+
+ALTER TABLE `technical_doc_other_class`
+  ADD CONSTRAINT `FK_c30cfffb0f55322728317027423`
+    FOREIGN KEY (`technicalFolderId`)
+      REFERENCES `technical_folder` (`id`)
+      ON DELETE CASCADE
+      ON UPDATE NO ACTION;
+
