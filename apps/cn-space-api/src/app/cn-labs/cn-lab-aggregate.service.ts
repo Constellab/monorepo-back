@@ -135,12 +135,21 @@ export class CnLabAggregateService {
 
   /**
    * Create a lab with all information (only for admin)
+   * @param createLab Lab creation data
    */
   async createAdmin(createLab: CnLabCreateAdminDTO): Promise<CnLabEntity> {
     const lab = this.labFromUpdateAdminDTO(createLab);
 
     const userInfo = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
     this.security.checkAuthorizationToCreateAdmin(lab, userInfo);
+
+    // If copyConfigFromLab is provided, copy the brick configuration from the source lab
+    if (createLab.copyConfigFromLab) {
+      const sourceLab = await this.labsService.findByIdAndCheck(createLab.copyConfigFromLab.id, {
+        labConfig: true,
+      });
+      lab.labConfig = sourceLab.labConfig;
+    }
 
     return this.dataSource.transaction(async (entityManager) => {
       return this.createLabNotSecure(

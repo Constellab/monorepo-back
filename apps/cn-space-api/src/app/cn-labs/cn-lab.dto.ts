@@ -161,6 +161,8 @@ export class CnLabCreateAdminDTO extends CnLabUpdateAdminDTO {
 
   @Type(() => CnCloudProviderRegion)
   weeklyBackupRegion: CnCloudProviderRegion;
+
+  copyConfigFromLab?: CnLab;
 }
 
 export class CnLabCloudCreateDTO {
