@@ -1,32 +1,15 @@
-import { blGetCorsConfig } from '@monorepo/back-core-lib';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { json, urlencoded } from 'body-parser';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
-import { HN_ENVIRONMENT_PROFILE_KEY, HnEnvironmentProfile } from './app/core/model/config/hn-config.class';
+import { hnCorsConfig } from './app/core/config/hn-cors.config';
 import { HnAppModule } from './hn-app.module';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create<NestExpressApplication>(HnAppModule);
 
-  // enable cors
-  const env: HnEnvironmentProfile = process.env[HN_ENVIRONMENT_PROFILE_KEY] as HnEnvironmentProfile;
-  const isLocal = env === 'dev' || env === 'docker' || env === 'test';
-
-  app.enableCors(
-    blGetCorsConfig(
-      [
-        'constellab.community',
-        'constellab.space',
-        'preconstellab.com',
-        'gencovery.com',
-        'gencovery.io',
-        'constellab.app',
-      ],
-      isLocal
-    )
-  );
+  app.enableCors(hnCorsConfig);
 
   app.use(json({ limit: '50mb' }));
   app.use(urlencoded({ limit: '50mb', extended: true }));

@@ -33,9 +33,8 @@ import { Request, Response } from 'express';
 import { IsAdmin } from '../core/decorators/hn-is-admin.decorator';
 import { HnIsAdminGuard } from '../core/guards/hn-is-admin.guard';
 import { HnSitemapItemBase } from '../core/model/config/hn-site-map.class';
-import { HnGeneratedDocDto } from '../core/model/entities/hn-generated-doc.dto';
+import { HnGeneratedDocDto, HnSimpleGeneratedDocDto } from '../core/model/entities/hn-generated-doc.dto';
 import {
-  HnGeneratedDocDTO,
   HnGeneratedDocEntity,
 } from '../core/model/entities/hn-generated-doc-typing.entity';
 import { HnCoreConfigService } from '../core/modules/core-config/hn-core-config.service';
@@ -133,29 +132,29 @@ export class HnBrickController {
   }
 
   @BlPublic()
-  @Get('all-docs/:brickId/:version')
+  @Get('all-docs/:brickName/:version')
   async findAllDocsByBrick(
-    @Param('brickId') brickId: string,
+    @Param('brickName') brickName: string,
     @Param('version') version: string
   ): Promise<HnDocumentationShortDto[]> {
     const documentations: HnDocumentation[] = await this.brickAggregateService.findAllDocsByBrick(
-      brickId,
+      brickName,
       version
     );
     return documentations.map((doc) => new HnDocumentationShortDto(doc));
   }
 
   @BlPublic()
-  @Get('all-technical-docs/:brickId/:version')
+  @Get('all-technical-docs/:brickName/:version')
   async findAllTechnicalDocsByBrick(
-    @Param('brickId') brickId: string,
+    @Param('brickName') brickName: string,
     @Param('version') version: string
-  ): Promise<Record<string, HnGeneratedDocDTO[]>> {
+  ): Promise<Record<string, HnSimpleGeneratedDocDto[]>> {
     const technicalDocumentations: Record<string, HnGeneratedDocEntity[]> =
-      await this.brickAggregateService.findAllTechnicalDocsByBrick(brickId, version);
-    const result: Record<string, HnGeneratedDocDTO[]> = {};
+      await this.brickAggregateService.findAllTechnicalDocsByBrick(brickName, version);
+    const result: Record<string, HnSimpleGeneratedDocDto[]> = {};
     for (const key of Object.keys(technicalDocumentations)) {
-      result[key] = technicalDocumentations[key].map((doc) => new HnGeneratedDocDTO(doc));
+      result[key] = technicalDocumentations[key].map((doc) => new HnSimpleGeneratedDocDto(doc));
     }
     return result;
   }
@@ -257,7 +256,7 @@ export class HnBrickController {
   @Post('technical-doc-by-path')
   async findTechDocByPath(
     @Body(new BlParsePipe(HnTechnicalDocInputDTO)) input: HnTechnicalDocInputDTO
-  ): Promise<HnGeneratedDocDto> {
+  ): Promise<HnGeneratedDocEntity> {
     return this.brickAggregateService.findTechDocByPath(input);
   }
 

@@ -1,4 +1,3 @@
-import { ClDateHelper } from '@monorepo/core-lib';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -35,15 +34,14 @@ export class HnTechnicalFolderService {
   ): Promise<boolean> {
     let technicalFolder: HnTechnicalFolder = await this.findTechnicalFolder(brickMajorVersion.id);
 
-    if (technicalFolder == null) {
-      technicalFolder = new HnTechnicalFolder();
-      technicalFolder.brickMajorVersion = brickMajorVersion;
-      technicalFolder = await this.technicalFolderRepository.save(technicalFolder);
-    } else {
-      // update technical info
-      technicalFolder.lastModifiedAt = ClDateHelper.getDate();
-      technicalFolder = await this.technicalFolderRepository.save(technicalFolder);
+    if (technicalFolder) {
+      // delete existing technical docs by deleting the technical folder (cascade)
+      await this.technicalFolderRepository.remove(technicalFolder);
     }
+
+    technicalFolder = new HnTechnicalFolder();
+    technicalFolder.brickMajorVersion = brickMajorVersion;
+    technicalFolder = await this.technicalFolderRepository.save(technicalFolder);
 
     let resourcesOk: boolean = false;
     let tasksOk: boolean = false;

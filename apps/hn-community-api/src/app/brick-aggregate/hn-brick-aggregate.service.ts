@@ -21,6 +21,7 @@ import { DataSource, FindOptionsWhere, In, IsNull, Like } from 'typeorm';
 import { HnErrorText } from '../core/model/config/hn-error-text.class';
 import { HnSiteMapEnumChangefreq, HnSitemapItemBase } from '../core/model/config/hn-site-map.class';
 import { HnGeneratedDocDto } from '../core/model/entities/hn-generated-doc.dto';
+import { HnGeneratedDocEntity } from '../core/model/entities/hn-generated-doc-typing.entity';
 import { HnCoreConfigService } from '../core/modules/core-config/hn-core-config.service';
 import { HnFrontService } from '../core/service/hn-front.service';
 import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
@@ -33,6 +34,7 @@ import {
 import { HnFileDocumentationService } from '../file-aggregate/file-documentation/hn-file-documentation.service';
 import { HnSpaceAggregateService } from '../space-aggregate/hn-space-aggregate.service';
 import { HnSpaceUserService } from '../space-aggregate/space-user/hn-space-user.service';
+import { HnTechnicalFolder } from '../technical-folder/hn-technical-folder.entity';
 import { HnTechnicalFolderService } from '../technical-folder/hn-technical-folder.service';
 import { HnUser } from '../users/hn-user.entity';
 import { HnUserService } from '../users/hn-user.service';
@@ -67,8 +69,6 @@ import { HnDocumentationService } from './documentation/hn-documentation.service
 import { HnFolderDto, HnNode, HnNodeDTO, HnNodeType } from './folder/hn-folder.dto';
 import { HnFolder } from './folder/hn-folder.entity';
 import { HnFolderService } from './folder/hn-folder.service';
-import { HnGeneratedDocEntity } from '../core/model/entities/hn-generated-doc-typing.entity';
-import { HnTechnicalFolder } from '../technical-folder/hn-technical-folder.entity';
 
 export interface HnBrickUserBasedWhereOptionalParams {
   spacesFilter?: string[];
@@ -719,8 +719,8 @@ export class HnBrickAggregateService {
     return await this.folderService.findBrickDocsNodesTree(mainFolder);
   }
 
-  async findAllDocsByBrick(brickId: string, version: string): Promise<HnDocumentation[]> {
-    const brick: HnBrick = await this.findBrickById(brickId);
+  async findAllDocsByBrick(brickName: string, version: string): Promise<HnDocumentation[]> {
+    const brick: HnBrick = await this.findBrickByName(brickName);
     if (brick == null) {
       return null;
     }
@@ -731,18 +731,21 @@ export class HnBrickAggregateService {
   }
 
   async findAllTechnicalDocsByBrick(
-    brickId: string,
+    brickName: string,
     version: string
   ): Promise<Record<string, HnGeneratedDocEntity[]>> {
-    const brick: HnBrick = await this.findBrickById(brickId);
+    const brick: HnBrick = await this.findBrickByName(brickName);
     if (brick == null) {
       return null;
     }
     const brickMajorVersion: HnBrickMajorVersion =
       await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(brick, version);
     const technicalFolder: HnTechnicalFolder = await this.technicalFolderService.findTechnicalFolder(
-      brickMajorVersion.id
+      brickMajorVersion?.id
     );
+    if (!technicalFolder) {
+      return {};
+    }
     return await this.technicalFolderService.findAllTechnicalDocsByBrick(technicalFolder);
   }
 
@@ -994,15 +997,14 @@ export class HnBrickAggregateService {
     return this.technicalFolderService.findTechnicalDoc(brickMajorVersion.id);
   }
 
-  async findTechDocByPath(input: HnTechnicalDocInputDTO): Promise<HnGeneratedDocDto> {
+  async findTechDocByPath(input: HnTechnicalDocInputDTO): Promise<HnGeneratedDocEntity> {
     const brick: HnBrick = await this.findBrickByName(input.brickName);
     if (brick == null) {
       return null;
     }
     const brickMajorVersion: HnBrickMajorVersion =
       await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(brick, input.brickVersion);
-    const techDoc = await this.technicalFolderService.findCurrentTecDoc(brickMajorVersion, input);
-    return techDoc?.toDto();
+    return await this.technicalFolderService.findCurrentTecDoc(brickMajorVersion, input);
   }
 
   async createNewVersion(newVersion: HnNewVersionDTO): Promise<HnNewVersionDTO> {
