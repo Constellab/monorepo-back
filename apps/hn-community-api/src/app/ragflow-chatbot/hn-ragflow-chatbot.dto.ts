@@ -3,10 +3,6 @@ import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 export class HnRagflowSendMessageDto {
   @IsString()
   @IsNotEmpty()
-  chatId: string;
-
-  @IsString()
-  @IsNotEmpty()
   message: string;
 
   @IsString()
@@ -20,18 +16,8 @@ export class HnRagflowSendMessageDto {
 
 export class HnRagflowJoinConversationDto {
   @IsString()
-  @IsNotEmpty()
-  chatId: string;
-
-  @IsString()
   @IsOptional()
   conversationId?: string;
-}
-
-export class HnRagflowCreateSessionDto {
-  @IsString()
-  @IsNotEmpty()
-  chatId: string;
 }
 
 export enum HnRagflowWsEvent {

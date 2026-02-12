@@ -30,3 +30,4 @@ export const HN_DIFY_API_KEY = 'DIFY_API_KEY';
 
 export const HN_RAGFLOW_API_KEY = 'RAGFLOW_API_KEY';
 export const HN_RAGFLOW_BASE_URL = 'RAGFLOW_BASE_URL';
+export const HN_RAGFLOW_CHAT_ID = 'RAGFLOW_CHAT_ID';

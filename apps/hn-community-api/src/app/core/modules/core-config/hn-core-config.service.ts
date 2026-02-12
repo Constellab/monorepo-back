@@ -20,6 +20,7 @@ import {
   HN_ENVIRONMENT_PROFILE_PROD_VALUE,
   HN_RAGFLOW_API_KEY,
   HN_RAGFLOW_BASE_URL,
+  HN_RAGFLOW_CHAT_ID,
   HnEnvironmentProfile,
 } from '../../model/config/hn-config.class';
 import { HnDatabaseConfig } from '../../model/config/hn-database-config.class';
@@ -261,5 +262,9 @@ export class HnCoreConfigService {
 
   public getRagflowBaseUrl(): string {
     return this.configService.get(HN_RAGFLOW_BASE_URL);
+  }
+
+  public getRagflowChatId(): string | undefined {
+    return this.configService.get(HN_RAGFLOW_CHAT_ID);
   }
 }

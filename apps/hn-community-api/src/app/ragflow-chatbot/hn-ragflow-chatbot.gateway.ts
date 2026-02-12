@@ -72,6 +72,14 @@ export class HnRagflowChatbotGateway implements OnGatewayInit, OnGatewayConnecti
   ): Promise<void> {
     const clientSession = this.clientSessions.get(client.id);
     const clientUserId = clientSession?.userId;
+    const chatId = this.coreConfigService.getRagflowChatId();
+
+    if (!chatId) {
+      client.emit(HnRagflowWsEvent.MESSAGE_ERROR, {
+        error: 'Ragflow chatbot is not configured',
+      });
+      return;
+    }
 
     try {
       let sessionId: string;
@@ -88,17 +96,17 @@ export class HnRagflowChatbotGateway implements OnGatewayInit, OnGatewayConnecti
         }
 
         // Check if the session exists in Ragflow
-        const sessionExists = await this.ragflowService.sessionExists(dto.chatId, dto.conversationId);
+        const sessionExists = await this.ragflowService.sessionExists(chatId, dto.conversationId);
 
         if (sessionExists) {
           sessionId = dto.conversationId;
-          messages = await this.ragflowService.getSessionHistory(dto.chatId, sessionId);
+          messages = await this.ragflowService.getSessionHistory(chatId, sessionId);
         } else {
-          sessionId = await this.ragflowService.createSession(dto.chatId);
+          sessionId = await this.ragflowService.createSession(chatId);
           this.registerSessionOwnership(sessionId, clientUserId);
         }
       } else {
-        sessionId = await this.ragflowService.createSession(dto.chatId);
+        sessionId = await this.ragflowService.createSession(chatId);
         this.registerSessionOwnership(sessionId, clientUserId);
       }
 
@@ -149,6 +157,15 @@ export class HnRagflowChatbotGateway implements OnGatewayInit, OnGatewayConnecti
       return;
     }
 
+    const chatId = this.coreConfigService.getRagflowChatId();
+
+    if (!chatId) {
+      client.emit(HnRagflowWsEvent.MESSAGE_ERROR, {
+        error: 'Ragflow chatbot is not configured',
+      });
+      return;
+    }
+
     try {
       this.server.to(session.conversationId).emit(HnRagflowWsEvent.TYPING_START, {
         conversationId: session.conversationId,
@@ -157,7 +174,7 @@ export class HnRagflowChatbotGateway implements OnGatewayInit, OnGatewayConnecti
       let fullResponse = '';
 
       for await (const chunk of this.ragflowService.streamMessage(
-        dto.chatId,
+        chatId,
         dto.message,
         session.sessionId
       )) {

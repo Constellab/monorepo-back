@@ -59,7 +59,7 @@ export class TeMarkdown {
   // This class is used to convert code block data to markdown
   public static getCodeBlockMarkdown(codeBlockData: TeBlockData): string {
     const codeBlock = '```';
-    return `> ${codeBlock}${codeBlockData.code}${codeBlock}`;
+    return `${codeBlock}${codeBlockData.code}${codeBlock}`;
   }
 
   // This class is used to convert hint block data to markdown

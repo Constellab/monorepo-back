@@ -20,7 +20,6 @@ import { DataSource, FindOptionsWhere, In, IsNull, Like } from 'typeorm';
 
 import { HnErrorText } from '../core/model/config/hn-error-text.class';
 import { HnSiteMapEnumChangefreq, HnSitemapItemBase } from '../core/model/config/hn-site-map.class';
-import { HnGeneratedDocDto } from '../core/model/entities/hn-generated-doc.dto';
 import { HnGeneratedDocEntity } from '../core/model/entities/hn-generated-doc-typing.entity';
 import { HnCoreConfigService } from '../core/modules/core-config/hn-core-config.service';
 import { HnFrontService } from '../core/service/hn-front.service';
@@ -392,11 +391,11 @@ export class HnBrickAggregateService {
       const version: BlVersion =
         body.version.subPatch != null
           ? new BlVersion(
-            +body.version.major,
-            +body.version.minor,
-            +body.version.patch,
-            +body.version.subPatch
-          )
+              +body.version.major,
+              +body.version.minor,
+              +body.version.patch,
+              +body.version.subPatch
+            )
           : new BlVersion(+body.version.major, +body.version.minor, +body.version.patch);
 
       // TODO: Improve brick version creation (simplify in the aggregate)
@@ -1301,8 +1300,10 @@ export class HnBrickAggregateService {
   }
 
   public async downloadTechnicalDocMarkdown(techDocType: string, techDocId: string): Promise<BlFileResponse> {
-    const techDoc: HnGeneratedDocEntity =
-      await this.technicalFolderService.findTechDocByIdAndType(techDocId, techDocType);
+    const techDoc: HnGeneratedDocEntity = await this.technicalFolderService.findTechDocByIdAndType(
+      techDocId,
+      techDocType
+    );
     if (techDoc == null) {
       throw new BlBadRequestException(HnErrorText.TECHNICAL_DOCUMENTATION_NOT_FOUND, {
         detailArgs: { id: techDocId },
