@@ -20,6 +20,16 @@ export class HnRagflowJoinConversationDto {
   conversationId?: string;
 }
 
+export class HnRagflowAskQuestionDto {
+  @IsString()
+  @IsNotEmpty()
+  message: string;
+
+  @IsString()
+  @IsOptional()
+  sessionId?: string;
+}
+
 export enum HnRagflowWsEvent {
   JOIN_CONVERSATION = 'join_conversation',
   LEAVE_CONVERSATION = 'leave_conversation',

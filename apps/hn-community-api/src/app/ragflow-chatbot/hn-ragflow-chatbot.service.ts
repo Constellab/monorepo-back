@@ -156,7 +156,9 @@ export class HnRagflowChatbotService {
       }
 
       const apiResponse = response.data;
-      return this.createMessage('assistant', apiResponse.data.answer);
+      const assistantMessage = this.createMessage('assistant', apiResponse.data.answer);
+      assistantMessage.references = this.parseReferences(apiResponse.data.reference);
+      return assistantMessage;
     } catch (error: any) {
       this.logger.error(`[sendMessage] Error sending message to Ragflow`, error?.response?.data || error);
       throw this.handleRagflowError(error);
