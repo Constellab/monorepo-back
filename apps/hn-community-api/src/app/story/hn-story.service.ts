@@ -101,7 +101,7 @@ export class HnStoryService extends BlAbstractService<HnStory> {
     let storyMarkDown = `# ${story.title}\n\n`;
     storyMarkDown += story
       .getContentRichText()
-      .toMarkdown(`${this.coreConfigService.getApiUrl()}story/${story.id}/image`, storyUrl);
+      .toMarkdown(`${this.coreConfigService.getApiUrl()}/story/${story.id}/image`, storyUrl);
     return storyMarkDown;
   }
 

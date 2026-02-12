@@ -9,6 +9,7 @@ export enum TeBlockType {
   HEADER = 'header',
   CODE = 'code',
   HINT = 'hint',
+  TABLE = 'table',
 }
 
 export enum TeInlineToolType {
@@ -119,4 +120,11 @@ export interface TeBlockFileViewData {
   id: string;
   title: string;
   caption: string;
+}
+
+/////////////// TABLE //////////////////////
+export interface TeBlockTableData {
+  withHeadings: boolean;
+  stretched: boolean;
+  content: string[][];
 }

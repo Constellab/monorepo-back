@@ -146,7 +146,7 @@ export class HnDifyService {
   private getDocumentationDocumentText(documentation: HnDocumentation, docUrl: string): string {
     const text = documentation
       .getRichText()
-      .toMarkdown(`${this.coreConfigService.getApiUrl()}documentation/${documentation.id}/image`, docUrl);
+      .toMarkdown(`${this.coreConfigService.getApiUrl()}/documentation/${documentation.id}/image`, docUrl);
 
     return `# ${documentation.title}\n\n${text}`;
   }

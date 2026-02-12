@@ -255,6 +255,9 @@ export class TeRichText {
         case TeBlockType.HINT:
           result += TeMarkdown.getHintBlockMarkdown(block.data) + '\n\n';
           break;
+        case TeBlockType.TABLE:
+          result += TeMarkdown.getTableBlockMarkdown(block.data) + '\n\n';
+          break;
         default:
           break;
       }

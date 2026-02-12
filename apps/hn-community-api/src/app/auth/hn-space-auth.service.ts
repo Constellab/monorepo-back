@@ -54,6 +54,6 @@ export class HnSpaceAuthService {
   }
 
   private buildRoute(route: string): string {
-    return this.coreConfigService.getSpaceApiUrl() + 'auth/' + route;
+    return this.coreConfigService.getSpaceApiUrl() + '/auth/' + route;
   }
 }

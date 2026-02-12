@@ -1260,7 +1260,7 @@ export class HnBrickAggregateService {
       let docContentMarkdown = `# ${doc.title}\n\n`;
       docContentMarkdown += doc
         .getRichText()
-        .toMarkdown(`${this.configService.getApiUrl()}documentation/${doc.id}/image`, docUrl);
+        .toMarkdown(`${this.configService.getApiUrl()}/documentation/${doc.id}/image`, docUrl);
       docsMarkDowns.push({
         name: ClStringHelper.getCleanUrlPath(doc.title),
         content: docContentMarkdown,
@@ -1291,7 +1291,7 @@ export class HnBrickAggregateService {
     let docContentMarkdown = `# ${doc.title}\n\n`;
     docContentMarkdown += doc
       .getRichText()
-      .toMarkdown(`${this.configService.getApiUrl()}documentation/${doc.id}/image`, docUrl);
+      .toMarkdown(`${this.configService.getApiUrl()}/documentation/${doc.id}/image`, docUrl);
 
     return HnMarkdownHelper.createMarkdownResponse(
       ClStringHelper.getCleanUrlPath(doc.title) + '.md',

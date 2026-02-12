@@ -52,7 +52,7 @@ export class HnCoreConfigService {
   }
 
   public getSpaceApiUrl(): string {
-    return this.isLocal() ? 'http://localhost:3001/' : this.configService.get('SPACE_API_URL');
+    return this.isLocal() ? 'http://localhost:3001' : this.configService.get('SPACE_API_URL');
   }
 
   // api key to communicate with space api

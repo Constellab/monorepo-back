@@ -8,6 +8,7 @@ import {
   TeBlockListData,
   TeBlockListItem,
   TeBlockListType,
+  TeBlockTableData,
 } from './te-block.class';
 
 export class TeMarkdown {
@@ -65,6 +66,32 @@ export class TeMarkdown {
   // This class is used to convert hint block data to markdown
   public static getHintBlockMarkdown(hintBlockData: TeBlockData): string {
     return `> ${this.getParagraphBlockMarkdown(hintBlockData.content)}`;
+  }
+
+  // This class is used to convert table block data to markdown
+  public static getTableBlockMarkdown(tableBlockData: TeBlockTableData): string {
+    const rows = tableBlockData.content;
+    if (!rows || rows.length === 0) return '';
+
+    let result = '';
+    const startIndex = tableBlockData.withHeadings ? 1 : 0;
+
+    if (tableBlockData.withHeadings) {
+      const headerRow = rows[0];
+      result += '| ' + headerRow.map((cell) => this.getParagraphBlockMarkdown(cell)).join(' | ') + ' |\n';
+      result += '| ' + headerRow.map(() => '---').join(' | ') + ' |\n';
+    } else {
+      // No headings: generate an empty header row for valid markdown table
+      const colCount = rows[0].length;
+      result += '| ' + new Array(colCount).fill('').join(' | ') + ' |\n';
+      result += '| ' + new Array(colCount).fill('---').join(' | ') + ' |\n';
+    }
+
+    for (let i = startIndex; i < rows.length; i++) {
+      result += '| ' + rows[i].map((cell) => this.getParagraphBlockMarkdown(cell)).join(' | ') + ' |\n';
+    }
+
+    return result.trimEnd();
   }
 
   // This class is used to convert list block items to markdown recursively

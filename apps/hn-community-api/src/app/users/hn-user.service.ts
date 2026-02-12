@@ -177,7 +177,7 @@ export class HnUserService implements BlUserService {
     const users: HnUser[] = await this.userRepository.find();
     for (const user of users) {
       const cnUser: any = await lastValueFrom(
-        this.externalApiService.get(this.configService.getSpaceApiUrl() + `users/valid/${user.id}`)
+        this.externalApiService.get(this.configService.getSpaceApiUrl() + `/users/valid/${user.id}`)
       );
       if (!cnUser) {
         console.log('Delete', user.id);
