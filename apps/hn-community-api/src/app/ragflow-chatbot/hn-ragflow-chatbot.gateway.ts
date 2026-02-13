@@ -54,15 +54,20 @@ export class HnRagflowChatbotGateway implements OnGatewayInit, OnGatewayConnecti
     private readonly coreConfigService: HnCoreConfigService
   ) {}
 
-  afterInit(): void {}
+  afterInit(): void {
+    this.logger.log('Ragflow chatbot gateway initialized');
+  }
 
   async handleConnection(client: Socket): Promise<void> {
+    this.logger.log(`Client connected: ${client.id}`);
     const user = await this.authenticateClient(client);
+    this.logger.log(`Client ${client.id} authenticated as: ${user?.id ?? 'anonymous'}`);
     const existingSession = this.clientSessions.get(client.id);
     this.clientSessions.set(client.id, { ...existingSession, userId: user?.id ?? null });
   }
 
   handleDisconnect(client: Socket): void {
+    this.logger.log(`Client disconnected: ${client.id}`);
     this.clientSessions.delete(client.id);
   }
 
@@ -71,11 +76,15 @@ export class HnRagflowChatbotGateway implements OnGatewayInit, OnGatewayConnecti
     @MessageBody() dto: HnRagflowJoinConversationDto,
     @ConnectedSocket() client: Socket
   ): Promise<void> {
+    this.logger.log(`[JOIN] Client ${client.id} requesting join, conversationId: ${dto.conversationId ?? 'none (new)'}`);
     const clientSession = this.clientSessions.get(client.id);
     const clientUserId = clientSession?.userId;
     const chatId = this.coreConfigService.getRagflowChatId();
 
+    this.logger.log(`[JOIN] Client ${client.id} - userId: ${clientUserId ?? 'anonymous'}, chatId configured: ${!!chatId}`);
+
     if (!chatId) {
+      this.logger.warn(`[JOIN] Ragflow chatbot not configured (no chatId)`);
       client.emit(HnRagflowWsEvent.MESSAGE_ERROR, {
         error: 'Ragflow chatbot is not configured',
       });
@@ -90,6 +99,7 @@ export class HnRagflowChatbotGateway implements OnGatewayInit, OnGatewayConnecti
       if (dto.conversationId) {
         // Check conversation ownership before allowing access
         if (!this.canAccessSession(dto.conversationId, clientUserId)) {
+          this.logger.warn(`[JOIN] Client ${client.id} denied access to session ${dto.conversationId}`);
           client.emit(HnRagflowWsEvent.MESSAGE_ERROR, {
             error: 'Unauthorized: you do not have access to this conversation',
           });
@@ -122,6 +132,8 @@ export class HnRagflowChatbotGateway implements OnGatewayInit, OnGatewayConnecti
 
       client.join(conversationId);
 
+      this.logger.log(`[JOIN] Client ${client.id} joined conversation ${conversationId} (sessionId: ${sessionId})`);
+
       client.emit(HnRagflowWsEvent.CONVERSATION_JOINED, {
         conversationId,
         sessionId,
@@ -151,7 +163,10 @@ export class HnRagflowChatbotGateway implements OnGatewayInit, OnGatewayConnecti
   ): Promise<void> {
     const session = this.clientSessions.get(client.id);
 
+    this.logger.log(`[SEND] Client ${client.id} sending message - session: ${JSON.stringify(session ?? 'none')}`);
+
     if (!session?.conversationId || !session?.sessionId) {
+      this.logger.warn(`[SEND] Client ${client.id} not in a conversation (no conversationId/sessionId)`);
       client.emit(HnRagflowWsEvent.MESSAGE_ERROR, {
         error: 'Not in a conversation. Please join first.',
       });
