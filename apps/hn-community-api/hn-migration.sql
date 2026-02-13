@@ -577,3 +577,125 @@ ALTER TABLE `technical_doc_other_class`
 
 #1.10.6
 # DECLARE ENV VAR RAGFLOW_CHAT_ID
+
+START TRANSACTION;
+
+-- =====================================================
+-- PROTOCOL
+-- =====================================================
+
+ALTER TABLE `protocol`
+  ADD COLUMN `createdAt` datetime DEFAULT NULL,
+  ADD COLUMN `lastModifiedAt` datetime DEFAULT NULL,
+  ADD COLUMN `createdById` varchar(36) DEFAULT NULL,
+  ADD COLUMN `lastModifiedById` varchar(36) DEFAULT NULL;
+
+UPDATE `protocol`
+SET
+  `createdAt` = NOW(),
+  `lastModifiedAt` = NOW()
+WHERE `createdAt` IS NULL;
+
+UPDATE `protocol` SET `typingName` = '' WHERE `typingName` IS NULL;
+
+ALTER TABLE `protocol`
+  MODIFY `typingName` varchar(255) NOT NULL,
+  ADD KEY `FK_0e189282c6c4f6bfe0727d860a4` (`createdById`),
+  ADD KEY `FK_d940e5fff8a99a1470b072792c0` (`lastModifiedById`),
+  ADD CONSTRAINT `FK_0e189282c6c4f6bfe0727d860a4`
+  FOREIGN KEY (`createdById`) REFERENCES `user` (`id`)
+  ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `FK_d940e5fff8a99a1470b072792c0`
+    FOREIGN KEY (`lastModifiedById`) REFERENCES `user` (`id`)
+    ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+
+
+-- =====================================================
+-- RESOURCE
+-- =====================================================
+
+ALTER TABLE `resource`
+  ADD COLUMN `createdAt` datetime DEFAULT NULL,
+  ADD COLUMN `lastModifiedAt` datetime DEFAULT NULL,
+  ADD COLUMN `createdById` varchar(36) DEFAULT NULL,
+  ADD COLUMN `lastModifiedById` varchar(36) DEFAULT NULL;
+
+UPDATE `resource`
+SET
+  `createdAt` = NOW(),
+  `lastModifiedAt` = NOW()
+WHERE `createdAt` IS NULL;
+
+UPDATE `resource` SET `typingName` = '' WHERE `typingName` IS NULL;
+
+ALTER TABLE `resource`
+  MODIFY `typingName` varchar(255) NOT NULL,
+  ADD KEY `FK_665a76edb2a7e87d0696727f3fb` (`createdById`),
+  ADD KEY `FK_944b8d5bbad8f52b924eca31dd8` (`lastModifiedById`),
+  ADD CONSTRAINT `FK_665a76edb2a7e87d0696727f3fb`
+  FOREIGN KEY (`createdById`) REFERENCES `user` (`id`)
+  ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `FK_944b8d5bbad8f52b924eca31dd8`
+    FOREIGN KEY (`lastModifiedById`) REFERENCES `user` (`id`)
+    ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+
+-- =====================================================
+-- TASK
+-- =====================================================
+
+ALTER TABLE `task`
+  ADD COLUMN `createdAt` datetime DEFAULT NULL,
+  ADD COLUMN `lastModifiedAt` datetime DEFAULT NULL,
+  ADD COLUMN `createdById` varchar(36) DEFAULT NULL,
+  ADD COLUMN `lastModifiedById` varchar(36) DEFAULT NULL;
+
+UPDATE `task`
+SET
+  `createdAt` = NOW(),
+  `lastModifiedAt` = NOW()
+WHERE `createdAt` IS NULL;
+
+UPDATE `task` SET `typingName` = '' WHERE `typingName` IS NULL;
+
+ALTER TABLE `task`
+  MODIFY `typingName` varchar(255) NOT NULL,
+  ADD KEY `FK_91d76dd2ae372b9b7dfb6bf3fd2` (`createdById`),
+  ADD KEY `FK_deb8ff38d42829973ec6db77a1c` (`lastModifiedById`),
+  ADD CONSTRAINT `FK_91d76dd2ae372b9b7dfb6bf3fd2`
+  FOREIGN KEY (`createdById`) REFERENCES `user` (`id`)
+  ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `FK_deb8ff38d42829973ec6db77a1c`
+    FOREIGN KEY (`lastModifiedById`) REFERENCES `user` (`id`)
+    ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+
+-- =====================================================
+-- TECHNICAL_DOC_OTHER_CLASS
+-- =====================================================
+
+ALTER TABLE `technical_doc_other_class`
+  ADD COLUMN `createdAt` datetime DEFAULT NULL,
+  ADD COLUMN `lastModifiedAt` datetime DEFAULT NULL,
+  ADD COLUMN `createdById` varchar(36) DEFAULT NULL,
+  ADD COLUMN `lastModifiedById` varchar(36) DEFAULT NULL;
+
+UPDATE `technical_doc_other_class`
+SET
+  `createdAt` = NOW(),
+  `lastModifiedAt` = NOW()
+WHERE `createdAt` IS NULL;
+
+ALTER TABLE `technical_doc_other_class`
+  ADD KEY `FK_95c59a0d83c3abef2bc35f9a7af` (`createdById`),
+  ADD KEY `FK_7f0ec9a22b5fd87d7db069d000e` (`lastModifiedById`),
+  ADD CONSTRAINT `FK_95c59a0d83c3abef2bc35f9a7af`
+    FOREIGN KEY (`createdById`) REFERENCES `user` (`id`)
+    ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `FK_7f0ec9a22b5fd87d7db069d000e`
+    FOREIGN KEY (`lastModifiedById`) REFERENCES `user` (`id`)
+    ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+
+COMMIT;
