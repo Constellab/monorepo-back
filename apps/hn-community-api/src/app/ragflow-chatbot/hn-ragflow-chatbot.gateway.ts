@@ -121,6 +121,14 @@ export class HnRagflowChatbotGateway implements OnGatewayInit, OnGatewayConnecti
         this.registerSessionOwnership(sessionId, clientUserId);
       }
 
+      if (!sessionId) {
+        this.logger.error(`[JOIN] Failed to obtain a session ID from Ragflow for client ${client.id}`);
+        client.emit(HnRagflowWsEvent.MESSAGE_ERROR, {
+          error: 'Failed to create conversation session',
+        });
+        return;
+      }
+
       // Use sessionId as conversationId (they are now the same for persistence)
       const conversationId = sessionId;
 

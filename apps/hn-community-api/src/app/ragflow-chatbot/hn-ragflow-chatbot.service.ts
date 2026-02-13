@@ -27,6 +27,7 @@ export class HnRagflowChatbotService {
 
     try {
       const response = await this.httpService.axiosRef.post(url, {}, { headers: this.getRagflowHeaders() });
+      this.logger.log(`[createSession] Ragflow response: ${JSON.stringify(response.data)}`);
       return response.data?.data?.id;
     } catch (error: any) {
       this.logger.error(
