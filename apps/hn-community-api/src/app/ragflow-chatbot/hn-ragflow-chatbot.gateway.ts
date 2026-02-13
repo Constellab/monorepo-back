@@ -58,7 +58,8 @@ export class HnRagflowChatbotGateway implements OnGatewayInit, OnGatewayConnecti
 
   async handleConnection(client: Socket): Promise<void> {
     const user = await this.authenticateClient(client);
-    this.clientSessions.set(client.id, { userId: user?.id ?? null });
+    const existingSession = this.clientSessions.get(client.id);
+    this.clientSessions.set(client.id, { ...existingSession, userId: user?.id ?? null });
   }
 
   handleDisconnect(client: Socket): void {
