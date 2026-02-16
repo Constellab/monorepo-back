@@ -85,6 +85,7 @@ import { HnLikeTagModule } from './app/like-aggregate/like-tag/hn-like-tag.modul
 import { HnPartnerModule } from './app/partner/hn-partner.module';
 import { HnProtocolModule } from './app/protocol/hn-protocol.module';
 import { HnPublicModule } from './app/public/hn-public.module';
+import { HnRagflowChatbotModule } from './app/ragflow-chatbot/hn-ragflow-chatbot.module';
 import { HnResourceModule } from './app/resource/hn-resource.module';
 import { HnRunStatAgModule } from './app/run-stat-aggregate/hn-run-stat-ag.module';
 import { HnRunStatModule } from './app/run-stat-aggregate/run-stat/hn-run-stat.module';
@@ -106,7 +107,6 @@ import { HnTechnicalFolderModule } from './app/technical-folder/hn-technical-fol
 import { HnTopicModule } from './app/topic/hn-topic.module';
 import { HnUserModule } from './app/users/hn-user.module';
 import { HnUserService } from './app/users/hn-user.service';
-import { HnRagflowChatbotModule } from './app/ragflow-chatbot/hn-ragflow-chatbot.module';
 
 function typeOrmConfig(configService: HnCoreConfigService): TypeOrmModuleOptions {
   const dbConfig: HnDatabaseConfig = configService.getDatabaseConfig();
@@ -117,7 +117,9 @@ function typeOrmConfig(configService: HnCoreConfigService): TypeOrmModuleOptions
     username: dbConfig.username,
     password: dbConfig.password,
     database: dbConfig.database,
-    synchronize: configService.isLocal(), // only activate synchronization in local
+    // disable for start speed, can be enabled to synchronize the database
+    // only activate synchronization in local
+    synchronize: configService.isDev() && false,
     autoLoadEntities: true,
     maxQueryExecutionTime: 1000, // log query longer than 1s,
     bigNumberStrings: false,

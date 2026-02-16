@@ -6,6 +6,12 @@
       "name": "Serve space",
       "request": "launch",
       "type": "node-terminal"
+    },
+    {
+      "command": "npm run hn-community-api:serve",
+      "name": "Serve community",
+      "request": "launch",
+      "type": "node-terminal"
     }
   ]
 }

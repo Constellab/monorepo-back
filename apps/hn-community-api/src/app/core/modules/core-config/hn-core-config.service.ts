@@ -51,6 +51,10 @@ export class HnCoreConfigService {
     return env === 'dev' || env === 'docker' || env === 'test';
   }
 
+  public isDev(): boolean {
+    return this.getEnvironmentProfile() === 'dev';
+  }
+
   public getSpaceApiUrl(): string {
     return this.isLocal() ? 'http://localhost:3001' : this.configService.get('SPACE_API_URL');
   }
