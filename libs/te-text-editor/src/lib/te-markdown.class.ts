@@ -60,7 +60,7 @@ export class TeMarkdown {
   // This class is used to convert code block data to markdown
   public static getCodeBlockMarkdown(codeBlockData: TeBlockData): string {
     const codeBlock = '```';
-    return `${codeBlock}${codeBlockData.code}${codeBlock}`;
+    return `${codeBlock}\n${codeBlockData.code}\n${codeBlock}\n`;
   }
 
   // This class is used to convert hint block data to markdown
@@ -104,7 +104,9 @@ export class TeMarkdown {
     for (let index = 0; index < items.length; index++) {
       const listBlockItem = items[index];
       const listIndexStr = style === 'ordered' ? `${index + 1}.` : '-';
-      result += `${'    '.repeat(level)}${listIndexStr} ${this.getParagraphBlockMarkdown(listBlockItem.content)}\n`;
+      result += `${'    '.repeat(level)}${listIndexStr} ${this.getParagraphBlockMarkdown(
+        listBlockItem.content
+      )}\n`;
       if (listBlockItem.items.length > 0) {
         result += this.getListBlockItemsMarkdown(listBlockItem.items, style, level + 1);
       }
