@@ -49,7 +49,9 @@ export abstract class HnAbstractFileController<T extends BlEntityWithId> {
     @Res() res: Response
   ): Promise<any> {
     const file = await this.fileService.getFile(entityId, fileName);
-    BlResponseHelper.setFileResponseAndCache(res, file);
+    if (file) {
+      BlResponseHelper.setFileResponseAndCache(res, file);
+    }
   }
 
   //-------------------------------------------- FILE --------------------------------------------

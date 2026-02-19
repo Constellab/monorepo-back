@@ -190,14 +190,15 @@ export class HnTechnicalFolderService {
     }
   }
 
-  async findTechDocByIdAndType(
-    techDocId: string,
-    techDocType: string): Promise<HnGeneratedDocEntity> {
+  async findTechDocByIdAndType(techDocId: string, techDocType: string): Promise<HnGeneratedDocEntity> {
     switch (techDocType) {
+      case 'resources':
       case 'resource':
         return this.resourceService.findTechDocById(techDocId);
+      case 'tasks':
       case 'task':
         return this.taskService.findTechDocById(techDocId);
+      case 'protocols':
       case 'protocol':
         return this.protocolService.findTechDocById(techDocId);
       case 'other-classes':

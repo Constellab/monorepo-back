@@ -122,6 +122,9 @@ export class HnUserService implements BlUserService {
 
   async getUserById(id: string): Promise<HnUserDetailDto> {
     const user = await this.userRepository.findOneBy({ id: id });
+    if (!user) {
+      throw new BlBadRequestException('User not found');
+    }
     return new HnUserDetailDto(user);
   }
 
