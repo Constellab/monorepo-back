@@ -79,6 +79,14 @@ export class HnBrickService extends BlAbstractService<HnBrick> {
     return this.bricksRepository.findOne({ where: whereConditions });
   }
 
+  /**
+   * Lightweight findOne that skips eager relations (brickUsers, createdBy, space, etc.)
+   * Use this when only the brick's own columns (id, name, etc.) are needed.
+   */
+  async findOneLight(whereConditions: FindOptionsWhere<HnBrick>[] | FindOptionsWhere<HnBrick>): Promise<HnBrick> {
+    return this.bricksRepository.findOne({ where: whereConditions, loadEagerRelations: false });
+  }
+
   async findByNameSpace(name: string): Promise<HnBrick> {
     return await this.bricksRepository.findOne({
       where: { name: name },

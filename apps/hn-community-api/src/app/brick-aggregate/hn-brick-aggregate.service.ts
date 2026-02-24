@@ -225,6 +225,21 @@ export class HnBrickAggregateService {
     return this.brickService.findOne(whereConditions);
   }
 
+  /**
+   * Lightweight findBrickById that skips eager relations.
+   * Use when only brick columns (id, name, etc.) are needed.
+   */
+  async findBrickByIdLight(id: string, user: HnUser = null): Promise<HnBrick> {
+    const whereConditions: FindOptionsWhere<HnBrick>[] | FindOptionsWhere<HnBrick> =
+      await this.getUserBasedWhereBrickConditions(null, { spacesFilter: null, user: user });
+    if (whereConditions instanceof Array) {
+      whereConditions.map((wc) => (wc.id = id));
+    } else {
+      whereConditions.id = id;
+    }
+    return this.brickService.findOneLight(whereConditions);
+  }
+
   async findBrickByIdAndCheck(id: string, user: HnUser = null): Promise<HnBrick> {
     const brick = await this.findBrickById(id, user);
     if (brick == null) {
@@ -251,6 +266,36 @@ export class HnBrickAggregateService {
     }
 
     const brick = await this.brickService.findOne(whereConditions);
+
+    if (brick == null) {
+      throw new BlBadRequestException(HnErrorText.BRICK_NOT_FOUND, {
+        detailArgs: { name: name },
+      });
+    }
+
+    return brick;
+  }
+
+  /**
+   * Lightweight findBrickByName that skips eager relations.
+   * Use when only brick columns (id, name, etc.) are needed.
+   */
+  async findBrickByNameLight(name: string, userId: string = null, strict: boolean = true): Promise<HnBrick> {
+    let whereConditions: FindOptionsWhere<HnBrick>[] | FindOptionsWhere<HnBrick> = {};
+
+    if (strict) {
+      whereConditions = await this.getUserBasedWhereBrickConditions(null, {
+        user: userId ? await this.userService.findOne(userId) : HnCurrentUserHelper.getCurrentUser(),
+      });
+    }
+
+    if (whereConditions instanceof Array) {
+      whereConditions.map((wc) => (wc.name = name));
+    } else {
+      whereConditions.name = name;
+    }
+
+    const brick = await this.brickService.findOneLight(whereConditions);
 
     if (brick == null) {
       throw new BlBadRequestException(HnErrorText.BRICK_NOT_FOUND, {
@@ -707,7 +752,7 @@ export class HnBrickAggregateService {
   }
 
   async findDocsNodeByBrick(brickId: string, version: string): Promise<HnNode> {
-    const brick: HnBrick = await this.findBrickById(brickId);
+    const brick: HnBrick = await this.findBrickByIdLight(brickId);
     if (brick == null) {
       return null;
     }
@@ -990,7 +1035,7 @@ export class HnBrickAggregateService {
   //------------------------------------- TECHNICAL DOCS -------------------------------------
 
   async findTechnicalDoc(brickId: string, version: string): Promise<HnNode> {
-    const brick: HnBrick = await this.findBrickById(brickId);
+    const brick: HnBrick = await this.findBrickByIdLight(brickId);
     const brickMajorVersion: HnBrickMajorVersion =
       await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(brick, version);
     return this.technicalFolderService.findTechnicalDoc(brickMajorVersion.id);
@@ -1037,7 +1082,7 @@ export class HnBrickAggregateService {
   //------------------------------------- VERSION -------------------------------------
 
   async getLatestBrickVersion(brickName: string): Promise<HnBrickVersion> {
-    const brick: HnBrick = await this.findBrickByName(brickName);
+    const brick: HnBrick = await this.findBrickByNameLight(brickName);
     const brickMajorVersion = await this.brickMajorVersionService.getLatestBrickMajorVersion(brick.id);
     return this.brickVersionService.getLatestBrickVersion(brickMajorVersion.id);
   }

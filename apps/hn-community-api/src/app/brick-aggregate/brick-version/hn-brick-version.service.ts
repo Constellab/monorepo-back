@@ -206,7 +206,7 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
   }
 
   async getLatestBrickVersion(brickMajorVersionId: string): Promise<HnBrickVersion> {
-    const brickVersions: HnBrickVersion[] = await this.brickVersionsRepository.find({
+    return this.brickVersionsRepository.findOne({
       where: {
         brickMajorVersion: {
           id: brickMajorVersionId,
@@ -218,7 +218,6 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
         patch: 'DESC',
       },
     });
-    return brickVersions[0];
   }
 
   async checkIfVersionExist(

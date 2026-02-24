@@ -12,7 +12,7 @@ export function blGetCorsConfig(
     // convert the domains to regex
     const originRegex = domains.map((domain) => new RegExp(`https:\\/\\/.*\\.${domain.replace('.', '\\.')}`));
     const exactOrigin = domains.map((domain) => new RegExp(`https:\\/\\/${domain.replace('.', '\\.')}`));
-    origin = [...originRegex, ...exactOrigin, 'http://localhost:4200'];
+    origin = [...originRegex, ...exactOrigin, 'http://localhost:4200', 'http://localhost:4000'];
   }
 
   return {

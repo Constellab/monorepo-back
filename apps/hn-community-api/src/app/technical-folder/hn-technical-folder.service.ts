@@ -75,8 +75,15 @@ export class HnTechnicalFolderService {
 
     if (technicalFolder) {
       const children: HnNode[] = [];
-      //RESOURCES
-      const resources: HnResource[] = await this.resourceService.findResources(technicalFolder.id);
+
+      // Parallelize the 4 independent queries
+      const [resources, tasks, protocols, otherClasses] = await Promise.all([
+        this.resourceService.findResources(technicalFolder.id),
+        this.taskService.findTasks(technicalFolder.id),
+        this.protocolService.findProtocols(technicalFolder.id),
+        this.techDocOtherClassService.findTechnicalDocOtherClasses(technicalFolder.id),
+      ]);
+
       if (resources && resources.length > 0) {
         const resourceFolder: HnNode = new HnNode(
           'ressourceFolder',
@@ -90,8 +97,6 @@ export class HnTechnicalFolderService {
         children.push(resourceFolder);
       }
 
-      //TASKS
-      const tasks: HnTask[] = await this.taskService.findTasks(technicalFolder.id);
       if (tasks && tasks.length > 0) {
         const taskFolder: HnNode = new HnNode(
           'taskFolder',
@@ -105,8 +110,6 @@ export class HnTechnicalFolderService {
         children.push(taskFolder);
       }
 
-      //PROTOCOLS
-      const protocols: HnProtocol[] = await this.protocolService.findProtocols(technicalFolder.id);
       if (protocols && protocols.length > 0) {
         const protocolFolder: HnNode = new HnNode(
           'protocolFolder',
@@ -119,10 +122,7 @@ export class HnTechnicalFolderService {
         );
         children.push(protocolFolder);
       }
-      //TODO: faire pour les autres classes
 
-      const otherClasses: HnTechnicalDocOtherClass[] =
-        await this.techDocOtherClassService.findTechnicalDocOtherClasses(technicalFolder.id);
       if (otherClasses && otherClasses.length > 0) {
         const otherClassesFolder: HnNode = new HnNode(
           'otherClassesFolder',
