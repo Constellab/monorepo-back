@@ -26,4 +26,10 @@ export class HnRunStatAggregateController {
   async migrateRunStats(): Promise<void> {
     return this.runStatAgService.migrateRunStats();
   }
+
+  @IsAdmin()
+  @Put('recalculate-aggregates')
+  async recalculateAggregates(): Promise<void> {
+    return this.runStatAgService.recalculateAggregates();
+  }
 }

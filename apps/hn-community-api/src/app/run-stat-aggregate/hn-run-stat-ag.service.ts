@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { DataSource, EntityManager } from 'typeorm';
 
 import { HnAgentVersion } from '../agent-aggregate/agent-version/hn-agent-version.entity';
@@ -31,6 +31,11 @@ export class HnRunStatAgService {
   async createNewStatsFromLab(stats: HnRunStatFromLabDto[]): Promise<void> {
     for (const stat of stats) {
       await this.datasource.transaction(async (entityManager) => {
+        const existingRunStat = await this.runStatService.findById(stat.id);
+        if (existingRunStat) {
+          throw new ConflictException(`Run stat with id ${stat.id} already exists`);
+        }
+
         const user = await this.userService.findOne(stat.executed_by);
         let agentVersion: HnAgentVersion;
         if (stat.community_agent_version_id) {
@@ -156,6 +161,23 @@ export class HnRunStatAgService {
       for (const runStat of runStats) {
         runStat.creators = await this.getRunStatCreators(runStat);
         await this.runStatService.save(entityManager, runStat);
+      }
+    });
+  }
+
+  async recalculateAggregates(): Promise<void> {
+    await this.datasource.transaction(async (entityManager) => {
+      // Clear all existing aggregates
+      await entityManager.delete(HnRunStatAggregate, {});
+
+      // Replay all run stats to rebuild aggregates
+      const runStats = await this.runStatService.findAll();
+      for (const runStat of runStats) {
+        if (runStat.agentVersion) {
+          await this.onAgentRunStatGroup(entityManager, runStat, runStat.agentVersion);
+        } else {
+          await this.onNewProcessRunStat(entityManager, runStat);
+        }
       }
     });
   }

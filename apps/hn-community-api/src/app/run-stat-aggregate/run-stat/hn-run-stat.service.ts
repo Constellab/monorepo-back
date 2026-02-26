@@ -15,6 +15,10 @@ export class HnRunStatService {
     return this.runStatRepository.find();
   }
 
+  async findById(id: string): Promise<HnRunStat> {
+    return this.runStatRepository.findOneBy({ id });
+  }
+
   async save(entityManager: EntityManager, runStat: HnRunStat): Promise<HnRunStat> {
     return entityManager.save(runStat);
   }
