@@ -168,7 +168,7 @@ export class HnRunStatAgService {
   async recalculateAggregates(): Promise<void> {
     await this.datasource.transaction(async (entityManager) => {
       // Clear all existing aggregates
-      await entityManager.delete(HnRunStatAggregate, {});
+      await entityManager.createQueryBuilder().delete().from(HnRunStatAggregate).execute();
 
       // Replay all run stats to rebuild aggregates
       const runStats = await this.runStatService.findAll();
