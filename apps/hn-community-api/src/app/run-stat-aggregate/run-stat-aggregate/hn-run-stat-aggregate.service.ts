@@ -14,13 +14,20 @@ export class HnRunStatAggregateService {
 
   async findObjectRunStatGroup(
     objectId: string,
-    objectType: HnRunStatAggregateObjectType
+    objectType: HnRunStatAggregateObjectType,
+    entityManager?: EntityManager
   ): Promise<HnRunStatAggregate> {
-    return this.runStatAggregateRepository.findOneBy({ objectId: objectId, objectType: objectType });
+    const repo = entityManager
+      ? entityManager.getRepository(HnRunStatAggregate)
+      : this.runStatAggregateRepository;
+    return repo.findOneBy({ objectId: objectId, objectType: objectType });
   }
 
-  async findByObjectId(objectId: string): Promise<HnRunStatAggregate> {
-    return this.runStatAggregateRepository.findOneBy({ objectId: objectId });
+  async findByObjectId(objectId: string, entityManager?: EntityManager): Promise<HnRunStatAggregate> {
+    const repo = entityManager
+      ? entityManager.getRepository(HnRunStatAggregate)
+      : this.runStatAggregateRepository;
+    return repo.findOneBy({ objectId: objectId });
   }
 
   async createAgentRunStatGroup(
@@ -109,7 +116,7 @@ export class HnRunStatAggregateService {
     entityManager: EntityManager,
     runStat: HnRunStat
   ): Promise<HnRunStatAggregate> {
-    const runStatAggregate = await this.findByObjectId(runStat.processTypingName);
+    const runStatAggregate = await this.findByObjectId(runStat.processTypingName, entityManager);
     if (!runStatAggregate) return await this.createProcessRunStatGroup(entityManager, runStat);
     return this.updateRunStatGroup(entityManager, runStatAggregate, runStat);
   }
@@ -119,7 +126,11 @@ export class HnRunStatAggregateService {
     brick: HnBrick,
     runStat: HnRunStat
   ): Promise<HnRunStatAggregate> {
-    const runStatAggregate = await this.findObjectRunStatGroup(brick.id, HnRunStatAggregateObjectType.BRICK);
+    const runStatAggregate = await this.findObjectRunStatGroup(
+      brick.id,
+      HnRunStatAggregateObjectType.BRICK,
+      entityManager
+    );
     if (!runStatAggregate) return await this.createBrickRunStatGroup(entityManager, runStat, brick);
     return this.updateRunStatGroup(entityManager, runStatAggregate, runStat);
   }
@@ -129,7 +140,11 @@ export class HnRunStatAggregateService {
     runStat: HnRunStat,
     userId: string
   ): Promise<HnRunStatAggregate> {
-    const runStatAggregate = await this.findObjectRunStatGroup(userId, HnRunStatAggregateObjectType.USER);
+    const runStatAggregate = await this.findObjectRunStatGroup(
+      userId,
+      HnRunStatAggregateObjectType.USER,
+      entityManager
+    );
     if (!runStatAggregate) return await this.createUserRunStatGroup(entityManager, runStat, userId);
     return this.updateRunStatGroup(entityManager, runStatAggregate, runStat);
   }
@@ -139,7 +154,11 @@ export class HnRunStatAggregateService {
     agentId: string,
     runStat: HnRunStat
   ): Promise<HnRunStatAggregate> {
-    const runStatAggregate = await this.findObjectRunStatGroup(agentId, HnRunStatAggregateObjectType.AGENT);
+    const runStatAggregate = await this.findObjectRunStatGroup(
+      agentId,
+      HnRunStatAggregateObjectType.AGENT,
+      entityManager
+    );
     if (!runStatAggregate) return await this.createAgentRunStatGroup(entityManager, runStat, agentId);
     return this.updateRunStatGroup(entityManager, runStatAggregate, runStat);
   }
@@ -150,7 +169,8 @@ export class HnRunStatAggregateService {
   ): Promise<HnRunStatAggregate> {
     const runStatAggregate: HnRunStatAggregate = await this.findObjectRunStatGroup(
       runStat.agentVersion.id,
-      HnRunStatAggregateObjectType.AGENT_VERSION
+      HnRunStatAggregateObjectType.AGENT_VERSION,
+      entityManager
     );
     if (!runStatAggregate) return await this.createAgentVersionRunStatGroup(entityManager, runStat);
     return this.updateRunStatGroup(entityManager, runStatAggregate, runStat);
