@@ -44,6 +44,7 @@ import {
   HnCreateTechnicalDocContent,
   HnEditBrickDTO,
   HnIsActualBrickAndNewVersionDTO,
+  HnIsActualBrickAndNewVersionResponseDTO,
   HnTechnicalDocInputDTO,
 } from './brick/hn-brick.dto';
 import { HnBrick, HnBrickVisibility } from './brick/hn-brick.entity';
@@ -56,7 +57,13 @@ import { HnBrickUserInviteDto } from './brick-user-invite/hn-brick-user-invite.d
 import { HnBrickUserInvite } from './brick-user-invite/hn-brick-user-invite.entity';
 import { HnBrickUserInviteService } from './brick-user-invite/hn-brick-user-invite.service';
 import { HnBrickVersionDto } from './brick-version/hn-brick-version.dto';
-import { HnBrickSettingsDTO, HnBrickVersion, HnNewVersionDTO, HnReferenceDTO, HnRepoType } from './brick-version/hn-brick-version.entity';
+import {
+  HnBrickSettingsDTO,
+  HnBrickVersion,
+  HnNewVersionDTO,
+  HnReferenceDTO,
+  HnRepoType,
+} from './brick-version/hn-brick-version.entity';
 import { HnBrickVersionService } from './brick-version/hn-brick-version.service';
 import { HnDocumentationDto } from './documentation/hn-documentation.dto';
 import {
@@ -555,10 +562,15 @@ export class HnBrickAggregateService {
     };
   }
 
-  async isActualBrickAndNewVersion(body: HnIsActualBrickAndNewVersionDTO): Promise<[boolean, boolean]> {
+  async isActualBrickAndNewVersion(
+    body: HnIsActualBrickAndNewVersionDTO
+  ): Promise<HnIsActualBrickAndNewVersionResponseDTO> {
     const brick: HnBrick = await this.findBrickByName(body.brickName);
     if (brick == null) {
-      return [false, false];
+      return {
+        sameBrick: false,
+        sameVersion: false,
+      };
     }
 
     this.brickService.checkIfUserHasRightOnTheBrick(brick);

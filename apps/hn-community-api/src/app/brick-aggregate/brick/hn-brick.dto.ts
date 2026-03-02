@@ -81,6 +81,11 @@ export class HnIsActualBrickAndNewVersionDTO {
   inputBrickVersion: string;
 }
 
+export interface HnIsActualBrickAndNewVersionResponseDTO {
+  sameBrick: boolean;
+  sameVersion: boolean;
+}
+
 export interface HnImportParentDTO {
   typing_name: string;
   class_name: string;

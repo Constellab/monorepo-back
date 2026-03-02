@@ -44,6 +44,7 @@ import {
   HnCreateTechnicalDocContent,
   HnEditBrickDTO,
   HnIsActualBrickAndNewVersionDTO,
+  HnIsActualBrickAndNewVersionResponseDTO,
   HnTechnicalDocInputDTO,
 } from './brick/hn-brick.dto';
 import { HnBrick } from './brick/hn-brick.entity';
@@ -333,7 +334,7 @@ export class HnBrickController {
   @Post('is-actual-brick-and-new-version')
   async isActualBrickAndNewVersion(
     @Body(new BlParsePipe(HnIsActualBrickAndNewVersionDTO)) content: HnIsActualBrickAndNewVersionDTO
-  ): Promise<[boolean, boolean]> {
+  ): Promise<HnIsActualBrickAndNewVersionResponseDTO> {
     return this.brickAggregateService.isActualBrickAndNewVersion(content);
   }
 
