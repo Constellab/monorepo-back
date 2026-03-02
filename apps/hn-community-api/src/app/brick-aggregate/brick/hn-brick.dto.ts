@@ -77,8 +77,7 @@ export class HnCreateTechnicalDocContent {
 }
 
 export class HnIsActualBrickAndNewVersionDTO {
-  brickId: string;
-  inputBrickName: string;
+  brickName: string;
   inputBrickVersion: string;
 }
 

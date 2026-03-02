@@ -556,12 +556,12 @@ export class HnBrickAggregateService {
   }
 
   async isActualBrickAndNewVersion(body: HnIsActualBrickAndNewVersionDTO): Promise<[boolean, boolean]> {
-    const brick: HnBrick = await this.findBrickById(body.brickId);
-    this.brickService.checkIfUserHasRightOnTheBrick(brick);
-
-    if (!body.inputBrickName || (brick && brick.name.toUpperCase() != body.inputBrickName.toUpperCase())) {
+    const brick: HnBrick = await this.findBrickByName(body.brickName);
+    if (brick == null) {
       return [false, false];
     }
+
+    this.brickService.checkIfUserHasRightOnTheBrick(brick);
 
     const brickMajorVersion: HnBrickMajorVersion =
       await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(

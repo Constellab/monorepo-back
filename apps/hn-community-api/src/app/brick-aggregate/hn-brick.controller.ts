@@ -258,13 +258,6 @@ export class HnBrickController {
     return this.brickAggregateService.findTechDocByPath(input);
   }
 
-  @Post('new-version')
-  createNewVersion(
-    @Body(new BlParsePipe(HnNewVersionDTO)) newVersion: HnNewVersionDTO
-  ): Promise<HnNewVersionDTO> {
-    return this.brickAggregateService.createNewVersion(newVersion);
-  }
-
   @Post('version-from-settings')
   createVersionFromSettings(
     @Body(new BlParsePipe(HnBrickSettingsDTO)) settings: HnBrickSettingsDTO
