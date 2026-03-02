@@ -56,7 +56,7 @@ import { HnBrickUserInviteDto } from './brick-user-invite/hn-brick-user-invite.d
 import { HnBrickUserInvite } from './brick-user-invite/hn-brick-user-invite.entity';
 import { HnBrickUserInviteService } from './brick-user-invite/hn-brick-user-invite.service';
 import { HnBrickVersionDto } from './brick-version/hn-brick-version.dto';
-import { HnBrickVersion, HnNewVersionDTO, HnReferenceDTO } from './brick-version/hn-brick-version.entity';
+import { HnBrickSettingsDTO, HnBrickVersion, HnNewVersionDTO, HnReferenceDTO, HnRepoType } from './brick-version/hn-brick-version.entity';
 import { HnBrickVersionService } from './brick-version/hn-brick-version.service';
 import { HnDocumentationDto } from './documentation/hn-documentation.dto';
 import {
@@ -1077,6 +1077,24 @@ export class HnBrickAggregateService {
     await this.brickVersionService.createNewBrickVersion(brickMajorVersion, newVersion);
 
     return newVersion;
+  }
+
+  async createVersionFromSettings(settings: HnBrickSettingsDTO): Promise<HnNewVersionDTO> {
+    const repoType = settings.environment?.pip?.length > 0 ? HnRepoType.PIP : HnRepoType.GIT;
+
+    const technicalInfo = {
+      ...settings.technical_info,
+      environment: settings.environment,
+      variables: settings.variables,
+    };
+
+    const newVersionDTO = new HnNewVersionDTO();
+    newVersionDTO.brickName = settings.name;
+    newVersionDTO.version = settings.version;
+    newVersionDTO.repoType = repoType;
+    newVersionDTO.technicalInfo = technicalInfo;
+
+    return this.createNewVersion(newVersionDTO);
   }
 
   //------------------------------------- VERSION -------------------------------------

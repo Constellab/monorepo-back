@@ -27,6 +27,31 @@ export class HnNewVersionDTO {
   technicalInfo?: Record<string, any>;
 }
 
+export class HnBrickSettingsDTO {
+  name: string;
+  author?: string;
+  version: string;
+  variables?: Record<string, any>;
+  technical_info?: Record<string, any>;
+  environment?: HnBrickSettingsEnvironmentDTO;
+}
+
+export class HnBrickSettingsEnvironmentDTO {
+  pip?: HnBrickSettingsPipSourceDTO[];
+  git?: any[];
+}
+
+export class HnBrickSettingsPipSourceDTO {
+  source?: string;
+  packages?: HnBrickSettingsPipPackageDTO[];
+}
+
+export class HnBrickSettingsPipPackageDTO {
+  name: string;
+  version: string;
+  comment?: string;
+}
+
 export interface HnReferenceDTO {
   name: string;
   version: string;

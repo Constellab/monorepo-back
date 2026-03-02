@@ -33,10 +33,8 @@ import { Request, Response } from 'express';
 import { IsAdmin } from '../core/decorators/hn-is-admin.decorator';
 import { HnIsAdminGuard } from '../core/guards/hn-is-admin.guard';
 import { HnSitemapItemBase } from '../core/model/config/hn-site-map.class';
-import { HnGeneratedDocDto, HnSimpleGeneratedDocDto } from '../core/model/entities/hn-generated-doc.dto';
-import {
-  HnGeneratedDocEntity,
-} from '../core/model/entities/hn-generated-doc-typing.entity';
+import { HnSimpleGeneratedDocDto } from '../core/model/entities/hn-generated-doc.dto';
+import { HnGeneratedDocEntity } from '../core/model/entities/hn-generated-doc-typing.entity';
 import { HnCoreConfigService } from '../core/modules/core-config/hn-core-config.service';
 import { HnUserDto } from '../users/hn-user.dto';
 import {
@@ -51,7 +49,7 @@ import {
 import { HnBrick } from './brick/hn-brick.entity';
 import { HnBrickUserInviteDto } from './brick-user-invite/hn-brick-user-invite.dto';
 import { HnBrickVersionDto } from './brick-version/hn-brick-version.dto';
-import { HnNewVersionDTO } from './brick-version/hn-brick-version.entity';
+import { HnBrickSettingsDTO, HnNewVersionDTO } from './brick-version/hn-brick-version.entity';
 import { HnDocumentationDto, HnDocumentationShortDto } from './documentation/hn-documentation.dto';
 import { HnDocumentation, HnDocumentationSearchDTO } from './documentation/hn-documentation.entity';
 import { HnNode } from './folder/hn-folder.dto';
@@ -265,6 +263,13 @@ export class HnBrickController {
     @Body(new BlParsePipe(HnNewVersionDTO)) newVersion: HnNewVersionDTO
   ): Promise<HnNewVersionDTO> {
     return this.brickAggregateService.createNewVersion(newVersion);
+  }
+
+  @Post('version-from-settings')
+  createVersionFromSettings(
+    @Body(new BlParsePipe(HnBrickSettingsDTO)) settings: HnBrickSettingsDTO
+  ): Promise<HnNewVersionDTO> {
+    return this.brickAggregateService.createVersionFromSettings(settings);
   }
 
   @BlPublic()
