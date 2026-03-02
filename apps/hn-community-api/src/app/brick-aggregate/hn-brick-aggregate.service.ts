@@ -448,7 +448,7 @@ export class HnBrickAggregateService {
         brickMajorVersion,
         {
           version: version.toString(),
-          brickId: brickMajorVersion.brick.id,
+          brickName: brickMajorVersion.brick.name,
           references: body.references,
           repoType: body.repoType,
           technicalInfo: body.technicalInfo,
@@ -1052,7 +1052,7 @@ export class HnBrickAggregateService {
   }
 
   async createNewVersion(newVersion: HnNewVersionDTO): Promise<HnNewVersionDTO> {
-    const brick: HnBrick = await this.findBrickById(newVersion.brickId);
+    const brick: HnBrick = await this.findBrickByName(newVersion.brickName);
     if (brick == null) {
       throw new BlBadRequestException('Brick not found');
     }

@@ -16,7 +16,7 @@ export enum HnVersionType {
 }
 
 export class HnNewVersionDTO {
-  brickId: string;
+  brickName: string;
 
   version: string;
 
