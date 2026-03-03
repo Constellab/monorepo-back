@@ -35,6 +35,7 @@ import { HnAgentVersionModule } from './app/agent-aggregate/agent-version/hn-age
 import { HnAgentVersionBrickDependenciesModule } from './app/agent-aggregate/agent-version-brick-dependencies/hn-agent-version-brick-dependencies.module';
 import { HnAgentAggregateModule } from './app/agent-aggregate/hn-agent-aggregate.module';
 import { HnAuthModule } from './app/auth/hn-auth.module';
+import { HnCliAuthModule } from './app/cli-auth/hn-cli-auth.module';
 import { hnJwtConfig } from './app/auth/hn-jwt.config';
 import { HnBrickModule } from './app/brick-aggregate/brick/hn-brick.module';
 import { HnBrickMajorVersionModule } from './app/brick-aggregate/brick-major-version/hn-brick-major-version.module';
@@ -244,6 +245,7 @@ TeRichTextModifications.setBackTimeDifference();
     HnBrickVersionModule,
     HnBrickMajorVersionModule,
     HnAuthModule,
+    HnCliAuthModule,
     HnFolderModule,
     HnTechnicalFolderModule,
     HnResourceModule,

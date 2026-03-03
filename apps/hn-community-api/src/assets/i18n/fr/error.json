@@ -8,5 +8,8 @@
   "brick_version_not_found": "La version '{version}' pour la brique '{name}' n'a pas été trouvée. A-t-elle été déclarée dans Constellab Community ?",
   "brick_name_invalid": "Le nom de la brique est invalide",
   "documentation_not_found": "La documentation est introuvable.",
-  "technical_documentation_not_found": "La documentation technique est introuvable."
+  "technical_documentation_not_found": "La documentation technique est introuvable.",
+  "cli_auth_invalid_code": "Le code d'authentification est invalide ou n'existe pas.",
+  "cli_auth_code_expired": "Le code d'authentification a expiré. Veuillez en générer un nouveau.",
+  "cli_auth_code_already_used": "Le code d'authentification a déjà été utilisé."
 }

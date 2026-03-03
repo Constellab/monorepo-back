@@ -77,9 +77,13 @@ export class HnCreateTechnicalDocContent {
 }
 
 export class HnIsActualBrickAndNewVersionDTO {
-  brickId: string;
-  inputBrickName: string;
+  brickName: string;
   inputBrickVersion: string;
+}
+
+export interface HnIsActualBrickAndNewVersionResponseDTO {
+  sameBrick: boolean;
+  sameVersion: boolean;
 }
 
 export interface HnImportParentDTO {

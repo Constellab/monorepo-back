@@ -44,6 +44,7 @@ import {
   HnCreateTechnicalDocContent,
   HnEditBrickDTO,
   HnIsActualBrickAndNewVersionDTO,
+  HnIsActualBrickAndNewVersionResponseDTO,
   HnTechnicalDocInputDTO,
 } from './brick/hn-brick.dto';
 import { HnBrick, HnBrickVisibility } from './brick/hn-brick.entity';
@@ -56,7 +57,13 @@ import { HnBrickUserInviteDto } from './brick-user-invite/hn-brick-user-invite.d
 import { HnBrickUserInvite } from './brick-user-invite/hn-brick-user-invite.entity';
 import { HnBrickUserInviteService } from './brick-user-invite/hn-brick-user-invite.service';
 import { HnBrickVersionDto } from './brick-version/hn-brick-version.dto';
-import { HnBrickVersion, HnNewVersionDTO, HnReferenceDTO } from './brick-version/hn-brick-version.entity';
+import {
+  HnBrickSettingsDTO,
+  HnBrickVersion,
+  HnNewVersionDTO,
+  HnReferenceDTO,
+  HnRepoType,
+} from './brick-version/hn-brick-version.entity';
 import { HnBrickVersionService } from './brick-version/hn-brick-version.service';
 import { HnDocumentationDto } from './documentation/hn-documentation.dto';
 import {
@@ -448,7 +455,7 @@ export class HnBrickAggregateService {
         brickMajorVersion,
         {
           version: version.toString(),
-          brickId: brickMajorVersion.brick.id,
+          brickName: brickMajorVersion.brick.name,
           references: body.references,
           repoType: body.repoType,
           technicalInfo: body.technicalInfo,
@@ -555,25 +562,37 @@ export class HnBrickAggregateService {
     };
   }
 
-  async isActualBrickAndNewVersion(body: HnIsActualBrickAndNewVersionDTO): Promise<[boolean, boolean]> {
-    const brick: HnBrick = await this.findBrickById(body.brickId);
-    this.brickService.checkIfUserHasRightOnTheBrick(brick);
+  async isActualBrickAndNewVersion(
+    body: HnIsActualBrickAndNewVersionDTO
+  ): Promise<HnIsActualBrickAndNewVersionResponseDTO> {
+    try {
+      const brick: HnBrick = await this.findBrickByName(body.brickName);
+      if (brick == null) {
+        return {
+          sameBrick: false,
+          sameVersion: false,
+        };
+      }
 
-    if (!body.inputBrickName || (brick && brick.name.toUpperCase() != body.inputBrickName.toUpperCase())) {
-      return [false, false];
+      this.brickService.checkIfUserHasRightOnTheBrick(brick);
+
+      const brickMajorVersion: HnBrickMajorVersion =
+        await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(
+          brick,
+          body.inputBrickVersion
+        );
+
+      if (brickMajorVersion == null) {
+        throw new BlUnauthorizedException('Impossible to create a new major version');
+      }
+
+      return this.brickVersionService.checkIfVersionExist(brickMajorVersion, body.inputBrickVersion);
+    } catch {
+      return {
+        sameBrick: false,
+        sameVersion: false,
+      };
     }
-
-    const brickMajorVersion: HnBrickMajorVersion =
-      await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(
-        brick,
-        body.inputBrickVersion
-      );
-
-    if (brickMajorVersion == null) {
-      throw new BlUnauthorizedException('Impossible to create a new major version');
-    }
-
-    return this.brickVersionService.checkIfVersionExist(brickMajorVersion, body.inputBrickVersion);
   }
 
   async updateFolder(updatedFolder: HnNodeDTO): Promise<HnFolder> {
@@ -1052,10 +1071,7 @@ export class HnBrickAggregateService {
   }
 
   async createNewVersion(newVersion: HnNewVersionDTO): Promise<HnNewVersionDTO> {
-    const brick: HnBrick = await this.findBrickById(newVersion.brickId);
-    if (brick == null) {
-      throw new BlBadRequestException('Brick not found');
-    }
+    const brick: HnBrick = await this.findBrickByName(newVersion.brickName);
 
     await this.assertUserCanEditBrick(brick.id, false);
 
@@ -1066,7 +1082,6 @@ export class HnBrickAggregateService {
       brickMajorVersion.id
     );
 
-    newVersion.repoType = brickVersion.repoType;
     const newMajor = parseInt(newVersion.version.split('.')[0]);
 
     // Verify if the new version match an existent major version
@@ -1077,6 +1092,24 @@ export class HnBrickAggregateService {
     await this.brickVersionService.createNewBrickVersion(brickMajorVersion, newVersion);
 
     return newVersion;
+  }
+
+  async createVersionFromSettings(settings: HnBrickSettingsDTO): Promise<HnNewVersionDTO> {
+    const repoType = settings.environment?.pip?.length > 0 ? HnRepoType.PIP : HnRepoType.GIT;
+
+    const technicalInfo = {
+      ...settings.technical_info,
+      environment: settings.environment,
+      variables: settings.variables,
+    };
+
+    const newVersionDTO = new HnNewVersionDTO();
+    newVersionDTO.brickName = settings.name;
+    newVersionDTO.version = settings.version;
+    newVersionDTO.repoType = repoType;
+    newVersionDTO.technicalInfo = technicalInfo;
+
+    return this.createNewVersion(newVersionDTO);
   }
 
   //------------------------------------- VERSION -------------------------------------

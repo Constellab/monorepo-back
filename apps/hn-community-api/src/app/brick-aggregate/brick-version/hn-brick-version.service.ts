@@ -19,7 +19,7 @@ import {
 import { HnBrickVersionReferenceService } from '../../brick-version-reference/hn-brick-version-reference.service';
 import { HnErrorText } from '../../core/model/config/hn-error-text.class';
 import { HnCurrentUserHelper } from '../../core/utils/hn-current-user.helper';
-import { HnBrickTransportDto } from '../brick/hn-brick.dto';
+import { HnBrickTransportDto, HnIsActualBrickAndNewVersionResponseDTO } from '../brick/hn-brick.dto';
 import { HnBrickMajorVersion, HnVersionState } from '../brick-major-version/hn-brick-major-version.entity';
 import { HnBrickVersionDto } from './hn-brick-version.dto';
 import { HnBrickVersion, HnNewVersionDTO, HnReferenceDTO, HnVersionType } from './hn-brick-version.entity';
@@ -223,7 +223,7 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
   async checkIfVersionExist(
     brickMajorVersion: HnBrickMajorVersion,
     version: string
-  ): Promise<[boolean, boolean]> {
+  ): Promise<HnIsActualBrickAndNewVersionResponseDTO> {
     const v: BlVersion = BlVersion.fromString(version);
     const bv: HnBrickVersion = await this.brickVersionsRepository.findOne({
       where: {
@@ -239,7 +239,10 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
     if (bv && bv.version.major != v.major) {
       throw new BlUnauthorizedException('Impossible to create a new major version');
     }
-    return [true, bv != null];
+    return {
+      sameBrick: true,
+      sameVersion: bv != null,
+    };
   }
 
   async findDirectReferences(id: string): Promise<HnBrickVersionReference[]> {

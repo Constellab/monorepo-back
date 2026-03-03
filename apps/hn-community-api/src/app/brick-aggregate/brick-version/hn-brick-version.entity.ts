@@ -16,7 +16,7 @@ export enum HnVersionType {
 }
 
 export class HnNewVersionDTO {
-  brickId: string;
+  brickName: string;
 
   version: string;
 
@@ -25,6 +25,31 @@ export class HnNewVersionDTO {
   references?: HnReferenceDTO[];
 
   technicalInfo?: Record<string, any>;
+}
+
+export class HnBrickSettingsDTO {
+  name: string;
+  author?: string;
+  version: string;
+  variables?: Record<string, any>;
+  technical_info?: Record<string, any>;
+  environment?: HnBrickSettingsEnvironmentDTO;
+}
+
+export class HnBrickSettingsEnvironmentDTO {
+  pip?: HnBrickSettingsPipSourceDTO[];
+  git?: any[];
+}
+
+export class HnBrickSettingsPipSourceDTO {
+  source?: string;
+  packages?: HnBrickSettingsPipPackageDTO[];
+}
+
+export class HnBrickSettingsPipPackageDTO {
+  name: string;
+  version: string;
+  comment?: string;
 }
 
 export interface HnReferenceDTO {
