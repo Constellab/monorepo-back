@@ -8,5 +8,8 @@
   "brick_not_found": "The brick '{name}' was not found. Was it declared in Constellab Community ?",
   "brick_version_not_found": "The version '{version}' for brick '{name}' was not found. Was it declared in Constellab Community ?",
   "documentation_not_found": "The documentation was not found.",
-  "technical_documentation_not_found": "The technical documentation was not found."
+  "technical_documentation_not_found": "The technical documentation was not found.",
+  "cli_auth_invalid_code": "The authentication code is invalid or does not exist.",
+  "cli_auth_code_expired": "The authentication code has expired. Please generate a new one.",
+  "cli_auth_code_already_used": "The authentication code has already been used."
 }

@@ -1,5 +1,5 @@
-import { BlBadRequestException, BlJwtService } from '@monorepo/back-core-lib';
-import { Injectable } from '@nestjs/common';
+import { BlHttpException, BlJwtService, BlNotFoundException } from '@monorepo/back-core-lib';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { randomBytes } from 'crypto';
 
 import { HnUser } from '../users/hn-user.entity';
@@ -37,16 +37,20 @@ export class HnCliAuthService {
   validateCode(code: string, user: HnUser): void {
     const authCode = this.codeStore.get(code);
     if (!authCode) {
-      throw new BlBadRequestException('Invalid code');
+      throw new BlNotFoundException('cli_auth_invalid_code');
+    }
+
+    if (authCode.status === HnCliAuthCodeStatus.EXPIRED) {
+      throw new BlHttpException(HttpStatus.GONE, 'cli_auth_code_expired');
     }
 
     if (authCode.status !== HnCliAuthCodeStatus.PENDING) {
-      throw new BlBadRequestException('Code already used or expired');
+      throw new BlHttpException(HttpStatus.CONFLICT, 'cli_auth_code_already_used');
     }
 
     if (this.isPendingExpired(authCode)) {
       authCode.status = HnCliAuthCodeStatus.EXPIRED;
-      throw new BlBadRequestException('Code expired');
+      throw new BlHttpException(HttpStatus.GONE, 'cli_auth_code_expired');
     }
 
     authCode.status = HnCliAuthCodeStatus.VALIDATED;
@@ -57,11 +61,15 @@ export class HnCliAuthService {
   refuseCode(code: string): void {
     const authCode = this.codeStore.get(code);
     if (!authCode) {
-      throw new BlBadRequestException('Invalid code');
+      throw new BlNotFoundException('cli_auth_invalid_code');
+    }
+
+    if (authCode.status === HnCliAuthCodeStatus.EXPIRED) {
+      throw new BlHttpException(HttpStatus.GONE, 'cli_auth_code_expired');
     }
 
     if (authCode.status !== HnCliAuthCodeStatus.PENDING) {
-      throw new BlBadRequestException('Code already used or expired');
+      throw new BlHttpException(HttpStatus.CONFLICT, 'cli_auth_code_already_used');
     }
 
     authCode.status = HnCliAuthCodeStatus.REFUSED;
@@ -70,12 +78,13 @@ export class HnCliAuthService {
   exchangeToken(code: string): { status: string; token?: string } {
     const authCode = this.codeStore.get(code);
     if (!authCode) {
-      throw new BlBadRequestException('Invalid code');
+      throw new BlNotFoundException('cli_auth_invalid_code');
     }
 
     if (authCode.status === HnCliAuthCodeStatus.PENDING) {
       if (this.isPendingExpired(authCode)) {
         authCode.status = HnCliAuthCodeStatus.EXPIRED;
+        this.codeStore.delete(code);
         return { status: 'expired' };
       }
       return { status: 'authorization_pending' };
@@ -87,6 +96,7 @@ export class HnCliAuthService {
     }
 
     if (authCode.status === HnCliAuthCodeStatus.EXPIRED) {
+      this.codeStore.delete(code);
       return { status: 'expired' };
     }
 

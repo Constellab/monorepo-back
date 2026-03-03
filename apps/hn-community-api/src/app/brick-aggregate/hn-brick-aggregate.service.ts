@@ -565,27 +565,34 @@ export class HnBrickAggregateService {
   async isActualBrickAndNewVersion(
     body: HnIsActualBrickAndNewVersionDTO
   ): Promise<HnIsActualBrickAndNewVersionResponseDTO> {
-    const brick: HnBrick = await this.findBrickByName(body.brickName);
-    if (brick == null) {
+    try {
+      const brick: HnBrick = await this.findBrickByName(body.brickName);
+      if (brick == null) {
+        return {
+          sameBrick: false,
+          sameVersion: false,
+        };
+      }
+
+      this.brickService.checkIfUserHasRightOnTheBrick(brick);
+
+      const brickMajorVersion: HnBrickMajorVersion =
+        await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(
+          brick,
+          body.inputBrickVersion
+        );
+
+      if (brickMajorVersion == null) {
+        throw new BlUnauthorizedException('Impossible to create a new major version');
+      }
+
+      return this.brickVersionService.checkIfVersionExist(brickMajorVersion, body.inputBrickVersion);
+    } catch {
       return {
         sameBrick: false,
         sameVersion: false,
       };
     }
-
-    this.brickService.checkIfUserHasRightOnTheBrick(brick);
-
-    const brickMajorVersion: HnBrickMajorVersion =
-      await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(
-        brick,
-        body.inputBrickVersion
-      );
-
-    if (brickMajorVersion == null) {
-      throw new BlUnauthorizedException('Impossible to create a new major version');
-    }
-
-    return this.brickVersionService.checkIfVersionExist(brickMajorVersion, body.inputBrickVersion);
   }
 
   async updateFolder(updatedFolder: HnNodeDTO): Promise<HnFolder> {
@@ -1065,9 +1072,6 @@ export class HnBrickAggregateService {
 
   async createNewVersion(newVersion: HnNewVersionDTO): Promise<HnNewVersionDTO> {
     const brick: HnBrick = await this.findBrickByName(newVersion.brickName);
-    if (brick == null) {
-      throw new BlBadRequestException('Brick not found');
-    }
 
     await this.assertUserCanEditBrick(brick.id, false);
 
@@ -1078,7 +1082,6 @@ export class HnBrickAggregateService {
       brickMajorVersion.id
     );
 
-    newVersion.repoType = brickVersion.repoType;
     const newMajor = parseInt(newVersion.version.split('.')[0]);
 
     // Verify if the new version match an existent major version
