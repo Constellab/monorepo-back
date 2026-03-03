@@ -2,8 +2,8 @@ import { BlHttpException, BlJwtService, BlNotFoundException } from '@monorepo/ba
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { randomBytes } from 'crypto';
 
-import { HnUser } from '../users/hn-user.entity';
 import { HnCoreConfigService } from '../core/modules/core-config/hn-core-config.service';
+import { HnUser } from '../users/hn-user.entity';
 import { HnCliAuthCode } from './hn-cli-auth.class';
 import { HnCliAuthCodeStatus } from './hn-cli-auth.enum';
 
@@ -16,7 +16,7 @@ export class HnCliAuthService {
 
   constructor(
     private readonly jwtService: BlJwtService,
-    private readonly configService: HnCoreConfigService,
+    private readonly configService: HnCoreConfigService
   ) {}
 
   createCode(): { code: string; authUrl: string } {
@@ -50,6 +50,7 @@ export class HnCliAuthService {
 
     if (this.isPendingExpired(authCode)) {
       authCode.status = HnCliAuthCodeStatus.EXPIRED;
+      this.codeStore.delete(code);
       throw new BlHttpException(HttpStatus.GONE, 'cli_auth_code_expired');
     }
 
