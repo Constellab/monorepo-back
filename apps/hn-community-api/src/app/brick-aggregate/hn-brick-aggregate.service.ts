@@ -1082,6 +1082,7 @@ export class HnBrickAggregateService {
       brickMajorVersion.id
     );
 
+    newVersion.repoType = brickVersion.repoType;
     const newMajor = parseInt(newVersion.version.split('.')[0]);
 
     // Verify if the new version match an existent major version
