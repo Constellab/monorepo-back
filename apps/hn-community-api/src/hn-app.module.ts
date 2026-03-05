@@ -35,7 +35,6 @@ import { HnAgentVersionModule } from './app/agent-aggregate/agent-version/hn-age
 import { HnAgentVersionBrickDependenciesModule } from './app/agent-aggregate/agent-version-brick-dependencies/hn-agent-version-brick-dependencies.module';
 import { HnAgentAggregateModule } from './app/agent-aggregate/hn-agent-aggregate.module';
 import { HnAuthModule } from './app/auth/hn-auth.module';
-import { HnCliAuthModule } from './app/cli-auth/hn-cli-auth.module';
 import { hnJwtConfig } from './app/auth/hn-jwt.config';
 import { HnBrickModule } from './app/brick-aggregate/brick/hn-brick.module';
 import { HnBrickMajorVersionModule } from './app/brick-aggregate/brick-major-version/hn-brick-major-version.module';
@@ -46,6 +45,7 @@ import { HnDocumentationModule } from './app/brick-aggregate/documentation/hn-do
 import { HnFolderModule } from './app/brick-aggregate/folder/hn-folder.module';
 import { HnBrickAggregateModule } from './app/brick-aggregate/hn-brick-aggregate.module';
 import { HnBrickVersionReferenceModule } from './app/brick-version-reference/hn-brick-version-reference.module';
+import { HnCliAuthModule } from './app/cli-auth/hn-cli-auth.module';
 import { HnCommentAgentModule } from './app/comment-aggregate/comment-agent/hn-comment-agent.module';
 import { HnCommentAppModule } from './app/comment-aggregate/comment-app/hn-comment-app.module';
 import { HnCommentPartnerModule } from './app/comment-aggregate/comment-partner/hn-comment-partner.module';
@@ -68,7 +68,6 @@ import { HnMailConfig } from './app/core/model/config/hn-mail.config';
 import { HnCoreConfigModule } from './app/core/modules/core-config/hn-core-config.module';
 import { HnCoreConfigService } from './app/core/modules/core-config/hn-core-config.service';
 import { HnCurrentUserHelper } from './app/core/utils/hn-current-user.helper';
-import { HnDifyModule } from './app/dify/hn-dify.module';
 import { HnFileAgentModule } from './app/file-aggregate/file-agent/hn-file-agent.module';
 import { HnFileAppModule } from './app/file-aggregate/file-app/hn-file-app.module';
 import { HnFileDocumentationModule } from './app/file-aggregate/file-documentation/hn-file-documentation.module';
@@ -312,8 +311,6 @@ TeRichTextModifications.setBackTimeDifference();
     HnPublicModule,
 
     HnPartnerModule,
-
-    HnDifyModule,
 
     HnRagflowChatbotModule,
   ],

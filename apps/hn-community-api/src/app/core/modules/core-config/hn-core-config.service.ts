@@ -15,7 +15,6 @@ import {
   HN_BUCKET_PARTNERS_KEY,
   HN_BUCKET_STORIES_BACKUP_KEY,
   HN_BUCKET_STORIES_KEY,
-  HN_DIFY_API_KEY,
   HN_ENVIRONMENT_PROFILE_KEY,
   HN_ENVIRONMENT_PROFILE_PROD_VALUE,
   HN_RAGFLOW_API_KEY,
@@ -254,10 +253,6 @@ export class HnCoreConfigService {
 
   public getDomain(): string {
     return this.configService.get('DOMAIN');
-  }
-
-  public getDifyApiKey(): string {
-    return this.configService.get(HN_DIFY_API_KEY);
   }
 
   public getRagflowApiKey(): string {
