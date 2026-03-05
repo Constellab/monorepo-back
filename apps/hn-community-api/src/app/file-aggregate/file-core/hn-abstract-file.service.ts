@@ -75,7 +75,9 @@ export abstract class HnAbstractFileService<T extends BlEntityWithId> {
     if (entityFile == null) {
       return null;
     }
-    return await this.objectStorageService.downloadObject(this.getBucketConfig(), entityFile.fileName);
+    const file = await this.objectStorageService.downloadObject(this.getBucketConfig(), entityFile.fileName);
+    file.name = name;
+    return file;
   }
 
   async renameFile(id: string, newName: string): Promise<HnAbstractFileEntityDTO> {
