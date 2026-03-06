@@ -18,3 +18,13 @@ export class CnLabSendMailToMailsDto {
   @BlTrim()
   subject?: string;
 }
+
+export class CnSendMailToSupportDto {
+  @BlTrim()
+  content: string;
+
+  @BlTrim()
+  subject: string;
+
+  data?: Record<string, any>;
+}

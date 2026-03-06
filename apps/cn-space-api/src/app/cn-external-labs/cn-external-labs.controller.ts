@@ -30,6 +30,7 @@ import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
 
 import { CnExternalCheckCredentialResponse } from '../cn-auth/cn-auth.service';
+import { CnEnterpriseOnly } from '../cn-core/decorators/cn-enterprise-only.decorator';
 import {
   CnLabAllowDev,
   CnLabGuard,
@@ -67,10 +68,15 @@ import { CnGroupsAggregateService } from '../cn-groups/cn-groups-aggregate.servi
 import { CnLabFolderAggregateService } from '../cn-lab-folder-aggregate/cn-lab-folder-aggregate.service';
 import { CnLabStartDTO } from '../cn-labs/cn-lab.dto';
 import { CnLabAggregateService } from '../cn-labs/cn-lab-aggregate.service';
-import { CnLabSendMailDto, CnLabSendMailToMailsDto } from '../cn-labs/mail/cn-lab-mail.dto';
+import {
+  CnLabSendMailDto,
+  CnLabSendMailToMailsDto,
+  CnSendMailToSupportDto,
+} from '../cn-labs/mail/cn-lab-mail.dto';
 import { CnLabMailService } from '../cn-labs/mail/cn-lab-mail.service';
 import { CnLabNotificationCreateDTO } from '../cn-labs/notification/cn-lab-notification.dto';
 import { CnLabNotificationService } from '../cn-labs/notification/cn-lab-notification.service';
+import { CnSupportService } from '../cn-support/cn-support.service';
 import { CnUser } from '../cn-users/cn-user.entity';
 import {
   CnExternalLabTagsDTO,
@@ -95,7 +101,8 @@ export class CnExternalLabsController {
     private labMailService: CnLabMailService,
     private labNotificationService: CnLabNotificationService,
     private configService: CnCoreConfigService,
-    private groupsAggregateService: CnGroupsAggregateService
+    private groupsAggregateService: CnGroupsAggregateService,
+    private supportService: CnSupportService
   ) {}
 
   // route called on the lab start
@@ -498,12 +505,25 @@ export class CnExternalLabsController {
     return this.labMailService.sendMailFromLab(CnCurrentUserHelper.getAndCheckCurrentLab(), body);
   }
 
+  @CnEnterpriseOnly({ action: 'sending mail to external addresses' })
   @CnLabAllowDev()
   @Post('send-mail-to-mails')
   sendMailToMails(
     @Body(new BlParsePipe(CnLabSendMailToMailsDto)) body: CnLabSendMailToMailsDto
   ): Promise<void> {
     return this.labMailService.sendMailToMailsFromLab(CnCurrentUserHelper.getAndCheckCurrentLab(), body);
+  }
+
+  /**
+   * Send an email to Gencovery support
+   * @param body The email content and subject
+   */
+  @CnLabAllowDev()
+  @Post('send-mail-to-support')
+  sendMailToSupport(
+    @Body(new BlParsePipe(CnSendMailToSupportDto)) body: CnSendMailToSupportDto
+  ): Promise<void> {
+    return this.supportService.sendMailFromString(body.content, body.subject);
   }
 
   @CnLabAllowDev()

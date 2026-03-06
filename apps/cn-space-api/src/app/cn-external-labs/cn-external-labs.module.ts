@@ -7,6 +7,7 @@ import { CnLabConfigsModule } from '../cn-lab-configs/cn-lab-configs.module';
 import { CnLabFolderAggregateModule } from '../cn-lab-folder-aggregate/cn-lab-folder-aggregate.module';
 import { CnLabsModule } from '../cn-labs/cn-labs.module';
 import { CnSpacesModule } from '../cn-spaces/cn-spaces.module';
+import { CnSupportModule } from '../cn-support/cn-support.module';
 import { CnUsersModule } from '../cn-users/cn-users.module';
 import { CnExternalCommunityLabsController } from './cn-external-community-labs.controller';
 import { CnExternalDatahubController } from './cn-external-datahub.controller';
@@ -34,6 +35,7 @@ import { CnExternalLabsManagerController } from './cn-external-labs-manager.cont
 
     CnUsersModule, // used by the lab auth guard
     CnSpacesModule, // used by the lab auth guard
+    CnSupportModule,
   ],
 })
 export class CnExternalLabsModule {}
