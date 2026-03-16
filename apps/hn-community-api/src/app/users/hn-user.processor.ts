@@ -1,9 +1,8 @@
-import { blTransportSpaceUserQueue } from '@monorepo/back-core-lib';
+import { blTransportSpaceUserQueue, BlTransportUserPattern } from '@monorepo/back-core-lib';
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Injectable, Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
 
-import { HnUserConstellabDTO } from './hn-user.entity';
 import { HnUserService } from './hn-user.service';
 
 @Processor(blTransportSpaceUserQueue)
@@ -15,10 +14,21 @@ export class HnUserProcessor extends WorkerHost {
     super();
   }
 
-  async process(job: Job<HnUserConstellabDTO>): Promise<void> {
-    await this.userService.createOrUpdate(job.data).catch((e) => {
-      this.logger.error(`Error while processing job ${job.id} ${job.name} : ${e.message}`);
-      throw e;
-    });
+  async process(job: Job): Promise<void> {
+    switch (job.name as BlTransportUserPattern) {
+      case BlTransportUserPattern.DELETE:
+        await this.userService.delete(job.data.userId).catch((e) => {
+          this.logger.error(`Error while processing job ${job.id} ${job.name} : ${e.message}`);
+          throw e;
+        });
+        break;
+      case BlTransportUserPattern.CREATE_OR_UPDATE:
+      default:
+        await this.userService.createOrUpdate(job.data).catch((e) => {
+          this.logger.error(`Error while processing job ${job.id} ${job.name} : ${e.message}`);
+          throw e;
+        });
+        break;
+    }
   }
 }

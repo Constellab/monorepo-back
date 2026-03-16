@@ -1,3 +1,5 @@
+import { blTransportSpaceUserQueue } from '@monorepo/back-core-lib';
+import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
 
 import { CnActivityModule } from '../cn-activity/cn-activity.module';
@@ -23,6 +25,9 @@ import { CnUserDeletionAggregateService } from './cn-user-deletion-aggregate.ser
     CnActivityModule,
     CnHierarchyObjectModule,
     CnNotificationModule,
+    BullModule.registerQueue({
+      name: blTransportSpaceUserQueue,
+    }),
   ],
   controllers: [CnUserDeletionAggregateController],
   providers: [CnUserDeletionAggregateService],

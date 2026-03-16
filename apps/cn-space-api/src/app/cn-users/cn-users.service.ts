@@ -10,6 +10,7 @@ import {
   BlSearchBuilder,
   BlSearchParams,
   blTransportSpaceUserQueue,
+  BlTransportUserPattern,
   BlUnauthorizedException,
   BlUserService,
   BlUserStatus,
@@ -216,7 +217,7 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
       biography: user.biography,
       photo: user.photo,
     };
-    this.queue.add(blTransportSpaceUserQueue, userDTO).catch((error) => {
+    this.queue.add(BlTransportUserPattern.CREATE_OR_UPDATE, userDTO).catch((error) => {
       this.logger.error('Error sending user to transport queue:', error);
     });
   }

@@ -57,6 +57,10 @@ export class HnUserService implements BlUserService {
     return;
   }
 
+  async delete(id: string): Promise<void> {
+    await this.userRepository.delete({ id });
+  }
+
   async findOne(id: string): Promise<HnUser> {
     return await this.userRepository.findOneBy({ id: id });
   }

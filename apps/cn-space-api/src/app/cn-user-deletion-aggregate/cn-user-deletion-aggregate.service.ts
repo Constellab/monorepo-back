@@ -1,5 +1,13 @@
-import { BlBadRequestException, BlUnauthorizedException, BlUserStatus } from '@monorepo/back-core-lib';
+import {
+  BlBadRequestException,
+  blTransportSpaceUserQueue,
+  BlTransportUserPattern,
+  BlUnauthorizedException,
+  BlUserStatus,
+} from '@monorepo/back-core-lib';
+import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable, Logger } from '@nestjs/common';
+import { Queue } from 'bullmq';
 import { DataSource } from 'typeorm';
 
 import { CnActivityService } from '../cn-activity/cn-activity.service';
@@ -28,7 +36,8 @@ export class CnUserDeletionAggregateService {
     private groupService: CnGroupsService,
     private activityService: CnActivityService,
     private notificationService: CnNotificationService,
-    private datasource: DataSource
+    private datasource: DataSource,
+    @InjectQueue(blTransportSpaceUserQueue) private queue: Queue
   ) {}
 
   /**
@@ -71,6 +80,9 @@ export class CnUserDeletionAggregateService {
 
       await entityManager.delete(CnUserEntity, userId);
     });
+
+    // Notify community (Hn) to delete the user
+    await this.queue.add(BlTransportUserPattern.DELETE, { userId });
 
     this.logger.log(`Completed deletion process for user ${userId}`);
   }

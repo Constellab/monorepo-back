@@ -52,6 +52,11 @@ export enum BlTransportSpaceUserPattern {
   DELETE = 'deleteSpace',
 }
 
+export enum BlTransportUserPattern {
+  CREATE_OR_UPDATE = 'createOrUpdateUser',
+  DELETE = 'deleteUser',
+}
+
 //queues filled from community
 export const blTransportCommunityBrickQueue = 'brick_queue';
 
