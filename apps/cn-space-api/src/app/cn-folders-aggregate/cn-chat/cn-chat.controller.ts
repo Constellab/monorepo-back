@@ -63,7 +63,11 @@ export class CnChatController {
     @Res() response: Response
   ): Promise<any> {
     const file = await this.chatAggregateService.getMessageImage(documentName, folderId);
-    BlResponseHelper.setFileResponseAndCache(response, file);
+    if (file) {
+      BlResponseHelper.setFileResponseAndCache(response, file);
+    } else {
+      response.status(404).send('File not found');
+    }
   }
 
   @Post('folder/:folderId/message')

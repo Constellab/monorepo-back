@@ -129,7 +129,11 @@ export class CnSpacesController {
   @Get('photo/:filename')
   public async getImage(@Param('filename') filename: string, @Res() response: Response): Promise<any> {
     const file = await this.spaceAggregateService.getPhoto(filename);
-    BlResponseHelper.setFileResponseAndCache(response, file);
+    if (file) {
+      BlResponseHelper.setFileResponseAndCache(response, file);
+    } else {
+      response.status(404).send('Image not found');
+    }
   }
 
   //////////////////////////////////////// LICENCE  ////////////////////////////////////////

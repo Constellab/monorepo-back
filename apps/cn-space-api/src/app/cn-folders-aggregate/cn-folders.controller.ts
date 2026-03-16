@@ -204,7 +204,11 @@ export class CnFoldersController {
     @Res() response: Response
   ): Promise<any> {
     const file = await this.folderAggregateService.getDescriptionImage(folderId, documentName);
-    BlResponseHelper.setFileResponseAndCache(response, file);
+    if (file) {
+      BlResponseHelper.setFileResponseAndCache(response, file);
+    } else {
+      response.status(404).send('File not found');
+    }
   }
 
   /////////////////////////////// Folder Bucket ///////////////////////////////////////////

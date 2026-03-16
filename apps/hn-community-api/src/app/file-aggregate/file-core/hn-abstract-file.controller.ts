@@ -28,6 +28,10 @@ export abstract class HnAbstractFileController<T extends BlEntityWithId> {
     @Res() res: Response
   ): Promise<any> {
     const file = await this.fileService.getFile(entityId, fileName);
+    if (!file) {
+      res.status(404).send('File not found');
+      return;
+    }
     res.set({
       'Content-Disposition': `attachment; filename="${fileName}"`,
     });
@@ -51,6 +55,8 @@ export abstract class HnAbstractFileController<T extends BlEntityWithId> {
     const file = await this.fileService.getFile(entityId, fileName);
     if (file) {
       BlResponseHelper.setFileResponseAndCache(res, file);
+    } else {
+      res.status(404).send('Image not found');
     }
   }
 

@@ -45,7 +45,11 @@ export class CnNotesController {
     @Res() response: Response
   ): Promise<any> {
     const file = await this.noteAggregateService.getNoteFile(id, filename);
-    BlResponseHelper.setFileResponseAndCache(response, file);
+    if (file) {
+      BlResponseHelper.setFileResponseAndCache(response, file);
+    } else {
+      response.status(404).send('File not found');
+    }
   }
 
   /**
@@ -59,7 +63,11 @@ export class CnNotesController {
     @Res() response: Response
   ): Promise<any> {
     const file = await this.noteAggregateService.getNoteView(id, viewId);
-    BlResponseHelper.setFileResponseAndCache(response, file);
+    if (file) {
+      BlResponseHelper.setFileResponseAndCache(response, file);
+    } else {
+      response.status(404).send('View not found');
+    }
   }
 
   @Get(':id/lab')
