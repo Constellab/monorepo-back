@@ -89,6 +89,7 @@ export class TeRichText {
     if (other == null) return false;
     if (this === other) return true;
     if (this.version !== other.version) return false;
+    if (this.isEmpty() && other.isEmpty()) return true;
     if (this.blocks.length !== other.blocks.length) return false;
     return JSON.stringify(this.blocks) === JSON.stringify(other.blocks);
   }
@@ -156,7 +157,10 @@ export class TeRichText {
         result += block.data.text.trim() + ' ';
       }
     }
-    return result.replace(/<[^>]*>/g, '');
+    return result
+      .replace(/<[^>]*>/g, '')
+      .replace(/&nbsp;/g, ' ')
+      .trim();
   }
 
   ///////////////////////////////////// HEADER ///////////////////////////////////////////////

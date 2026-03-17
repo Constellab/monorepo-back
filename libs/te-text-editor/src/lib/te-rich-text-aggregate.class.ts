@@ -1,4 +1,6 @@
-import { TeBlock } from './te-block.class';
+import { ClStringHelper } from '@monorepo/core-lib';
+
+import { TeBlock, TeBlockType } from './te-block.class';
 import { TeHTMLEditorJSON, TeRichText, TeRichTextDTO } from './te-rich-text.class';
 import {
   TeRichTextBlockModification,
@@ -94,6 +96,16 @@ export class TeRichTextAggregate {
    */
   public updateContent(content: TeRichText, userId: string): void {
     const newModifications = this.compareWithCurrent(content, userId);
+
+    // Assign a common groupId to all modifications from the same user action
+    const modifications = newModifications.getModifications();
+    if (modifications.length > 1) {
+      const groupId = ClStringHelper.generateUUID();
+      for (const modification of modifications) {
+        modification.groupId = groupId;
+      }
+    }
+
     this.modifications.fusion(newModifications);
     this.richText = content;
   }
@@ -158,6 +170,11 @@ export class TeRichTextAggregate {
           index,
           userId
         );
+        if (modif.blockType == TeBlockType.LIST) {
+          if ('meta' in block.data) delete block.data['meta'];
+          if ('meta' in oldBlock.data) delete oldBlock.data['meta'];
+        }
+
         modif.blockValue = block.data;
         // get the differences between the old block data and the new block data,
         // we stringify the data to compare them as string with the lib diff
@@ -183,15 +200,17 @@ export class TeRichTextAggregate {
   }
 
   /**
-   * Undo the last modification (useful for the ctrl+z)
+   * Undo the last modification group (useful for the ctrl+z).
+   * Returns all undone modifications.
    */
-  public undoLastModification(): TeRichTextBlockModification {
-    const lastModification = this.modifications.getLastModification();
-    if (lastModification) {
-      this.undoModifications(lastModification.id);
-      return lastModification;
-    }
-    return null;
+  public undoLastModification(): TeRichTextBlockModification[] {
+    const firstOfGroup = this.modifications.getFirstModificationOfLastGroup();
+    if (!firstOfGroup) return [];
+
+    // Get the group before it's moved to redo
+    const undoneModifications = this.modifications.getModificationsFromModificationId(firstOfGroup.id);
+    this.undoModifications(firstOfGroup.id);
+    return undoneModifications;
   }
 
   // Undo the modifications in the modificationsList
@@ -246,40 +265,42 @@ export class TeRichTextAggregate {
     this.modifications.removeModificationsAfterUndo(modificationId);
   }
 
-  // Redo the modifications in the modificationsList
-  public redoLastModification(): TeRichTextBlockModification {
+  // Redo the last modification group
+  public redoLastModification(): TeRichTextBlockModification[] {
+    const redoGroup = this.modifications.getLastRedoGroup();
+    if (redoGroup.length === 0) return [];
+
     const blocks = this.richText.getBlocks();
 
-    const modification = this.modifications.getLastRedoModification();
-    if (!modification) return null;
-
-    switch (modification.type) {
-      case TeRichTextModificationType.MOVED:
-        const movedBlock: TeBlock = {
-          id: modification.blockId,
-          data: modification.blockValue,
-          type: modification.blockType as any,
-        };
-        blocks.splice(modification.oldIndex, 1);
-        blocks.splice(modification.index, 0, movedBlock);
-        break;
-      case TeRichTextModificationType.CREATED:
-        const block: TeBlock = {
-          id: modification.blockId,
-          data: modification.blockValue,
-          type: modification.blockType as any,
-        };
-        blocks.splice(modification.index, 0, block);
-        break;
-      case TeRichTextModificationType.UPDATED:
-        const diff = modification.redoDifferences(blocks[modification.index].data);
-        if (diff) {
-          blocks[modification.index].data = diff;
-        }
-        break;
-      case TeRichTextModificationType.DELETED:
-        blocks.splice(modification.index, 1);
-        break;
+    for (const modification of redoGroup) {
+      switch (modification.type) {
+        case TeRichTextModificationType.MOVED:
+          const movedBlock: TeBlock = {
+            id: modification.blockId,
+            data: modification.blockValue,
+            type: modification.blockType as any,
+          };
+          blocks.splice(modification.oldIndex, 1);
+          blocks.splice(modification.index, 0, movedBlock);
+          break;
+        case TeRichTextModificationType.CREATED:
+          const block: TeBlock = {
+            id: modification.blockId,
+            data: modification.blockValue,
+            type: modification.blockType as any,
+          };
+          blocks.splice(modification.index, 0, block);
+          break;
+        case TeRichTextModificationType.UPDATED:
+          const diff = modification.redoDifferences(blocks[modification.index].data);
+          if (diff) {
+            blocks[modification.index].data = diff;
+          }
+          break;
+        case TeRichTextModificationType.DELETED:
+          blocks.splice(modification.index, 1);
+          break;
+      }
     }
 
     this.richText = new TeRichText({
@@ -288,11 +309,13 @@ export class TeRichTextAggregate {
       blocks: blocks,
     });
 
-    this.modifications.removeLastRedoModification();
-    // re-add the modification to the list
-    this.modifications.addModification(modification);
+    this.modifications.removeLastRedoGroup();
+    // re-add the modifications to the list
+    for (const modification of redoGroup) {
+      this.modifications.addModification(modification);
+    }
 
-    return modification;
+    return redoGroup;
   }
 
   public async getModificationsDTO(

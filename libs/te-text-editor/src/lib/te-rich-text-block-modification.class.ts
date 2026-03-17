@@ -43,6 +43,8 @@ export class TeRichTextBlockModification {
 
   oldIndex?: number;
 
+  groupId?: string;
+
   constructor(
     blockId: string,
     blockType: TeBlockType,
@@ -50,7 +52,8 @@ export class TeRichTextBlockModification {
     index: number,
     userId: string,
     id?: string,
-    time?: string
+    time?: string,
+    groupId?: string
   ) {
     this.id = id ?? ClStringHelper.generateUUID();
     this.time = time ? DateTime.fromISO(time) : DateTime.now();
@@ -59,6 +62,7 @@ export class TeRichTextBlockModification {
     this.type = type;
     this.index = index;
     this.userId = userId;
+    this.groupId = groupId;
   }
 
   public static fromJsonObject(json: TeRichTextBlockModificationDTO): TeRichTextBlockModification {
@@ -69,7 +73,8 @@ export class TeRichTextBlockModification {
       json.index,
       json.userId,
       json.id,
-      json.time
+      json.time,
+      json.groupId
     );
     if (json.type == TeRichTextModificationType.UPDATED) {
       modification.differences = json.differences;
@@ -176,6 +181,7 @@ export class TeRichTextBlockModification {
       userId: this.userId,
       id: this.id,
       oldIndex: this.oldIndex,
+      groupId: this.groupId,
     };
   }
 }

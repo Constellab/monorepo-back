@@ -69,6 +69,7 @@ export interface TeRichTextBlockModificationDTO {
   differences?: TeRichTextModificationDifference[];
   blockValue?: TeBlockData;
   oldIndex?: number;
+  groupId?: string;
 }
 
 export interface TeRichTextBlockModificationsDTO {
