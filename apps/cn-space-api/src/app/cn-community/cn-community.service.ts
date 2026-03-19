@@ -89,7 +89,7 @@ export class CnCommunityService {
   private async getHeaders(labId: string): Promise<Record<string, string>> {
     const lab = await this.labsService.findByIdAndCheckWithSpace(labId);
     return {
-      authorization: lab.glabProdApiKey,
+      Authorization: `api-key ${lab.glabProdApiKey}`,
       user: CnCurrentUserHelper.getAndCheckCurrentUser().id,
     };
   }
