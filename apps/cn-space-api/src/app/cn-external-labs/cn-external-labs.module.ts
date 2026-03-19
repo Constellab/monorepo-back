@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common';
 import { CnCoreModule } from '../cn-core/cn-core.module';
 import { CnFoldersAggregateModule } from '../cn-folders-aggregate/cn-folders-aggregate.module';
 import { CnGroupsModule } from '../cn-groups/cn-groups.module';
+import { CnLabConfigsModule } from '../cn-lab-configs/cn-lab-configs.module';
 import { CnLabFolderAggregateModule } from '../cn-lab-folder-aggregate/cn-lab-folder-aggregate.module';
 import { CnLabsModule } from '../cn-labs/cn-labs.module';
 import { CnSpacesModule } from '../cn-spaces/cn-spaces.module';
@@ -26,6 +27,7 @@ import { CnExternalLabsManagerController } from './cn-external-labs-manager.cont
     CnCoreModule,
 
     CnLabsModule,
+    CnLabConfigsModule,
     CnFoldersAggregateModule,
     CnLabFolderAggregateModule,
     CnGroupsModule,

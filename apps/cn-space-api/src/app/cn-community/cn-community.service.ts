@@ -5,28 +5,34 @@ import { lastValueFrom } from 'rxjs';
 
 import { CnCoreConfigService } from '../cn-core/modules/cn-core-config/cn-core-config.service';
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
+import { CnLabsService } from '../cn-labs/cn-labs.service';
 import { CnCommunityBrickDto, CnCommunityBrickVersionDTO } from './dto/cn-community-brick.dto';
 
 @Injectable()
 export class CnCommunityService {
   constructor(
     private readonly externalApiService: BlExternalApiService,
-    private readonly configService: CnCoreConfigService
+    private readonly configService: CnCoreConfigService,
+    private readonly labsService: CnLabsService
   ) {}
 
-  public async getBrickLatestVersion(brickName: string): Promise<CnCommunityBrickVersionDTO> {
+  public async getBrickLatestVersion(labId: string, brickName: string): Promise<CnCommunityBrickVersionDTO> {
     // TODO TO IMPROVE WHEN ROUTE TO GET LATEST VERSION WILL BE IMPLEMENTED
-    const brick = await this.getBrickByName(brickName);
-    const brickVersions = await this.getBrickVersionsList(brick.id);
+    const brick = await this.getBrickByName(labId, brickName);
+    const brickVersions = await this.getBrickVersionsList(labId, brick.id);
     const latestVersion = brickVersions[0];
-    return this.getBrickVersion(brickName, latestVersion);
+    return this.getBrickVersion(labId, brickName, latestVersion);
   }
 
-  public async getBrickVersion(brickName: string, brickVersion: string): Promise<CnCommunityBrickVersionDTO> {
-    const url = `${this.configService.getCommunityApiUrl()}/brick/space/name/${brickName}/${brickVersion}`;
+  public async getBrickVersion(
+    labId: string,
+    brickName: string,
+    brickVersion: string
+  ): Promise<CnCommunityBrickVersionDTO> {
+    const url = `${this.configService.getCommunityApiUrl()}/brick/for-space/name/${brickName}/${brickVersion}`;
     const brickVersionDTO: CnCommunityBrickVersionDTO = await lastValueFrom(
       this.externalApiService.get(url, CnCommunityBrickVersionDTO, {
-        headers: this.getHeaders(),
+        headers: await this.getHeaders(labId),
       })
     );
 
@@ -35,38 +41,33 @@ export class CnCommunityService {
     return brickVersionDTO;
   }
 
-  async getBrickByName(name: string): Promise<CnCommunityBrickDto> {
-    const url = this.configService.getCommunityApiUrl() + '/brick/space-name/' + name;
+  async getBrickByName(labId: string, name: string): Promise<CnCommunityBrickDto> {
+    const url = `${this.configService.getCommunityApiUrl()}/brick/for-space/name/${name}`;
     return await lastValueFrom(
-      this.externalApiService.post(
-        url,
-        { userId: CnCurrentUserHelper.getAndCheckCurrentUser().id },
-        CnCommunityBrickDto,
-        {
-          headers: this.getHeaders(),
-        }
-      )
+      this.externalApiService.get(url, CnCommunityBrickDto, {
+        headers: await this.getHeaders(labId),
+      })
     );
   }
 
   async getBricksByFilters(
+    labId: string,
     spacesFilter: string[],
     titleFilter: string,
     page: number,
     size: number
   ): Promise<ClPage<CnCommunityBrickDto>> {
-    const url = this.configService.getCommunityApiUrl() + '/brick/space-filters';
+    const url = `${this.configService.getCommunityApiUrl()}/brick/for-space/filters`;
     return await lastValueFrom(
       this.externalApiService.post(
         url,
         {
           spacesFilter: spacesFilter,
           titleFilter: titleFilter,
-          userId: CnCurrentUserHelper.getAndCheckCurrentUser().id,
         },
         CnCommunityBrickDto,
         {
-          headers: this.getHeaders(),
+          headers: await this.getHeaders(labId),
           params: {
             page: page,
             size: size,
@@ -76,18 +77,20 @@ export class CnCommunityService {
     );
   }
 
-  async getBrickVersionsList(brickId: string): Promise<string[]> {
-    const url = this.configService.getCommunityApiUrl() + '/brick/space-versions-list/' + brickId;
+  async getBrickVersionsList(labId: string, brickId: string): Promise<string[]> {
+    const url = `${this.configService.getCommunityApiUrl()}/brick/for-space/versions-list/${brickId}`;
     return await lastValueFrom(
-      this.externalApiService.post(url, { userId: CnCurrentUserHelper.getAndCheckCurrentUser().id }, null, {
-        headers: this.getHeaders(),
+      this.externalApiService.get(url, null, {
+        headers: await this.getHeaders(labId),
       })
     );
   }
 
-  private getHeaders(): Record<string, string> {
+  private async getHeaders(labId: string): Promise<Record<string, string>> {
+    const lab = await this.labsService.findByIdAndCheckWithSpace(labId);
     return {
-      'X-Api-Key': this.configService.getCommunityApiKey(),
+      authorization: lab.glabProdApiKey,
+      user: CnCurrentUserHelper.getAndCheckCurrentUser().id,
     };
   }
 }

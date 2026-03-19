@@ -15,6 +15,7 @@ import { HnBrickVersionModule } from './brick-version/hn-brick-version.module';
 import { HnDocumentationModule } from './documentation/hn-documentation.module';
 import { HnFolderModule } from './folder/hn-folder.module';
 import { HnBrickController } from './hn-brick.controller';
+import { HnBrickForSpaceController } from './hn-brick-for-space.controller';
 import { HnBrickListener } from './hn-brick.listener';
 import { HnBrickAggregateService } from './hn-brick-aggregate.service';
 import { HnBrickVersionController } from './hn-brick-version.controller';
@@ -38,7 +39,7 @@ import { HnFolderController } from './hn-folder.controller';
     HnUserModule,
     HnFileDocumentationModule,
   ],
-  controllers: [HnBrickController, HnBrickVersionController, HnFolderController, HnDocumentationController],
+  controllers: [HnBrickController, HnBrickForSpaceController, HnBrickVersionController, HnFolderController, HnDocumentationController],
   providers: [HnBrickAggregateService, HnBrickListener],
   exports: [HnBrickAggregateService],
 })

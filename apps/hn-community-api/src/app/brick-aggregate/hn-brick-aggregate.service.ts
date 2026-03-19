@@ -1,8 +1,10 @@
 import {
   BlBadRequestException,
+  BlExternalApiService,
   BlFile,
   BlFileResponse,
   BlNotFoundException,
+  BlRequestContextHelper,
   BlSearchParams,
   BlSearchSortCriteria,
   BlUnauthorizedException,
@@ -16,6 +18,7 @@ import {
   TeRichTextBlockModificationWithUser,
 } from '@monorepo/te-text-editor';
 import { Injectable } from '@nestjs/common';
+import { lastValueFrom } from 'rxjs';
 import { DataSource, FindOptionsWhere, In, IsNull, Like } from 'typeorm';
 
 import { HnErrorText } from '../core/model/config/hn-error-text.class';
@@ -98,7 +101,8 @@ export class HnBrickAggregateService {
     private configService: HnCoreConfigService,
     private frontService: HnFrontService,
     private fileDocumentationService: HnFileDocumentationService,
-    private readonly spaceAggregateService: HnSpaceAggregateService
+    private readonly spaceAggregateService: HnSpaceAggregateService,
+    private readonly externalApiService: BlExternalApiService
   ) {}
 
   //------------------------------------- BRICKS -------------------------------------
@@ -527,6 +531,9 @@ export class HnBrickAggregateService {
     return brick;
   }
 
+  /**
+   * @deprecated Use getBrickVersionForDownload instead
+   */
   async findBrickByNameSpace(
     name: string,
     version: string,
@@ -560,6 +567,53 @@ export class HnBrickAggregateService {
       repositoryAccessUrl: brick.repositoryAccessUrl,
       technicalInfo: brickVersion.technicalInfo,
     };
+  }
+
+  async getBrickVersionForDownload(
+    name: string,
+    version: string
+  ): Promise<HnBrickVersionDownloadDTO> {
+    const brick = await this.brickService.findByNameSpace(name);
+    if (brick == null) {
+      throw new BlBadRequestException(HnErrorText.BRICK_NOT_FOUND, {
+        detailArgs: { name: name },
+      });
+    }
+
+    if (brick.visibility === HnBrickVisibility.PRIVATE) {
+      await this.checkLabBrickAccess(name, version);
+    }
+
+    const brickVersion: HnBrickVersion = await this.brickVersionService.getAndCheckBrickVersion(
+      name,
+      version
+    );
+
+    return {
+      brickName: brick.name,
+      brickVersion: brickVersion.version.toString(),
+      repoType: brickVersion.repoType,
+      repositoryUrl: brick.repositoryUrl,
+      repositoryAccessUrl: brick.repositoryAccessUrl,
+      technicalInfo: brickVersion.technicalInfo,
+    };
+  }
+
+  private async checkLabBrickAccess(brickName: string, version: string): Promise<void> {
+    const request = BlRequestContextHelper.getCurrentRequest();
+    const url =
+      this.configService.getSpaceApiUrl() +
+      `/external-community-labs/check-brick-access/${brickName}/${version}`;
+    const result: { hasAccess: boolean } = await lastValueFrom(
+      this.externalApiService.get(url, null, {
+        headers: { authorization: request.header('authorization') },
+      })
+    );
+    if (!result?.hasAccess) {
+      throw new BlUnauthorizedException(HnErrorText.PRIVATE_BRICK_ACCESS_DENIED, {
+        detailArgs: { brickName, version },
+      });
+    }
   }
 
   async isActualBrickAndNewVersion(
@@ -1135,15 +1189,17 @@ export class HnBrickAggregateService {
     );
   }
 
-  async getVersionsList(brickId: string, userId: string = null): Promise<string[]> {
-    const brick = await this.findBrickById(
-      brickId,
-      userId ? await this.userService.findOne(userId) : HnCurrentUserHelper.getCurrentUser()
-    );
-    if (brick == null) {
-      throw new BlNotFoundException(HnErrorText.BRICK_NOT_FOUND, {
-        detailArgs: { id: brickId },
-      });
+  async getVersionsList(brickId: string, userId: string = null, strict: boolean = true): Promise<string[]> {
+    if (strict) {
+      const brick = await this.findBrickById(
+        brickId,
+        userId ? await this.userService.findOne(userId) : HnCurrentUserHelper.getCurrentUser()
+      );
+      if (brick == null) {
+        throw new BlNotFoundException(HnErrorText.BRICK_NOT_FOUND, {
+          detailArgs: { id: brickId },
+        });
+      }
     }
     return this.brickVersionService.getVersionsList(brickId);
   }
