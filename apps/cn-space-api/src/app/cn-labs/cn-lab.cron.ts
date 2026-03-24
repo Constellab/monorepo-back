@@ -112,7 +112,7 @@ export class CnLabCron {
       await this.labAggregateService
         .refreshLabStatus(lab.id)
         .catch((error: Error) =>
-          this.logger.error(`Error during lab ${lab.id} status refresh : ${error.message}`)
+          this.logger.error(`Error during lab ${lab.id} status refresh : ${error.message}`, error.stack)
         );
     }
   }

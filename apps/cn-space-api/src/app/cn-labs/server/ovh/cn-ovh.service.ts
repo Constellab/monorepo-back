@@ -1,8 +1,9 @@
 import { BlBadRequestException } from '@monorepo/back-core-lib';
 import { Injectable, Logger } from '@nestjs/common';
+import ovh from 'ovh';
 
 import { CnCoreConfigService } from '../../../cn-core/modules/cn-core-config/cn-core-config.service';
-import { cnServerUbuntuUser } from '../cn-cloud-provider.class';
+import { CN_SERVER_UBUNTU_USER } from '../cn-cloud-provider.class';
 import {
   CnDomainFieldType,
   CnOvhAttachVolumeRequest,
@@ -15,8 +16,6 @@ import {
   CnOvhInstance,
   CnOvhVolume,
 } from './cn-ovh.class';
-
-const ovh = require('ovh');
 
 interface CnOvh {
   requestPromised(methode: 'GET' | 'POST' | 'PUT' | 'DELETE', path: string, body?: any): Promise<any>;
@@ -73,7 +72,7 @@ export class CnOvhService {
         image.name === name &&
         image.status === 'active' &&
         image.type === 'linux' &&
-        image.user === cnServerUbuntuUser
+        image.user === CN_SERVER_UBUNTU_USER
     );
   }
 

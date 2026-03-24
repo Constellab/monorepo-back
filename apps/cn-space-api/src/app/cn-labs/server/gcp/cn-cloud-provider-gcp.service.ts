@@ -5,13 +5,13 @@ import { CnCloudProviderName } from '../../../cn-cloud-providers/cn-cloud-provid
 import { CnCoreConfigService } from '../../../cn-core/modules/cn-core-config/cn-core-config.service';
 import { CnCommandService } from '../../../cn-core/services/cn-command.service';
 import {
+  CN_SERVER_UBUNTU_USER,
   CnCpCreateInstanceRequest,
   CnCpCreateVolumeRequest,
   CnCpInstance,
   CnCpInstanceWithVolume,
   CnCpStaticIpAddress,
   CnCpVolume,
-  cnServerUbuntuUser,
 } from '../cn-cloud-provider.class';
 import { CnCloudProviderService } from '../cn-cloud-provider.service';
 import { CnGcpHelper } from './cn-gcp.class';
@@ -48,11 +48,11 @@ export class CnCloudProviderGcpService extends CnCloudProviderService {
   }
 
   getSshUserName(): string {
-    return cnServerUbuntuUser;
+    return CN_SERVER_UBUNTU_USER;
   }
 
   /////////////////////// INSTANCE ///////////////////////
-  async createInstance(): Promise<CnCpInstance> {
+  createInstance(): Promise<CnCpInstance> {
     // this is not called as the volume is created the same time as the instance
     // with this we only create 1 volume in GCP
     throw new Error('Not implemented');
@@ -110,12 +110,12 @@ export class CnCloudProviderGcpService extends CnCloudProviderService {
     return false;
   }
 
-  async attachVolumeToInstance(): Promise<CnCpVolume> {
+  attachVolumeToInstance(): Promise<CnCpVolume> {
     // as the volume is created with the instance, we don't need to create it separately
     throw Error('Not implemented');
   }
 
-  async createVolume(): Promise<CnCpVolume> {
+  createVolume(): Promise<CnCpVolume> {
     // as the volume is created with the instance, we don't need to create it separately
     throw Error('Not implemented');
   }
@@ -135,7 +135,7 @@ export class CnCloudProviderGcpService extends CnCloudProviderService {
     return instance.isAttachedToVolume(volume.selfLink);
   }
 
-  async mountVolume(): Promise<void> {
+  mountVolume(): Promise<void> {
     // no need to mount the volume as the volume is already mounted
     // because the volume is created with the instance
     return null;

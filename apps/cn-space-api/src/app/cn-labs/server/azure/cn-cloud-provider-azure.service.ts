@@ -7,6 +7,7 @@ import { CnCommandService } from '../../../cn-core/services/cn-command.service';
 import { CnLab } from '../../cn-lab.entity';
 import { CnLabVolumeType } from '../../volume/cn-lab-volume-entity';
 import {
+  CN_SERVERS_SSH_AUTHORIZED_KEY_PATH,
   CnCpCreateInstanceRequest,
   CnCpCreateVolumeRequest,
   CnCpInstance,
@@ -14,7 +15,6 @@ import {
   CnCpStaticIpAddress,
   CnCpVolume,
   CnCpVolumeStatus,
-  cnServerSshAuthorizedKeyPath,
 } from '../cn-cloud-provider.class';
 import { CnCloudProviderService } from '../cn-cloud-provider.service';
 import { CnAzureInstance, CnAzureVolumeStatus } from './cn-azure.class';
@@ -57,7 +57,7 @@ export class CnCloudProviderAzureService extends CnCloudProviderService {
     // retrieve the ssh key stored in azure
     const ssh = await this.azureService.getSshKey(this.configService.getAzureSshKey());
     const sshPublicKey: SshPublicKey = {
-      path: cnServerSshAuthorizedKeyPath,
+      path: CN_SERVERS_SSH_AUTHORIZED_KEY_PATH,
       keyData: ssh.publicKey,
     };
 
@@ -182,7 +182,7 @@ export class CnCloudProviderAzureService extends CnCloudProviderService {
       case 'Frozen':
         return 'IN_USE';
       default:
-        throw new Error(`Unknown status ${status} for azure disk ${name}`);
+        throw new Error(`Unknown status ${String(status)} for azure disk ${name}`);
     }
   }
 
@@ -191,15 +191,15 @@ export class CnCloudProviderAzureService extends CnCloudProviderService {
     return false;
   }
 
-  async createStaticIpAddress(): Promise<CnCpStaticIpAddress | null> {
+  createStaticIpAddress(): Promise<CnCpStaticIpAddress | null> {
     return null;
   }
 
-  async deleteIpAddress(): Promise<void> {
+  deleteIpAddress(): Promise<void> {
     return null;
   }
 
-  async getIpAddressFromId(): Promise<CnCpStaticIpAddress | null> {
+  getIpAddressFromId(): Promise<CnCpStaticIpAddress | null> {
     return null;
   }
 

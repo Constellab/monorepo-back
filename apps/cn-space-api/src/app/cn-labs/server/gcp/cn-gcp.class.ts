@@ -118,6 +118,8 @@ export class CnGcpInstance {
 }
 
 export class CnGcpVolume {
+  private readonly logger = new Logger(CnGcpVolume.name);
+
   constructor(public volume: google.cloud.compute.v1.IDisk) {}
 
   get name(): string {
@@ -152,6 +154,8 @@ export class CnGcpVolume {
         return 'AVAILABLE';
       case 'CREATING':
         return 'CREATING';
+      case 'DELETING':
+        return 'DELETING';
       case 'FAILED':
       default:
         throw new Error(`Unknown status ${this.volume.status} for GCP disk`);

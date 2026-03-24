@@ -26,7 +26,7 @@ export interface CnCpInstance {
   billing: CnLabBillingMode;
 }
 
-export type CnCpVolumeStatus = 'CREATING' | 'AVAILABLE' | 'IN_USE' | 'ATTACHING';
+export type CnCpVolumeStatus = 'CREATING' | 'AVAILABLE' | 'IN_USE' | 'ATTACHING' | 'DELETING';
 
 export interface CnCpCreateVolumeRequest {
   name: string;
@@ -58,8 +58,8 @@ export interface CnCpCompleteInfo {
   domainRecord: CnOvhDomainRecord;
 }
 
-export const cnServerUbuntuUser = 'ubuntu';
-export const cnServerSshAuthorizedKeyPath = `/home/${cnServerUbuntuUser}/.ssh/authorized_keys`;
+export const CN_SERVER_UBUNTU_USER = 'ubuntu';
+export const CN_SERVERS_SSH_AUTHORIZED_KEY_PATH = `/home/${CN_SERVER_UBUNTU_USER}/.ssh/authorized_keys`;
 
 export interface CnCpStaticIpAddress {
   id: string;

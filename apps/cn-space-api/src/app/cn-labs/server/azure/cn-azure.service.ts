@@ -11,7 +11,7 @@ import { DefaultAzureCredential } from '@azure/identity';
 import { Injectable } from '@nestjs/common';
 
 import { CnCoreConfigService } from '../../../cn-core/modules/cn-core-config/cn-core-config.service';
-import { cnServerUbuntuUser } from '../cn-cloud-provider.class';
+import { CN_SERVER_UBUNTU_USER } from '../cn-cloud-provider.class';
 
 @Injectable()
 export class CnAzureService {
@@ -36,7 +36,7 @@ export class CnAzureService {
 
       osProfile: {
         computerName: name,
-        adminUsername: cnServerUbuntuUser,
+        adminUsername: CN_SERVER_UBUNTU_USER,
         linuxConfiguration: {
           ssh: {
             publicKeys: [sshPublicKey],

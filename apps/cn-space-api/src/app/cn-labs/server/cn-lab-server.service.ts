@@ -139,13 +139,13 @@ export class CnLabServerService {
       );
     }
 
-    // Create or get the volume
+    // Create or get the volume (skip if already created with the instance)
     if (!lab.serverVolumeId) {
       if (!cloudProviderService.volumeIsCreatedSeparately()) {
         throw new BlBadRequestException("The volume should be created but it doesn't exist");
       }
       lab = await this.createVolume(cloudProviderService, lab, labVolume);
-    } else {
+    } else if (cloudProviderService.volumeIsCreatedSeparately()) {
       const serverVolume = await cloudProviderService.getVolume(lab.serverVolumeId, lab.region.technicalName);
       if (serverVolume == null) {
         throw new BlBadRequestException(
@@ -339,9 +339,19 @@ export class CnLabServerService {
         serverVolume = await service.getVolume(lab.serverVolumeId, lab.region.technicalName);
       }
 
+      // break early if resources are being deleted
+      if (serverVolume.status === 'DELETING' || serverInstance.status.status === 'ERROR') {
+        break;
+      }
+
       count++;
     }
 
+    if (serverVolume.status === 'DELETING' || serverInstance.status.status === 'ERROR') {
+      throw new BlBadRequestException(
+        'Server instance or volume was deleted during initialization, please retry or contact support'
+      );
+    }
     if (serverInstance.status.status === 'CREATING') {
       throw new BlBadRequestException(
         'Server instance not ready, please refresh the status if few minutes and then contact the' +
@@ -390,7 +400,9 @@ export class CnLabServerService {
     try {
       await this.ovhCloudProviderService.createLabDomainHostRecord(ipv4, mainDomain, subDomainName);
     } catch (e) {
-      throw new Error(`Error while creating domain record for lab. Error: ${e}`);
+      throw new Error(
+        `Error while creating domain record for lab. Error: ${e instanceof Error ? e.message : String(e)}`
+      );
     }
     this.logger.log(`Domain record created for lab ${lab.id} with subdomain ${subDomainName}`);
     await this.labService.updatePartial(lab.id, { dnsConfigured: true });
