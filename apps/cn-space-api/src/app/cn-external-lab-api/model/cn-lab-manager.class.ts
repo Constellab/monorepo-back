@@ -91,6 +91,7 @@ export interface CnLabManagerInitConfig {
   community: {
     frontUrl: string;
     apiUrl: string;
+    // TODO : to remove once all lab manager are on version 2.11.0 or higher
     apiKey: string;
   };
   codelabToken: string;

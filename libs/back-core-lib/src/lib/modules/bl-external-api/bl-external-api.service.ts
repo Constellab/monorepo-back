@@ -163,7 +163,7 @@ export class BlExternalApiService {
       };
     } else {
       this.logger.error('Response object not paginated');
-      throw 'Response object not paginated';
+      throw new Error('Response object not paginated');
     }
   }
 

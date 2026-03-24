@@ -3,6 +3,7 @@ import {
   BlExternalApiError,
   BlExternalApiHttpOption,
   BlExternalApiService,
+  BlHttpException,
 } from '@monorepo/back-core-lib';
 import { ClDeserializationRef } from '@monorepo/core-lib';
 import { Injectable, Logger } from '@nestjs/common';
@@ -379,6 +380,17 @@ export class CnExternalLabManagerApiService {
       throw new BlBadRequestException('The lab manager is not running, cannot perform the operation');
     }
 
-    return throwError(error as any);
+    // convert the known error from the lab manager to a BlHttpException
+    // to show the message to the user
+    if (error?.knownError) {
+      return throwError(
+        () =>
+          new BlHttpException(error.knownError.status, error.knownError.detail, {
+            instanceId: error.knownError.instanceId,
+          })
+      );
+    }
+
+    return throwError(() => error as any);
   }
 }

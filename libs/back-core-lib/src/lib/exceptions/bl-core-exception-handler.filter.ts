@@ -92,7 +92,7 @@ export abstract class BlCoreExceptionHandlerFilter implements ExceptionFilter {
       return this.convertToNestError(this.options.serverError, HttpStatus.BAD_REQUEST);
     } else {
       return {
-        status: HttpStatus.BAD_REQUEST,
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
         code: this.options.serverError,
         detail: error.message,
         instanceId: instanceId,
