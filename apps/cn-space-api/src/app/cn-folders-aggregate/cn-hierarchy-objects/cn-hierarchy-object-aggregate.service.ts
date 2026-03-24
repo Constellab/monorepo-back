@@ -269,6 +269,10 @@ export class CnHierarchyObjectAggregateService {
     newFolderParentId: string
   ): Promise<CnHierarchyObject> {
     const hierarchyObject = await this.securityService.getAndCheckAuthorizationForUpdate(hierarchyObjectId);
+    if (hierarchyObjectId === newFolderParentId) {
+      throw new BlBadRequestException('Cannot move an object into itself');
+    }
+
     if (hierarchyObject.parentId === newFolderParentId) {
       return hierarchyObject;
     }
@@ -276,6 +280,10 @@ export class CnHierarchyObjectAggregateService {
     const oldParentRootFolderId = hierarchyObject.getRootFolderId();
 
     const newParentFolder = await this.securityService.getAndCheckAuthorizationForFindOne(newFolderParentId);
+
+    if (newParentFolder.objectType !== CnHierarchyObjectType.FOLDER) {
+      throw new BlBadRequestException('The target parent must be a folder');
+    }
 
     let newHierarchyObject: CnHierarchyObject;
     switch (hierarchyObject.objectType) {
