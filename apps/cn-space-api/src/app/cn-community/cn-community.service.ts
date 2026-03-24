@@ -17,11 +17,7 @@ export class CnCommunityService {
   ) {}
 
   public async getBrickLatestVersion(labId: string, brickName: string): Promise<CnCommunityBrickVersionDTO> {
-    // TODO TO IMPROVE WHEN ROUTE TO GET LATEST VERSION WILL BE IMPLEMENTED
-    const brick = await this.getBrickByName(labId, brickName);
-    const brickVersions = await this.getBrickVersionsList(labId, brick.id);
-    const latestVersion = brickVersions[0];
-    return this.getBrickVersion(labId, brickName, latestVersion);
+    return this.getBrickVersion(labId, brickName, 'latest');
   }
 
   public async getBrickVersion(
@@ -29,16 +25,13 @@ export class CnCommunityService {
     brickName: string,
     brickVersion: string
   ): Promise<CnCommunityBrickVersionDTO> {
-    const url = `${this.configService.getCommunityApiUrl()}/brick/for-space/name/${brickName}/${brickVersion}`;
-    const brickVersionDTO: CnCommunityBrickVersionDTO = await lastValueFrom(
+    const baseUrl = this.configService.getCommunityApiUrl();
+    const url = `${baseUrl}/brick/for-space/version-info/${brickName}/${brickVersion}`;
+    return await lastValueFrom(
       this.externalApiService.get(url, CnCommunityBrickVersionDTO, {
         headers: await this.getHeaders(labId),
       })
     );
-
-    // delete repositoryAccessUrl to avoid security issue
-    delete brickVersionDTO.repositoryAccessUrl;
-    return brickVersionDTO;
   }
 
   async getBrickByName(labId: string, name: string): Promise<CnCommunityBrickDto> {

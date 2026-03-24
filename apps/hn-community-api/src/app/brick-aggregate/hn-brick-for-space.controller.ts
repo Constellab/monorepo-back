@@ -2,12 +2,15 @@ import { ClPage } from '@monorepo/core-lib';
 import { Body, Controller, Get, Param, ParseIntPipe, Post, Query } from '@nestjs/common';
 
 import {
-  hnIsLabAllowWithoutUserAuth,
   HnLabAllowWithoutUserAuthentication,
   HnLabGuard,
 } from '../core/decorators/hn-lab-auth-guard.decorator';
 import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
-import { HnBrickDto, HnBrickVersionDownloadDTO } from './brick/hn-brick.dto';
+import {
+  HnBrickDto,
+  HnBrickVersionDownloadDTO,
+  HnBrickVersionInfoDTO,
+} from './brick/hn-brick.dto';
 import { HnBrickAggregateService } from './hn-brick-aggregate.service';
 
 @HnLabGuard()
@@ -17,7 +20,20 @@ export class HnBrickForSpaceController {
 
   @Get('name/:name')
   async findOneByName(@Param('name') name: string): Promise<HnBrickDto> {
-    return new HnBrickDto(await this.brickAggregateService.findBrickByName(name, null, false));
+    return new HnBrickDto(
+      await this.brickAggregateService.findBrickByNameForSpace(name)
+    );
+  }
+
+  @Get('version-info/:name/:version')
+  getBrickVersionInfo(
+    @Param('name') name: string,
+    @Param('version') version: string
+  ): Promise<HnBrickVersionInfoDTO> {
+    return this.brickAggregateService.getBrickVersionInfo(
+      name,
+      version
+    );
   }
 
   @HnLabAllowWithoutUserAuthentication()
@@ -42,6 +58,6 @@ export class HnBrickForSpaceController {
 
   @Get('versions-list/:brickId')
   async getVersionsList(@Param('brickId') brickId: string): Promise<string[]> {
-    return this.brickAggregateService.getVersionsList(brickId, null, false);
+    return this.brickAggregateService.getVersionsListForSpace(brickId);
   }
 }

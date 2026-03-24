@@ -18,7 +18,7 @@ export class CnExternalCommunityLabsController {
    * Verify rights of the lab user requesting Community based on the Api token and the user id
    */
   @Get('verify-rights')
-  async verifyRights(): Promise<any> {
+  verifyRights(): any {
     return {
       labId: CnCurrentUserHelper.getAndCheckCurrentLab().id,
       userId: CnCurrentUserHelper.getAndCheckCurrentUser().id,
@@ -31,10 +31,24 @@ export class CnExternalCommunityLabsController {
    */
   @CnLabRobotAuthentication()
   @Get('verify-without-user-rights')
-  async verifyWithoutUserRights(): Promise<any> {
+  verifyWithoutUserRights(): { labId: string } {
     return {
       labId: CnCurrentUserHelper.getAndCheckCurrentLab().id,
     };
+  }
+
+  /**
+   * Check if the lab has access to a specific brick based on its lab config
+   */
+  @CnLabRobotAuthentication()
+  @Get('check-brick-access/:brickName')
+  async checkBrickAccessByName(@Param('brickName') brickName: string): Promise<{ hasAccess: boolean }> {
+    const lab = CnCurrentUserHelper.getAndCheckCurrentLab();
+    if (lab.labConfigId == null) {
+      return { hasAccess: false };
+    }
+    const brickVersion = await this.labConfigsService.getLabBrickVersion(lab.labConfigId, brickName);
+    return { hasAccess: brickVersion != null };
   }
 
   /**
