@@ -165,15 +165,21 @@ export class HnTechnicalDocInputDTO {
 }
 
 /**
- * DTO containing minimum information to download a brick version
+ * DTO containing brick version info without sensitive data
  */
-export class HnBrickVersionDownloadDTO {
+export class HnBrickVersionInfoDTO {
   brickName: string;
   brickVersion: string;
   repoType: HnRepoType;
   repositoryUrl: string;
-  repositoryAccessUrl: string;
   technicalInfo?: Record<string, any>;
+}
+
+/**
+ * DTO containing minimum information to download a brick version
+ */
+export class HnBrickVersionDownloadDTO extends HnBrickVersionInfoDTO {
+  repositoryAccessUrl: string;
 }
 
 export class HnCreateBrickDTO {

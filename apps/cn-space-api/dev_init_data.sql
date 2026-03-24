@@ -73,11 +73,16 @@ VALUES -- AZURE
 ------------------ Cloud provider regions ------------------
 INSERT INTO `cloud_provider_region` (`id`, `createdAt`, `lastModifiedAt`, `technicalName`, `s3Endpoint`, `createdById`,
                                      `lastModifiedById`, `cloudProviderId`, `cityId`, `name`, `type`)
-VALUES -- OVH gra (Gravelines)
+VALUES -- OVH gra (Gravelines) S3
        ('2f71581d-2882-476a-a6d5-e077dd2724ff', '2023-02-27 17:19:45', '2023-12-22 14:11:56', 'gra',
         'https://s3.gra.io.cloud.ovh.net/', 'cc041136-3e20-48e6-bf9d-9aa8ecaad21f',
         'cc041136-3e20-48e6-bf9d-9aa8ecaad21f', '964ad825-6b0b-44f2-9825-7129b01a9df7',
         '2694a12e-0835-11ed-afdd-0242ac120004', 'Graveline', 'S3'),
+       -- OVH gra (Gravelines) ALL
+       ('a7c8e3f1-5d42-4b9a-8f6e-1c2d3e4f5a6b', '2026-03-16 10:00:00', '2026-03-16 10:00:00', 'gra',
+        'https://s3.gra.io.cloud.ovh.net/', 'cc041136-3e20-48e6-bf9d-9aa8ecaad21f',
+        'cc041136-3e20-48e6-bf9d-9aa8ecaad21f', '964ad825-6b0b-44f2-9825-7129b01a9df7',
+        '2694a12e-0835-11ed-afdd-0242ac120004', 'Graveline', 'ALL'),
        -- OVH sbg (Strasbourg)
        ('d4c4172b-10d6-4c47-84c5-b6575d90c06f', '2023-10-04 09:23:30', '2024-03-25 12:21:17', 'sbg',
         'https://s3.sbg.io.cloud.ovh.net/', 'cc041136-3e20-48e6-bf9d-9aa8ecaad21f',

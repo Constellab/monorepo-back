@@ -1,8 +1,10 @@
 import {
   BlBadRequestException,
+  BlExternalApiService,
   BlFile,
   BlFileResponse,
   BlNotFoundException,
+  BlRequestContextHelper,
   BlSearchParams,
   BlSearchSortCriteria,
   BlUnauthorizedException,
@@ -16,6 +18,7 @@ import {
   TeRichTextBlockModificationWithUser,
 } from '@monorepo/te-text-editor';
 import { Injectable } from '@nestjs/common';
+import { lastValueFrom } from 'rxjs';
 import { DataSource, FindOptionsWhere, In, IsNull, Like } from 'typeorm';
 
 import { HnErrorText } from '../core/model/config/hn-error-text.class';
@@ -40,6 +43,7 @@ import { HnUserService } from '../users/hn-user.service';
 import {
   HnBrickDto,
   HnBrickVersionDownloadDTO,
+  HnBrickVersionInfoDTO,
   HnCreateBrickDTO,
   HnCreateTechnicalDocContent,
   HnEditBrickDTO,
@@ -98,7 +102,8 @@ export class HnBrickAggregateService {
     private configService: HnCoreConfigService,
     private frontService: HnFrontService,
     private fileDocumentationService: HnFileDocumentationService,
-    private readonly spaceAggregateService: HnSpaceAggregateService
+    private readonly spaceAggregateService: HnSpaceAggregateService,
+    private readonly externalApiService: BlExternalApiService
   ) {}
 
   //------------------------------------- BRICKS -------------------------------------
@@ -283,6 +288,22 @@ export class HnBrickAggregateService {
     return brick;
   }
 
+  async findBrickByNameForSpace(name: string): Promise<HnBrick> {
+    const brick = await this.brickService.findOne({ name });
+
+    if (brick == null) {
+      throw new BlBadRequestException(HnErrorText.BRICK_NOT_FOUND, {
+        detailArgs: { name: name },
+      });
+    }
+
+    if (brick.visibility === HnBrickVisibility.PRIVATE) {
+      await this.checkLabBrickAccessByName(name);
+    }
+
+    return brick;
+  }
+
   /**
    * Lightweight findBrickByName that skips eager relations.
    * Use when only brick columns (id, name, etc.) are needed.
@@ -443,11 +464,11 @@ export class HnBrickAggregateService {
       const version: BlVersion =
         body.version.subPatch != null
           ? new BlVersion(
-              +body.version.major,
-              +body.version.minor,
-              +body.version.patch,
-              +body.version.subPatch
-            )
+            +body.version.major,
+            +body.version.minor,
+            +body.version.patch,
+            +body.version.subPatch
+          )
           : new BlVersion(+body.version.major, +body.version.minor, +body.version.patch);
 
       // TODO: Improve brick version creation (simplify in the aggregate)
@@ -527,6 +548,9 @@ export class HnBrickAggregateService {
     return brick;
   }
 
+  /**
+   * @deprecated Use getBrickVersionForDownload instead
+   */
   async findBrickByNameSpace(
     name: string,
     version: string,
@@ -560,6 +584,76 @@ export class HnBrickAggregateService {
       repositoryAccessUrl: brick.repositoryAccessUrl,
       technicalInfo: brickVersion.technicalInfo,
     };
+  }
+
+  async getBrickVersionInfo(name: string, version: string): Promise<HnBrickVersionInfoDTO> {
+    const brickVersion: HnBrickVersion = await this.brickVersionService.getAndCheckBrickVersion(
+      name,
+      version
+    );
+    const brick = brickVersion.brickMajorVersion.brick;
+
+    return {
+      brickName: brick.name,
+      brickVersion: brickVersion.version.toString(),
+      repoType: brickVersion.repoType,
+      repositoryUrl: brick.repositoryUrl,
+      technicalInfo: brickVersion.technicalInfo,
+    };
+  }
+
+  async getBrickVersionForDownload(name: string, version: string): Promise<HnBrickVersionDownloadDTO> {
+    const brickVersion: HnBrickVersion = await this.brickVersionService.getAndCheckBrickVersion(
+      name,
+      version
+    );
+    const brick = brickVersion.brickMajorVersion.brick;
+
+    if (brick.visibility === HnBrickVisibility.PRIVATE) {
+      await this.checkLabBrickAccess(name, version);
+    }
+
+    return {
+      brickName: brick.name,
+      brickVersion: brickVersion.version.toString(),
+      repoType: brickVersion.repoType,
+      repositoryUrl: brick.repositoryUrl,
+      repositoryAccessUrl: brick.repositoryAccessUrl,
+      technicalInfo: brickVersion.technicalInfo,
+    };
+  }
+
+  private async checkLabBrickAccessByName(brickName: string): Promise<void> {
+    const request = BlRequestContextHelper.getCurrentRequest();
+    const url =
+      this.configService.getSpaceApiUrl() + `/external-community-labs/check-brick-access/${brickName}`;
+    const result: { hasAccess: boolean } = await lastValueFrom(
+      this.externalApiService.get(url, null, {
+        headers: { authorization: request.header('authorization') },
+      })
+    );
+    if (!result?.hasAccess) {
+      throw new BlUnauthorizedException(HnErrorText.PRIVATE_BRICK_ACCESS_DENIED, {
+        detailArgs: { brickName },
+      });
+    }
+  }
+
+  private async checkLabBrickAccess(brickName: string, version: string): Promise<void> {
+    const request = BlRequestContextHelper.getCurrentRequest();
+    const url =
+      this.configService.getSpaceApiUrl() +
+      `/external-community-labs/check-brick-access/${brickName}/${version}`;
+    const result: { hasAccess: boolean } = await lastValueFrom(
+      this.externalApiService.get(url, null, {
+        headers: { authorization: request.header('authorization') },
+      })
+    );
+    if (!result?.hasAccess) {
+      throw new BlUnauthorizedException(HnErrorText.PRIVATE_BRICK_ACCESS_DENIED, {
+        detailArgs: { brickName, version },
+      });
+    }
   }
 
   async isActualBrickAndNewVersion(
@@ -1135,16 +1229,34 @@ export class HnBrickAggregateService {
     );
   }
 
-  async getVersionsList(brickId: string, userId: string = null): Promise<string[]> {
-    const brick = await this.findBrickById(
-      brickId,
-      userId ? await this.userService.findOne(userId) : HnCurrentUserHelper.getCurrentUser()
-    );
+  async getVersionsList(brickId: string, userId: string = null, strict: boolean = true): Promise<string[]> {
+    if (strict) {
+      const brick = await this.findBrickById(
+        brickId,
+        userId ? await this.userService.findOne(userId) : HnCurrentUserHelper.getCurrentUser()
+      );
+      if (brick == null) {
+        throw new BlNotFoundException(HnErrorText.BRICK_NOT_FOUND, {
+          detailArgs: { id: brickId },
+        });
+      }
+    }
+    return this.brickVersionService.getVersionsList(brickId);
+  }
+
+  async getVersionsListForSpace(brickId: string): Promise<string[]> {
+    const brick = await this.brickService.findOne({ id: brickId });
+
     if (brick == null) {
       throw new BlNotFoundException(HnErrorText.BRICK_NOT_FOUND, {
         detailArgs: { id: brickId },
       });
     }
+
+    if (brick.visibility === HnBrickVisibility.PRIVATE) {
+      await this.checkLabBrickAccessByName(brick.name);
+    }
+
     return this.brickVersionService.getVersionsList(brickId);
   }
 

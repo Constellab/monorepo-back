@@ -107,6 +107,7 @@ export class HnBrickController {
   }
 
   /**
+   * @deprecated Use HnBrickForSpaceController.getBrickVersionForDownload instead.
    * Special route that is called by the lab using the space API key to retrieve info about the brick.
    * If the key is present and valid, private bricks can be accessed.
    * TODO remove central route once all lab manager are on v 1.20 and lab are on v 0.15.0

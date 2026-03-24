@@ -12,4 +12,5 @@ export enum HnErrorText {
   DOCUMENTATION_NOT_FOUND = 'error.documentation_not_found',
   TECHNICAL_DOCUMENTATION_NOT_FOUND = 'error.technical_documentation_not_found',
   WRONG_CREDENTIALS = 'error.wrong_credentials',
+  PRIVATE_BRICK_ACCESS_DENIED = 'error.private_brick_access_denied',
 }
