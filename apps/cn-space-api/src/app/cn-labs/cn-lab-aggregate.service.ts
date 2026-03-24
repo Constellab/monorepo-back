@@ -1424,6 +1424,13 @@ export class CnLabAggregateService {
     const lab = await this.getAndCheckServerStatusBeforeAction(labId);
     this.checkServerIsRunning(lab);
 
+    // before updating the lab manager, we update the lab-configurer
+    try {
+      await this.labConfigurerService.updateLabConfigurerRepoWithTask(lab);
+    } catch (error: any) {
+      this.logger.error(`Error updating lab configurer: ${error instanceof Error ? error.message : error}`);
+    }
+
     await this.labsService.updateServerTask(
       lab.id,
       `Updating lab manager to version ${labManagerVersion}`,
@@ -1450,6 +1457,9 @@ export class CnLabAggregateService {
     this.checkServerIsRunning(lab);
 
     await this.labConfigurerService.updateLabConfigurerRepoWithTask(lab);
+
+    // restart the lab to apply the new config
+    await this.labConfigurerService.composeUp(lab);
     return this.getStatus(lab);
   }
 
