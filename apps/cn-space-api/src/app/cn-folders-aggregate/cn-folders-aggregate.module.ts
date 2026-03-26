@@ -98,6 +98,7 @@ import { CnFoldersSecurityService } from './cn-security/cn-folders-security.serv
     CnScenarioAggregateService,
     CnNoteAggregateService,
     CnDocumentAggregateService,
+    CnConstellabDocumentAggregateService,
   ],
 })
 export class CnFoldersAggregateModule {}

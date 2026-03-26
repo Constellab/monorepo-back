@@ -42,6 +42,7 @@ import {
   CnExternalLabSyncedObjectDTO,
   CnExternalLabUser,
 } from '../cn-external-lab-api/model/cn-external-lab-api.class';
+import { CnConstellabDocumentAggregateService } from '../cn-folders-aggregate/cn-documents/cn-constellab-document.aggregate.service';
 import { CnDocument } from '../cn-folders-aggregate/cn-documents/cn-document.entity';
 import { CnDocumentAggregateService } from '../cn-folders-aggregate/cn-documents/cn-document-aggregate.service';
 import { CnDocumentUploadOverrideMode } from '../cn-folders-aggregate/cn-documents/cn-document-dto.class';
@@ -102,7 +103,8 @@ export class CnExternalLabsController {
     private labNotificationService: CnLabNotificationService,
     private configService: CnCoreConfigService,
     private groupsAggregateService: CnGroupsAggregateService,
-    private supportService: CnSupportService
+    private supportService: CnSupportService,
+    private constellabDocumentAggregateService: CnConstellabDocumentAggregateService
   ) {}
 
   // route called on the lab start
@@ -167,7 +169,7 @@ export class CnExternalLabsController {
     return this.scenarioAggregateService.getScenariosOfCurrentLab();
   }
 
-  //////////////////////////// NOTE ////////////////////////////
+  //////////////////////////// LAB NOTE ////////////////////////////
 
   @UseInterceptors(FilesInterceptor('files'))
   @Put(['folder/:parentFolderId/note/v2'])
@@ -201,6 +203,16 @@ export class CnExternalLabsController {
   @Get('note/sync')
   async getNoteOfCurrentLab(): Promise<CnExternalLabSyncedObjectDTO[]> {
     return this.noteAggregateService.getNotesOfCurrentLab();
+  }
+
+  //////////////////////////// CONSTELLAB DOCUMENT ////////////////////////////
+
+  @Post('folder/:folderId/constellab-document')
+  public createConstellabDocument(
+    @Param('folderId', new ParseUUIDPipe()) folderId: string,
+    @Body() name: { name: string }
+  ): Promise<CnHierarchyObject> {
+    return this.constellabDocumentAggregateService.createConstellabDocumentFromLab(folderId, name.name);
   }
 
   //////////////////////////// RESOURCE ////////////////////////////

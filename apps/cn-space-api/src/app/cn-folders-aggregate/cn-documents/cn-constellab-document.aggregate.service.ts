@@ -10,6 +10,7 @@ import { Injectable } from '@nestjs/common';
 import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
 import { CnUsersService } from '../../cn-users/cn-users.service';
 import { CnFolderEventService } from '../cn-folder.event';
+import { CnHierarchyObject } from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
 import { CnHierarchyObjectService } from '../cn-hierarchy-objects/cn-hierarchy-object.service';
 import { CnFoldersSecurityService } from '../cn-security/cn-folders-security.service';
 import { CnDocument, CnDocumentType } from './cn-document.entity';
@@ -39,6 +40,14 @@ export class CnConstellabDocumentAggregateService {
       parentFolder,
     });
     return doc;
+  }
+
+  public async createConstellabDocumentFromLab(
+    parentFolderId: string,
+    filename: string
+  ): Promise<CnHierarchyObject> {
+    const constellabDocument = await this.createConstellabDocument(parentFolderId, filename);
+    return await this.hierarchyObjectService.findByIdAndCheck(constellabDocument.document.id);
   }
 
   public async updateConstellabDocument(
