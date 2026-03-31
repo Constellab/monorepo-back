@@ -40,6 +40,22 @@ import { HnTechnicalFolder } from '../technical-folder/hn-technical-folder.entit
 import { HnTechnicalFolderService } from '../technical-folder/hn-technical-folder.service';
 import { HnUser } from '../users/hn-user.entity';
 import { HnUserService } from '../users/hn-user.service';
+import { HnBrickMajorVersion } from './brick-major-version/hn-brick-major-version.entity';
+import { HnBrickMajorVersionService } from './brick-major-version/hn-brick-major-version.service';
+import { HnBrickUserInviteDto } from './brick-user-invite/hn-brick-user-invite.dto';
+import { HnBrickUserInvite } from './brick-user-invite/hn-brick-user-invite.entity';
+import { HnBrickUserInviteService } from './brick-user-invite/hn-brick-user-invite.service';
+import { HnBrickUser } from './brick-user/hn-brick-user.entity';
+import { HnBrickUserService } from './brick-user/hn-brick-user.service';
+import { HnBrickVersionDto } from './brick-version/hn-brick-version.dto';
+import {
+  HnBrickSettingsDTO,
+  HnBrickVersion,
+  HnNewVersionDTO,
+  HnReferenceDTO,
+  HnRepoType,
+} from './brick-version/hn-brick-version.entity';
+import { HnBrickVersionService } from './brick-version/hn-brick-version.service';
 import {
   HnBrickDto,
   HnBrickVersionDownloadDTO,
@@ -53,22 +69,6 @@ import {
 } from './brick/hn-brick.dto';
 import { HnBrick, HnBrickVisibility } from './brick/hn-brick.entity';
 import { HnBrickService } from './brick/hn-brick.service';
-import { HnBrickMajorVersion } from './brick-major-version/hn-brick-major-version.entity';
-import { HnBrickMajorVersionService } from './brick-major-version/hn-brick-major-version.service';
-import { HnBrickUser } from './brick-user/hn-brick-user.entity';
-import { HnBrickUserService } from './brick-user/hn-brick-user.service';
-import { HnBrickUserInviteDto } from './brick-user-invite/hn-brick-user-invite.dto';
-import { HnBrickUserInvite } from './brick-user-invite/hn-brick-user-invite.entity';
-import { HnBrickUserInviteService } from './brick-user-invite/hn-brick-user-invite.service';
-import { HnBrickVersionDto } from './brick-version/hn-brick-version.dto';
-import {
-  HnBrickSettingsDTO,
-  HnBrickVersion,
-  HnNewVersionDTO,
-  HnReferenceDTO,
-  HnRepoType,
-} from './brick-version/hn-brick-version.entity';
-import { HnBrickVersionService } from './brick-version/hn-brick-version.service';
 import { HnDocumentationDto } from './documentation/hn-documentation.dto';
 import {
   HnDocumentation,
@@ -297,9 +297,9 @@ export class HnBrickAggregateService {
       });
     }
 
-    if (brick.visibility === HnBrickVisibility.PRIVATE) {
-      await this.checkLabBrickAccessByName(name);
-    }
+    // if (brick.visibility === HnBrickVisibility.PRIVATE) {
+    //   await this.checkLabBrickAccessByName(name);
+    // }
 
     return brick;
   }
@@ -464,11 +464,11 @@ export class HnBrickAggregateService {
       const version: BlVersion =
         body.version.subPatch != null
           ? new BlVersion(
-            +body.version.major,
-            +body.version.minor,
-            +body.version.patch,
-            +body.version.subPatch
-          )
+              +body.version.major,
+              +body.version.minor,
+              +body.version.patch,
+              +body.version.subPatch
+            )
           : new BlVersion(+body.version.major, +body.version.minor, +body.version.patch);
 
       // TODO: Improve brick version creation (simplify in the aggregate)
@@ -609,9 +609,9 @@ export class HnBrickAggregateService {
     );
     const brick = brickVersion.brickMajorVersion.brick;
 
-    if (brick.visibility === HnBrickVisibility.PRIVATE) {
-      await this.checkLabBrickAccess(name, version);
-    }
+    // if (brick.visibility === HnBrickVisibility.PRIVATE) {
+    //   await this.checkLabBrickAccess(name, version);
+    // }
 
     return {
       brickName: brick.name,
@@ -1253,9 +1253,9 @@ export class HnBrickAggregateService {
       });
     }
 
-    if (brick.visibility === HnBrickVisibility.PRIVATE) {
-      await this.checkLabBrickAccessByName(brick.name);
-    }
+    // if (brick.visibility === HnBrickVisibility.PRIVATE) {
+    //   await this.checkLabBrickAccessByName(brick.name);
+    // }
 
     return this.brickVersionService.getVersionsList(brickId);
   }
