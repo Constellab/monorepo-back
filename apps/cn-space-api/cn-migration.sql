@@ -356,3 +356,11 @@ delete from mail where subject is null or mail is null;
 alter table mail
   modify column subject varchar(255) not null,
   modify column mail text not null;
+
+############################ FREE LAB CONFIG ##########################
+alter table settings
+  add column freeLabConfig text null;
+
+update settings
+set freeLabConfig = '{"cloudProvider":"GCP","cloudProviderRegion":"europe-west1-b","cloudProviderInstanceType":"e2-standard-2","nbCpus":2,"ramSize":8,"volumeSize":100,"volumeType":"HIGH_SPEED","billingMode":"HOURLY","domain":"constellab.app","greenOption":"STOP_AFTER_INACTIVITY_TIME","greenOptionInactivityDuration":60,"bricks":["gws_core","gws_academy"],"hourLimit":25,"deletionAfterDays":2}'
+where freeLabConfig is null;

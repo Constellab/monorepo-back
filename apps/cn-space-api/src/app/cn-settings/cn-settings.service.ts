@@ -15,6 +15,7 @@ import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
 import {
   CnConstellabSuiteAppDTO,
   CnConstellabSuiteDTO,
+  CnFreeLabConfigDTO,
   CnRequestAppDTO,
   CnServerDecisionTreeDTO,
   CnServerDecisionTreeOptionDTO,
@@ -109,6 +110,20 @@ export class CnSettingsService extends BlAbstractService<CnSettings> {
         );
       }
     });
+  }
+
+  ///////////////////////////////// FREE LAB CONFIG /////////////////////////////////
+
+  public async getFreeLabConfig(): Promise<CnFreeLabConfigDTO> {
+    const settings = await this.getSettingsAndCheck();
+
+    return settings.freeLabConfig ?? CnSettings.getDefaultFreeLabConfig();
+  }
+
+  public async updateFreeLabConfig(freeLabConfig: CnFreeLabConfigDTO): Promise<CnFreeLabConfigDTO> {
+    await this.updateSettings({ freeLabConfig });
+
+    return freeLabConfig;
   }
 
   ///////////////////////////////// REQUEST APP /////////////////////////////////

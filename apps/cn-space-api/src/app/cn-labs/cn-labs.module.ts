@@ -16,6 +16,7 @@ import { CnObjectStoragesModule } from '../cn-object-storages/cn-object-storages
 import { CnServerCloudModule } from '../cn-servers-info/server-cloud/cn-server-cloud.module';
 import { CnServerPriceModule } from '../cn-servers-info/server-price/cn-server-price.module';
 import { CnStoragePriceModule } from '../cn-servers-info/storage-price/cn-storage-price.module';
+import { CnSettingsModule } from '../cn-settings/cn-settings.module';
 import { CnSpacesModule } from '../cn-spaces/cn-spaces.module';
 import { CnSupportModule } from '../cn-support/cn-support.module';
 import { CnUsersModule } from '../cn-users/cn-users.module';
@@ -99,6 +100,7 @@ import { CnLabVolumeEntity } from './volume/cn-lab-volume-entity';
     CnCloudProvidersModule,
     CnServerCloudModule,
     CnSpacesModule,
+    CnSettingsModule,
 
     HttpModule,
   ],

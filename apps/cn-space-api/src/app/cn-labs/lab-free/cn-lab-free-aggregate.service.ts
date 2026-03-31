@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { DataSource, EntityManager } from 'typeorm';
 
 import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
+import { CnSettingsService } from '../../cn-settings/cn-settings.service';
 import { CnSpace } from '../../cn-spaces/cn-space.entity';
 import { CnUser } from '../../cn-users/cn-user.entity';
 import { CnLab } from '../cn-lab.entity';
@@ -10,7 +11,6 @@ import { CnLabAggregateService } from '../cn-lab-aggregate.service';
 import { CnLabFactoryData, CnLabFactoryService } from '../cn-lab-factory.service';
 import { CnLabStatus } from '../status/cn-lab-status.enum';
 import { CnLabFreeCreateDto, CnLabFreeGetDto, CnLabFreeUpdateDto } from './cn-lab-free.dto';
-import { CnLabFree } from './cn-lab-free.entity';
 import { CnLabFreeService } from './cn-lab-free.service';
 
 /**
@@ -22,7 +22,8 @@ export class CnLabFreeAggregateService {
     private labFreeService: CnLabFreeService,
     private datasource: DataSource,
     private labAggregateService: CnLabAggregateService,
-    private labFactoryService: CnLabFactoryService
+    private labFactoryService: CnLabFactoryService,
+    private settingsService: CnSettingsService
   ) {}
 
   public async createFreeLabCurrentUser(): Promise<CnLab> {
@@ -50,31 +51,33 @@ export class CnLabFreeAggregateService {
       throw new BlBadRequestException('You cannot create a free lab in an entreprise space');
     }
 
+    const config = await this.settingsService.getFreeLabConfig();
+
     const data: CnLabFactoryData = {
       name: user.firstname + ' lab',
       user: user,
       space: space,
-      domain: CnLabFree.DOMAIN,
-      volumeSize: CnLabFree.VOLUME_SIZE,
-      volumeType: CnLabFree.VOLUME_TYPE,
-      billingMode: CnLabFree.BILLING_MODE,
+      domain: config.domain,
+      volumeSize: config.volumeSize,
+      volumeType: config.volumeType,
+      billingMode: config.billingMode,
       cloudProvider: {
-        name: CnLabFree.CLOUD_PROVIDER,
-        region: CnLabFree.CLOUD_PROVIDER_REGION,
-        instanceType: CnLabFree.CLOUD_PROVIDER_INSTANCE_TYPE,
+        name: config.cloudProvider,
+        region: config.cloudProviderRegion,
+        instanceType: config.cloudProviderInstanceType,
       },
-      bricks: CnLabFree.BRICKS.map((brick) => ({ name: brick })),
+      bricks: config.bricks.map((brick) => ({ name: brick })),
       isFreeLab: true,
       greenOption: {
-        type: CnLabFree.GREEN_OPTION,
-        inactivityDuration: CnLabFree.GREEN_OPTION_INACTIVITY_DURATION,
+        type: config.greenOption,
+        inactivityDuration: config.greenOptionInactivityDuration,
       },
     };
 
     const labDb = await this.datasource.transaction(async (entityManager) => {
       const labDb = await this.labFactoryService.createLab(data, entityManager);
 
-      await this.markFreeLabAsStarted(user, labDb, entityManager);
+      await this.markFreeLabAsStarted(user, labDb, config.hourLimit, entityManager);
 
       return labDb;
     });
@@ -85,8 +88,13 @@ export class CnLabFreeAggregateService {
     return labDb;
   }
 
-  private async markFreeLabAsStarted(user: CnUser, lab: CnLab, entityManager: EntityManager): Promise<void> {
-    await this.labFreeService.createFreeLab(user, lab, CnLabFree.HOUR_LIMIT, entityManager);
+  private async markFreeLabAsStarted(
+    user: CnUser,
+    lab: CnLab,
+    hourLimit: number,
+    entityManager: EntityManager
+  ): Promise<void> {
+    await this.labFreeService.createFreeLab(user, lab, hourLimit, entityManager);
   }
 
   public findFreeLabUsageForCurrentUser(): Promise<CnLabFreeGetDto> {

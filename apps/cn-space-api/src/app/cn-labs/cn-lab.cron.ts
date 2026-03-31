@@ -5,6 +5,7 @@ import { DateTime } from 'luxon';
 
 import { CnCoreConfigService } from '../cn-core/modules/cn-core-config/cn-core-config.service';
 import { CnExternalLabApiService } from '../cn-external-lab-api/cn-external-lab-api.service';
+import { CnSettingsService } from '../cn-settings/cn-settings.service';
 import { CnLabBackupsHistory, CnLabBackupStatus } from './backup/cn-lab-backup.dto';
 import { CnLab } from './cn-lab.entity';
 import { CnLabAggregateService } from './cn-lab-aggregate.service';
@@ -59,7 +60,8 @@ export class CnLabCron {
     private labAggregateService: CnLabAggregateService,
     private labFreeService: CnLabFreeService,
     private labMailService: CnLabMailService,
-    private configService: CnCoreConfigService
+    private configService: CnCoreConfigService,
+    private settingsService: CnSettingsService
   ) {}
 
   /**
@@ -388,7 +390,8 @@ export class CnLabCron {
 
   private async getFreeLabsToDelete(): Promise<CnLabFree[]> {
     const expiredLabs = await this.labFreeService.getExpiredFreeLab();
+    const config = await this.settingsService.getFreeLabConfig();
 
-    return expiredLabs.filter((lab) => lab.toDelete());
+    return expiredLabs.filter((lab) => lab.toDelete(config.deletionAfterDays));
   }
 }

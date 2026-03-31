@@ -11,5 +11,6 @@ import { CnYoutubeService } from './cn-youtube.service';
   imports: [TypeOrmModule.forFeature([CnSettings]), CnCoreModule],
   providers: [CnSettingsService, CnYoutubeService],
   controllers: [CnSettingsController],
+  exports: [CnSettingsService],
 })
 export class CnSettingsModule {}
