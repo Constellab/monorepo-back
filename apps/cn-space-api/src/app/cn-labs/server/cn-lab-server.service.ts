@@ -510,7 +510,20 @@ export class CnLabServerService {
     // if the server is stopped
     const user = CnCurrentUserHelper.getAndCheckCurrentUser();
     this.logger.log(`Starting server instance ${lab.serverInstanceId} for lab ${lab.id} by ${user.email}`);
-    await cloudProviderService.startInstance(lab.serverInstanceId, lab.region.technicalName);
+    try {
+      await cloudProviderService.startInstance(lab.serverInstanceId, lab.region.technicalName);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      this.logger.error(
+        `Error while starting instance ${lab.serverInstanceId} for lab ${lab.id}. Error: ${errorMessage}`
+      );
+      await this.labService.updateServerTask(
+        lab.id,
+        `Error starting server: ${errorMessage}`,
+        CnLabServerTaskStatus.ERROR
+      );
+      throw err;
+    }
     return await this.labService.markInstanceAsServerStarting(lab.id);
   }
 
