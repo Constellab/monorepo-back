@@ -14,6 +14,7 @@ import { CnLabManagerService } from './cn-lab-manager.service';
 import { CnLabsService } from './cn-labs.service';
 import { CnLabGreenOptionService } from './green-option/cn-lab-green-option.service';
 import { CnLabMailService } from './mail/cn-lab-mail.service';
+import { CnLabServerService } from './server/cn-lab-server.service';
 import { CnLabServerTaskStatus, CnLabStatus } from './status/cn-lab-status.enum';
 
 @Injectable()
@@ -26,7 +27,8 @@ export class CnLabListener {
     private labConfigService: CnLabConfigsService,
     private labMailService: CnLabMailService,
     private labAggregateService: CnLabAggregateService,
-    private labGreenOptionService: CnLabGreenOptionService
+    private labGreenOptionService: CnLabGreenOptionService,
+    private labServerService: CnLabServerService
   ) {}
 
   @OnEvent(cnLabEventName)
@@ -49,6 +51,14 @@ export class CnLabListener {
         CnLabStatus.SERVER_RUNNING,
       ].includes(event.oldStatus)
     ) {
+      // Update DNS with the current IP (ephemeral IPs may change on restart)
+      const lab = await this.labsService.findByIdAndCheck(event.labId);
+      await this.labServerService
+        .updateDnsForLab(lab)
+        .catch((error: Error) =>
+          this.logger.error(`Error updating DNS for lab ${event.labId}: ${error.message}`)
+        );
+
       await this.configureAndStartLabBricksAfterInit(event.labId).catch(
         // if an error occurred we just refresh the lab status
         (error: Error) => this.onError(event.labId, `Error during lab manager start : ${error.message}`)

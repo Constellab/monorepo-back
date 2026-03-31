@@ -162,7 +162,7 @@ export class CnGcpService {
     await this.waitForZoneOperation(projectId, zone, operation.name);
   }
 
-  //////////////////////////// STATIC IP ADDRESS ////////////////////////////
+  //////////////////////////// IP ADDRESS ////////////////////////////
 
   async getIpAddressFromInstance(instanceName: string, zone: string): Promise<string> {
     const instance = await this.getInstance(instanceName, zone);
@@ -178,51 +178,6 @@ export class CnGcpService {
     }
 
     return accessConfigs[0].natIP;
-  }
-
-  async createStaticIpAddress(
-    name: string,
-    region: string
-  ): Promise<protos.google.cloud.compute.v1.IAddress> {
-    const projectId = this.getProjectId();
-    const addressesClient = this.getAddressesClient();
-
-    const addressResource: protos.google.cloud.compute.v1.IAddress = {
-      name,
-      description: 'Static IP created by CnLab',
-      addressType: 'EXTERNAL',
-      networkTier: 'PREMIUM',
-    };
-
-    const [operation] = await addressesClient.insert({
-      project: projectId,
-      region,
-      addressResource,
-    });
-
-    await this.waitForRegionOperation(projectId, region, operation.name);
-
-    // Get the IP address
-    const [addressInfo] = await addressesClient.get({
-      project: projectId,
-      region,
-      address: name,
-    });
-
-    return addressInfo;
-  }
-
-  async getStaticIpAddress(name: string, region: string): Promise<protos.google.cloud.compute.v1.IAddress> {
-    const projectId = this.getProjectId();
-    const addressesClient = this.getAddressesClient();
-
-    const [addressInfo] = await addressesClient.get({
-      project: projectId,
-      region,
-      address: name,
-    });
-
-    return addressInfo;
   }
 
   async deleteStaticIpAddress(name: string, region: string): Promise<void> {

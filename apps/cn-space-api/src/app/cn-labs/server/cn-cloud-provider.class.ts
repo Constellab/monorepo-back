@@ -7,7 +7,6 @@ export interface CnCpCreateInstanceRequest {
   region: string;
   serverName: string;
   billing: CnLabBillingMode;
-  ipAddress?: CnCpStaticIpAddress;
 }
 
 export type CnCpInstanceStatus = 'CREATING' | 'RUNNING' | 'RESTARTING' | 'STOPPED' | 'STOPPING' | 'ERROR';
@@ -59,11 +58,3 @@ export interface CnCpCompleteInfo {
 
 export const CN_SERVER_UBUNTU_USER = 'ubuntu';
 export const CN_SERVERS_SSH_AUTHORIZED_KEY_PATH = `/home/${CN_SERVER_UBUNTU_USER}/.ssh/authorized_keys`;
-
-export interface CnCpStaticIpAddress {
-  id: string;
-  ipAddress: string;
-  region: string;
-  // complete object of the cloud provider
-  originalObject: any;
-}

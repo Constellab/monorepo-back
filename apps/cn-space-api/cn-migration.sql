@@ -357,7 +357,7 @@ alter table mail
   modify column subject varchar(255) not null,
   modify column mail text not null;
 
-############################ FREE LAB CONFIG ##########################
+############################ 2.9.18 ##########################
 alter table settings
   add column freeLabConfig text null;
 

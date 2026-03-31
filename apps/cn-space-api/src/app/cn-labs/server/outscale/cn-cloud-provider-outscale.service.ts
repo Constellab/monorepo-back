@@ -13,7 +13,6 @@ import {
   CnCpInstance,
   CnCpInstanceStatus,
   CnCpInstanceWithVolume,
-  CnCpStaticIpAddress,
   CnCpVolume,
   CnCpVolumeStatus,
 } from '../cn-cloud-provider.class';
@@ -237,19 +236,7 @@ export class CnCloudProviderOutscaleService extends CnCloudProviderService {
     return vm.publicIp;
   }
 
-  needStaticIpAddressBeforeInstance(): boolean {
-    return false;
-  }
-
-  async createStaticIpAddress(): Promise<CnCpStaticIpAddress | null> {
-    return null;
-  }
-
-  async deleteIpAddress(): Promise<void> {
-    return null;
-  }
-
-  async getIpAddressFromId(): Promise<CnCpStaticIpAddress | null> {
+  deleteIpAddress(): Promise<void> {
     return null;
   }
 }

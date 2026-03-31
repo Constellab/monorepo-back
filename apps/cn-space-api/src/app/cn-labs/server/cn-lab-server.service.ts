@@ -448,32 +448,23 @@ export class CnLabServerService {
       );
       throw err;
     });
-
-    // Update DNS with the current IP (may have changed if using ephemeral IPs)
-    await this.updateDnsAfterStart(cloudProviderService, lab);
-
-    // Migration: release static IP for existing GCP labs that had one
-    if (lab.serverIpAddressId && cloudProviderService.getName() === 'GCP') {
-      this.logger.log(`Migrating lab ${lab.id}: releasing static IP ${lab.serverIpAddressId}`);
-      await cloudProviderService.deleteIpAddress(lab.serverIpAddressId, lab.region.technicalName);
-      await this.labService.updatePartial(lab.id, { serverIpAddressId: null });
-      this.logger.log(`Static IP ${lab.serverIpAddressId} released for lab ${lab.id}`);
-    }
-
     return await this.labService.markInstanceAsServerStarting(lab.id);
   }
 
   /**
-   * After starting an instance, get the current IP and update the DNS record if it changed.
+   * Update the DNS record with the current IP of the instance.
+   * Called when the lab transitions to SERVER_CONFIGURED (instance is running and IP is available).
    */
-  private async updateDnsAfterStart(cloudProviderService: CnCloudProviderService, lab: CnLab): Promise<void> {
+  public async updateDnsForLab(lab: CnLab): Promise<void> {
+    const cloudProviderService = await this.cloudProviderFactory.getCloudProviderServiceFromLab(lab.id);
+
     const ipv4 = await cloudProviderService.getIpAddressFromInstanceId(
       lab.serverInstanceId,
       lab.region.technicalName
     );
 
     if (!ipv4) {
-      this.logger.warn(`Could not get IP for lab ${lab.id} after start, skipping DNS update`);
+      this.logger.warn(`Could not get IP for lab ${lab.id}, skipping DNS update`);
       return;
     }
 
@@ -483,6 +474,14 @@ export class CnLabServerService {
       lab.getMainDomain(),
       lab.getSubDomainName()
     );
+
+    // Migration: release static IP for existing GCP labs that had one
+    if (lab.serverIpAddressId && cloudProviderService.getName() === 'GCP') {
+      this.logger.log(`Migrating lab ${lab.id}: releasing static IP ${lab.serverIpAddressId}`);
+      await cloudProviderService.deleteIpAddress(lab.serverIpAddressId, lab.region.technicalName);
+      await this.labService.updatePartial(lab.id, { serverIpAddressId: null });
+      this.logger.log(`Static IP ${lab.serverIpAddressId} released for lab ${lab.id}`);
+    }
   }
 
   public async stopLab(lab: CnLab): Promise<CnLab> {
