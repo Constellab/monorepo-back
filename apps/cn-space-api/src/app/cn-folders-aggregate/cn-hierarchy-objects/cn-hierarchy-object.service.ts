@@ -180,6 +180,19 @@ export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjec
     return await this.findPaginated(page, size, searchBuilder.build());
   }
 
+  public async findAllIdsBySearch(searchParam: BlSearchParams): Promise<string[]> {
+    const searchBuilder: BlSearchBuilder<CnHierarchyObjectEntity> = new BlSearchBuilder();
+    searchBuilder.addSearchParams(searchParam);
+
+    const options = searchBuilder.build();
+    const entities = await this.repo.find({
+      ...options,
+      select: ['id'],
+    } as any);
+
+    return entities.map((entity) => entity.id);
+  }
+
   public async searchInRootFoldersAndChildren(
     rootFoldersIds: string[],
     spaceId: string,

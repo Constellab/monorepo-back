@@ -17,7 +17,12 @@ import { CnResourceAggregateService } from '../cn-resources/cn-resource-aggregat
 import { CnCreateLabScenarioDto } from '../cn-scenarios/cn-scenario.dto';
 import { CnScenarioAggregateService } from '../cn-scenarios/cn-scenario-aggregate.service';
 import { CnFoldersSecurityService } from '../cn-security/cn-folders-security.service';
-import { CnHierarchyObjectFindOneDTO } from './cn-hierarchy-object.dto';
+import {
+  CnBulkActionContext,
+  CnBulkCreateTagsDto,
+  CnBulkMoveToFolderDto,
+  CnHierarchyObjectFindOneDTO,
+} from './cn-hierarchy-object.dto';
 import {
   CnHierarchyObject,
   CnHierarchyObjectType,
@@ -520,6 +525,36 @@ export class CnHierarchyObjectAggregateService {
       CnCurrentUserHelper.getAndCheckCurrentSpace().id,
       CnCurrentUserHelper.getAndCheckCurrentUser().id
     );
+  }
+
+  ///////////////////////////////// BULK /////////////////////////////////
+
+  private async resolveHierarchyObjectIds(context: CnBulkActionContext): Promise<string[]> {
+    if (!context.isAllSelected) {
+      return context.selectedIds;
+    }
+    return this.hierarchyObjectService.findAllIdsBySearch(context.searchInput);
+  }
+
+  public async bulkMoveToTrash(context: CnBulkActionContext): Promise<void> {
+    const ids = await this.resolveHierarchyObjectIds(context);
+    for (const id of ids) {
+      await this.moveToTrash(id);
+    }
+  }
+
+  public async bulkMoveToFolder(dto: CnBulkMoveToFolderDto): Promise<void> {
+    const ids = await this.resolveHierarchyObjectIds(dto.context);
+    for (const id of ids) {
+      await this.moveHierarchyObjectToFolder(id, dto.targetFolderId);
+    }
+  }
+
+  public async bulkCreateTags(dto: CnBulkCreateTagsDto): Promise<void> {
+    const ids = await this.resolveHierarchyObjectIds(dto.context);
+    for (const id of ids) {
+      await this.createHierarchyObjectTags(id, dto.tags);
+    }
   }
 
   ///////////////////////////////// SCENARIO /////////////////////////////
