@@ -4,6 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, In, LessThanOrEqual, Not, Repository } from 'typeorm';
 
+import { CnSettingsService } from '../../cn-settings/cn-settings.service';
 import { CnUser } from '../../cn-users/cn-user.entity';
 import { CnLab, CnLabEntity } from '../cn-lab.entity';
 import { CnLabStatsRequestDTO } from '../stats/cn-lab-stats.dto';
@@ -19,7 +20,8 @@ import { CnLabFree } from './cn-lab-free.entity';
 export class CnLabFreeService extends BlAbstractService<CnLabFree> {
   constructor(
     @InjectRepository(CnLabFree) repo: Repository<CnLabFree>,
-    private labStatsAggregateService: CnLabStatsAggregateService
+    private labStatsAggregateService: CnLabStatsAggregateService,
+    private settingsService: CnSettingsService
   ) {
     super(repo, CnLabFree);
   }
@@ -55,12 +57,13 @@ export class CnLabFreeService extends BlAbstractService<CnLabFree> {
   }
 
   private async buildUsageDto(labFree?: CnLabFree): Promise<CnLabFreeGetDto> {
+    const config = await this.settingsService.getFreeLabConfig();
     const freeGetDto: CnLabFreeGetDto = new CnLabFreeGetDto();
     freeGetDto.standardInfo = {
-      usageLimitInHours: CnLabFree.HOUR_LIMIT,
-      nbCpus: CnLabFree.NB_CPUS,
-      ramSize: CnLabFree.RAM_SIZE,
-      diskSize: CnLabFree.VOLUME_SIZE,
+      usageLimitInHours: config.hourLimit,
+      nbCpus: config.nbCpus,
+      ramSize: config.ramSize,
+      diskSize: config.volumeSize,
     };
     freeGetDto.freeLab = labFree;
 
@@ -93,7 +96,7 @@ export class CnLabFreeService extends BlAbstractService<CnLabFree> {
     }
 
     freeGetDto.currentUsageInSeconds = monthRunningDuration;
-    freeGetDto.deletionDate = labFree.getDeletionDate();
+    freeGetDto.deletionDate = labFree.getDeletionDate(config.deletionAfterDays);
 
     return freeGetDto;
   }

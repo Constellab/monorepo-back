@@ -1,8 +1,13 @@
 import { BlFile, BlPublic, BlUploadedFile } from '@monorepo/back-core-lib';
-import { Body, Controller, Get, Post, Put, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Post, Put, UseInterceptors, UsePipes, ValidationPipe } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 
-import { CnConstellabSuiteDTO, CnRequestAppDTO, CnServerDecisionTreeDTO } from './cn-settings.entity';
+import {
+  CnConstellabSuiteDTO,
+  CnFreeLabConfigDTO,
+  CnRequestAppDTO,
+  CnServerDecisionTreeDTO,
+} from './cn-settings.entity';
 import { CnSettingsService } from './cn-settings.service';
 import { CnYoutubeService } from './cn-youtube.service';
 
@@ -40,6 +45,19 @@ export class CnSettingsController {
   @Put('constellab-suite')
   updateConstellabSuite(@BlUploadedFile() file: BlFile): Promise<void> {
     return this.settingsService.updateConstellabSuite(file);
+  }
+
+  /////////////////////////////// FREE LAB CONFIG /////////////////////////////////
+
+  @Get('free-lab-config')
+  public async getFreeLabConfig(): Promise<CnFreeLabConfigDTO> {
+    return this.settingsService.getFreeLabConfig();
+  }
+
+  @Put('free-lab-config')
+  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+  updateFreeLabConfig(@Body() freeLabConfig: CnFreeLabConfigDTO): Promise<CnFreeLabConfigDTO> {
+    return this.settingsService.updateFreeLabConfig(freeLabConfig);
   }
 
   @Post('request-app')
