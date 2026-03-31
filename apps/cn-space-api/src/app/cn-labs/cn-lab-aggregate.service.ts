@@ -401,9 +401,8 @@ export class CnLabAggregateService {
 
   /**
    * Update the lab bricks config.
-   * If the lab is desktop, the config is updated directly in the lab.
-   * If the lab is on cloud, it only updates the lab manager config
-   * (the config is then update when the lab is restarted)
+   * If the lab is http accessible update the lab manager config.
+   * Then update the lab config in database to keep track of the config even when the lab is stopped.
    * @param labId
    * @param config
    */
@@ -421,15 +420,15 @@ export class CnLabAggregateService {
 
     if (lab.isHttpAccessible()) {
       await this.labManagerService.updateConfig(lab, config);
-    } else {
-      // for on desktop, we need to update the lab config directly (there is no lab manager)
-      const labConfig = await this.labConfigService.getOrCreateLabConfig({
-        version: 1,
-        brick_versions: config.brickVersions,
-      });
-
-      await this.updateLabConfig(lab, labConfig);
     }
+
+    // for on desktop, we need to update the lab config directly (there is no lab manager)
+    const labConfig = await this.labConfigService.getOrCreateLabConfig({
+      version: 1,
+      brick_versions: config.brickVersions,
+    });
+
+    await this.updateLabConfig(lab, labConfig);
   }
 
   /**
