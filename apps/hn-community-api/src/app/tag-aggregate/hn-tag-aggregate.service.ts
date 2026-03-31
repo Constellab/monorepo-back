@@ -11,6 +11,7 @@ import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
 import { HnSpaceAggregateService } from '../space-aggregate/hn-space-aggregate.service';
 import { HnSpace } from '../space-aggregate/space/hn-space.entity';
 import { HnUser } from '../users/hn-user.entity';
+import { HnTagSecurity } from './security/hn-tag.security';
 import { HnTagCoAuthorService } from './tag-co-author/hn-tag-co-author.service';
 import { HnCreateTagKeyDto, HnTagKeyForLabDto } from './tag-key/hn-tag-key.dto';
 import {
@@ -32,6 +33,7 @@ export class HnTagAggregateService {
     private readonly tagKeyService: HnTagKeyService,
     private readonly tagValueService: HnTagValueService,
     private readonly frontService: HnFrontService,
+    private readonly tagSecurity: HnTagSecurity,
     private dataSource: DataSource
   ) {}
 
@@ -436,7 +438,8 @@ export class HnTagAggregateService {
     if (!tagKey) {
       throw new Error('Tag key not found');
     }
-    await this.assertRightsToEditTagKey(tagKey);
+    const currentUser = HnCurrentUserHelper.getAndCheckCurrentUser();
+    await this.tagSecurity.assertCanEdit(tagKey, currentUser);
     if (assertNotDeprecated && tagKey.deprecated) {
       throw new Error('Tag key is deprecated');
     }
@@ -450,22 +453,6 @@ export class HnTagAggregateService {
       throw new Error('Space not found');
     }
     return space;
-  }
-
-  private async assertRightsToEditTagKey(tagKey: HnTagKey): Promise<void> {
-    const currentUser = HnCurrentUserHelper.getCurrentUser();
-    if (!currentUser) {
-      throw new Error('You must be logged in to edit a tag key');
-    }
-    if (tagKey.space && !(await this.spaceAggregateService.checkSpaceUser(tagKey.space.id, currentUser.id))) {
-      throw new Error('You do not have the rights to edit this tag key');
-    }
-    if (
-      tagKey.createdBy.id !== currentUser.id &&
-      !tagKey.tagCoAuthors.some((tagCoAuthor) => tagCoAuthor.user.id === currentUser.id)
-    ) {
-      throw new Error('You do not have the rights to edit this tag key');
-    }
   }
 
   private async checkIfTagHasValues(tagKey: HnTagKey): Promise<boolean> {

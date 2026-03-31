@@ -401,24 +401,21 @@ export class HnAgentService {
     return entityManager.save(agent);
   }
 
-  public async updateTitle(id: string, title: string): Promise<HnAgent> {
-    const agent = await this.checkIfCreatorOrCoAuthorAndGetAgent(id);
+  public async updateTitle(agent: HnAgent, title: string): Promise<HnAgent> {
     agent.title = title;
     return this.agentRepository.save(agent);
   }
 
-  public async updateDescription(id: string, description: TeRichText): Promise<HnAgent> {
-    const agent = await this.checkIfCreatorOrCoAuthorAndGetAgent(id);
+  public async updateDescription(agent: HnAgent, description: TeRichText): Promise<HnAgent> {
     agent.setDescriptionRichText(description);
     return this.agentRepository.save(agent);
   }
 
   public async updateAgentLatestPublishVersion(
-    id: string,
+    agent: HnAgent,
     latestPublishVersion: HnAgentVersion,
     entityManager: EntityManager
   ): Promise<HnAgent> {
-    const agent = await this.checkIfCreatorOrCoAuthorAndGetAgent(id);
     agent.latestPublishVersion = latestPublishVersion.version;
     agent.latestStyle = latestPublishVersion.style;
     return entityManager.save(agent);
@@ -433,40 +430,12 @@ export class HnAgentService {
     return entityManager.save(agent);
   }
 
-  public async checkIfCreatorOrCoAuthorAndGetAgent(agentId: string): Promise<HnAgent> {
-    const agent = await this.agentRepository.findOneBy({ id: agentId });
-    if (!agent || agent.createdBy.id != HnCurrentUserHelper.getAndCheckCurrentUser().id) {
-      const coAuthors = await this.agentCoAuthorService.getAgentCoAuthorsByAgentId(agentId);
-      if (
-        !coAuthors.some((coAuthor) => coAuthor.user.id === HnCurrentUserHelper.getAndCheckCurrentUser().id)
-      ) {
-        throw new BlUnauthorizedException(
-          `User ${
-            HnCurrentUserHelper.getAndCheckCurrentUser().id
-          } is not the creator or co-author of agent ${agent.id}`
-        );
-      }
-    }
-    return agent;
-  }
-
-  public async checkIfCreatorAndGetAgent(agentId: string): Promise<HnAgent> {
-    const agent = await this.agentRepository.findOneBy({ id: agentId });
-    if (!agent || agent.createdBy.id != HnCurrentUserHelper.getAndCheckCurrentUser().id) {
-      throw new BlUnauthorizedException(
-        `User ${HnCurrentUserHelper.getAndCheckCurrentUser().id} is not the creator of agent ${agent.id}`
-      );
-    }
-
-    return agent;
-  }
-
   public async delete(entityManager: EntityManager, id: string): Promise<void> {
     await entityManager.delete(HnAgent, { id: id });
   }
 
   public async updateLatestStyle(agentId: string, style: HnTypingStyle): Promise<HnAgent> {
-    const agent = await this.checkIfCreatorOrCoAuthorAndGetAgent(agentId);
+    const agent = await this.agentRepository.findOneBy({ id: agentId });
     agent.latestStyle = style;
     return this.agentRepository.save(agent);
   }

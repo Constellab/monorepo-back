@@ -42,6 +42,7 @@ import { HnAgentVersionService } from './agent-version/hn-agent-version.service'
 import { HnAgentVersionMigrator } from './agent-version/hn-agent-version-migrator.class';
 import { HnAgentVersionBrickDependencies } from './agent-version-brick-dependencies/hn-agent-version-brick-dependencies.entity';
 import { HnAgentVersionBrickDependenciesService } from './agent-version-brick-dependencies/hn-agent-version-brick-dependencies.service';
+import { HnAgentSecurity } from './security/hn-agent.security';
 
 @Injectable()
 export class HnAgentAggregateService {
@@ -55,6 +56,7 @@ export class HnAgentAggregateService {
     private readonly agentCoAuthorService: HnAgentCoAuthorService,
     private readonly frontService: HnFrontService,
     private readonly fileAgentService: HnFileAgentService,
+    private readonly agentSecurity: HnAgentSecurity,
     private dataSource: DataSource
   ) {}
 
@@ -125,11 +127,7 @@ export class HnAgentAggregateService {
   ): Promise<HnCreateAgentVersionFromLabResponseDto> {
     const user = HnCurrentUserHelper.getAndCheckCurrentUser();
     const agent: HnAgent = await this.agentService.findOne(agentId);
-
-    if (agent.createdBy.id != user.id) {
-      const coAuthors = await this.agentCoAuthorService.getAgentCoAuthorsByAgentId(agentId);
-      if (!coAuthors.some((coAuthor) => coAuthor.user.id == user.id)) throw new BlUnauthorizedException();
-    }
+    await this.agentSecurity.assertCanEdit(agent, user);
     const newAgentVersion = await this.createNewDraftVersion(agentId, newAgentVersionFile, true, true);
     return {
       id: newAgentVersion.agent.id,
@@ -139,11 +137,15 @@ export class HnAgentAggregateService {
   }
 
   public async updateTitle(id: string, title: string): Promise<HnAgent> {
-    return this.agentService.updateTitle(id, title);
+    const agent = await this.agentService.findOne(id);
+    await this.agentSecurity.assertCanEdit(agent, HnCurrentUserHelper.getAndCheckCurrentUser());
+    return this.agentService.updateTitle(agent, title);
   }
 
   public async updateDescription(id: string, description: TeRichText): Promise<HnAgent> {
-    return this.agentService.updateDescription(id, description);
+    const agent = await this.agentService.findOne(id);
+    await this.agentSecurity.assertCanEdit(agent, HnCurrentUserHelper.getAndCheckCurrentUser());
+    return this.agentService.updateDescription(agent, description);
   }
 
   public async findPublic(): Promise<HnAgent[]> {
@@ -200,21 +202,15 @@ export class HnAgentAggregateService {
     if (agent == null) {
       throw new BlNotFoundException('Agent not found');
     }
-    if (agent.space != null) {
-      await this.spaceAggregateService.assertCheckSpaceUser(agent.space.id, user.id);
-    }
-    const coAuthors = await this.getAgentCoAuthors(agent.id);
-    if (user.id == agent.createdBy.id || coAuthors.some((coAuthor) => coAuthor.user.id == user.id)) {
-      const migrator = new HnAgentVersionMigrator();
-      const agentDto = migrator.migrateAgentVersionToSpecificVersion(
-        new HnAgentVersionDto(agentVersion),
-        versionNumber
-      ).agent;
-      agentDto.agentCoAuthors = agent.agentCoAuthors;
-      return HnAgentForLabDto.fromAgentDto(agentDto);
-    }
-
-    throw new BlUnauthorizedException('You are not allowed to access this agent');
+    await this.agentSecurity.assertCanView(agent, user);
+    await this.agentSecurity.assertCanEdit(agent, user);
+    const migrator = new HnAgentVersionMigrator();
+    const agentDto = migrator.migrateAgentVersionToSpecificVersion(
+      new HnAgentVersionDto(agentVersion),
+      versionNumber
+    ).agent;
+    agentDto.agentCoAuthors = agent.agentCoAuthors;
+    return HnAgentForLabDto.fromAgentDto(agentDto);
   }
 
   public async findAllWithFilters(
@@ -335,7 +331,9 @@ export class HnAgentAggregateService {
   }
 
   public async deleteAgent(id: string): Promise<void> {
-    await this.agentService.checkIfCreatorAndGetAgent(id);
+    const agent = await this.agentService.findOne(id);
+    const user = HnCurrentUserHelper.getAndCheckCurrentUser();
+    this.agentSecurity.assertIsCreator(agent, user);
     await this.dataSource.transaction(async (entityManager) => {
       const agentVersions: HnAgentVersion[] = await this.agentVersionService.findAllByAgentId(id);
       for (const agentVersion of agentVersions) {
@@ -350,7 +348,8 @@ export class HnAgentAggregateService {
   }
 
   public async updateStyle(id: string, data: HnAgentEditStyleData): Promise<HnAgent> {
-    let agent = await this.agentService.checkIfCreatorOrCoAuthorAndGetAgent(id);
+    let agent = await this.agentService.findOne(id);
+    await this.agentSecurity.assertCanEdit(agent, HnCurrentUserHelper.getAndCheckCurrentUser());
     return this.dataSource.transaction(async (entityManager) => {
       agent = await this.agentService.updateLatestStyleWithEntityManager(agent, data.style, entityManager);
       // if not all versions checked, update the latest version
@@ -377,11 +376,11 @@ export class HnAgentAggregateService {
 
   public async assertCheckAgentUser(agentId: string): Promise<void> {
     const agent = await this.agentService.findOne(agentId);
-    if (agent.space != null) {
-      await this.spaceAggregateService.assertCheckSpaceUser(
-        agent.space.id,
-        HnCurrentUserHelper.getCurrentUser().id
-      );
+    const user = HnCurrentUserHelper.getCurrentUser();
+    if (user) {
+      await this.agentSecurity.assertCanView(agent, user);
+    } else if (agent.space) {
+      throw new BlUnauthorizedException();
     }
   }
 
@@ -392,12 +391,18 @@ export class HnAgentAggregateService {
 
   public async assertCheckAgentVersionUser(agentVersionId: string): Promise<void> {
     const agentVersion = await this.agentVersionService.findOne(agentVersionId);
-    if (agentVersion.agent.space != null) {
-      await this.spaceAggregateService.assertCheckSpaceUser(
-        agentVersion.agent.space.id,
-        HnCurrentUserHelper.getCurrentUser().id
-      );
+    const user = HnCurrentUserHelper.getCurrentUser();
+    if (user) {
+      await this.agentSecurity.assertCanView(agentVersion.agent, user);
+    } else if (agentVersion.agent.space) {
+      throw new BlUnauthorizedException();
     }
+  }
+
+  private async assertCanEditAgentVersion(agentVersionId: string): Promise<void> {
+    const agentVersion = await this.agentVersionService.findOne(agentVersionId);
+    const agent = await this.agentService.findOne(agentVersion.agent.id);
+    await this.agentSecurity.assertCanEdit(agent, HnCurrentUserHelper.getAndCheckCurrentUser());
   }
 
   public async findAgentVersionByAgentIdAndVersionNumber(
@@ -409,7 +414,8 @@ export class HnAgentAggregateService {
       return version;
     }
 
-    await this.agentService.checkIfCreatorOrCoAuthorAndGetAgent(agentId);
+    const agent = await this.agentService.findOne(agentId);
+    await this.agentSecurity.assertCanEdit(agent, HnCurrentUserHelper.getAndCheckCurrentUser());
     return version;
   }
 
@@ -447,34 +453,26 @@ export class HnAgentAggregateService {
   }
 
   public async updateAgentVersionParams(id: string, params: Record<string, any>): Promise<HnAgentVersion> {
-    await this.agentService.checkIfCreatorOrCoAuthorAndGetAgent(
-      (await this.agentVersionService.findOne(id)).agent.id
-    );
+    await this.assertCanEditAgentVersion(id);
     return this.agentVersionService.updateParams(id, params);
   }
 
   public async updateAgentVersionCode(id: string, code: string): Promise<HnAgentVersion> {
-    await this.agentService.checkIfCreatorOrCoAuthorAndGetAgent(
-      (await this.agentVersionService.findOne(id)).agent.id
-    );
+    await this.assertCanEditAgentVersion(id);
     return this.agentVersionService.updateCode(id, code);
   }
 
   public async updateAgentVersionEnvironment(id: string, environment: string): Promise<HnAgentVersion> {
-    await this.agentService.checkIfCreatorOrCoAuthorAndGetAgent(
-      (await this.agentVersionService.findOne(id)).agent.id
-    );
+    await this.assertCanEditAgentVersion(id);
     return this.agentVersionService.updateEnvironment(id, environment);
   }
 
   public async publishAgentVersion(id: string): Promise<HnAgentVersion> {
     return await this.dataSource.transaction(async (entityManager) => {
-      await this.agentService.checkIfCreatorOrCoAuthorAndGetAgent(
-        (await this.agentVersionService.findOne(id)).agent.id
-      );
+      await this.assertCanEditAgentVersion(id);
       const agentVersion: HnAgentVersion = await this.agentVersionService.publish(id, entityManager);
       agentVersion.agent = await this.agentService.updateAgentLatestPublishVersion(
-        agentVersion.agent.id,
+        agentVersion.agent,
         agentVersion,
         entityManager
       );
@@ -488,8 +486,8 @@ export class HnAgentAggregateService {
     fromLab: boolean = false,
     replaceDraft: boolean = false
   ): Promise<HnAgentVersion> {
-    if (!fromLab) await this.agentService.checkIfCreatorOrCoAuthorAndGetAgent(agentId);
     const agent = await this.agentService.findOne(agentId);
+    if (!fromLab) await this.agentSecurity.assertCanEdit(agent, HnCurrentUserHelper.getAndCheckCurrentUser());
 
     return await this.dataSource.transaction(async (entityManager) => {
       let latestAgentVersion = await this.agentVersionService.findLatestByAgent(agent);
@@ -525,8 +523,8 @@ export class HnAgentAggregateService {
     newAgentVersionFile: HnAgentVersionFileInput,
     fromLab: boolean = false
   ): Promise<HnAgentVersion> {
-    if (!fromLab) await this.agentService.checkIfCreatorOrCoAuthorAndGetAgent(agentId);
     let agent = await this.agentService.findOne(agentId);
+    if (!fromLab) await this.agentSecurity.assertCanEdit(agent, HnCurrentUserHelper.getAndCheckCurrentUser());
     const latestAgentVersion = await this.agentVersionService.findLatestByAgent(agent);
 
     if (latestAgentVersion?.versionState != HnAgentVersionState.DRAFT)
@@ -559,14 +557,10 @@ export class HnAgentAggregateService {
 
   public async getPublishedAgentVersions(agentId: string): Promise<HnAgentVersion[]> {
     const agent: HnAgent = await this.agentService.findOne(agentId);
-    if (HnCurrentUserHelper.getCurrentUser()?.id == agent?.createdBy.id) {
+    const user = HnCurrentUserHelper.getCurrentUser();
+    if (user && (await this.agentSecurity.isCreatorOrCoAuthor(agent, user))) {
       return this.agentVersionService.findAllByAgentId(agentId);
     }
-
-    const coAuthors = await this.agentCoAuthorService.getAgentCoAuthorsByAgentId(agentId);
-    if (coAuthors.some((coAuthor) => coAuthor.user.id == HnCurrentUserHelper.getCurrentUser()?.id))
-      return this.agentVersionService.findAllByAgentId(agentId);
-
     return await this.agentVersionService.findPublishedByAgentId(agentId);
   }
 
@@ -574,9 +568,7 @@ export class HnAgentAggregateService {
     agentVersionId: string,
     versionInfos: TeRichText
   ): Promise<HnAgentVersion> {
-    await this.agentService.checkIfCreatorOrCoAuthorAndGetAgent(
-      (await this.agentVersionService.findOne(agentVersionId)).agent.id
-    );
+    await this.assertCanEditAgentVersion(agentVersionId);
     return this.agentVersionService.updateVersionInfos(agentVersionId, versionInfos);
   }
 
@@ -588,7 +580,8 @@ export class HnAgentAggregateService {
 
   public async updateVersionStyle(versionId: string, data: HnAgentEditStyleData): Promise<HnAgentVersion> {
     const version = await this.agentVersionService.findOne(versionId);
-    const agent = await this.agentService.checkIfCreatorOrCoAuthorAndGetAgent(version.agent.id);
+    const agent = await this.agentService.findOne(version.agent.id);
+    await this.agentSecurity.assertCanEdit(agent, HnCurrentUserHelper.getAndCheckCurrentUser());
 
     return this.dataSource.transaction(async (entityManager) => {
       // if it's the latest version, update the agent latest style
@@ -605,7 +598,8 @@ export class HnAgentAggregateService {
 
   ////////////////////////////////////////// AGENT CO AUTHORS //////////////////////////////////////////
   public async inviteAgentCoAuthor(agentId: string, emailOrId: string): Promise<boolean> {
-    const agent = await this.agentService.checkIfCreatorAndGetAgent(agentId);
+    const agent = await this.agentService.findOne(agentId);
+    this.agentSecurity.assertIsCreator(agent, HnCurrentUserHelper.getAndCheckCurrentUser());
     return this.agentCoAuthorService.inviteAgentCoAuthor(agent, emailOrId);
   }
 
@@ -614,12 +608,14 @@ export class HnAgentAggregateService {
   }
 
   public async getAgentCoAuthorsPendingInvites(agentId: string): Promise<HnAgentCoAuthorInvite[]> {
-    await this.agentService.checkIfCreatorAndGetAgent(agentId);
+    const agent = await this.agentService.findOne(agentId);
+    this.agentSecurity.assertIsCreator(agent, HnCurrentUserHelper.getAndCheckCurrentUser());
     return this.agentCoAuthorService.getAgentCoAuthorsPendingInvites(agentId);
   }
 
   public async removeAgentCoAuthor(id: string, agentCoAuthorUserId: string): Promise<void> {
-    await this.agentService.checkIfCreatorAndGetAgent(id);
+    const agent = await this.agentService.findOne(id);
+    this.agentSecurity.assertIsCreator(agent, HnCurrentUserHelper.getAndCheckCurrentUser());
     return this.agentCoAuthorService.removeAgentCoAuthor(id, agentCoAuthorUserId);
   }
 
@@ -662,7 +658,8 @@ export class HnAgentAggregateService {
 
   public async deleteAgentVersion(id: string): Promise<void> {
     const agentVersion = await this.agentVersionService.findOne(id);
-    const agent = await this.agentService.checkIfCreatorOrCoAuthorAndGetAgent(agentVersion.agent.id);
+    const agent = await this.agentService.findOne(agentVersion.agent.id);
+    await this.agentSecurity.assertCanEdit(agent, HnCurrentUserHelper.getAndCheckCurrentUser());
 
     //Check number of agentVersion
     const agentVersions = await this.agentVersionService.findAllByAgentId(agent.id);
@@ -675,24 +672,27 @@ export class HnAgentAggregateService {
       await this.agentVersionService.deleteById(entityManager, id);
       if (agent.latestPublishVersion == agentVersion.version) {
         const latestVersion = await this.agentVersionService.findSecondLastByAgent(agent);
-        await this.agentService.updateAgentLatestPublishVersion(agent.id, latestVersion, entityManager);
+        await this.agentService.updateAgentLatestPublishVersion(agent, latestVersion, entityManager);
       }
     });
   }
 
   /////////////////////////////////////// FILES  ////////////////////////////////////
   public async saveFile(file: BlFile, agentId: string): Promise<HnUploadFileResponseDto> {
-    const agent = await this.agentService.checkIfCreatorOrCoAuthorAndGetAgent(agentId);
+    const agent = await this.agentService.findOne(agentId);
+    await this.agentSecurity.assertCanEdit(agent, HnCurrentUserHelper.getAndCheckCurrentUser());
     return await this.fileAgentService.saveFile(agent, file);
   }
 
   public async saveImage(file: BlFile, agentId: string): Promise<TeBlockFigureUploadedResponse> {
-    const agent = await this.agentService.checkIfCreatorOrCoAuthorAndGetAgent(agentId);
+    const agent = await this.agentService.findOne(agentId);
+    await this.agentSecurity.assertCanEdit(agent, HnCurrentUserHelper.getAndCheckCurrentUser());
     return await this.fileAgentService.saveImage(agent, file);
   }
 
   public async saveView(file: BlFile, agentId: string): Promise<string> {
-    const agent = await this.agentService.checkIfCreatorOrCoAuthorAndGetAgent(agentId);
+    const agent = await this.agentService.findOne(agentId);
+    await this.agentSecurity.assertCanEdit(agent, HnCurrentUserHelper.getAndCheckCurrentUser());
     return await this.fileAgentService.saveResourceView(agent, file);
   }
 }

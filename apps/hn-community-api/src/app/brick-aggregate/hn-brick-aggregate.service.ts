@@ -25,6 +25,7 @@ import { HnErrorText } from '../core/model/config/hn-error-text.class';
 import { HnSiteMapEnumChangefreq, HnSitemapItemBase } from '../core/model/config/hn-site-map.class';
 import { HnGeneratedDocEntity } from '../core/model/entities/hn-generated-doc-typing.entity';
 import { HnCoreConfigService } from '../core/modules/core-config/hn-core-config.service';
+import { HnCommunitySecurity } from '../core/security/hn-community-security.service';
 import { HnFrontService } from '../core/service/hn-front.service';
 import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
 import { HnMarkdownHelper } from '../core/utils/hn-markdown.helper';
@@ -79,6 +80,7 @@ import { HnDocumentationService } from './documentation/hn-documentation.service
 import { HnFolderDto, HnNode, HnNodeDTO, HnNodeType } from './folder/hn-folder.dto';
 import { HnFolder } from './folder/hn-folder.entity';
 import { HnFolderService } from './folder/hn-folder.service';
+import { HnBrickSecurity } from './security/hn-brick.security';
 
 export interface HnBrickUserBasedWhereOptionalParams {
   spacesFilter?: string[];
@@ -103,7 +105,9 @@ export class HnBrickAggregateService {
     private frontService: HnFrontService,
     private fileDocumentationService: HnFileDocumentationService,
     private readonly spaceAggregateService: HnSpaceAggregateService,
-    private readonly externalApiService: BlExternalApiService
+    private readonly externalApiService: BlExternalApiService,
+    private readonly brickSecurity: HnBrickSecurity,
+    private readonly communitySecurity: HnCommunitySecurity
   ) {}
 
   //------------------------------------- BRICKS -------------------------------------
@@ -668,7 +672,7 @@ export class HnBrickAggregateService {
         };
       }
 
-      this.brickService.checkIfUserHasRightOnTheBrick(brick);
+      this.brickSecurity.assertIsCreatorOrCoAuthor(brick, HnCurrentUserHelper.getAndCheckCurrentUser());
 
       const brickMajorVersion: HnBrickMajorVersion =
         await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(
@@ -704,7 +708,7 @@ export class HnBrickAggregateService {
     const folder: HnFolder = await this.folderService.findById(id);
     const brickMajorVersion: HnBrickMajorVersion = folder.brickMajorVersion;
     const brick: HnBrick = brickMajorVersion.brick;
-    this.brickService.checkIfUserHasRightOnTheBrick(brick);
+    this.brickSecurity.assertIsCreatorOrCoAuthor(brick, HnCurrentUserHelper.getAndCheckCurrentUser());
   }
 
   async createFolder(createFolder: HnNodeDTO): Promise<HnFolder> {
@@ -979,7 +983,7 @@ export class HnBrickAggregateService {
     const folder: HnFolder = doc.folder;
     const brickMajorVersion: HnBrickMajorVersion = folder.brickMajorVersion;
     const brick: HnBrick = brickMajorVersion.brick;
-    this.brickService.checkIfUserHasRightOnTheBrick(brick);
+    this.brickSecurity.assertIsCreatorOrCoAuthor(brick, HnCurrentUserHelper.getAndCheckCurrentUser());
   }
 
   async findDocsByParentId(id: string): Promise<HnDocumentationDto[]> {
@@ -1225,7 +1229,7 @@ export class HnBrickAggregateService {
       page,
       size,
       brickId,
-      this.brickService.userHasRightOnBrick(brick)
+      this.communitySecurity.isCreatorOrCoAuthor(brick, brick.brickUsers, HnCurrentUserHelper.getCurrentUser()?.id)
     );
   }
 
@@ -1315,44 +1319,15 @@ export class HnBrickAggregateService {
   }
 
   async checkIfUserCanEditBrick(brickId: string, fullRight = true): Promise<boolean> {
-    if (HnCurrentUserHelper.getCurrentUser() == null) {
-      return false;
-    }
-
-    if (HnCurrentUserHelper.getCurrentUser().isAdmin()) {
-      return true;
-    }
-
     const brick = await this.findBrickById(brickId);
-
-    if (!brick.space)
-      // if not fullRight, check if the user is a brickAuthor as well
-      return (
-        brick.createdBy.id === HnCurrentUserHelper.getCurrentUser()?.id ||
-        (!fullRight && brick.brickUsers.some((bu) => bu.user.id === HnCurrentUserHelper.getCurrentUser().id))
-      );
-
-    if (await this.spaceUserService.checkCurrentUserIsSpaceAdmin(brick.space.id)) {
-      return true;
-    }
-
-    if (await this.spaceUserService.checkCurrentUserIsSpaceUser(brick.space.id)) {
-      return (
-        brick.createdBy.id === HnCurrentUserHelper.getCurrentUser()?.id ||
-        brick.brickUsers.some((bu) => bu.user.id === HnCurrentUserHelper.getCurrentUser().id)
-      );
-    }
-
-    // if not fullRight, check if the user is a brickAuthor
-    return (
-      !fullRight && brick.brickUsers.some((bu) => bu.user.id === HnCurrentUserHelper.getCurrentUser().id)
-    );
+    const user = HnCurrentUserHelper.getCurrentUser();
+    return this.brickSecurity.canEdit(brick, user, fullRight);
   }
 
   async assertUserCanEditBrick(brickId: string, fullRight = true): Promise<void> {
-    if (!(await this.checkIfUserCanEditBrick(brickId, fullRight))) {
-      throw new BlUnauthorizedException('You are not authorized to perform this action');
-    }
+    const brick = await this.findBrickById(brickId);
+    const user = HnCurrentUserHelper.getAndCheckCurrentUser();
+    await this.brickSecurity.assertCanEdit(brick, user, fullRight);
   }
 
   public async getMyBricksWhereBrickConditions(

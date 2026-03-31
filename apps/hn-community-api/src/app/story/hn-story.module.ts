@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { HnCoreModule } from '../core/hn-core.module';
+import { HnCommunitySecurityModule } from '../core/security/hn-community-security.module';
 import { HnCoreConfigModule } from '../core/modules/core-config/hn-core-config.module';
 import { HnFileStoryModule } from '../file-aggregate/file-story/hn-file-story.module';
 import { HnFileStoryService } from '../file-aggregate/file-story/hn-file-story.service';
@@ -16,12 +17,14 @@ import { HnStoryController } from './hn-story.controller';
 import { HnStory } from './hn-story.entity';
 import { HnCommunityStoryListener } from './hn-story.listener';
 import { HnStoryService } from './hn-story.service';
+import { HnStorySecurity } from './security/hn-story.security';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([HnStory]),
 
     HnCoreModule,
+    HnCommunitySecurityModule,
     HnTopicModule,
     HnStoryAuthorModule,
     HnUserModule,
@@ -33,6 +36,7 @@ import { HnStoryService } from './hn-story.service';
   controllers: [HnStoryController],
   providers: [
     HnStoryService,
+    HnStorySecurity,
     HnTopicService,
     HnStoryAuthorService,
     HnStoryAuthorInviteService,

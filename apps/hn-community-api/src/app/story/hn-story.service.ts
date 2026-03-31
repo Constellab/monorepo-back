@@ -42,6 +42,7 @@ import { HnTopicService } from '../topic/hn-topic.service';
 import { HnUserService } from '../users/hn-user.service';
 import { HnCreateStoryDto, HnStoryDto, HnStoryFilter } from './hn-story.dto';
 import { HnStory, HnStoryStatus } from './hn-story.entity';
+import { HnStorySecurity } from './security/hn-story.security';
 
 @Injectable()
 export class HnStoryService extends BlAbstractService<HnStory> {
@@ -53,6 +54,7 @@ export class HnStoryService extends BlAbstractService<HnStory> {
     private storyAuthorService: HnStoryAuthorService,
     private storyFileService: HnFileStoryService,
     private userService: HnUserService,
+    private storySecurity: HnStorySecurity,
     private dataSource: DataSource,
     private coreConfigService: HnCoreConfigService
   ) {
@@ -143,7 +145,7 @@ export class HnStoryService extends BlAbstractService<HnStory> {
   }
 
   async deleteStory(id: string): Promise<void> {
-    await this.checkAndValidateOwnerOrCoAuthor(id, true);
+    await this.assertIsCreator(id);
     const deleteRes = await this.dataSource.transaction(async (entityManager) => {
       await this.storyFileService.deleteAllEntityFiles(id, entityManager);
       await this.deleteAllStoryCoAuthorsInvites(id, entityManager);
@@ -157,7 +159,7 @@ export class HnStoryService extends BlAbstractService<HnStory> {
   }
 
   async deleteAllStoryCoAuthorsInvites(storyId: string, entityManager: EntityManager): Promise<void> {
-    await this.checkAndValidateOwnerOrCoAuthor(storyId, true);
+    await this.assertIsCreator(storyId);
     const storyCoAuthorsInvites = await this.storyAuthorService.getStoryCoAuthorsInvites(storyId);
     for (const storyCoAuthorsInvite of storyCoAuthorsInvites) {
       try {
@@ -171,7 +173,7 @@ export class HnStoryService extends BlAbstractService<HnStory> {
   }
 
   async deleteAllStoryCoAuthors(storyId: string, entityManager: EntityManager): Promise<void> {
-    await this.checkAndValidateOwnerOrCoAuthor(storyId, true);
+    await this.assertIsCreator(storyId);
     const storyCoAuthors = await this.storyAuthorService.getStoryCoAuthorsByStoryId(storyId);
     for (const storyCoAuthor of storyCoAuthors) {
       try {
@@ -343,22 +345,27 @@ export class HnStoryService extends BlAbstractService<HnStory> {
     ).map((story) => new HnStoryDto(story));
   }
 
-  async checkAndValidateOwnerOrCoAuthor(id: string, onlyOwner = false): Promise<void> {
-    const isAuthor: boolean = await this.isStoryOwnerOrCoAuthor(id, onlyOwner);
-    if (!isAuthor) {
-      throw new BlUnauthorizedException('You are not authorized to update this story');
-    }
+  private async assertCanEdit(id: string): Promise<void> {
+    const story = await this.getStory(id);
+    const user = HnCurrentUserHelper.getAndCheckCurrentUser();
+    await this.storySecurity.assertCanEdit(story, user);
+  }
+
+  private async assertIsCreator(id: string): Promise<void> {
+    const story = await this.getStory(id);
+    const user = HnCurrentUserHelper.getAndCheckCurrentUser();
+    this.storySecurity.assertIsCreator(story, user);
   }
 
   async updateStoryTitle(id: string, title: string): Promise<HnStory> {
-    await this.checkAndValidateOwnerOrCoAuthor(id);
+    await this.assertCanEdit(id);
     const story = await this.getStory(id);
     story.title = title;
     return this.storyRepository.save(story);
   }
 
   async addStoryTopic(id: string, topic: HnTopicDto): Promise<HnTopic> {
-    await this.checkAndValidateOwnerOrCoAuthor(id);
+    await this.assertCanEdit(id);
     const t: HnTopic = await this.topicService.getOrCreateTopic(topic);
     const story: HnStory = await this.getStory(id);
     story.topics.push(t);
@@ -368,7 +375,7 @@ export class HnStoryService extends BlAbstractService<HnStory> {
   }
 
   async removeTopic(id: string, topicId: string): Promise<HnStory> {
-    await this.checkAndValidateOwnerOrCoAuthor(id);
+    await this.assertCanEdit(id);
     const story = await this.getStory(id);
     story.topics = story.topics.filter((t) => t.id !== topicId);
     const topic: HnTopic = await this.topicService.getTopic(topicId);
@@ -380,7 +387,7 @@ export class HnStoryService extends BlAbstractService<HnStory> {
   }
 
   async updateStoryContent(id: string): Promise<HnStory> {
-    await this.checkAndValidateOwnerOrCoAuthor(id);
+    await this.assertCanEdit(id);
     const story = await this.getStory(id);
 
     const richText = new TeRichText(story.contentEdition);
@@ -395,7 +402,7 @@ export class HnStoryService extends BlAbstractService<HnStory> {
   }
 
   async updateStoryContentEdition(id: string, contentEdition: TeRichText): Promise<HnStory> {
-    await this.checkAndValidateOwnerOrCoAuthor(id);
+    await this.assertCanEdit(id);
     const story = await this.getStory(id);
     const richTextAggregate = story.getContentEditionRichTextAggregate();
 
@@ -417,13 +424,13 @@ export class HnStoryService extends BlAbstractService<HnStory> {
   }
 
   async saveImage(file: BlFile, storyId: string): Promise<TeBlockFigureUploadedResponse> {
-    await this.checkAndValidateOwnerOrCoAuthor(storyId);
+    await this.assertCanEdit(storyId);
     const story: HnStory = await this.getStory(storyId);
     return this.storyFileService.saveImage(story, file);
   }
 
   async updateStoryMainImage(file: BlFile, storyId: string): Promise<HnStory> {
-    await this.checkAndValidateOwnerOrCoAuthor(storyId);
+    await this.assertCanEdit(storyId);
     const story: HnStory = await this.getStory(storyId);
     const mainPictureData = await this.storyFileService.saveImage(story, file);
     story.mainPicture = mainPictureData.filename;
@@ -431,7 +438,7 @@ export class HnStoryService extends BlAbstractService<HnStory> {
   }
 
   async deleteStoryMainImage(storyId: string): Promise<HnStory> {
-    await this.checkAndValidateOwnerOrCoAuthor(storyId);
+    await this.assertCanEdit(storyId);
     const story: HnStory = await this.getStory(storyId);
     const content = new TeRichText(story.contentEdition);
     if (content.getFirstFigureLink() == null && story.publishedAt != null)
@@ -448,13 +455,13 @@ export class HnStoryService extends BlAbstractService<HnStory> {
   }
 
   async saveFile(file: BlFile, storyId: string): Promise<HnUploadFileResponseDto> {
-    await this.checkAndValidateOwnerOrCoAuthor(storyId);
+    await this.assertCanEdit(storyId);
     const story: HnStory = await this.getStory(storyId);
     return await this.storyFileService.saveFile(story, file);
   }
 
   async publishStory(id: string): Promise<HnStory> {
-    await this.checkAndValidateOwnerOrCoAuthor(id);
+    await this.assertCanEdit(id);
     const story: HnStory = await this.updateStoryContent(id);
     if (story.mainPicture == null) {
       throw new Error('Story must have a main picture');
@@ -465,26 +472,11 @@ export class HnStoryService extends BlAbstractService<HnStory> {
     return this.storyRepository.save(story);
   }
 
-  async isStoryOwnerOrCoAuthor(id: string, onlyOwner: boolean = false): Promise<boolean> {
-    if (HnCurrentUserHelper.getCurrentUser() == null) return false;
-
-    if (HnCurrentUserHelper.getCurrentUser().isAdmin()) return true;
-
+  async isStoryOwnerOrCoAuthor(id: string): Promise<boolean> {
+    const user = HnCurrentUserHelper.getCurrentUser();
+    if (!user) return false;
     const story = await this.getStory(id);
-
-    // True if createdBy
-    if (story.createdBy.id == HnCurrentUserHelper.getCurrentUser().id) {
-      return true;
-    }
-
-    // False if onlyOwner and current user is not the owner
-    if (onlyOwner) return false;
-
-    // True if coAuthor of the story otherwise false
-    const storyAuthors = await this.getStoryCoAuthors(id);
-    return storyAuthors?.some(
-      (storyAuthor: HnStoryCoAuthor) => storyAuthor.user.id === HnCurrentUserHelper.getCurrentUser().id
-    );
+    return this.storySecurity.isCreatorOrCoAuthor(story, user);
   }
 
   async getStoryCoAuthors(storyId: string): Promise<HnStoryCoAuthor[]> {
@@ -492,17 +484,17 @@ export class HnStoryService extends BlAbstractService<HnStory> {
   }
 
   async getStoryCoAuthorsPendingInvites(id: string): Promise<HnStoryCoAuthorInvite[]> {
-    await this.checkAndValidateOwnerOrCoAuthor(id, true);
+    await this.assertIsCreator(id);
     return this.storyAuthorService.getStoryCoAuthorsPendingInvites(id);
   }
 
   async removeStoryCoAuthor(id: string, storyAuthorUserId: string): Promise<void> {
-    await this.checkAndValidateOwnerOrCoAuthor(id, true);
+    await this.assertIsCreator(id);
     return this.storyAuthorService.removeStoryCoAuthor(id, storyAuthorUserId);
   }
 
   async inviteStoryCoAuthor(storyId: string, emailOrId: string): Promise<boolean> {
-    await this.checkAndValidateOwnerOrCoAuthor(storyId, true);
+    await this.assertIsCreator(storyId);
     const story: HnStory = await this.getStory(storyId);
     if (story == null) throw new BlBadRequestException('Story not found');
     return this.storyAuthorService.inviteStoryCoAuthor(story, emailOrId);
@@ -552,7 +544,7 @@ export class HnStoryService extends BlAbstractService<HnStory> {
 
   /////////////////////////////////// RESOURCE VIEW ///////////////////////////////////
   async uploadStoryResourceViewFile(storyId: string, file: BlFile): Promise<string> {
-    await this.checkAndValidateOwnerOrCoAuthor(storyId);
+    await this.assertCanEdit(storyId);
     const story: HnStory = await this.getStory(storyId);
     return this.storyFileService.saveResourceView(story, file);
   }

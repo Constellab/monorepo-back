@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 
 import { HnCoreModule } from '../core/hn-core.module';
+import { HnCommunitySecurityModule } from '../core/security/hn-community-security.module';
 import { HnCoreConfigModule } from '../core/modules/core-config/hn-core-config.module';
 import { HnFileDocumentationModule } from '../file-aggregate/file-documentation/hn-file-documentation.module';
 import { HnSpaceAggregateModule } from '../space-aggregate/hn-space-aggregate.module';
@@ -18,6 +19,7 @@ import { HnBrickController } from './hn-brick.controller';
 import { HnBrickForSpaceController } from './hn-brick-for-space.controller';
 import { HnBrickListener } from './hn-brick.listener';
 import { HnBrickAggregateService } from './hn-brick-aggregate.service';
+import { HnBrickSecurity } from './security/hn-brick.security';
 import { HnBrickVersionController } from './hn-brick-version.controller';
 import { HnDocumentationController } from './hn-documentation.controller';
 import { HnFolderController } from './hn-folder.controller';
@@ -25,6 +27,7 @@ import { HnFolderController } from './hn-folder.controller';
 @Module({
   imports: [
     HnCoreModule,
+    HnCommunitySecurityModule,
     HnCoreConfigModule,
     HnBrickModule,
     HnBrickMajorVersionModule,
@@ -40,7 +43,7 @@ import { HnFolderController } from './hn-folder.controller';
     HnFileDocumentationModule,
   ],
   controllers: [HnBrickController, HnBrickForSpaceController, HnBrickVersionController, HnFolderController, HnDocumentationController],
-  providers: [HnBrickAggregateService, HnBrickListener],
-  exports: [HnBrickAggregateService],
+  providers: [HnBrickAggregateService, HnBrickSecurity, HnBrickListener],
+  exports: [HnBrickAggregateService, HnBrickSecurity],
 })
 export class HnBrickAggregateModule {}

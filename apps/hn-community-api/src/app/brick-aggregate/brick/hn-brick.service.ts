@@ -11,7 +11,6 @@ import {
   BlSearchBuilder,
   BlSearchParams,
   BlSearchSortCriteria,
-  BlUnauthorizedException,
 } from '@monorepo/back-core-lib';
 import { ClPage, ClStringHelper } from '@monorepo/core-lib';
 import { TeBlockFigureUploadedResponse } from '@monorepo/te-text-editor';
@@ -20,7 +19,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { FindOptionsWhere, Repository } from 'typeorm';
 
 import { HnCoreConfigService } from '../../core/modules/core-config/hn-core-config.service';
-import { HnCurrentUserHelper } from '../../core/utils/hn-current-user.helper';
 import { HnBrickDto, HnEditBrickDTO } from './hn-brick.dto';
 import { HnBrick, HnBrickVisibility } from './hn-brick.entity';
 
@@ -158,23 +156,6 @@ export class HnBrickService extends BlAbstractService<HnBrick> {
     brick.credentialPassword = editedBrick.credentialPassword;
 
     return this.bricksRepository.save(brick);
-  }
-
-  checkIfUserHasRightOnTheBrick(brick: HnBrick): void {
-    const currentUser = HnCurrentUserHelper.getCurrentUser();
-    if (
-      currentUser.id != brick.createdBy.id &&
-      !brick?.brickUsers.some((bu) => bu.user.id === HnCurrentUserHelper.getCurrentUser()?.id)
-    ) {
-      throw new BlUnauthorizedException('You are not authorized to edit this brick');
-    }
-  }
-
-  userHasRightOnBrick(brick: HnBrick): boolean {
-    return (
-      HnCurrentUserHelper.getCurrentUser()?.id === brick.createdBy?.id ||
-      brick?.brickUsers.some((bu) => bu.user.id === HnCurrentUserHelper.getCurrentUser()?.id)
-    );
   }
 
   private getBucketConfig(): BlBucketConfig {

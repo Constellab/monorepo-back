@@ -11,6 +11,7 @@ import { HnFolderModule } from '../brick-aggregate/folder/hn-folder.module';
 import { HnBrickAggregateModule } from '../brick-aggregate/hn-brick-aggregate.module';
 import { HnBrickAggregateService } from '../brick-aggregate/hn-brick-aggregate.service';
 import { HnCoreModule } from '../core/hn-core.module';
+import { HnCommunitySecurityModule } from '../core/security/hn-community-security.module';
 import { HnCoreConfigModule } from '../core/modules/core-config/hn-core-config.module';
 import { HnFileAgentModule } from '../file-aggregate/file-agent/hn-file-agent.module';
 import { HnFileAppModule } from '../file-aggregate/file-app/hn-file-app.module';
@@ -29,6 +30,7 @@ import { HnAgentVersionBrickDependenciesModule } from './agent-version-brick-dep
 import { HnAgentController } from './hn-agent.controller';
 import { HnAgentListener } from './hn-agent.listener';
 import { HnAgentAggregateService } from './hn-agent-aggregate.service';
+import { HnAgentSecurity } from './security/hn-agent.security';
 import { HnAgentForLabController } from './hn-agent-for-lab.controller';
 import { HnTempLiveTaskController } from './hn-temp-live-task.controller';
 
@@ -60,12 +62,14 @@ import { HnTempLiveTaskController } from './hn-temp-live-task.controller';
     BlExternalApiModule,
     HnCoreConfigModule,
     HnCoreModule,
+    HnCommunitySecurityModule,
 
     HnUserModule,
   ],
   controllers: [HnAgentController, HnAgentForLabController, HnTempLiveTaskController],
   providers: [
     HnAgentAggregateService,
+    HnAgentSecurity,
     HnSpaceAggregateService,
     HnBrickAggregateService,
     HnAgentForLabController,

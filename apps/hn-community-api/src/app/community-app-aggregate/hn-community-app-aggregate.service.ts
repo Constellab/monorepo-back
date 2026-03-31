@@ -36,6 +36,7 @@ import { HnCommunityAppStatLabDto } from './community-app-stat/hn-community-app-
 import { HnCommunityAppStatService } from './community-app-stat/hn-community-app-stat.service';
 import { HnCommunityAppUser } from './community-app-user/hn-community-app-user.entity';
 import { HnCommunityAppUserService } from './community-app-user/hn-community-app-user.service';
+import { HnCommunityAppSecurity } from './security/hn-community-app.security';
 
 @Injectable()
 export class HnCommunityAppAggregateService {
@@ -50,6 +51,7 @@ export class HnCommunityAppAggregateService {
     private readonly userService: HnUserService,
     private readonly communityAppCoAuthorService: HnCommunityAppCoAuthorService,
     private readonly coreConfigService: HnCoreConfigService,
+    private readonly communityAppSecurity: HnCommunityAppSecurity,
     private dataSource: DataSource
   ) {}
 
@@ -73,9 +75,7 @@ export class HnCommunityAppAggregateService {
 
   async delete(id: string): Promise<boolean> {
     const communityApp = await this.getAndCheckCommunityApp(id);
-    if (communityApp.createdBy.id != HnCurrentUserHelper.getCurrentUser().id) {
-      throw new BlUnauthorizedException('You are not authorized to perform this action');
-    }
+    this.communityAppSecurity.assertIsCreator(communityApp, HnCurrentUserHelper.getAndCheckCurrentUser());
     return this.communityAppService.delete(id);
   }
 
@@ -87,11 +87,10 @@ export class HnCommunityAppAggregateService {
 
   async getAndCheckCommunityApp(id: string): Promise<HnCommunityApp> {
     const communityApp = await this.getById(id);
+    const currentUser = HnCurrentUserHelper.getCurrentUser();
     if (communityApp.space) {
-      const currentUser = HnCurrentUserHelper.getCurrentUser();
       if (!currentUser) throw new BlNotFoundException('Community App not found');
-      if (!(await this.spaceAggregateService.checkSpaceUser(communityApp.space.id, currentUser.id)))
-        throw new BlNotFoundException('Community App not found');
+      await this.communityAppSecurity.assertCanView(communityApp, currentUser);
     }
     return communityApp;
   }
@@ -478,9 +477,7 @@ export class HnCommunityAppAggregateService {
 
   public async removeCommunityAppCoAuthor(id: string, communityAppCoAuthorUserId: string): Promise<void> {
     const communityApp = await this.getAndCheckCommunityApp(id);
-    if (communityApp.createdBy.id != HnCurrentUserHelper.getCurrentUser().id) {
-      throw new BlUnauthorizedException('You are not authorized to perform this action');
-    }
+    this.communityAppSecurity.assertIsCreator(communityApp, HnCurrentUserHelper.getAndCheckCurrentUser());
     return this.communityAppCoAuthorService.removeCommunityAppCoAuthor(id, communityAppCoAuthorUserId);
   }
 
