@@ -1,4 +1,4 @@
-import { BlMailService, BlUnauthorizedException } from '@monorepo/back-core-lib';
+import { BlBadRequestException, BlMailService, BlUnauthorizedException } from '@monorepo/back-core-lib';
 import { ClStringHelper, ClSupportedLanguage } from '@monorepo/core-lib';
 import { Repository } from 'typeorm';
 
@@ -19,14 +19,22 @@ export abstract class HnAbstractUserInviteService<T extends HnUserInvite, E> {
   ) {}
 
   async createUserInviteMail(entity: E, emailOrId: string): Promise<boolean> {
+    const currentUser = HnCurrentUserHelper.getCurrentUser();
+
     const userInviteMail: T = this.initNewUserInvite(entity);
     userInviteMail.token = ClStringHelper.generateUUID();
     let user: HnUser;
     if (ClStringHelper.isEmail(emailOrId)) {
+      if (emailOrId === currentUser.email) {
+        throw new BlBadRequestException('You cannot invite yourself as a co-author');
+      }
       user = await this.userService.findOneByEmail(emailOrId);
       userInviteMail.email = emailOrId;
     } else {
       if (!ClStringHelper.isUUID(emailOrId)) throw Error('User not found');
+      if (emailOrId === currentUser.id) {
+        throw new BlBadRequestException('You cannot invite yourself as a co-author');
+      }
       user = await this.userService.findOne(emailOrId);
       userInviteMail.email = user.email;
     }
