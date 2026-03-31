@@ -510,8 +510,47 @@ export class CnLabServerService {
     // if the server is stopped
     const user = CnCurrentUserHelper.getAndCheckCurrentUser();
     this.logger.log(`Starting server instance ${lab.serverInstanceId} for lab ${lab.id} by ${user.email}`);
-    await cloudProviderService.startInstance(lab.serverInstanceId, lab.region.technicalName);
+    await cloudProviderService.startInstance(lab.serverInstanceId, lab.region.technicalName).catch((err) => {
+      this.logger.error(
+        `Error while starting instance ${lab.serverInstanceId} for lab ${lab.id}. Error: ${err}`
+      );
+      throw err;
+    });
+
+    // Update DNS with the current IP (may have changed if using ephemeral IPs)
+    await this.updateDnsAfterStart(cloudProviderService, lab);
+
+    // Migration: release static IP for existing GCP labs that had one
+    if (lab.serverIpAddressId && cloudProviderService.getName() === 'GCP') {
+      this.logger.log(`Migrating lab ${lab.id}: releasing static IP ${lab.serverIpAddressId}`);
+      await cloudProviderService.deleteIpAddress(lab.serverIpAddressId, lab.region.technicalName);
+      await this.labService.updatePartial(lab.id, { serverIpAddressId: null });
+      this.logger.log(`Static IP ${lab.serverIpAddressId} released for lab ${lab.id}`);
+    }
+
     return await this.labService.markInstanceAsServerStarting(lab.id);
+  }
+
+  /**
+   * After starting an instance, get the current IP and update the DNS record if it changed.
+   */
+  private async updateDnsAfterStart(cloudProviderService: CnCloudProviderService, lab: CnLab): Promise<void> {
+    const ipv4 = await cloudProviderService.getIpAddressFromInstanceId(
+      lab.serverInstanceId,
+      lab.region.technicalName
+    );
+
+    if (!ipv4) {
+      this.logger.warn(`Could not get IP for lab ${lab.id} after start, skipping DNS update`);
+      return;
+    }
+
+    this.logger.log(`Updating DNS for lab ${lab.id} with IP ${ipv4}`);
+    await this.ovhCloudProviderService.updateOrCreateLabDomainHostRecord(
+      ipv4,
+      lab.getMainDomain(),
+      lab.getSubDomainName()
+    );
   }
 
   public async stopLab(lab: CnLab): Promise<CnLab> {
@@ -520,7 +559,12 @@ export class CnLabServerService {
     // if the server is running
     const user = CnCurrentUserHelper.getAndCheckCurrentUser();
     this.logger.log(`Stopping server instance ${lab.serverInstanceId} for lab ${lab.id} by ${user.email}`);
-    await cloudProviderService.stopInstance(lab.serverInstanceId, lab.region.technicalName);
+    await cloudProviderService.stopInstance(lab.serverInstanceId, lab.region.technicalName).catch((err) => {
+      this.logger.error(
+        `Error while stopping instance ${lab.serverInstanceId} for lab ${lab.id}. Error: ${err}`
+      );
+      throw err;
+    });
     return await this.labService.markInstanceAsServerStopping(lab.id);
   }
 

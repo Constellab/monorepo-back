@@ -9,7 +9,6 @@ import {
 } from '@google-cloud/compute';
 import { Injectable, Logger } from '@nestjs/common';
 import { existsSync } from 'fs';
-import { Exception } from 'handlebars';
 
 import { CnCoreConfigService } from '../../../cn-core/modules/cn-core-config/cn-core-config.service';
 import { CnGcpHelper, CnGcpInstance, CnGcpVolume } from './cn-gcp.class';
@@ -20,7 +19,7 @@ export interface CnGcpCreateInstanceRequest {
   machineType: string;
   imageFamily: string;
   imageProject: string;
-  staticIp: string;
+  staticIp?: string;
   subnetName: string;
   volumeSizeGb: number;
   volumeArchitecture: string;
@@ -46,11 +45,14 @@ export class CnGcpService {
     const zonePath = `projects/${projectId}/zones/${createInstance.zone}`;
     const region = CnGcpHelper.getRegionNameFromZoneName(createInstance.zone);
 
-    const accessConfig = {
+    const accessConfig: Record<string, string> = {
       name: 'External NAT',
       type: 'PREMIUM',
-      natIP: createInstance.staticIp,
     };
+
+    if (createInstance.staticIp) {
+      accessConfig.natIP = createInstance.staticIp;
+    }
 
     const instanceConfig: protos.google.cloud.compute.v1.IInstance = {
       name: createInstance.name,
@@ -332,7 +334,7 @@ export class CnGcpService {
 
     if (!credentialsPath || !existsSync(credentialsPath)) {
       this.logger.error(`GCP credentials file not found at ${credentialsPath}`);
-      throw new Exception(`GCP credentials file not found.`);
+      throw new Error(`GCP credentials file not found.`);
     }
 
     return new InstancesClient();

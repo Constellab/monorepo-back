@@ -12,7 +12,6 @@ import {
   CnCpInstance,
   CnCpInstanceStatus,
   CnCpInstanceWithVolume,
-  CnCpStaticIpAddress,
   CnCpVolume,
   CnCpVolumeStatus,
 } from '../cn-cloud-provider.class';
@@ -85,7 +84,7 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
       flavorId: flavor.id,
       imageId: image.id,
       sshKeyId: this.configService.getOvhSshKey(),
-      monthlyBilling: instance.billing === 'MONTHLY',
+      monthlyBilling: instance.billing === CnLabBillingMode.MONTHLY,
     };
 
     const ovhInstance = await this.ovhService.createInstance(request);
@@ -156,7 +155,7 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
       case 'UNKNOWN':
         return 'ERROR';
       default:
-        this.logger.error(`Unknown status ${status} for ovh instance ${id}`);
+        this.logger.error(`Unknown status ${status as any} for ovh instance ${id}`);
         return 'ERROR';
     }
   }
@@ -182,7 +181,7 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
     const request: CnOvhCreateVolumeRequest = {
       region: volume.region,
       size: volume.size,
-      type: volume.type === 'CLASSIC' ? 'classic' : 'high-speed-gen2',
+      type: volume.type === CnLabVolumeType.CLASSIC ? 'classic' : 'high-speed-gen2',
       name: volume.name,
       description: volume.description,
     };
@@ -259,19 +258,8 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
   }
 
   /////////////////////////////// IP ADDRESS ///////////////////////////////
-  needStaticIpAddressBeforeInstance(): boolean {
-    return false;
-  }
 
-  async createStaticIpAddress(): Promise<CnCpStaticIpAddress | null> {
-    return null;
-  }
-
-  async deleteIpAddress(): Promise<void> {
-    return null;
-  }
-
-  async getIpAddressFromId(): Promise<CnCpStaticIpAddress | null> {
+  deleteIpAddress(): Promise<void> {
     return null;
   }
 
@@ -321,6 +309,32 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
     }
 
     return this.ovhService.getDomainRecord(mainDomain, recordIds[0]);
+  }
+
+  /**
+   * Update the DNS A record for a lab if the IP has changed, or create it if it doesn't exist.
+   */
+  public async updateOrCreateLabDomainHostRecord(
+    ipv4: string,
+    mainDomain: string,
+    subDomainName: string
+  ): Promise<void> {
+    const recordIds: number[] = await this.ovhService.getDomainRecordIdBySubDomain(
+      mainDomain,
+      this.getSubDomainRecordName(subDomainName),
+      CnCloudProviderOvhService.DNS_HOST_RECORD
+    );
+
+    if (recordIds.length > 0) {
+      const existingRecord = await this.ovhService.getDomainRecord(mainDomain, recordIds[0]);
+      if (existingRecord.target === ipv4) {
+        return;
+      }
+      await this.ovhService.updateDomainRecord(mainDomain, recordIds[0], ipv4);
+      return;
+    }
+
+    await this.createLabDomainHostRecord(ipv4, mainDomain, subDomainName);
   }
 
   public async deleteLabDomainHostRecord(mainDomain: string, subDomainName: string): Promise<void> {

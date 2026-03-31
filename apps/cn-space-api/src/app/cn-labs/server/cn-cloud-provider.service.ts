@@ -7,7 +7,6 @@ import {
   CnCpCreateVolumeRequest,
   CnCpInstance,
   CnCpInstanceWithVolume,
-  CnCpStaticIpAddress,
   CnCpVolume,
 } from './cn-cloud-provider.class';
 import { CnLabSshService } from './cn-lab-ssh.service';
@@ -76,29 +75,9 @@ export abstract class CnCloudProviderService {
 
   ///////////////////////////////// IP ADDRESS //////////////////////////////////////
 
-  /**
-   * Check if the cloud provider need a static IP address before creating the instance
-   * If true, the static IP address will be created before the instance (GCP)
-   * If false, the static IP address will be created after the instance (others)
-   *
-   */
-  public abstract needStaticIpAddressBeforeInstance(): boolean;
-
-  /**
-   * Create a static IP address for the instance
-   * If the cloud provider can create the static IP address with the instance name, this is not needed
-   * This is not call if needStaticIpAddressForInstance() is false
-   */
-  public abstract createStaticIpAddress(name: string, region: string): Promise<CnCpStaticIpAddress | null>;
-
   public abstract deleteIpAddress(ipAddressId: string, region: string): Promise<void>;
 
   public abstract getIpAddressFromInstanceId(instanceId: string, region: string): Promise<string>;
-
-  public abstract getIpAddressFromId(
-    ipAddressId: string,
-    regionName: string
-  ): Promise<CnCpStaticIpAddress | null>;
 
   public instantiateLabSshService(lab: CnLab): CnLabSshService {
     return new CnLabSshService(

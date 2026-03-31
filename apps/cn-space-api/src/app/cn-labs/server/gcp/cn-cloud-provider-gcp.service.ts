@@ -1,4 +1,3 @@
-import { protos } from '@google-cloud/compute';
 import { Injectable } from '@nestjs/common';
 
 import { CnCloudProviderName } from '../../../cn-cloud-providers/cn-cloud-provider.entity';
@@ -10,7 +9,6 @@ import {
   CnCpCreateVolumeRequest,
   CnCpInstance,
   CnCpInstanceWithVolume,
-  CnCpStaticIpAddress,
   CnCpVolume,
 } from '../cn-cloud-provider.class';
 import { CnCloudProviderService } from '../cn-cloud-provider.service';
@@ -70,7 +68,7 @@ export class CnCloudProviderGcpService extends CnCloudProviderService {
       machineType: instanceRequest.serverName,
       imageFamily: CnCloudProviderGcpService.IMAGE_FAMILY,
       imageProject: CnCloudProviderGcpService.IMAGE_PROJECT,
-      staticIp: instanceRequest.ipAddress.ipAddress,
+      staticIp: instanceRequest.ipAddress?.ipAddress,
       subnetName: CnCloudProviderGcpService.SUB_NETWORK_NAME,
       volumeSizeGb: volumeRequest.size,
       volumeArchitecture: CnCloudProviderGcpService.DISK_ARCHITECTURE,
@@ -143,41 +141,13 @@ export class CnCloudProviderGcpService extends CnCloudProviderService {
 
   ///////////////////////////////////// IP ADDRESS ///////////////////////////////////////
 
-  needStaticIpAddressBeforeInstance(): boolean {
-    return true;
-  }
-
   async getIpAddressFromInstanceId(id: string, region: string): Promise<string> {
     return await this.gcpService.getIpAddressFromInstance(id, region);
   }
 
-  async getIpAddressFromId(ipAddressId: string, region: string): Promise<CnCpStaticIpAddress> {
-    const gcpRegion = CnGcpHelper.getRegionNameFromZoneName(region);
-    const address = await this.gcpService.getStaticIpAddress(ipAddressId, gcpRegion);
-    return this.ipAddressToCnIpAddress(address);
-  }
-
-  async createStaticIpAddress(name: string, region: string): Promise<CnCpStaticIpAddress> {
-    // reserve the IP address
-    const gcpRegion = CnGcpHelper.getRegionNameFromZoneName(region);
-    const ipName = this.getGCPInstanceName(name);
-
-    const address = await this.gcpService.createStaticIpAddress(ipName, gcpRegion);
-    return this.ipAddressToCnIpAddress(address);
-  }
-
-  deleteIpAddress(ipAddressId: string, region: string): Promise<void> {
+  async deleteIpAddress(ipAddressId: string, region: string): Promise<void> {
     const gcpRegion = CnGcpHelper.getRegionNameFromZoneName(region);
     return this.gcpService.deleteStaticIpAddress(ipAddressId, gcpRegion);
-  }
-
-  private ipAddressToCnIpAddress(ipAddress: protos.google.cloud.compute.v1.IAddress): CnCpStaticIpAddress {
-    return {
-      id: ipAddress.name,
-      ipAddress: ipAddress.address,
-      region: ipAddress.region,
-      originalObject: ipAddress,
-    };
   }
 
   /////////////////////////////////////// OTHER ////////////////////////////////////////

@@ -182,6 +182,11 @@ export class CnOvhService {
     return this.requestPromised('GET', `/domain/zone/${domain}/record/${recordId}`);
   }
 
+  public async updateDomainRecord(domain: string, recordId: number, target: string): Promise<void> {
+    await this.requestPromised('PUT', `/domain/zone/${domain}/record/${recordId}`, { target });
+    await this.refreshDns(domain);
+  }
+
   private async refreshDns(domain: string): Promise<void> {
     // apply modifications
     await this.requestPromised('POST', `/domain/zone/${domain}/refresh`);
