@@ -213,6 +213,10 @@ export class CnLabServerService {
     lab: CnLab,
     labVolume: CnLabVolume
   ): Promise<CnLab> {
+    if (labVolume.size <= 0) {
+      throw new BlBadRequestException(`Volume size must be greater than 0, got ${labVolume.size}`);
+    }
+
     const volumeRequest: CnCpCreateVolumeRequest = this.getLabVolumeRequest(lab, labVolume);
 
     await this.labService.updateServerTask(
