@@ -76,6 +76,16 @@ export abstract class BlCoreExceptionHandlerFilter implements ExceptionFilter {
   }
 
   private handleNestHttpException(error: HttpException): Promise<BlApiError> {
+    // handle validation errors from ValidationPipe (message is an array of constraint descriptions)
+    const response = error.getResponse();
+    if (typeof response === 'object' && 'message' in response) {
+      const message = (response as any).message;
+      if (Array.isArray(message)) {
+        const detail = `Validation failed:\n- ${message.join('\n- ')}`;
+        return this.convertToNestError(detail, error.getStatus());
+      }
+    }
+
     // translate the error message and throw the exception with error code and message
     return this.convertToNestError(error.message, error.getStatus());
   }
