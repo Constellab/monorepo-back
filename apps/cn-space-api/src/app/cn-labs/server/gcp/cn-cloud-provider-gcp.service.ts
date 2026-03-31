@@ -68,7 +68,6 @@ export class CnCloudProviderGcpService extends CnCloudProviderService {
       machineType: instanceRequest.serverName,
       imageFamily: CnCloudProviderGcpService.IMAGE_FAMILY,
       imageProject: CnCloudProviderGcpService.IMAGE_PROJECT,
-      staticIp: instanceRequest.ipAddress?.ipAddress,
       subnetName: CnCloudProviderGcpService.SUB_NETWORK_NAME,
       volumeSizeGb: volumeRequest.size,
       volumeArchitecture: CnCloudProviderGcpService.DISK_ARCHITECTURE,

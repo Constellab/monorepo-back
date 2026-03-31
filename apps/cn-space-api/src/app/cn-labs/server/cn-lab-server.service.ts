@@ -15,7 +15,6 @@ import {
   CnCpInstance,
   CnCpInstanceStatusObject,
   CnCpInstanceWithVolume,
-  CnCpStaticIpAddress,
   CnCpVolume,
 } from './cn-cloud-provider.class';
 import { CnCloudProviderFactory } from './cn-cloud-provider.factory';
@@ -42,7 +41,6 @@ export class CnLabServerService {
     const info: CnCpCompleteInfo = {
       instance: null,
       volume: null,
-      ipAddress: null,
       domainRecord: null,
     };
 
@@ -61,15 +59,6 @@ export class CnLabServerService {
         cloudProviderService
           .getVolume(lab.serverVolumeId, lab.region.technicalName)
           .then((volume) => (info.volume = volume))
-          .catch((err) => this.logger.error(err))
-      );
-    }
-
-    if (lab.serverIpAddressId) {
-      promises.push(
-        cloudProviderService
-          .getIpAddressFromId(lab.serverIpAddressId, lab.region.technicalName)
-          .then((ipAddress) => (info.ipAddress = ipAddress))
           .catch((err) => this.logger.error(err))
       );
     }
@@ -98,32 +87,9 @@ export class CnLabServerService {
     const cloudProviderName = serverCloud.cloudProvider.name;
     const cloudProviderService = this.cloudProviderFactory.getCloudProviderService(cloudProviderName);
 
-    // Create or get the static IP address
-    let ipAddress: CnCpStaticIpAddress | null;
-    if (cloudProviderService.needStaticIpAddressBeforeInstance()) {
-      if (!lab.serverIpAddressId) {
-        // Creating the static IP address
-        ipAddress = await this.createStaticIpAddress(cloudProviderService, lab);
-        lab = await this.labService.updatePartial(lab.id, { serverIpAddressId: ipAddress.id });
-      } else {
-        ipAddress = await cloudProviderService.getIpAddressFromId(
-          lab.serverIpAddressId,
-          lab.region.technicalName
-        );
-        if (ipAddress == null) {
-          throw new BlBadRequestException(
-            `Static IP address ${lab.serverIpAddressId} not found in cloud provider ${cloudProviderName}`
-          );
-        }
-        this.logger.log(
-          `Static IP address ${lab.serverIpAddressId} already exists for lab ${lab.id}. Skipping creation`
-        );
-      }
-    }
-
     // Create or get the server instance
     if (!lab.serverInstanceId) {
-      lab = await this.createLab(cloudProviderService, lab, ipAddress, labVolume);
+      lab = await this.createLab(cloudProviderService, lab, labVolume);
     } else {
       const serverInstance = await cloudProviderService.getInstance(
         lab.serverInstanceId,
@@ -189,37 +155,9 @@ export class CnLabServerService {
     return lab;
   }
 
-  private async createStaticIpAddress(
-    service: CnCloudProviderService,
-    lab: CnLab
-  ): Promise<CnCpStaticIpAddress> {
-    if (!service.needStaticIpAddressBeforeInstance()) {
-      this.logger.debug(
-        `Static IP address not needed for cloud provider ${service.getName()} before instance ` +
-          `creation for lab ${lab.id}`
-      );
-      return null;
-    }
-    const regionName = lab.region.technicalName;
-
-    await this.labService.updateServerTask(
-      lab.id,
-      `Creating static IP address in cloud provider ${service.getName()} `,
-      CnLabServerTaskStatus.RUNNING
-    );
-    this.logger.log(`Creating static IP address for lab ${lab.id} in cloud provider ${service.getName()}`);
-    const staticIpAddress = await service.createStaticIpAddress(lab.cloudName, regionName);
-    this.logger.log(
-      `Static IP address ${staticIpAddress.id} created for lab ${lab.id} ` +
-        `in cloud provider ${service.getName()}`
-    );
-    return staticIpAddress;
-  }
-
   private async createLab(
     service: CnCloudProviderService,
     lab: CnLab,
-    ipAddress?: CnCpStaticIpAddress,
     labVolume?: CnLabVolume
   ): Promise<CnLab> {
     const regionName = lab.region.technicalName;
@@ -244,7 +182,6 @@ export class CnLabServerService {
       region: regionName,
       serverName: labServer.technicalName,
       billing: lab.billingMode,
-      ipAddress: ipAddress,
     };
 
     let serverInstance: CnCpInstance;
@@ -444,11 +381,6 @@ export class CnLabServerService {
     }
 
     if (lab.serverIpAddressId) {
-      if (!cloudProviderService.needStaticIpAddressBeforeInstance()) {
-        throw new BlBadRequestException(
-          'The data lab has a static ip address but the cloud provider does not need it'
-        );
-      }
       this.logger.log(`Deleting static IP address ${lab.serverIpAddressId} for lab ${lab.id}`);
       await cloudProviderService.deleteIpAddress(lab.serverIpAddressId, lab.region.technicalName);
       const ipAddressId = lab.serverIpAddressId;

@@ -54,7 +54,6 @@ export interface CnCpInstanceWithVolume {
 export interface CnCpCompleteInfo {
   instance: CnCpInstance;
   volume: CnCpVolume;
-  ipAddress: CnCpStaticIpAddress;
   domainRecord: CnOvhDomainRecord;
 }
 
