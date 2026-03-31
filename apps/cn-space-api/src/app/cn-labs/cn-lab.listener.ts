@@ -51,14 +51,6 @@ export class CnLabListener {
         CnLabStatus.SERVER_RUNNING,
       ].includes(event.oldStatus)
     ) {
-      // Update DNS with the current IP (ephemeral IPs may change on restart)
-      const lab = await this.labsService.findByIdAndCheck(event.labId);
-      await this.labServerService
-        .updateDnsForLab(lab)
-        .catch((error: Error) =>
-          this.logger.error(`Error updating DNS for lab ${event.labId}: ${error.message}`)
-        );
-
       await this.configureAndStartLabBricksAfterInit(event.labId).catch(
         // if an error occurred we just refresh the lab status
         (error: Error) => this.onError(event.labId, `Error during lab manager start : ${error.message}`)
@@ -79,6 +71,19 @@ export class CnLabListener {
       await this.handleStoppedLab(event.labId).catch((error: Error) =>
         this.onError(event.labId, `Error during lab stop handling : ${error.message}`)
       );
+    }
+
+    // TODO TO improve, this should works as if the server is not available is
+    // will have the status server running so here we update the DNS
+    // maybe we need to put it in the if the lab server switched from a stopped state to a running state too
+    if (event.newStatus === CnLabStatus.SERVER_RUNNING) {
+      // Update DNS with the current IP (ephemeral IPs may change on restart)
+      const lab = await this.labsService.findByIdAndCheck(event.labId);
+      await this.labServerService
+        .updateDnsForLab(lab)
+        .catch((error: Error) =>
+          this.logger.error(`Error updating DNS for lab ${event.labId}: ${error.message}`)
+        );
     }
   }
 
