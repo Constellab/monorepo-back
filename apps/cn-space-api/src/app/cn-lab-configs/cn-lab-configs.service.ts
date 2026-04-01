@@ -100,7 +100,7 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
       relations: { brickVersions: { brick: true } },
     });
     if (!labConfig) {
-      throw new BlBadRequestException(`The lab config could not be found for the lab`);
+      throw new BlBadRequestException(`The brick '${brick_name}' is not in the lab config`);
     }
     return labConfig.brickVersions.find((brickVersion) => brickVersion.brick.name === brick_name);
   }
