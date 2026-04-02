@@ -24,6 +24,11 @@ export class CnBricksController {
     return this.service.getBrickVersions(brickName);
   }
 
+  @Get(':brickName/versions-list')
+  public getBrickVersionsList(@Param('brickName') brickName: string): Promise<string[]> {
+    return this.service.getBrickVersionsList(brickName);
+  }
+
   @Get(':brickName/versions/:version')
   public getBrickVersion(
     @Param('brickName') brickName: string,

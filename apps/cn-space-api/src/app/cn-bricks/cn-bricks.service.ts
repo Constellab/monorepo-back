@@ -114,6 +114,11 @@ export class CnBricksService extends BlAbstractService<CnBrick> {
     return brickVersions.sort((a, b) => b.version.getDif(a.version));
   }
 
+  public async getBrickVersionsList(brickName: string): Promise<string[]> {
+    const brickVersions = await this.getBrickVersions(brickName);
+    return brickVersions.map((bv) => bv.version.toString());
+  }
+
   public async getByBrickVersionId(brickVersionId: string): Promise<CnBrick> {
     return (
       await this.brickVersionRepo.findOne({

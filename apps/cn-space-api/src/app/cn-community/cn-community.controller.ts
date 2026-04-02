@@ -43,12 +43,4 @@ export class CnCommunityController {
   ): Promise<ClPage<CnCommunityBrickDto>> {
     return this.communityService.getBricksByFilters(labId, spacesFilter, titleFilter, page, size);
   }
-
-  @Get('brick/versions-list/:brickId')
-  async getCommunityBrickVersionsList(
-    @Param('labId') labId: string,
-    @Param('brickId') brickId: string
-  ): Promise<string[]> {
-    return this.communityService.getBrickVersionsList(labId, brickId);
-  }
 }

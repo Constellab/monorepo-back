@@ -70,15 +70,6 @@ export class CnCommunityService {
     );
   }
 
-  async getBrickVersionsList(labId: string, brickId: string): Promise<string[]> {
-    const url = `${this.configService.getCommunityApiUrl()}/brick/for-space/versions-list/${brickId}`;
-    return await lastValueFrom(
-      this.externalApiService.get(url, null, {
-        headers: await this.getHeaders(labId),
-      })
-    );
-  }
-
   private async getHeaders(labId: string): Promise<Record<string, string>> {
     const lab = await this.labsService.findByIdAndCheckWithSpace(labId);
     return {

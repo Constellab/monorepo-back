@@ -301,9 +301,9 @@ export class HnBrickAggregateService {
       });
     }
 
-    // if (brick.visibility === HnBrickVisibility.PRIVATE) {
-    //   await this.checkLabBrickAccessByName(name);
-    // }
+    if (brick.visibility === HnBrickVisibility.PRIVATE) {
+      await this.checkLabBrickAccessByName(name);
+    }
 
     return brick;
   }
