@@ -15,7 +15,7 @@ export class HnBrickSecurity {
 
   async canEdit(brick: HnBrick, user: HnUser, fullRight = true): Promise<boolean> {
     if (!user) return false;
-    if (user.isAdmin()) return true;
+    // if (user.isAdmin()) return true;
 
     const isCreator = this.communitySecurity.isCreator(brick, user.id);
     const isCoAuthor = this.communitySecurity.isCoAuthor(brick.brickUsers, user.id);
@@ -29,10 +29,10 @@ export class HnBrickSecurity {
     }
 
     if (await this.spaceUserService.checkCurrentUserIsSpaceUser(brick.space.id)) {
-      return isCreator || isCoAuthor;
+      return isCreator || (!fullRight && isCoAuthor);
     }
 
-    return !fullRight && isCoAuthor;
+    return false;
   }
 
   async assertCanEdit(brick: HnBrick, user: HnUser, fullRight = true): Promise<void> {
