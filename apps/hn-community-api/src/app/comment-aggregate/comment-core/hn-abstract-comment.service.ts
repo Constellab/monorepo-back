@@ -1,10 +1,11 @@
-import { BlAbstractPaginatedService, BlEntityWithId } from '@monorepo/back-core-lib';
+import { BlAbstractPaginatedService, BlEntityWithId, BlUnauthorizedException } from '@monorepo/back-core-lib';
 import { ClPage } from '@monorepo/core-lib';
 import { TeRichText } from '@monorepo/te-text-editor';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Repository } from 'typeorm';
 
 import { HnEntityType } from '../../core/model/entities/hn-entity-type.enum';
+import { HnCurrentUserHelper } from '../../core/utils/hn-current-user.helper';
 import { HnCommentEventData, HnEventType } from '../../core/utils/hn-events.enum';
 import { HnCommentEntity } from './hn-comment.entity';
 
@@ -67,6 +68,15 @@ export abstract class HnAbstractCommentService<T extends BlEntityWithId> {
 
   async deleteComment(commentType: HnEntityType, commentId: string): Promise<void> {
     const comment = await this.repository.findOneBy({ id: commentId });
+    if (!comment) {
+      throw new Error('Comment not found');
+    }
+
+    const currentUser = HnCurrentUserHelper.getAndCheckCurrentUser();
+    if (comment.createdBy?.id !== currentUser.id && !currentUser.isAdmin()) {
+      throw new BlUnauthorizedException('You can only delete your own comments');
+    }
+
     await this.repository.remove(comment);
     this.emitCommentEvent(commentType, comment.entityId, await this.getNumberOfComments(comment.entityId));
   }
