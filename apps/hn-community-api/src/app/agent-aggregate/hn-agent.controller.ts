@@ -185,6 +185,14 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
     return this.agentAggregateService.updateDescription(id, description);
   }
 
+  @Put(':id/space')
+  async updateSpace(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body('spaceId') spaceId: string
+  ): Promise<HnAgentDto> {
+    return new HnAgentDto(await this.agentAggregateService.updateSpace(id, spaceId));
+  }
+
   @Put(':id/style')
   async updateStyle(
     @Param('id', ParseUUIDPipe) id: string,

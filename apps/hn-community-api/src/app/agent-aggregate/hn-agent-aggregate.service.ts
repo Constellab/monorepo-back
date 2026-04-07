@@ -20,6 +20,7 @@ import { HnFileAgentService } from '../file-aggregate/file-agent/hn-file-agent.s
 import { HnUploadFileResponseDto } from '../file-aggregate/file-core/hn-abstract-file.dto';
 import { HnSpaceAggregateService } from '../space-aggregate/hn-space-aggregate.service';
 import { HnSpaceDto } from '../space-aggregate/space/hn-space.dto';
+import { HnSpace } from '../space-aggregate/space/hn-space.entity';
 import { HnUser } from '../users/hn-user.entity';
 import { HnUserService } from '../users/hn-user.service';
 import {
@@ -146,6 +147,17 @@ export class HnAgentAggregateService {
     const agent = await this.agentService.findOne(id);
     await this.agentSecurity.assertCanEdit(agent, HnCurrentUserHelper.getAndCheckCurrentUser());
     return this.agentService.updateDescription(agent, description);
+  }
+
+  public async updateSpace(id: string, spaceId: string): Promise<HnAgent> {
+    const agent = await this.agentService.findOne(id);
+    await this.agentSecurity.assertCanEdit(agent, HnCurrentUserHelper.getAndCheckCurrentUser());
+    let space: HnSpace = null;
+    if (spaceId) {
+      await this.spaceAggregateService.checkIfSpaceExists(spaceId);
+      space = await this.spaceAggregateService.findSpaceById(spaceId);
+    }
+    return this.agentService.updateSpace(agent, space);
   }
 
   public async findPublic(): Promise<HnAgent[]> {

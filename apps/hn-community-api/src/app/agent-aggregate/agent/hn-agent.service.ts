@@ -12,6 +12,7 @@ import { EntityManager, FindOptionsWhere, In, IsNull, Like, Not, Repository } fr
 import { HnTypingStyle } from '../../brick-aggregate/brick/hn-brick.dto';
 import { HnCurrentUserHelper } from '../../core/utils/hn-current-user.helper';
 import { HnSpaceDto } from '../../space-aggregate/space/hn-space.dto';
+import { HnSpace } from '../../space-aggregate/space/hn-space.entity';
 import { HnUser } from '../../users/hn-user.entity';
 import { HnAgentCoAuthorService } from '../agent-co-author/hn-agent-co-author.service';
 import { HnAgentVersion } from '../agent-version/hn-agent-version.entity';
@@ -408,6 +409,11 @@ export class HnAgentService {
 
   public async updateDescription(agent: HnAgent, description: TeRichText): Promise<HnAgent> {
     agent.setDescriptionRichText(description);
+    return this.agentRepository.save(agent);
+  }
+
+  public async updateSpace(agent: HnAgent, space: HnSpace): Promise<HnAgent> {
+    agent.space = space;
     return this.agentRepository.save(agent);
   }
 
