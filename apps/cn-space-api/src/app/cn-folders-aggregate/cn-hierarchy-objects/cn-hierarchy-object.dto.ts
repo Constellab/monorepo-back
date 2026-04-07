@@ -10,6 +10,7 @@ import {
   CnHierarchyObject,
   CnHierarchyObjectEntity,
   CnHierarchyObjectType,
+  CnHierarchyObjectVisibility,
   CnHierarchyObjectWithChildren,
 } from './cn-hierarchy-object.entity';
 
@@ -50,6 +51,8 @@ export class CnBulkActionContext {
   selectedIds: string[];
   isAllSelected: boolean;
   searchInput?: BlSearchParams;
+  folderId: string;
+  visibility: CnHierarchyObjectVisibility;
 }
 
 export class CnBulkMoveToFolderDto {

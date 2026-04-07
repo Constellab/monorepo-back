@@ -1,5 +1,5 @@
 import { BlBadRequestException, BlFile, BlSearchParams } from '@monorepo/back-core-lib';
-import { ClPage, ClPageI } from '@monorepo/core-lib';
+import { ClBulkActionResult, ClBulkActionRunner, ClPage, ClPageI } from '@monorepo/core-lib';
 import { Injectable } from '@nestjs/common';
 
 import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
@@ -533,28 +533,36 @@ export class CnHierarchyObjectAggregateService {
     if (!context.isAllSelected) {
       return context.selectedIds;
     }
-    return this.hierarchyObjectService.findAllIdsBySearch(context.searchInput);
+    return await this.hierarchyObjectService.findAllIdsByFolderChildren(
+      context.folderId,
+      context.visibility,
+      context.searchInput
+    );
   }
 
-  public async bulkMoveToTrash(context: CnBulkActionContext): Promise<void> {
+  private async createBulkRunner(context: CnBulkActionContext): Promise<ClBulkActionRunner> {
     const ids = await this.resolveHierarchyObjectIds(context);
-    for (const id of ids) {
-      await this.moveToTrash(id);
-    }
+    return new ClBulkActionRunner(ids).setNameResolver(async (id) => {
+      const item = await this.hierarchyObjectService.findByIdAndCheck(id);
+      return item.name;
+    });
   }
 
-  public async bulkMoveToFolder(dto: CnBulkMoveToFolderDto): Promise<void> {
-    const ids = await this.resolveHierarchyObjectIds(dto.context);
-    for (const id of ids) {
-      await this.moveHierarchyObjectToFolder(id, dto.targetFolderId);
-    }
+  public async bulkMoveToTrash(context: CnBulkActionContext): Promise<ClBulkActionResult> {
+    const runner = await this.createBulkRunner(context);
+    return runner.setAction((id) => this.moveToTrash(id).then()).execute();
   }
 
-  public async bulkCreateTags(dto: CnBulkCreateTagsDto): Promise<void> {
-    const ids = await this.resolveHierarchyObjectIds(dto.context);
-    for (const id of ids) {
-      await this.createHierarchyObjectTags(id, dto.tags);
-    }
+  public async bulkMoveToFolder(dto: CnBulkMoveToFolderDto): Promise<ClBulkActionResult> {
+    const runner = await this.createBulkRunner(dto.context);
+    return runner
+      .setAction((id) => this.moveHierarchyObjectToFolder(id, dto.targetFolderId).then())
+      .execute();
+  }
+
+  public async bulkCreateTags(dto: CnBulkCreateTagsDto): Promise<ClBulkActionResult> {
+    const runner = await this.createBulkRunner(dto.context);
+    return runner.setAction((id) => this.createHierarchyObjectTags(id, dto.tags).then()).execute();
   }
 
   ///////////////////////////////// SCENARIO /////////////////////////////

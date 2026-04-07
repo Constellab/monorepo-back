@@ -164,6 +164,19 @@ export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjec
     return await this.findPaginated(page, size, searchBuilder.build());
   }
 
+  private buildFolderChildrenSearch(
+    folderId: string,
+    visibility: CnHierarchyObjectVisibility,
+    searchParam: BlSearchParams
+  ): BlSearchBuilder<CnHierarchyObjectEntity> {
+    const searchBuilder: BlSearchBuilder<CnHierarchyObjectEntity> = new BlSearchBuilder();
+    // force the sort by objectType first
+    searchBuilder.mergeOrderOptions({ objectTypeOrder: 'ASC' });
+    searchBuilder.addSearchParams(searchParam);
+    searchBuilder.mergeWhereOptions({ parentId: folderId, visibility: visibility });
+    return searchBuilder;
+  }
+
   public async searchInFolderChildren(
     folderId: string,
     visibility: CnHierarchyObjectVisibility,
@@ -171,19 +184,16 @@ export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjec
     page: number,
     size: number
   ): Promise<ClPage<CnHierarchyObject>> {
-    const searchBuilder: BlSearchBuilder<CnHierarchyObjectEntity> = new BlSearchBuilder();
-    // force the sort by objectType first
-    searchBuilder.mergeOrderOptions({ objectTypeOrder: 'ASC' });
-    searchBuilder.addSearchParams(searchParam);
-    searchBuilder.mergeWhereOptions({ parentId: folderId, visibility: visibility });
-
+    const searchBuilder = this.buildFolderChildrenSearch(folderId, visibility, searchParam);
     return await this.findPaginated(page, size, searchBuilder.build());
   }
 
-  public async findAllIdsBySearch(searchParam: BlSearchParams): Promise<string[]> {
-    const searchBuilder: BlSearchBuilder<CnHierarchyObjectEntity> = new BlSearchBuilder();
-    searchBuilder.addSearchParams(searchParam);
-
+  public async findAllIdsByFolderChildren(
+    folderId: string,
+    visibility: CnHierarchyObjectVisibility,
+    searchParam: BlSearchParams
+  ): Promise<string[]> {
+    const searchBuilder = this.buildFolderChildrenSearch(folderId, visibility, searchParam);
     const options = searchBuilder.build();
     const entities = await this.repo.find({
       ...options,
