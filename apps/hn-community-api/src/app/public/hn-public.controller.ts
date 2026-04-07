@@ -1,6 +1,6 @@
 import { BlPublic, BlResponseHelper } from '@monorepo/back-core-lib';
 import { ClPage } from '@monorepo/core-lib';
-import { Controller, Get, ParseIntPipe, Query, Req, Res } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, Query, Res } from '@nestjs/common';
 import { Response } from 'express';
 
 import { HnIcon } from '../icon/hn-icon.entity';
@@ -21,8 +21,7 @@ export class HnPublicController {
 
   @BlPublic()
   @Get('icon/file/:technicalName')
-  async getIconUrl(@Req() request: Request, @Res() response: Response): Promise<any> {
-    const technicalName = request.url.split('file/')[1];
+  async getIconUrl(@Param('technicalName') technicalName: string, @Res() response: Response): Promise<any> {
     const file = await this.iconService.getIconFile(technicalName);
     BlResponseHelper.setFileResponseAndCache(response, file);
   }
