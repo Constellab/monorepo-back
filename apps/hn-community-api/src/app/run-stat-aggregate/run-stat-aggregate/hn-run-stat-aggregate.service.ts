@@ -1,3 +1,4 @@
+import { BlBadRequestException } from '@monorepo/back-core-lib';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
@@ -62,7 +63,7 @@ export class HnRunStatAggregateService {
     } else if (runStat.processTypingName.startsWith('PROTOCOL')) {
       return this.createProtocolRunStatGroup(entityManager, runStat);
     } else {
-      throw new Error('Unknown process type');
+      throw new BlBadRequestException('Unknown process type');
     }
   }
 

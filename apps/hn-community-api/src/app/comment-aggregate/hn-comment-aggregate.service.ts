@@ -1,4 +1,4 @@
-import { BlEntityWithId } from '@monorepo/back-core-lib';
+import { BlBadRequestException, BlEntityWithId } from '@monorepo/back-core-lib';
 import { ClPage } from '@monorepo/core-lib';
 import { TeRichText } from '@monorepo/te-text-editor';
 import { Injectable } from '@nestjs/common';
@@ -9,9 +9,9 @@ import { HnCommentAppService } from './comment-app/hn-comment-app.service';
 import { HnAbstractCommentDto } from './comment-core/hn-abstract-comment.dto';
 import { HnAbstractCommentService } from './comment-core/hn-abstract-comment.service';
 import { HnCommentEntity } from './comment-core/hn-comment.entity';
+import { HnCommentPartnerService } from './comment-partner/hn-comment-partner.service';
 import { HnCommentStoryService } from './comment-story/hn-comment-story.service';
 import { HnCommentTagService } from './comment-tag/hn-comment-tag.service';
-import { HnCommentPartnerService } from './comment-partner/hn-comment-partner.service';
 
 @Injectable()
 export class HnCommentAggregateService {
@@ -59,7 +59,7 @@ export class HnCommentAggregateService {
       case HnEntityType.PARTNER:
         return this.commentPartnerService;
       default:
-        throw new Error('Unknown comment type');
+        throw new BlBadRequestException('Unknown comment type');
     }
   }
 }

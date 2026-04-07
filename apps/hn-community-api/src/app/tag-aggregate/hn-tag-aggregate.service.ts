@@ -1,4 +1,9 @@
-import { BlSearchSortCriteria } from '@monorepo/back-core-lib';
+import {
+  BlBadRequestException,
+  BlNotFoundException,
+  BlSearchSortCriteria,
+  BlUnauthorizedException,
+} from '@monorepo/back-core-lib';
 import { ClPage } from '@monorepo/core-lib';
 import { TeRichTextDTO } from '@monorepo/te-text-editor';
 import { Injectable } from '@nestjs/common';
@@ -144,7 +149,7 @@ export class HnTagAggregateService {
     }
     const tagKey: HnTagKey = await this.tagKeyService.getTagKeyByTechnicalName(technicalName, userSpacesIds);
     if (strict && !tagKey) {
-      throw new Error('Tag key not found');
+      throw new BlNotFoundException('Tag key not found');
     }
     return tagKey;
   }
@@ -161,14 +166,14 @@ export class HnTagAggregateService {
       tagKey = await this.tagKeyService.getPublicTagKeyById(id);
     }
     if (!tagKey) {
-      throw new Error('Tag key not found');
+      throw new BlNotFoundException('Tag key not found');
     }
     return tagKey;
   }
 
   async createTagKey(createTagKeyDto: HnCreateTagKeyDto): Promise<HnTagKey> {
     if (await this.checkIfTagKeyExists(createTagKeyDto.technicalName)) {
-      throw new Error('A tag with this technical name already exist');
+      throw new BlBadRequestException('A tag with this technical name already exist');
     }
     let space: HnSpace = null;
     if (createTagKeyDto.space) {
@@ -218,12 +223,12 @@ export class HnTagAggregateService {
     const tagKey = await this.getTagKeyByTechnicalName(technicalName);
     const additionalInfosSpecs: HnTagKeyAdditionalInfosSpecs = tagKey.additionalInfosSpecs || {};
     if (additionalInfosSpecs[specName]) {
-      throw new Error(`Additional info spec '${specName}' already exists`);
+      throw new BlBadRequestException(`Additional info spec '${specName}' already exists`);
     }
     additionalInfosSpecs[specName] = spec;
     additionalInfosSpecs[specName]['visibility'] = 'public'; // Default visibility for additional info specs
     if (!spec.optional && (await this.checkIfTagHasValues(tagKey))) {
-      throw new Error(`There are already tag values for this tag,
+      throw new BlBadRequestException(`There are already tag values for this tag,
        you cannot add a required additional info spec`);
     }
     return this.tagKeyService.updateAdditionalInfosSpecs(tagKey, additionalInfosSpecs);
@@ -237,7 +242,7 @@ export class HnTagAggregateService {
     const tagKey = await this.getTagKeyByTechnicalName(technicalName);
     const additionalInfosSpecs: HnTagKeyAdditionalInfosSpecs = tagKey.additionalInfosSpecs;
     if (!additionalInfosSpecs || !(specName in additionalInfosSpecs)) {
-      throw new Error(`Additional info spec ${specName} does not exist`);
+      throw new BlNotFoundException(`Additional info spec ${specName} does not exist`);
     }
     additionalInfosSpecs[specName] = spec;
     additionalInfosSpecs[specName]['visibility'] = 'public'; // Default visibility for additional info specs
@@ -253,10 +258,10 @@ export class HnTagAggregateService {
     const tagKey = await this.getTagKeyByTechnicalName(technicalName);
     const additionalInfosSpecs: HnTagKeyAdditionalInfosSpecs = tagKey.additionalInfosSpecs;
     if (!additionalInfosSpecs || !(oldName in additionalInfosSpecs)) {
-      throw new Error(`Additional info spec ${oldName} does not exist`);
+      throw new BlNotFoundException(`Additional info spec ${oldName} does not exist`);
     }
     if (newName !== oldName && additionalInfosSpecs[newName]) {
-      throw new Error(`Additional info spec ${newName} already exists`);
+      throw new BlBadRequestException(`Additional info spec ${newName} already exists`);
     }
     delete additionalInfosSpecs[oldName];
     additionalInfosSpecs[newName] = spec;
@@ -271,7 +276,7 @@ export class HnTagAggregateService {
     const tagKey = await this.getTagKeyByTechnicalName(technicalName);
     const additionalInfosSpecs: HnTagKeyAdditionalInfosSpecs = tagKey.additionalInfosSpecs;
     if (!additionalInfosSpecs || !(additionalInfoSpecName in additionalInfosSpecs)) {
-      throw new Error(`Additional info spec ${additionalInfoSpecName} does not exist`);
+      throw new BlNotFoundException(`Additional info spec ${additionalInfoSpecName} does not exist`);
     }
     delete additionalInfosSpecs[additionalInfoSpecName];
     return this.tagKeyService.updateAdditionalInfosSpecs(tagKey, additionalInfosSpecs);
@@ -307,7 +312,7 @@ export class HnTagAggregateService {
   async getTagValuesByTagKeyId(tagKeyId: string, page: number, size: number): Promise<ClPage<HnTagValue>> {
     const tagKey = await this.getTagKeyById(tagKeyId);
     if (!tagKey) {
-      throw new Error('Tag key not found');
+      throw new BlNotFoundException('Tag key not found');
     }
     return this.tagValueService.getTagValuesByTagKeyId(tagKey.id, page, size);
   }
@@ -315,7 +320,7 @@ export class HnTagAggregateService {
   async getTagValuesCountByTagKeyId(tagKeyId: string): Promise<number> {
     const tagKey = await this.getTagKeyById(tagKeyId);
     if (!tagKey) {
-      throw new Error('Tag key not found');
+      throw new BlNotFoundException('Tag key not found');
     }
     return this.tagValueService.getTagValuesCountByTagKeyId(tagKey.id);
   }
@@ -337,7 +342,7 @@ export class HnTagAggregateService {
     const tagKey = await this.getTagKeyByTechnicalName(technicalName, false);
     if (!tagKey) {
       if (strict) {
-        throw new Error('Tag key not found');
+        throw new BlNotFoundException('Tag key not found');
       }
       return new ClPage<HnTagValue>(true, false, 0, 0, 0, []);
     }
@@ -348,13 +353,13 @@ export class HnTagAggregateService {
     const tagKey = await this.getTagKeyAndCheckRights(id, true);
     this.verifyTagValue(tagKey, createTagValue.additionalInfos);
     if (await this.tagValueService.checkTagValueExists(tagKey.id, createTagValue.value)) {
-      throw new Error('A tag value with this value already exist');
+      throw new BlBadRequestException('A tag value with this value already exist');
     }
     return this.tagValueService.createTagValue(tagKey, createTagValue);
   }
 
   async updateTagValue(id: string, editTagValueDto: HnEditTagValueDto): Promise<HnTagValue> {
-    if (!editTagValueDto.id) throw new Error('Tag value id is required');
+    if (!editTagValueDto.id) throw new BlBadRequestException('Tag value id is required');
     const tagKey = await this.getTagKeyAndCheckRights(id, true);
     this.verifyTagValue(tagKey, editTagValueDto.additionalInfos);
     return this.tagValueService.updateTagValue(tagKey, editTagValueDto);
@@ -370,7 +375,7 @@ export class HnTagAggregateService {
     if (tagKey.additionalInfosSpecs) {
       for (const key in tagKey.additionalInfosSpecs) {
         if (!tagKey.additionalInfosSpecs[key].optional && !additionalInfos[key]) {
-          throw new Error(`Missing additional info ${key}`);
+          throw new BlBadRequestException(`Missing additional info ${key}`);
         }
       }
     }
@@ -385,14 +390,14 @@ export class HnTagAggregateService {
   ): Promise<HnTagKey> {
     const currentUser = HnCurrentUserHelper.getAndCheckCurrentUser();
     if (!currentUser) {
-      throw new Error('You must be logged in to share a tag key');
+      throw new BlUnauthorizedException('You must be logged in to share a tag key');
     }
 
     let space: HnSpace = null;
     if (spaceId) {
       space = await this.getSpaceById(spaceId);
       if (!space) {
-        throw new Error('You can only share a tag key to a public space');
+        throw new BlBadRequestException('You can only share a tag key to a public space');
       }
     }
 
@@ -436,12 +441,12 @@ export class HnTagAggregateService {
   ): Promise<HnTagKey> {
     const tagKey = await this.tagKeyService.getTagKeyById(tagKeyId);
     if (!tagKey) {
-      throw new Error('Tag key not found');
+      throw new BlNotFoundException('Tag key not found');
     }
     const currentUser = HnCurrentUserHelper.getAndCheckCurrentUser();
     await this.tagSecurity.assertCanEdit(tagKey, currentUser);
     if (assertNotDeprecated && tagKey.deprecated) {
-      throw new Error('Tag key is deprecated');
+      throw new BlBadRequestException('Tag key is deprecated');
     }
     return tagKey;
   }
@@ -450,7 +455,7 @@ export class HnTagAggregateService {
     await this.spaceAggregateService.assertCheckSpaceUser(spaceId, HnCurrentUserHelper.getCurrentUser()?.id);
     const space = await this.spaceAggregateService.findSpaceById(spaceId);
     if (!space) {
-      throw new Error('Space not found');
+      throw new BlNotFoundException('Space not found');
     }
     return space;
   }

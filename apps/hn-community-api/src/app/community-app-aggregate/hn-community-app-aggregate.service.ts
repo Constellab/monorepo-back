@@ -441,11 +441,11 @@ export class HnCommunityAppAggregateService {
     }
 
     if (!ClStringHelper.isHttpLink(appUrl))
-      throw new Error('The app url must be a valid URL starting with http:// or https://');
+      throw new BlBadRequestException('The app url must be a valid URL starting with http:// or https://');
 
     const urlWithoutHttp: string = appUrl.replace('http://', '').replace('https://', '');
     const urlFragment: string[] = urlWithoutHttp.split('/');
-    if (urlFragment.length <= 0) throw new Error('The app url is not valid');
+    if (urlFragment.length <= 0) throw new BlBadRequestException('The app url is not valid');
 
     const domain = urlFragment[0].split('?')[0];
 
@@ -494,7 +494,7 @@ export class HnCommunityAppAggregateService {
   public async acceptInvite(token: string): Promise<HnCommunityApp> {
     const coAuthorInvite: HnCommunityAppCoAuthorInvite =
       await this.communityAppCoAuthorService.getCommunityAppCoAuthorInviteByToken(token);
-    if (!coAuthorInvite) throw new Error('Invalid invite');
+    if (!coAuthorInvite) throw new BlNotFoundException('Invalid invite');
     const communityApp = await this.communityAppService.findOneById(coAuthorInvite.communityApp.id);
     if (
       communityApp.space &&
@@ -528,7 +528,7 @@ export class HnCommunityAppAggregateService {
     }
     const user: HnUser = app.createdBy;
     if (!user) {
-      throw new Error('App creator not found');
+      throw new BlNotFoundException('App creator not found');
     }
     return await this.dataSource.transaction(async (entityManager) => {
       await this.communityAppStatService.create(user, labStatDto, entityManager);

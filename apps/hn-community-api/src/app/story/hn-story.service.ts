@@ -4,6 +4,7 @@ import {
   BlBadRequestException,
   BlFile,
   BlFileResponse,
+  BlNotFoundException,
   BlSearchBuilder,
   BlSearchParams,
   BlSearchSortCriteria,
@@ -464,7 +465,7 @@ export class HnStoryService extends BlAbstractService<HnStory> {
     await this.assertCanEdit(id);
     const story: HnStory = await this.updateStoryContent(id);
     if (story.mainPicture == null) {
-      throw new Error('Story must have a main picture');
+      throw new BlBadRequestException('Story must have a main picture');
     }
     story.status = HnStoryStatus.PUBLISHED;
     story.publishedAt = DateTime.now();
@@ -523,7 +524,7 @@ export class HnStoryService extends BlAbstractService<HnStory> {
       );
       return acceptStoryInvite ? story : null;
     }
-    throw new Error('Invalid invite');
+    throw new BlNotFoundException('Invalid invite');
   }
 
   async getAllStoriesMap(): Promise<HnSitemapItemBase[]> {

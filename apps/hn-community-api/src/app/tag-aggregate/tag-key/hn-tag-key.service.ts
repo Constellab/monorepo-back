@@ -1,5 +1,6 @@
 import {
   BlAbstractPaginatedService,
+  BlNotFoundException,
   BlSearchSortCriteria,
   BlUnauthorizedException,
 } from '@monorepo/back-core-lib';
@@ -95,7 +96,7 @@ export class HnTagKeyService {
   async updateLikes(tagKeyLike: string, numberOfLikes: number): Promise<void> {
     const tagKey = await this.getTagKeyById(tagKeyLike);
     if (!tagKey) {
-      throw new Error('Tag not found');
+      throw new BlNotFoundException('Tag not found');
     }
     tagKey.likes = numberOfLikes;
     await this.tagKeyRepository.save(tagKey, { listeners: false });
@@ -104,7 +105,7 @@ export class HnTagKeyService {
   async updateComments(tagKeyId: string, numberOfComments: number): Promise<void> {
     const tagKey = await this.getTagKeyById(tagKeyId);
     if (!tagKey) {
-      throw new Error('Tag not found');
+      throw new BlNotFoundException('Tag not found');
     }
     tagKey.comments = numberOfComments;
     await this.tagKeyRepository.save(tagKey);

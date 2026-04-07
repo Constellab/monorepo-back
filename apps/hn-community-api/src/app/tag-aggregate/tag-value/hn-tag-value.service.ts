@@ -1,4 +1,4 @@
-import { BlAbstractPaginatedService } from '@monorepo/back-core-lib';
+import { BlAbstractPaginatedService, BlNotFoundException } from '@monorepo/back-core-lib';
 import { ClPage } from '@monorepo/core-lib';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -46,7 +46,7 @@ export class HnTagValueService {
   async updateTagValue(tagKey: HnTagKey, updateTagValueDto: HnEditTagValueDto): Promise<HnTagValue> {
     const tagValue = await this.tagValueRepository.findOneBy({ id: updateTagValueDto.id });
     if (!tagValue || tagValue.tagKey.id !== tagKey.id || tagValue.value !== updateTagValueDto.value) {
-      throw new Error('Tag value not found');
+      throw new BlNotFoundException('Tag value not found');
     }
     tagValue.shortDescription = updateTagValueDto.shortDescription;
     tagValue.additionalInfos = updateTagValueDto.additionalInfos;
@@ -110,7 +110,7 @@ export class HnTagValueService {
   async deleteTagValue(tagValueID: string): Promise<HnTagValue> {
     const tagValue = await this.tagValueRepository.findOneBy({ id: tagValueID });
     if (!tagValue) {
-      throw new Error('Tag value not found');
+      throw new BlNotFoundException('Tag value not found');
     }
     return this.tagValueRepository.remove(tagValue);
   }
@@ -118,7 +118,7 @@ export class HnTagValueService {
   async deprecatedTagValue(tagKeyId: string, tagValueId: string): Promise<HnTagValue> {
     const tagValue = await this.tagValueRepository.findOneBy({ id: tagValueId });
     if (!tagValue || tagValue.tagKey.id !== tagKeyId) {
-      throw new Error('Tag value not found');
+      throw new BlNotFoundException('Tag value not found');
     }
     tagValue.deprecated = true;
     return this.tagValueRepository.save(tagValue);
@@ -151,7 +151,7 @@ export class HnTagValueService {
     const tagValues = await this.tagValueRepository.findBy({ tagKey: { id: tagKeyId } });
     for (const tagValue of tagValues) {
       if (tagValue.tagKey.id !== tagKeyId) {
-        throw new Error('Tag value not found');
+        throw new BlNotFoundException('Tag value not found');
       }
       if (!tagValue.additionalInfos) {
         tagValue.additionalInfos = {};

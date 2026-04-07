@@ -1,3 +1,4 @@
+import { BlNotFoundException } from '@monorepo/back-core-lib';
 import { TeRichText } from '@monorepo/te-text-editor';
 import { Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
@@ -22,7 +23,7 @@ export class HnCommentTagService extends HnAbstractCommentService<HnTagKey> {
   async getEntityByIdAndCheck(entityId: string): Promise<HnTagKey> {
     const tagKey = await this.tagKeyService.getTagKeyById(entityId);
     if (!tagKey) {
-      throw new Error(`TagKey with id ${entityId} not found`);
+      throw new BlNotFoundException(`TagKey with id ${entityId} not found`);
     }
     return tagKey;
   }

@@ -1,3 +1,4 @@
+import { BlBadRequestException } from '@monorepo/back-core-lib';
 import { TeRichText } from '@monorepo/te-text-editor';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -159,10 +160,10 @@ export class HnAgentVersionService {
   public async publish(id: string, entityManager: EntityManager): Promise<HnAgentVersion> {
     const agentVersion = await this.agentVersionRepository.findOneBy({ id: id });
     if (agentVersion.versionState === HnAgentVersionState.PUBLISHED) {
-      throw new Error('Cannot publish the agent version is already published');
+      throw new BlBadRequestException('Cannot publish the agent version is already published');
     }
     if (agentVersion.code == null || agentVersion.code.trim() === '') {
-      throw new Error('Cannot publish an agent version without code');
+      throw new BlBadRequestException('Cannot publish an agent version without code');
     }
     agentVersion.versionState = HnAgentVersionState.PUBLISHED;
     return entityManager.save(agentVersion);

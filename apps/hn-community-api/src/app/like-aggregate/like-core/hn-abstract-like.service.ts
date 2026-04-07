@@ -101,7 +101,7 @@ export abstract class HnAbstractLikeService<T extends BlEntityWithId> {
       case HnEntityType.PARTNER:
         return HnEventType.PARTNER_LIKE;
       default:
-        throw new Error('Unknown like type');
+        throw new BlBadRequestException('Unknown like type');
     }
   }
 }

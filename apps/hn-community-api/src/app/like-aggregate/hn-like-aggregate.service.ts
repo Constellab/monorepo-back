@@ -1,4 +1,4 @@
-import { BlEntityWithId } from '@monorepo/back-core-lib';
+import { BlBadRequestException, BlEntityWithId } from '@monorepo/back-core-lib';
 import { Injectable } from '@nestjs/common';
 
 import { HnEntityType } from '../core/model/entities/hn-entity-type.enum';
@@ -56,7 +56,7 @@ export class HnLikeAggregateService {
       case HnEntityType.PARTNER:
         return this.likePartnerService;
       default:
-        throw new Error('Unknown like type');
+        throw new BlBadRequestException('Unknown like type');
     }
   }
 }

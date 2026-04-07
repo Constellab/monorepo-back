@@ -1,4 +1,8 @@
-import { BlAbstractPaginatedService, BlSearchSortCriteria } from '@monorepo/back-core-lib';
+import {
+  BlAbstractPaginatedService,
+  BlNotFoundException,
+  BlSearchSortCriteria,
+} from '@monorepo/back-core-lib';
 import { ClPage } from '@monorepo/core-lib';
 import { TeRichTextDTO } from '@monorepo/te-text-editor';
 import { Injectable } from '@nestjs/common';
@@ -70,7 +74,7 @@ export class HnCommunityAppService {
   async update(id: string, dto: HnCommunityAppEditDto, space: HnSpace = null): Promise<HnCommunityApp> {
     const app = await this.findOneById(id);
     if (app == null) {
-      throw new Error('App not found');
+      throw new BlNotFoundException('App not found');
     }
     const updatedApp = this.updateFromDto(app, dto, space);
     return this.communityAppRepository.save(updatedApp);

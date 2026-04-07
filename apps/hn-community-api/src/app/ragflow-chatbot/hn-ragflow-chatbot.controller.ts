@@ -1,4 +1,4 @@
-import { BlPublic } from '@monorepo/back-core-lib';
+import { BlBadRequestException, BlPublic } from '@monorepo/back-core-lib';
 import { Body, Controller, Get, Post } from '@nestjs/common';
 
 import { HnCoreConfigService } from '../core/modules/core-config/hn-core-config.service';
@@ -31,7 +31,7 @@ export class HnRagflowChatbotController {
   async askQuestion(@Body() dto: HnRagflowAskQuestionDto): Promise<HnRagflowAskQuestionResponse> {
     const chatId = this.coreConfigService.getRagflowChatId();
     if (!chatId) {
-      throw new Error('Ragflow chatbot is not configured');
+      throw new BlBadRequestException('Ragflow chatbot is not configured');
     }
 
     let sessionId = dto.sessionId;

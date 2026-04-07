@@ -1,3 +1,4 @@
+import { BlNotFoundException } from '@monorepo/back-core-lib';
 import { Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -21,7 +22,7 @@ export class HnLikeTagService extends HnAbstractLikeService<HnTagKey> {
   async getEntityAndCheckById(entityId: string): Promise<HnTagKey> {
     const tagKey = await this.tagKeyService.getTagKeyById(entityId);
     if (!tagKey) {
-      throw new Error(`TagKey with id ${entityId} not found`);
+      throw new BlNotFoundException(`TagKey with id ${entityId} not found`);
     }
     return tagKey;
   }

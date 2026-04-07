@@ -1,4 +1,10 @@
-import { BlAbstractPaginatedService, BlEntityWithId, BlUnauthorizedException } from '@monorepo/back-core-lib';
+import {
+  BlAbstractPaginatedService,
+  BlBadRequestException,
+  BlEntityWithId,
+  BlNotFoundException,
+  BlUnauthorizedException,
+} from '@monorepo/back-core-lib';
 import { ClPage } from '@monorepo/core-lib';
 import { TeRichText } from '@monorepo/te-text-editor';
 import { EventEmitter2 } from '@nestjs/event-emitter';
@@ -54,7 +60,7 @@ export abstract class HnAbstractCommentService<T extends BlEntityWithId> {
   ): Promise<HnCommentEntity<T>> {
     const entity: T = await this.getEntityByIdAndCheck(entityId);
     if (!entity) {
-      throw new Error('Entity not found');
+      throw new BlNotFoundException('Entity not found');
     }
     const comment: HnCommentEntity<T> = this.createComment(entity, commentData);
     const newComment = await this.repository.save(comment);
@@ -69,7 +75,7 @@ export abstract class HnAbstractCommentService<T extends BlEntityWithId> {
   async deleteComment(commentType: HnEntityType, commentId: string): Promise<void> {
     const comment = await this.repository.findOneBy({ id: commentId });
     if (!comment) {
-      throw new Error('Comment not found');
+      throw new BlNotFoundException('Comment not found');
     }
 
     const currentUser = HnCurrentUserHelper.getAndCheckCurrentUser();
@@ -105,7 +111,7 @@ export abstract class HnAbstractCommentService<T extends BlEntityWithId> {
       case HnEntityType.PARTNER:
         return HnEventType.PARTNER_COMMENT;
       default:
-        throw new Error('Unknown comment type');
+        throw new BlBadRequestException('Unknown comment type');
     }
   }
 }

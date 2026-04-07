@@ -643,7 +643,7 @@ export class HnAgentAggregateService {
 
   public async acceptInvite(token: string): Promise<HnAgent> {
     const agentCoAuthorInvite: HnAgentCoAuthorInvite = await this.isInviteValid(token);
-    if (!agentCoAuthorInvite) throw new Error('Invalid invite');
+    if (!agentCoAuthorInvite) throw new BlNotFoundException('Invalid invite');
     const agent = await this.agentService.findOne(agentCoAuthorInvite.agent.id);
     if (
       agent.space &&
