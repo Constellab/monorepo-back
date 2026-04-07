@@ -9,6 +9,7 @@ import { HnCliAuthCodeStatus } from './hn-cli-auth.enum';
 
 const PENDING_EXPIRATION = 2 * 60 * 1000;
 const VALIDATED_EXPIRATION = 5 * 60 * 1000;
+const MAX_CODE_TTL = 10 * 60 * 1000;
 
 @Injectable()
 export class HnCliAuthService {
@@ -123,11 +124,21 @@ export class HnCliAuthService {
   private cleanupExpiredCodes(): void {
     const now = Date.now();
     for (const [code, authCode] of this.codeStore) {
-      if (authCode.status === HnCliAuthCodeStatus.PENDING && now - authCode.createdAt > PENDING_EXPIRATION) {
+      if (now - authCode.createdAt > MAX_CODE_TTL) {
+        this.codeStore.delete(code);
+      } else if (
+        authCode.status === HnCliAuthCodeStatus.PENDING &&
+        now - authCode.createdAt > PENDING_EXPIRATION
+      ) {
         this.codeStore.delete(code);
       } else if (
         authCode.status === HnCliAuthCodeStatus.VALIDATED &&
         now - authCode.validatedAt > VALIDATED_EXPIRATION
+      ) {
+        this.codeStore.delete(code);
+      } else if (
+        authCode.status === HnCliAuthCodeStatus.REFUSED ||
+        authCode.status === HnCliAuthCodeStatus.EXPIRED
       ) {
         this.codeStore.delete(code);
       }

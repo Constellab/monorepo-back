@@ -114,7 +114,9 @@ export class HnBrick extends BlEntityWithId {
     const url = this.repositoryUrl;
 
     if (this.credentialUsername && this.credentialPassword) {
-      return url.replace('https://', `https://${this.credentialUsername}:${this.credentialPassword}@`);
+      const encodedUser = encodeURIComponent(this.credentialUsername);
+      const encodedPassword = encodeURIComponent(this.credentialPassword);
+      return url.replace('https://', `https://${encodedUser}:${encodedPassword}@`);
     }
     return url;
   }

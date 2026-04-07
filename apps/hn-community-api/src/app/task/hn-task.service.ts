@@ -119,7 +119,7 @@ export class HnTaskService {
       this.tasksOfTheDay[i].uniqueName,
       this.tasksOfTheDay[i].brickName
     );
-    while (task == null) {
+    while (task == null && i + 1 < this.tasksOfTheDay.length) {
       i = i + 1;
       task = await this.findTaskOfTheDay(this.tasksOfTheDay[i].uniqueName, this.tasksOfTheDay[i].brickName);
     }

@@ -15,8 +15,6 @@ export class HnBrickDto extends BlEntityWithIdDTO {
   pipRepo?: string;
   gitRepo?: string;
   imageLink?: string;
-  credentialUsername?: string;
-  credentialPassword?: string;
   createdAt: string;
   createdBy: HnUserDto;
   lastModifiedAt: string;
@@ -38,8 +36,6 @@ export class HnBrickDto extends BlEntityWithIdDTO {
     this.pipRepo = brick.pipRepo;
     this.gitRepo = brick.gitRepo;
     this.imageLink = brick.imageLink;
-    this.credentialUsername = brick.credentialUsername;
-    this.credentialPassword = brick.credentialPassword;
     this.createdAt = brick.createdAt.toISO();
     this.createdBy = new HnUserDto(brick.createdBy);
     this.lastModifiedAt = brick.lastModifiedAt.toISO();
