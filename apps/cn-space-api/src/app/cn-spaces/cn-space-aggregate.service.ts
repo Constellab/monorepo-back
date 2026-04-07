@@ -671,10 +671,13 @@ export class CnSpaceAggregateService {
   //////////////////////////////// EVENT ///////////////////////////////////////
 
   private async emitSpaceEventAndCheckResult(event: CnSpaceEvent): Promise<void> {
-    const results: string[] = await this.eventEmitter.emitAsync(cnSpaceEventName, event);
+    const results = await this.eventEmitter.emitAsync(cnSpaceEventName, event);
     // if a text is returned, it means an error occurred
     for (const res of results) {
-      if (res) {
+      if (!res) continue;
+      if (res instanceof Error) {
+        throw res;
+      } else {
         throw new Error(res);
       }
     }

@@ -249,14 +249,14 @@ export class CnFolderAggregateService {
     // remove folder from all lab using event to avoid circular dependencies.
     // If the user can delete the folder, we consider he can remove it from labs
     if (hierarchyObject.isRootFolder()) {
-      const results: string[] = await this.eventEmitter.emitAsync(
-        cnRemoveFolderFromAllLabsEventName,
-        hierarchyObject
-      );
+      const results = await this.eventEmitter.emitAsync(cnRemoveFolderFromAllLabsEventName, hierarchyObject);
       // if a text is returned, it means an error occurred
       for (const res of results) {
-        if (res) {
-          throw new BlBadRequestException(res);
+        if (!res) continue;
+        if (res instanceof Error) {
+          throw res;
+        } else {
+          throw new Error(res);
         }
       }
     }
