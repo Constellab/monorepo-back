@@ -21,23 +21,18 @@ export class HnTaskService {
       .map(({ value }) => value as HnTask);
   }
 
+  async deleteByTechnicalFolder(technicalFolderId: string): Promise<void> {
+    await this.tasksRepository.delete({ technicalFolder: { id: technicalFolderId } });
+  }
+
   async createTechnicalDocTasks(
     technicalFolder: HnTechnicalFolder,
     tasks: HnImportTaskDTO[]
   ): Promise<boolean> {
-    const oldTasks: HnTask[] = await this.tasksRepository.find({
-      where: {
-        technicalFolder: {
-          id: technicalFolder.id,
-        },
-      },
-    });
+    // Deduplicate by unique_name, last entry wins
+    const deduped = [...new Map(tasks.map((t) => [t.unique_name, t])).values()];
 
-    for (const t of oldTasks) {
-      await this.tasksRepository.delete(t.id);
-    }
-
-    for (const t of tasks) {
+    for (const t of deduped) {
       const task = new HnTask();
       task.shortDescription = t.short_description ? t.short_description : null;
       task.doc = t.doc;

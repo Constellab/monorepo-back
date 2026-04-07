@@ -14,23 +14,18 @@ export class HnResourceService {
     private readonly resourceRepository: Repository<HnResource>
   ) {}
 
+  async deleteByTechnicalFolder(technicalFolderId: string): Promise<void> {
+    await this.resourceRepository.delete({ technicalFolder: { id: technicalFolderId } });
+  }
+
   async createTechnicalDocResources(
     technicalFolder: HnTechnicalFolder,
     resources: HnImportResourceDTO[]
   ): Promise<boolean> {
-    const oldResources: HnResource[] = await this.resourceRepository.find({
-      where: {
-        technicalFolder: {
-          id: technicalFolder.id,
-        },
-      },
-    });
+    // Deduplicate by unique_name, last entry wins
+    const deduped = [...new Map(resources.map((r) => [r.unique_name, r])).values()];
 
-    for (const r of oldResources) {
-      await this.resourceRepository.delete(r.id);
-    }
-
-    for (const r of resources) {
+    for (const r of deduped) {
       const resource = new HnResource();
       resource.shortDescription = r.short_description ? r.short_description : null;
       resource.doc = r.doc;

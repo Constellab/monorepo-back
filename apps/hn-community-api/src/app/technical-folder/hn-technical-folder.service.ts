@@ -32,14 +32,18 @@ export class HnTechnicalFolderService {
     brickMajorVersion: HnBrickMajorVersion,
     importFile: HnImportTechnicalDocDTO
   ): Promise<boolean> {
-    let technicalFolder: HnTechnicalFolder = await this.findTechnicalFolder(brickMajorVersion.id);
+    const existingFolder: HnTechnicalFolder = await this.findTechnicalFolder(brickMajorVersion.id);
 
-    if (technicalFolder) {
-      // delete existing technical docs by deleting the technical folder (cascade)
-      await this.technicalFolderRepository.remove(technicalFolder);
+    if (existingFolder) {
+      // Explicitly delete all children before deleting the folder
+      await this.resourceService.deleteByTechnicalFolder(existingFolder.id);
+      await this.taskService.deleteByTechnicalFolder(existingFolder.id);
+      await this.protocolService.deleteByTechnicalFolder(existingFolder.id);
+      await this.techDocOtherClassService.deleteByTechnicalFolder(existingFolder.id);
+      await this.technicalFolderRepository.remove(existingFolder);
     }
 
-    technicalFolder = new HnTechnicalFolder();
+    let technicalFolder = new HnTechnicalFolder();
     technicalFolder.brickMajorVersion = brickMajorVersion;
     technicalFolder = await this.technicalFolderRepository.save(technicalFolder);
 
@@ -47,7 +51,6 @@ export class HnTechnicalFolderService {
     let tasksOk: boolean = false;
     let protocolsOk: boolean = false;
     let otherClassesOk: boolean = false;
-    //TODO: Faire pour les autres classes
 
     if (importFile.resources && importFile.resources.length > 0)
       resourcesOk = await this.resourceService.createTechnicalDocResources(

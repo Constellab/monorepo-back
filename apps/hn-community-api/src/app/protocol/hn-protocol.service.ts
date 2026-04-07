@@ -13,23 +13,18 @@ export class HnProtocolService {
     private readonly protocolsRepository: Repository<HnProtocol>
   ) {}
 
+  async deleteByTechnicalFolder(technicalFolderId: string): Promise<void> {
+    await this.protocolsRepository.delete({ technicalFolder: { id: technicalFolderId } });
+  }
+
   async createTechnicalDocProtocols(
     technicalFolder: HnTechnicalFolder,
     protocols: HnImportProtocolDTO[]
   ): Promise<boolean> {
-    const oldProtocols: HnProtocol[] = await this.protocolsRepository.find({
-      where: {
-        technicalFolder: {
-          id: technicalFolder.id,
-        },
-      },
-    });
+    // Deduplicate by unique_name, last entry wins
+    const deduped = [...new Map(protocols.map((p) => [p.unique_name, p])).values()];
 
-    for (const p of oldProtocols) {
-      await this.protocolsRepository.delete(p.id);
-    }
-
-    for (const p of protocols) {
+    for (const p of deduped) {
       const proto = new HnProtocol();
       proto.shortDescription = p.short_description ? p.short_description : null;
       proto.doc = p.doc;

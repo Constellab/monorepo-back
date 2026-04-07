@@ -14,23 +14,18 @@ export class HnTechnicalDocOtherClassService {
     private readonly techDocOtherClassesRepository: Repository<HnTechnicalDocOtherClass>
   ) {}
 
+  async deleteByTechnicalFolder(technicalFolderId: string): Promise<void> {
+    await this.techDocOtherClassesRepository.delete({ technicalFolder: { id: technicalFolderId } });
+  }
+
   async createTechnicalDocOtherClasses(
     technicalFolder: HnTechnicalFolder,
     otherClasses: HnImportTechDocOtherClassesDTO[]
   ): Promise<boolean> {
-    const oldTechDocOtherClasses: HnTechnicalDocOtherClass[] = await this.techDocOtherClassesRepository.find({
-      where: {
-        technicalFolder: {
-          id: technicalFolder.id,
-        },
-      },
-    });
+    // Deduplicate by name, last entry wins
+    const deduped = [...new Map(otherClasses.map((oC) => [oC.name, oC])).values()];
 
-    for (const r of oldTechDocOtherClasses) {
-      await this.techDocOtherClassesRepository.delete(r.id);
-    }
-
-    for (const oC of otherClasses) {
+    for (const oC of deduped) {
       const otherClass = new HnTechnicalDocOtherClass();
       otherClass.uniqueName = oC.name;
       otherClass.humanName = oC.name;
