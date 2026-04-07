@@ -698,4 +698,41 @@ ALTER TABLE `technical_doc_other_class`
     ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 
+-- =====================================================
+-- ADD UNIQUE CONSTRAINTS ON LIKE TABLES (entity + likedBy)
+-- =====================================================
+
+-- Remove potential duplicates before adding constraints
+DELETE l1 FROM `like_agent` l1
+  INNER JOIN `like_agent` l2
+  ON l1.`entityId` = l2.`entityId` AND l1.`likedById` = l2.`likedById` AND l1.`id` > l2.`id`;
+
+DELETE l1 FROM `like_app` l1
+  INNER JOIN `like_app` l2
+  ON l1.`entityId` = l2.`entityId` AND l1.`likedById` = l2.`likedById` AND l1.`id` > l2.`id`;
+
+DELETE l1 FROM `like_brick` l1
+  INNER JOIN `like_brick` l2
+  ON l1.`entityId` = l2.`entityId` AND l1.`likedById` = l2.`likedById` AND l1.`id` > l2.`id`;
+
+DELETE l1 FROM `like_partner` l1
+  INNER JOIN `like_partner` l2
+  ON l1.`entityId` = l2.`entityId` AND l1.`likedById` = l2.`likedById` AND l1.`id` > l2.`id`;
+
+DELETE l1 FROM `like_story` l1
+  INNER JOIN `like_story` l2
+  ON l1.`entityId` = l2.`entityId` AND l1.`likedById` = l2.`likedById` AND l1.`id` > l2.`id`;
+
+DELETE l1 FROM `like_tag` l1
+  INNER JOIN `like_tag` l2
+  ON l1.`entityId` = l2.`entityId` AND l1.`likedById` = l2.`likedById` AND l1.`id` > l2.`id`;
+
+ALTER TABLE `like_agent` ADD UNIQUE INDEX `UQ_like_agent_entity_user` (`entityId`, `likedById`);
+ALTER TABLE `like_app` ADD UNIQUE INDEX `UQ_like_app_entity_user` (`entityId`, `likedById`);
+ALTER TABLE `like_brick` ADD UNIQUE INDEX `UQ_like_brick_entity_user` (`entityId`, `likedById`);
+ALTER TABLE `like_partner` ADD UNIQUE INDEX `UQ_like_partner_entity_user` (`entityId`, `likedById`);
+ALTER TABLE `like_story` ADD UNIQUE INDEX `UQ_like_story_entity_user` (`entityId`, `likedById`);
+ALTER TABLE `like_tag` ADD UNIQUE INDEX `UQ_like_tag_entity_user` (`entityId`, `likedById`);
+
+
 COMMIT;

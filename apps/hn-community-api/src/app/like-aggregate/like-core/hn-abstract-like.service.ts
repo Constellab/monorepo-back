@@ -1,4 +1,4 @@
-import { BlEntityWithId } from '@monorepo/back-core-lib';
+import { BlBadRequestException, BlEntityWithId, BlNotFoundException } from '@monorepo/back-core-lib';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Repository } from 'typeorm';
 
@@ -42,41 +42,36 @@ export abstract class HnAbstractLikeService<T extends BlEntityWithId> {
   }
 
   async like(entityType: HnEntityType, entityId: string): Promise<number> {
-    if (await this.checkIfLiked(entityId)) {
-      throw new Error('Entity already liked');
-    }
-
     const entity: T = await this.getEntityAndCheckById(entityId);
-
     if (!entity) {
-      throw new Error('Entity not found');
+      throw new BlNotFoundException('Entity not found');
     }
 
     const like: any = this.createLike(entity);
-    const numberOfLikes = (await this.getNumberOfLikes(entityId)) + 1;
-    const newLike: HnAbstractLikeEntity<T> = await this.repository.save(like);
-    if (!newLike) {
-      return null;
+    try {
+      await this.repository.save(like);
+    } catch (e: any) {
+      if (e?.code === 'ER_DUP_ENTRY') {
+        throw new BlBadRequestException('Entity already liked');
+      }
+      throw e;
     }
-    this.emitLikeEvent(entityType, newLike.entity.id, numberOfLikes);
 
+    const numberOfLikes = await this.getNumberOfLikes(entityId);
+    this.emitLikeEvent(entityType, entityId, numberOfLikes);
     return numberOfLikes;
   }
 
   async unlike(entityType: HnEntityType, entityId: string): Promise<number> {
-    if (!(await this.checkIfLiked(entityId))) {
-      throw new Error('Entity not liked');
-    }
-
     const like: HnAbstractLikeEntity<BlEntityWithId> = await this.getLike(entityId);
-    const numberOfLikes = (await this.getNumberOfLikes(entityId)) - 1;
-    const removedLike = await this.repository.remove(like);
-    if (!removedLike) {
-      return null;
+    if (!like) {
+      throw new BlBadRequestException('Entity not liked');
     }
 
-    this.emitLikeEvent(entityType, removedLike.entity.id, numberOfLikes);
+    await this.repository.remove(like);
 
+    const numberOfLikes = await this.getNumberOfLikes(entityId);
+    this.emitLikeEvent(entityType, entityId, numberOfLikes);
     return numberOfLikes;
   }
 
