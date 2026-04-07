@@ -55,7 +55,7 @@ export class CnActivity extends BlEntityWithId {
   spaceId: string | null;
 
   @Type(() => CnSpaceEntity)
-  @ManyToOne(() => CnSpaceEntity, { nullable: true })
+  @ManyToOne(() => CnSpaceEntity, { nullable: true, onDelete: 'CASCADE' })
   @BlNotUpdatable()
   space: Relation<CnSpace> | null;
 
