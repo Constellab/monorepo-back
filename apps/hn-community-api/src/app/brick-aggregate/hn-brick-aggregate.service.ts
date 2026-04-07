@@ -451,8 +451,15 @@ export class HnBrickAggregateService {
         throw new BlBadRequestException('Private bricks must belong to a space');
       }
 
-      // Create brick
-      brick = await this.brickService.create(newBrick, entityManager);
+      // Create brick - catch duplicate in case of concurrent creation
+      try {
+        brick = await this.brickService.create(newBrick, entityManager);
+      } catch (e: any) {
+        if (e?.code === 'ER_DUP_ENTRY') {
+          throw new BlBadRequestException(HnErrorText.BRICK_ALREADY_EXIST);
+        }
+        throw e;
+      }
 
       // init subpatch version if beta
       if (body.isBeta) body.version.subPatch = body.subPatch;
