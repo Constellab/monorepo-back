@@ -195,9 +195,9 @@ export class HnCommunityAppAggregateService {
 
     if (titleFilter) {
       if (whereConditions instanceof Array) {
-        whereConditions.map((wc) => (wc.title = Like(`%${titleFilter}%`)));
+        whereConditions.map((wc) => (wc.title = Like(`%${ClStringHelper.escapeSqlLike(titleFilter)}%`)));
       } else {
-        whereConditions.title = Like(`%${titleFilter}%`);
+        whereConditions.title = Like(`%${ClStringHelper.escapeSqlLike(titleFilter)}%`);
       }
     }
 

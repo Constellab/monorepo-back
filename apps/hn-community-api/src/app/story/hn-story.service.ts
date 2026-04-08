@@ -211,7 +211,7 @@ export class HnStoryService extends BlAbstractService<HnStory> {
     }
 
     if (filters.title && filters.title.length > 0) {
-      where.map((w) => (w.title = Like(`%${filters.title}%`)));
+      where.map((w) => (w.title = Like(`%${ClStringHelper.escapeSqlLike(filters.title)}%`)));
     }
 
     return (
@@ -305,7 +305,7 @@ export class HnStoryService extends BlAbstractService<HnStory> {
     }
 
     if (filters.title && filters.title.length > 0) {
-      where.title = Like(`%${filters.title}%`);
+      where.title = Like(`%${ClStringHelper.escapeSqlLike(filters.title)}%`);
     }
 
     where.status = HnStoryStatus.PUBLISHED;
@@ -609,6 +609,7 @@ export class HnStoryService extends BlAbstractService<HnStory> {
   }
 
   ////////////////////////////////////////// MIGRATION ////////////////////////////////////
+  /** @deprecated One-shot migration — remove after execution in all environments */
   async migrateTitlePaths(): Promise<void> {
     const stories: HnStory[] = await this.storyRepository.find();
     for (const story of stories) {

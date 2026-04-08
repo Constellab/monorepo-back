@@ -17,7 +17,7 @@ import {
   TeRichTextAggregate,
   TeRichTextBlockModificationWithUser,
 } from '@monorepo/te-text-editor';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { lastValueFrom } from 'rxjs';
 import { DataSource, FindOptionsWhere, In, IsNull, Like } from 'typeorm';
 
@@ -89,6 +89,8 @@ export interface HnBrickUserBasedWhereOptionalParams {
 
 @Injectable()
 export class HnBrickAggregateService {
+  private readonly logger = new Logger(HnBrickAggregateService.name);
+
   constructor(
     private brickService: HnBrickService,
     private brickMajorVersionService: HnBrickMajorVersionService,
@@ -162,9 +164,9 @@ export class HnBrickAggregateService {
     // Add where conditions based on filters
     if (titleFilter) {
       if (whereConditions instanceof Array) {
-        whereConditions.map((wc) => (wc.name = Like(`%${titleFilter}%`)));
+        whereConditions.map((wc) => (wc.name = Like(`%${ClStringHelper.escapeSqlLike(titleFilter)}%`)));
       } else {
-        whereConditions.name = Like(`%${titleFilter}%`);
+        whereConditions.name = Like(`%${ClStringHelper.escapeSqlLike(titleFilter)}%`);
       }
     }
 
@@ -553,7 +555,7 @@ export class HnBrickAggregateService {
       const brickVersion = await this.brickVersionService.getLatestBrickVersion(lastBrickMajorVersion.id);
       await this.brickVersionService.sendBrickVersionIdToTransport(brickVersion.id);
     } catch (e: any) {
-      console.log(e);
+      this.logger.error('Failed to send brick version to transport after edit', e);
     }
 
     return brick;
@@ -723,7 +725,10 @@ export class HnBrickAggregateService {
     return this.folderService.create(createFolder);
   }
 
-  async updateFolderRecusive(updatedFolder: HnNodeDTO): Promise<HnFolder> {
+  private static readonly MAX_RECURSION_DEPTH = 50;
+
+  async updateFolderRecusive(updatedFolder: HnNodeDTO, depth: number = 0): Promise<HnFolder> {
+    if (depth > HnBrickAggregateService.MAX_RECURSION_DEPTH) return null;
     let folder: HnFolder = await this.folderService.findWithRelationById(updatedFolder.id);
     folder.path = ClStringHelper.generateUrlPathFromString(updatedFolder.title);
     folder.title = updatedFolder.title;
@@ -733,12 +738,13 @@ export class HnBrickAggregateService {
 
     folder = await this.folderService.save(folder);
 
-    await this.updateChildCompletePath(folder);
+    await this.updateChildCompletePath(folder, depth + 1);
 
     return folder;
   }
 
-  async updateChildCompletePath(folder: HnFolder): Promise<void> {
+  async updateChildCompletePath(folder: HnFolder, depth: number = 0): Promise<void> {
+    if (depth > HnBrickAggregateService.MAX_RECURSION_DEPTH) return;
     if (folder.documentations.length > 0) {
       for (const d of folder.documentations) {
         await this.documentationService.updateCompletePath(d, folder);
@@ -751,7 +757,7 @@ export class HnBrickAggregateService {
         fDTO.isFolder = true;
         fDTO.title = f.title;
         fDTO.id = f.id;
-        await this.updateFolderRecusive(fDTO);
+        await this.updateFolderRecusive(fDTO, depth + 1);
       }
     }
   }

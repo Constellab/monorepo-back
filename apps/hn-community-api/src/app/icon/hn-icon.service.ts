@@ -7,7 +7,7 @@ import {
   BlNotFoundException,
   BlObjectStorageService,
 } from '@monorepo/back-core-lib';
-import { ClPage } from '@monorepo/core-lib';
+import { ClPage, ClStringHelper } from '@monorepo/core-lib';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Like, Repository } from 'typeorm';
@@ -117,7 +117,7 @@ export class HnIconService {
       size,
       {
         where: {
-          subNames: Like('%' + subNameFilter + '%'),
+          subNames: Like('%' + ClStringHelper.escapeSqlLike(subNameFilter) + '%'),
         },
         order: {
           name: 'ASC',

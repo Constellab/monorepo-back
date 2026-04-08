@@ -3,7 +3,7 @@ import {
   BlNotFoundException,
   BlSearchSortCriteria,
 } from '@monorepo/back-core-lib';
-import { ClPage } from '@monorepo/core-lib';
+import { ClPage, ClStringHelper } from '@monorepo/core-lib';
 import { TeRichTextDTO } from '@monorepo/te-text-editor';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -57,7 +57,7 @@ export class HnCommunityAppService {
   }
 
   async findOneByAppUrl(appUrl: string): Promise<HnCommunityApp> {
-    return this.communityAppRepository.findOneBy({ appUrl: Like(`${appUrl}%`) });
+    return this.communityAppRepository.findOneBy({ appUrl: Like(`${ClStringHelper.escapeSqlLike(appUrl)}%`) });
   }
 
   async create(dto: HnCommunityAppEditDto, space: HnSpace = null): Promise<HnCommunityApp> {

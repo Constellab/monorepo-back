@@ -3,7 +3,7 @@ import {
   BlSearchSortCriteria,
   BlUnauthorizedException,
 } from '@monorepo/back-core-lib';
-import { ClPage } from '@monorepo/core-lib';
+import { ClPage, ClStringHelper } from '@monorepo/core-lib';
 import { TeRichText } from '@monorepo/te-text-editor';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -236,7 +236,7 @@ export class HnAgentService {
 
     if (titleFilter && titleFilter.length > 0) {
       where = where.map((w) => {
-        w.title = Like(`%${titleFilter}%`);
+        w.title = Like(`%${ClStringHelper.escapeSqlLike(titleFilter)}%`);
         return w;
       });
     }

@@ -182,6 +182,16 @@ export class ClStringHelper {
   }
 
   /**
+   * Escape special characters for SQL LIKE patterns.
+   * Prevents user input containing %, _ or \ from being interpreted as LIKE wildcards.
+   * @param str user input to escape
+   */
+  public static escapeSqlLike(str: string): string {
+    if (str == null) return str;
+    return str.replace(/[\\%_]/g, '\\$&');
+  }
+
+  /**
    * Remove non-visible characters from a string
    * This includes control characters, zero-width characters, and other non-printable characters
    * Regular spaces and line breaks are preserved

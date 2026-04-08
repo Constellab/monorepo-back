@@ -103,7 +103,7 @@ export class HnPartnerService extends BlAbstractService<HnPartner> {
     const where: FindOptionsWhere<HnPartner> = {};
 
     if (nameFilter && nameFilter.trim().length > 0) {
-      where.name = Like(`%${nameFilter.trim()}%`);
+      where.name = Like(`%${ClStringHelper.escapeSqlLike(nameFilter.trim())}%`);
     }
 
     where.certified = true;

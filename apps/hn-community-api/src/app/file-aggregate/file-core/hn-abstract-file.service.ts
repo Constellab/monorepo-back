@@ -120,8 +120,8 @@ export abstract class HnAbstractFileService<T extends BlEntityWithId> {
         ) {
           await this.deleteFileWithEntityManager(file.id, entityManager);
         }
-      } catch (e) {
-        throw new Error('Error while deleting file: ' + file.name);
+      } catch {
+        throw new BlBadRequestException('Error while deleting file: ' + file.name);
       }
     }
   }

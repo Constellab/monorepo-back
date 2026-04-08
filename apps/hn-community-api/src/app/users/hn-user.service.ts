@@ -8,7 +8,7 @@ import {
 } from '@monorepo/back-core-lib';
 import { ClPage, ClStringHelper, ClSupportedLanguage, ClTheme } from '@monorepo/core-lib';
 import { TeUser } from '@monorepo/te-text-editor';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { lastValueFrom } from 'rxjs';
 import { FindOptionsWhere, Like, Repository } from 'typeorm';
@@ -23,6 +23,7 @@ import { HnUser, HnUserConstellabDTO, HnUserSearchFilters } from './hn-user.enti
 
 @Injectable()
 export class HnUserService implements BlUserService {
+  private readonly logger = new Logger(HnUserService.name);
   constructor(
     @InjectRepository(HnUser)
     private userRepository: Repository<HnUser>,
@@ -163,7 +164,7 @@ export class HnUserService implements BlUserService {
     if (filters.email && filters.email.length > 0 && ClStringHelper.isEmail(filters.email)) {
       whereOptions.email = filters.email;
     } else if (filters.alias && filters.alias.length > 0) {
-      whereOptions.alias = Like(`%${filters.alias}%`);
+      whereOptions.alias = Like(`%${ClStringHelper.escapeSqlLike(filters.alias)}%`);
     }
 
     return await BlAbstractPaginatedService.findPaginatedStatic(
@@ -187,7 +188,7 @@ export class HnUserService implements BlUserService {
         this.externalApiService.get(this.configService.getSpaceApiUrl() + `/users/valid/${user.id}`)
       );
       if (!cnUser) {
-        console.log('Delete', user.id);
+        this.logger.warn(`Deleting user ${user.id} — not found in space API`);
         await this.userRepository.delete({ id: user.id });
       }
     }

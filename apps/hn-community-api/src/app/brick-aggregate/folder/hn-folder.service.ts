@@ -85,11 +85,14 @@ export class HnFolderService {
     return this.collectDocsFromFolder(brickDocs);
   }
 
-  private collectDocsFromFolder(folder: HnFolder): HnDocumentation[] {
+  private static readonly MAX_RECURSION_DEPTH = 50;
+
+  private collectDocsFromFolder(folder: HnFolder, depth: number = 0): HnDocumentation[] {
+    if (depth > HnFolderService.MAX_RECURSION_DEPTH) return [];
     let docs: HnDocumentation[] = [];
     docs = docs.concat(folder.documentations);
     for (const f of folder.folders) {
-      docs = docs.concat(this.collectDocsFromFolder(f));
+      docs = docs.concat(this.collectDocsFromFolder(f, depth + 1));
     }
     return docs;
   }
@@ -100,11 +103,12 @@ export class HnFolderService {
     return this.findFirstDocNodeInTree(tree);
   }
 
-  private findFirstDocNodeInTree(tree: HnNode): HnNode {
+  private findFirstDocNodeInTree(tree: HnNode, depth: number = 0): HnNode {
+    if (depth > HnFolderService.MAX_RECURSION_DEPTH) return null;
     let node: HnNode = null;
     for (const c of tree.children) {
       if (c.children) {
-        node = this.findFirstDocNodeInTree(c);
+        node = this.findFirstDocNodeInTree(c, depth + 1);
         if (node) break;
       } else {
         node = c;
@@ -114,7 +118,7 @@ export class HnFolderService {
     return node;
   }
 
-  private createTree(folder: HnFolder): HnNode {
+  private createTree(folder: HnFolder, depth: number = 0): HnNode {
     const currentChild: HnNode[] = [];
 
     const currentParent: HnNode = new HnNode(
@@ -127,6 +131,8 @@ export class HnFolderService {
       []
     );
 
+    if (depth > HnFolderService.MAX_RECURSION_DEPTH) return currentParent;
+
     if (folder.documentations != null) {
       folder.documentations.forEach((doc) => {
         currentChild.push(
@@ -137,7 +143,7 @@ export class HnFolderService {
 
     if (folder.folders != null) {
       folder.folders.forEach((f) => {
-        currentChild.push(this.createTree(f));
+        currentChild.push(this.createTree(f, depth + 1));
       });
     }
 
@@ -147,13 +153,14 @@ export class HnFolderService {
     return currentParent;
   }
 
-  private treeToArray(folder: HnFolder): HnFolder[] {
+  private treeToArray(folder: HnFolder, depth: number = 0): HnFolder[] {
+    if (depth > HnFolderService.MAX_RECURSION_DEPTH) return [folder];
     let array: HnFolder[] = [folder];
     let arrayChildFolder: HnFolder[] = [];
 
     folder.folders.sort((a, b) => a.order - b.order);
     folder.folders.forEach((f) => {
-      arrayChildFolder = arrayChildFolder.concat(this.treeToArray(f));
+      arrayChildFolder = arrayChildFolder.concat(this.treeToArray(f, depth + 1));
     });
     array = array.concat(arrayChildFolder);
     return array;
@@ -214,7 +221,13 @@ export class HnFolderService {
     return this.getDocsByFolder(brickDocs, major, brickName);
   }
 
-  private getDocsByFolder(folder: HnFolder, major: string, brickName: string): HnDocumentationSearchDTO[] {
+  private getDocsByFolder(
+    folder: HnFolder,
+    major: string,
+    brickName: string,
+    depth: number = 0
+  ): HnDocumentationSearchDTO[] {
+    if (depth > HnFolderService.MAX_RECURSION_DEPTH) return [];
     const documentations: HnDocumentationSearchDTO[] = [];
 
     for (const doc of folder.documentations) {
@@ -230,7 +243,7 @@ export class HnFolderService {
 
     if (folder.folder) {
       for (const fol of folder.folders) {
-        this.getDocsByFolder(fol, major, brickName).forEach((d) => {
+        this.getDocsByFolder(fol, major, brickName, depth + 1).forEach((d) => {
           documentations.push(d);
         });
       }

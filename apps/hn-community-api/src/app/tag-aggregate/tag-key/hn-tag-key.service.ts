@@ -1,10 +1,11 @@
 import {
   BlAbstractPaginatedService,
+  BlBadRequestException,
   BlNotFoundException,
   BlSearchSortCriteria,
   BlUnauthorizedException,
 } from '@monorepo/back-core-lib';
-import { ClDateHelper, ClPage } from '@monorepo/core-lib';
+import { ClDateHelper, ClPage, ClStringHelper } from '@monorepo/core-lib';
 import { TeRichTextDTO } from '@monorepo/te-text-editor';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -210,7 +211,7 @@ export class HnTagKeyService {
     space?: HnSpace
   ): Promise<HnTagKey> {
     if (tagKey.technicalName != updateTagKeyDto.technicalName || tagKey.id != updateTagKeyDto.id) {
-      throw new Error('Error updating tag key technical name or id');
+      throw new BlBadRequestException('Error updating tag key technical name or id');
     }
     tagKey.label = updateTagKeyDto.label;
     tagKey.type = updateTagKeyDto.type;
@@ -443,14 +444,14 @@ export class HnTagKeyService {
 
     if (technicalNameFilter && technicalNameFilter.length > 0) {
       where = where.map((w) => {
-        w.technicalName = Like(`%${technicalNameFilter}%`);
+        w.technicalName = Like(`%${ClStringHelper.escapeSqlLike(technicalNameFilter)}%`);
         return w;
       });
     }
 
     if (labelFilter && labelFilter.length > 0) {
       where = where.map((w) => {
-        w.label = Like(`%${labelFilter}%`);
+        w.label = Like(`%${ClStringHelper.escapeSqlLike(labelFilter)}%`);
         return w;
       });
     }

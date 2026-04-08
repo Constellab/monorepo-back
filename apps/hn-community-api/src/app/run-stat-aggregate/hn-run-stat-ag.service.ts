@@ -155,6 +155,7 @@ export class HnRunStatAgService {
     return creators;
   }
 
+  /** @deprecated One-shot migration — remove after execution in all environments */
   async migrateRunStats(): Promise<void> {
     const runStats = await this.runStatService.findAll();
     await this.datasource.transaction(async (entityManager) => {
