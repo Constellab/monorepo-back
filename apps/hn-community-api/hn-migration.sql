@@ -735,4 +735,19 @@ ALTER TABLE `like_story` ADD UNIQUE INDEX `UQ_like_story_entity_user` (`entityId
 ALTER TABLE `like_tag` ADD UNIQUE INDEX `UQ_like_tag_entity_user` (`entityId`, `likedById`);
 
 
+-- Add expiresAt column to all invite tables and update enum to include EXPIRED status
+ALTER TABLE `brick_user_invite` ADD COLUMN `expiresAt` datetime NULL;
+ALTER TABLE `agent_co_author_invite` ADD COLUMN `expiresAt` datetime NULL;
+ALTER TABLE `story_co_author_invite` ADD COLUMN `expiresAt` datetime NULL;
+ALTER TABLE `tag_co_author_invite` ADD COLUMN `expiresAt` datetime NULL;
+ALTER TABLE `app_co_author_invite` ADD COLUMN `expiresAt` datetime NULL;
+
+-- Update invite status enum to include EXPIRED
+ALTER TABLE `brick_user_invite` MODIFY COLUMN `status` enum('ACCEPTED','PENDING','EXPIRED') NOT NULL DEFAULT 'PENDING';
+ALTER TABLE `agent_co_author_invite` MODIFY COLUMN `status` enum('ACCEPTED','PENDING','EXPIRED') NOT NULL DEFAULT 'PENDING';
+ALTER TABLE `story_co_author_invite` MODIFY COLUMN `status` enum('ACCEPTED','PENDING','EXPIRED') NOT NULL DEFAULT 'PENDING';
+ALTER TABLE `tag_co_author_invite` MODIFY COLUMN `status` enum('ACCEPTED','PENDING','EXPIRED') NOT NULL DEFAULT 'PENDING';
+ALTER TABLE `app_co_author_invite` MODIFY COLUMN `status` enum('ACCEPTED','PENDING','EXPIRED') NOT NULL DEFAULT 'PENDING';
+
+
 COMMIT;

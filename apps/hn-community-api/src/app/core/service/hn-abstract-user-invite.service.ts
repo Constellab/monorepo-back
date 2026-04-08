@@ -1,5 +1,6 @@
-import { BlBadRequestException, BlMailService, BlUnauthorizedException } from '@monorepo/back-core-lib';
+import { BlBadRequestException, BlMailService, BlNotFoundException, BlUnauthorizedException } from '@monorepo/back-core-lib';
 import { ClStringHelper, ClSupportedLanguage } from '@monorepo/core-lib';
+import { DateTime } from 'luxon';
 import { Repository } from 'typeorm';
 
 import { HnUserDto } from '../../users/hn-user.dto';
@@ -23,6 +24,7 @@ export abstract class HnAbstractUserInviteService<T extends HnUserInvite, E> {
 
     const userInviteMail: T = this.initNewUserInvite(entity);
     userInviteMail.token = ClStringHelper.generateUUID();
+    userInviteMail.expiresAt = DateTime.now().plus({ days: HnUserInvite.INVITE_EXPIRY_DAYS });
     let user: HnUser;
     if (ClStringHelper.isEmail(emailOrId)) {
       if (emailOrId === currentUser.email) {
@@ -31,7 +33,7 @@ export abstract class HnAbstractUserInviteService<T extends HnUserInvite, E> {
       user = await this.userService.findOneByEmail(emailOrId);
       userInviteMail.email = emailOrId;
     } else {
-      if (!ClStringHelper.isUUID(emailOrId)) throw Error('User not found');
+      if (!ClStringHelper.isUUID(emailOrId)) throw new BlNotFoundException('User not found');
       if (emailOrId === currentUser.id) {
         throw new BlBadRequestException('You cannot invite yourself as a co-author');
       }
@@ -84,6 +86,12 @@ export abstract class HnAbstractUserInviteService<T extends HnUserInvite, E> {
       userInvite.email !== HnCurrentUserHelper.getCurrentUser().email
     ) {
       throw new BlUnauthorizedException('This invite is not valid');
+    }
+
+    if (userInvite.isExpired()) {
+      userInvite.status = HnInviteStatus.EXPIRED;
+      await this.repository.save(userInvite);
+      throw new BlBadRequestException('This invite has expired');
     }
 
     return userInvite;
