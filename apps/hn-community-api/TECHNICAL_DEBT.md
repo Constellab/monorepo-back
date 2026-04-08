@@ -99,3 +99,37 @@ async login(...) { }
 - Add `class-validator` decorators progressively, starting with endpoints exposed to external users.
 - Prioritize: auth DTOs > brick creation/edit DTOs > content DTOs (comments, stories).
 - Ensure `ValidationPipe` is enabled globally (check `main.ts`).
+
+---
+
+## 6. Config Variables Not Validated at Startup
+
+**File:** `src/app/core/modules/core-config/hn-core-config.service.ts`
+
+**Problem:** `HnCoreConfigService` retrieves config values via `configService.get()` without validating that required values are present or have valid formats at startup. Missing or malformed config (JWT secret, DB connection, S3 credentials) will cause unpredictable runtime failures instead of a clean startup error.
+
+**Suggested fix:**
+
+- Use NestJS `ConfigModule.forRoot()` with a Joi or `class-validator` validation schema.
+- Alternatively, add an `onModuleInit()` method to `HnCoreConfigService` that checks all required config keys and throws a clear error if any are missing.
+
+---
+
+## 7. Missing Pagination on Internal Queries
+
+**Locations:**
+
+- `hn-agent-version.service.ts:103` — `find()` without limit
+- `hn-brick.service.ts:44` — `find()` without limit
+- `hn-partner.service.ts:39` — `find()` unbounded
+- `hn-space.service.ts:17` — `find()` no limit
+- `hn-story.service.ts:112, 613` — `find()` returns all records
+- `hn-user.service.ts:152, 184` — `find()` without take/skip
+
+**Problem:** These queries fetch all records without pagination. As data grows, they risk high memory usage and slow response times.
+
+**Suggested fix:**
+
+- Add `take` limits to internal queries that don't need all records.
+- For admin/migration endpoints (`checkAllStatus`, `migrateTitlePaths`), consider streaming or batch processing instead of loading all records at once.
+- Prioritize: public-facing endpoints first, then internal admin endpoints.
