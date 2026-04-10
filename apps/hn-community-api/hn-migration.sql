@@ -697,7 +697,11 @@ ALTER TABLE `technical_doc_other_class`
     FOREIGN KEY (`lastModifiedById`) REFERENCES `user` (`id`)
     ON DELETE NO ACTION ON UPDATE NO ACTION;
 
+COMMIT;
 
+#1.10.18
+
+START TRANSACTION;
 -- =====================================================
 -- ADD UNIQUE CONSTRAINTS ON LIKE TABLES (entity + likedBy)
 -- =====================================================
@@ -748,6 +752,5 @@ ALTER TABLE `agent_co_author_invite` MODIFY COLUMN `status` enum('ACCEPTED','PEN
 ALTER TABLE `story_co_author_invite` MODIFY COLUMN `status` enum('ACCEPTED','PENDING','EXPIRED') NOT NULL DEFAULT 'PENDING';
 ALTER TABLE `tag_co_author_invite` MODIFY COLUMN `status` enum('ACCEPTED','PENDING','EXPIRED') NOT NULL DEFAULT 'PENDING';
 ALTER TABLE `app_co_author_invite` MODIFY COLUMN `status` enum('ACCEPTED','PENDING','EXPIRED') NOT NULL DEFAULT 'PENDING';
-
 
 COMMIT;
