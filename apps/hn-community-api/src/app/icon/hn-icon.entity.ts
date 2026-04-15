@@ -10,19 +10,19 @@ export enum HnIconType {
 
 @Entity('icon')
 export class HnIcon extends BlEntityWithId {
-  @Column({ length: 30, name: 'technical_name', unique: true })
+  @Column({ length: 30, unique: true })
   technicalName: string;
 
   @Column()
   name: string;
 
-  @Column('simple-array', { name: 'sub_names' })
+  @Column('simple-array')
   subNames: string[];
 
   @Column({ type: 'enum', enum: HnIconType, default: HnIconType.COMMUNITY_ICON })
   type: HnIconType;
 
-  @Column({ name: 'file_name' })
+  @Column()
   fileName: string;
 
   init(_icon: HnIconCreateDto): void {

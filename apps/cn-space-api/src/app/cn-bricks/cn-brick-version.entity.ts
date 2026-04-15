@@ -56,7 +56,7 @@ export class CnBrickVersion extends BlEntityWithId {
   @Column({ type: 'enum', enum: CnRepoType, nullable: false })
   repoType: CnRepoType;
 
-  @Column({ name: 'technicalInfo', type: 'simple-json', nullable: true })
+  @Column({ type: 'simple-json', nullable: true })
   technicalInfo?: Record<string, string>;
 
   @BlVersionTransform()

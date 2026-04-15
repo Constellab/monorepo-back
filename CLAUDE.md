@@ -9,7 +9,7 @@ This is a monorepo containing NestJS backend applications for Gencovery's platfo
 ### Applications
 
 - **cn-space-api** (prefix: `Cn`): Main NestJS application for the Constellab space platform
-- **hn-community-api** (prefix: `Hn`): Community/hub NestJS application for documentation and community features
+- **hn-community-api** (prefix: `Hn`): Community NestJS application for documentation and community features
 
 ### Libraries
 

@@ -59,7 +59,7 @@ export abstract class HnGeneratedDocTypingEntity extends HnGeneratedDocEntity {
   @Column({ nullable: true })
   deprecatedMessage?: string;
 
-  @Column({ name: 'style', type: 'simple-json', nullable: true })
+  @Column({ type: 'simple-json', nullable: true })
   style?: Record<string, any>;
 
   @Column({ nullable: true })

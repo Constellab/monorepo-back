@@ -77,7 +77,8 @@ export class CnBricksService extends BlAbstractService<CnBrick> {
 
     if (brickVersion == null) {
       throw new BlBadRequestException(
-        `The version '${version.toString()}' does not exist on brick '${name}'. Please register the version on the hub.`
+        `The version '${version.toString()}' does not exist on brick '${name}'.` +
+          ` Please register the version on community.`
       );
     }
 

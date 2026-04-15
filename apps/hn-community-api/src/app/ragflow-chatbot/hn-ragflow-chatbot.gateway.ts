@@ -34,8 +34,9 @@ interface HnRagflowClientSession {
 @WebSocketGateway({
   namespace: '/ragflow-chatbot',
   cors: {
-    origin: hnCorsConfig.origin,
-    credentials: hnCorsConfig.credentials,
+    // TODO this is now great because the env variable in corsConfig are not yet loaded
+    origin: hnCorsConfig().origin,
+    credentials: hnCorsConfig().credentials,
   },
 })
 export class HnRagflowChatbotGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
@@ -128,7 +129,12 @@ export class HnRagflowChatbotGateway implements OnGatewayInit, OnGatewayConnecti
         conversationId,
       });
 
-      client.join(conversationId);
+      const joinPromise = client.join(conversationId);
+      if (joinPromise) {
+        joinPromise.catch((error) => {
+          this.logger.error(`[JOIN] Error joining conversation for client ${client.id}`, error);
+        });
+      }
 
       client.emit(HnRagflowWsEvent.CONVERSATION_JOINED, {
         conversationId,
@@ -147,7 +153,12 @@ export class HnRagflowChatbotGateway implements OnGatewayInit, OnGatewayConnecti
   handleLeaveConversation(@ConnectedSocket() client: Socket): void {
     const session = this.clientSessions.get(client.id);
     if (session?.conversationId) {
-      client.leave(session.conversationId);
+      const promise = client.leave(session.conversationId);
+      if (promise) {
+        promise.catch((error) => {
+          this.logger.error(`[LEAVE] Error leaving conversation for client ${client.id}`, error);
+        });
+      }
       this.clientSessions.set(client.id, { userId: session.userId });
     }
   }
@@ -182,11 +193,7 @@ export class HnRagflowChatbotGateway implements OnGatewayInit, OnGatewayConnecti
 
       let fullResponse = '';
 
-      for await (const chunk of this.ragflowService.streamMessage(
-        chatId,
-        dto.message,
-        session.sessionId
-      )) {
+      for await (const chunk of this.ragflowService.streamMessage(chatId, dto.message, session.sessionId)) {
         if (chunk.type === 'chunk' && chunk.content) {
           fullResponse += chunk.content;
           client.emit(HnRagflowWsEvent.MESSAGE_CHUNK, {

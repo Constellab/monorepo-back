@@ -42,7 +42,7 @@ export class HnAgentVersion extends BlEntityWithId {
   @Column({ type: 'enum', enum: HnAgentVersionType, nullable: false, default: HnAgentVersionType.PYTHON })
   type: HnAgentVersionType;
 
-  @Column({ name: 'versionInfos', type: 'simple-json', nullable: true })
+  @Column({ type: 'simple-json', nullable: true })
   versionInfos?: TeRichTextDTO;
 
   @Column({ type: 'simple-json', nullable: true })
@@ -57,16 +57,16 @@ export class HnAgentVersion extends BlEntityWithId {
   @BlLuxonDateTimeColumn({ nullable: true, update: false })
   createdAt: DateTime;
 
-  @Column({ name: 'inputSpecs', type: 'simple-json', nullable: true })
+  @Column({ type: 'simple-json', nullable: true })
   inputSpecs?: Record<string, any>;
 
-  @Column({ name: 'outputSpecs', type: 'simple-json', nullable: true })
+  @Column({ type: 'simple-json', nullable: true })
   outputSpecs?: Record<string, any>;
 
-  @Column({ name: 'configSpecs', type: 'simple-json', nullable: true })
+  @Column({ type: 'simple-json', nullable: true })
   configSpecs?: Record<string, any>;
 
-  @Column({ name: 'style', type: 'simple-json', nullable: true })
+  @Column({ type: 'simple-json', nullable: true })
   style?: HnTypingStyle;
 
   initVersion(agent: HnAgent, versionFile: HnAgentVersionFileInput): void {

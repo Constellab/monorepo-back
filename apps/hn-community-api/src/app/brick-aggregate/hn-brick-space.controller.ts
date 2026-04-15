@@ -2,6 +2,7 @@ import { ClPage } from '@monorepo/core-lib';
 import { Body, Controller, Get, Param, ParseIntPipe, Post, Query } from '@nestjs/common';
 
 import { HnSpaceGuard } from '../core/decorators/hn-space-auth-guard.decorator';
+import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
 import { HnBrickDto, HnBrickVersionInfoDTO } from './brick/hn-brick.dto';
 import { HnBrickAggregateService } from './hn-brick-aggregate.service';
 
@@ -30,6 +31,13 @@ export class HnBrickSpaceController {
     @Query('page', new ParseIntPipe()) page: number,
     @Query('size', new ParseIntPipe()) size: number
   ): Promise<ClPage<HnBrickDto>> {
-    return this.brickAggregateService.findBricksWithFilter(spacesFilter, titleFilter, [], page, size);
+    return this.brickAggregateService.findBricksWithFilter(
+      spacesFilter,
+      titleFilter,
+      [],
+      page,
+      size,
+      HnCurrentUserHelper.getAndCheckCurrentUser()
+    );
   }
 }

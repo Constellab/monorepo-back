@@ -30,14 +30,14 @@ export class CnLabUserEntity {
   @PrimaryColumn()
   labId: string;
 
-  @JoinColumn({ name: 'labId' })
+  @JoinColumn()
   @ManyToOne(() => CnLabEntity, (lab) => lab.sharedGroups, { onDelete: 'CASCADE' })
   lab: CnLabEntity;
 
   @PrimaryColumn()
   userId: string;
 
-  @JoinColumn({ name: 'userId' })
+  @JoinColumn()
   @ManyToOne(() => CnUserEntity)
   user: CnUser;
 

@@ -34,6 +34,7 @@ import { HnIsAdminGuard } from '../core/guards/hn-is-admin.guard';
 import { HnSitemapItemBase } from '../core/model/config/hn-site-map.class';
 import { HnSimpleGeneratedDocDto } from '../core/model/entities/hn-generated-doc.dto';
 import { HnGeneratedDocEntity } from '../core/model/entities/hn-generated-doc-typing.entity';
+import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
 import { HnUserDto } from '../users/hn-user.dto';
 import {
   HnBrickDto,
@@ -162,7 +163,8 @@ export class HnBrickController {
       titleFilter,
       sortsCriteria,
       page,
-      size
+      size,
+      HnCurrentUserHelper.getCurrentUser()
     );
   }
 

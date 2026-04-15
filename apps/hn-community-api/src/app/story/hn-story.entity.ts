@@ -42,10 +42,10 @@ export class HnStory extends BlEntityWithId {
   title: string;
 
   // the database was modified to use a long text instead of a json
-  @Column({ name: 'content', type: 'simple-json' })
+  @Column({ type: 'simple-json' })
   content: TeRichTextDTO;
 
-  @Column({ name: 'content_edition', type: 'simple-json', nullable: true })
+  @Column({ type: 'simple-json', nullable: true })
   contentEdition?: TeRichTextDTO;
 
   @Column({ type: 'longtext', nullable: true })
@@ -86,7 +86,7 @@ export class HnStory extends BlEntityWithId {
   @Column({ default: 0 })
   comments: number;
 
-  @Column({ name: 'title_path', nullable: true })
+  @Column({ nullable: true })
   titlePath: string;
 
   @BeforeInsert()

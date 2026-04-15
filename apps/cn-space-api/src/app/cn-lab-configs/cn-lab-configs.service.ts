@@ -157,7 +157,7 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
     // retrieve the lab front version
     const gwsCoreVersion = BlVersion.fromString(gwsCore.version);
     // get gws_core version
-    return await this.brickService.getBrickVersion(CnBrickGWS.GWS_CORE, gwsCoreVersion);
+    return await this.brickService.getBrickVersionAndCheck(CnBrickGWS.GWS_CORE, gwsCoreVersion);
   }
 
   // @deprecated From version 0.11.0 of biota, this is not used anymore

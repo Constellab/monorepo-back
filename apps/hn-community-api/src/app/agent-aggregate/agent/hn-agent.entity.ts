@@ -18,10 +18,10 @@ export class HnAgent extends BlEntityWithId {
   @Column()
   title: string;
 
-  @Column({ name: 'description', type: 'simple-json', nullable: true })
+  @Column({ type: 'simple-json', nullable: true })
   description?: TeRichTextDTO;
 
-  @Column({ name: 'latest_publish_version', nullable: true })
+  @Column({ nullable: true })
   latestPublishVersion?: number;
 
   @ManyToOne(() => HnSpace, { eager: true, onUpdate: 'CASCADE', onDelete: 'CASCADE' })
@@ -59,7 +59,7 @@ export class HnAgent extends BlEntityWithId {
   @OneToMany(() => HnFileAgent, (agentFile) => agentFile.entity, { nullable: true })
   agentFiles: HnFileAgent[];
 
-  @Column({ name: 'latest_style', type: 'simple-json', nullable: true })
+  @Column({ type: 'simple-json', nullable: true })
   latestStyle?: HnTypingStyle;
 
   static init(agentDto: HnCreateAgentDto, parentAgentVersionId?: string, user?: HnUser): HnAgent {

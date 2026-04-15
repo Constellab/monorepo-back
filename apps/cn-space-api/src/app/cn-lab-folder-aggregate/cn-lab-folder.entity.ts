@@ -20,7 +20,7 @@ export class CnLabFolderEntity {
   @PrimaryColumn({ type: 'varchar', length: 36 })
   labId: string;
 
-  @JoinColumn({ name: 'labId' })
+  @JoinColumn()
   @ManyToOne(() => CnLabEntity, (lab) => lab.sharedGroups, { onDelete: 'CASCADE' })
   lab: CnLab;
 
@@ -28,7 +28,7 @@ export class CnLabFolderEntity {
   rootFolderId: string;
 
   @Type(() => CnHierarchyObjectEntity)
-  @JoinColumn({ name: 'rootFolderId' })
+  @JoinColumn()
   @ManyToOne(() => CnHierarchyObjectEntity)
   rootFolder: CnHierarchyObject;
 

@@ -24,14 +24,14 @@ export class HnDocumentation extends HnBaseEntity {
   @Column()
   title: string;
 
-  @Column({ name: 'content', type: 'simple-json', nullable: true })
+  @Column({ type: 'simple-json', nullable: true })
   content?: TeRichTextDTO;
 
   @Column({ type: 'longtext', nullable: true })
   modifications: string;
 
   // TODO: TO REMOVE
-  @Column({ type: 'longtext', nullable: true, name: 'modifications_backup' })
+  @Column({ type: 'longtext', nullable: true })
   modificationsBackup: string;
 
   @Column()

@@ -15,14 +15,14 @@ export class HnBrickVersionReference extends BlEntityWithId {
   versionState: HnBrickVersionRefState;
 
   @ManyToOne(() => HnBrickVersion, (object) => object.id, { nullable: false, onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'brickVersionId' })
+  @JoinColumn()
   brickVersion: HnBrickVersion;
 
   @Column({ nullable: false })
   brickVersionId: string;
 
   @ManyToOne(() => HnBrickVersion, (object) => object.id, { nullable: false, onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'referenceId' })
+  @JoinColumn()
   reference: HnBrickVersion;
 
   @Column({ nullable: false })

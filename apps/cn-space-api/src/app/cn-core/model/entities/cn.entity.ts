@@ -25,11 +25,11 @@ export abstract class CnEntity extends BlEntityWithId {
   @BlNotUpdatable()
   createdBy: Relation<CnUser>;
 
-  @BlLuxonDateTimeColumn()
+  @BlLuxonDateTimeColumn({ nullable: false })
   lastModifiedAt: DateTime;
 
   @Type(() => CnUserEntity)
-  @ManyToOne(() => CnUserEntity, { eager: true })
+  @ManyToOne(() => CnUserEntity, { eager: true, nullable: false })
   lastModifiedBy: Relation<CnUser>;
 }
 

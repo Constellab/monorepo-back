@@ -12,17 +12,17 @@ export class HnCommunityAppEntity extends HnBaseEntity {
   @Column({ nullable: false })
   title: string;
 
-  @Column({ name: 'description', type: 'simple-json', nullable: true })
+  @Column({ type: 'simple-json', nullable: true })
   description?: TeRichTextDTO;
 
   @Column({ nullable: true })
   picture?: string;
 
-  @Column({ name: 'app_url', nullable: true })
+  @Column({ nullable: true })
   @Index({ unique: true })
   appUrl: string;
 
-  @Column({ name: 'contact_mail', nullable: true })
+  @Column({ nullable: true })
   contactMail?: string;
 
   @Column({ default: 0 })

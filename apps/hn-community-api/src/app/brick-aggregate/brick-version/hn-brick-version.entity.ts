@@ -80,7 +80,7 @@ export class HnBrickVersion extends HnBaseEntity {
   @ManyToOne(() => HnBrickMajorVersion, { eager: true, onDelete: 'CASCADE' })
   brickMajorVersion: HnBrickMajorVersion;
 
-  @Column({ name: 'technicalInfo', type: 'simple-json', nullable: true })
+  @Column({ type: 'simple-json', nullable: true })
   technicalInfo?: Record<string, any>;
 
   initialize(

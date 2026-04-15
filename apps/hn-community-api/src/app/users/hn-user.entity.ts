@@ -15,7 +15,7 @@ export class HnUser {
   @PrimaryColumn('uuid')
   id: string;
 
-  @Column({ name: 'user_code', nullable: false, length: 11, update: false })
+  @Column({ nullable: false, length: 11, update: false })
   userCode: string;
 
   @Column({ nullable: false, length: 52 })
@@ -33,13 +33,13 @@ export class HnUser {
   @Column({ nullable: true })
   photo: string;
 
-  @Column({ name: 'github_link', nullable: true })
+  @Column({ nullable: true })
   githubLink: string;
 
-  @Column({ name: 'linkedin_link', nullable: true })
+  @Column({ nullable: true })
   linkedinLink: string;
 
-  @Column({ name: 'x_link', nullable: true })
+  @Column({ nullable: true })
   xLink: string;
 
   @Column({ nullable: true })

@@ -5,7 +5,7 @@ import { Column } from 'typeorm';
 import { HnBaseEntity } from '../../core/model/entities/hn-base.entity';
 
 export class HnCommentEntity<T extends BlEntityWithId> extends HnBaseEntity {
-  @Column({ name: 'content', type: 'simple-json' })
+  @Column({ type: 'simple-json' })
   content: TeRichTextInput;
 
   entityId: string;

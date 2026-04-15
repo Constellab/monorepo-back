@@ -20,9 +20,9 @@ to deploy the app to caprover. Be careful of the image tag.
 
 To build the image locally : `docker build -t cn-space-api-test -f apps/cn-space-api/Dockerfile .`
 
-### Hub back (hn-community-api) : Hn
+### Community back (hn-community-api) : Hn
 
-The hub nest app containing the documentation.
+The community nest app containing the documentation.
 
 Prefix : Hn
 

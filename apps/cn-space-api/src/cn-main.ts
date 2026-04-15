@@ -17,6 +17,7 @@ async function bootstrap(): Promise<void> {
 
   // enable cors
   const env: CnEnvironmentProfile = process.env[CN_ENVIRONMENT_PROFILE_KEY] as CnEnvironmentProfile;
+  console.log('CORS config - environment : ', env);
   const isLocal = env === 'dev' || env === 'docker' || env === 'test';
 
   // allow the local-space header only for local env

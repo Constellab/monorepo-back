@@ -56,9 +56,9 @@ export class CnLabStatusHistoryService extends BlAbstractPaginatedService<CnLabS
   public async getUsersOfStatusHistory(labId: string): Promise<string[]> {
     const users: any[] = await this.repo
       .createQueryBuilder()
-      .select('DISTINCT createdById')
-      .where('entityId = :labId', { labId })
-      .orderBy('createdAt', 'DESC')
+      .select('DISTINCT created_by_id')
+      .where('entity_id = :labId', { labId })
+      .orderBy('created_at', 'DESC')
       .getRawMany();
 
     return users.map((user) => user.createdById);

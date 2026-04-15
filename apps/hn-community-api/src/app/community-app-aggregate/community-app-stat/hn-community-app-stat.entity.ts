@@ -7,7 +7,7 @@ import { HnUser } from '../../users/hn-user.entity';
 
 @Entity('app_stat')
 export class HnCommunityAppStat extends BlEntityWithId {
-  @Column({ name: 'app_url' })
+  @Column()
   appUrl: string;
 
   @BlLuxonDateTimeColumn({ nullable: true, update: false })

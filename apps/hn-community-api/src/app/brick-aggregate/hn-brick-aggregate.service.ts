@@ -125,13 +125,11 @@ export class HnBrickAggregateService {
     titleFilter: string,
     sortsCriteria: BlSearchSortCriteria[],
     page: number,
-    size: number
+    size: number,
+    user: HnUser | null = null
   ): Promise<ClPage<HnBrickDto>> {
     let publicSelected = false;
     let myBricks = false;
-
-    const user = HnCurrentUserHelper.getAndCheckCurrentUser();
-
     for (const spaceId of spacesFilter) {
       if (spaceId === 'public') publicSelected = true;
       // Verify user right on spaces

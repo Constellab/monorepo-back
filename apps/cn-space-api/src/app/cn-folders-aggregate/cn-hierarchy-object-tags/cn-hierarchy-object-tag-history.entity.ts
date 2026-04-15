@@ -18,10 +18,10 @@ export enum CnHierarchyObjectTagHistoryType {
  */
 @Entity('hierarchy_object_tag_history')
 export class CnHierarchyObjectTagHistoryEntity extends CnBaseEntity {
-  @Column({ nullable: false, length: 50, update: false, name: 'tagKey' })
+  @Column({ nullable: false, length: 50, update: false, name: 'tag_key' })
   key: string;
 
-  @Column({ nullable: false, length: 50, update: false, name: 'tagValue' })
+  @Column({ nullable: false, length: 50, update: false, name: 'tag_value' })
   value: string;
 
   @BlNotUpdatable()

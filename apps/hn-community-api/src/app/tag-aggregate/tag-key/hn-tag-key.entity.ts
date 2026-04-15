@@ -53,7 +53,7 @@ export class HnTagKey extends BlEntityWithId {
   @Column({ nullable: true })
   unit?: string;
 
-  @Column({ name: 'description', type: 'simple-json', nullable: true })
+  @Column({ type: 'simple-json', nullable: true })
   description?: TeRichTextDTO;
 
   @Column({ nullable: true, type: 'simple-json' })

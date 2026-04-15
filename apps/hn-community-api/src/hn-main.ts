@@ -9,7 +9,7 @@ import { HnAppModule } from './hn-app.module';
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create<NestExpressApplication>(HnAppModule);
 
-  app.enableCors(hnCorsConfig);
+  app.enableCors(hnCorsConfig());
 
   app.use(json({ limit: '50mb' }));
   app.use(urlencoded({ limit: '50mb', extended: true }));

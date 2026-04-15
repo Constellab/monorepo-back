@@ -55,7 +55,7 @@ export class CnFolderUserEntity {
   rootFolderId: string;
 
   @Exclude()
-  @JoinColumn({ name: 'rootFolderId' })
+  @JoinColumn()
   @ManyToOne(() => CnHierarchyObjectEntity, { onUpdate: 'CASCADE', onDelete: 'CASCADE' })
   rootFolder: CnHierarchyObjectEntity;
 

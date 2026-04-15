@@ -118,7 +118,7 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
 
       if (!referencedBrickVersion) {
         throw new BlUnauthorizedException(
-          `The referenced brick ${ref.name} with the version ${ref.version} is not in the hub`
+          `The referenced brick ${ref.name} with the version ${ref.version} is not in community`
         );
       }
 

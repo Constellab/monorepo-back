@@ -5,10 +5,10 @@ import { HnGeneratedDocTypingEntity } from '../core/model/entities/hn-generated-
 @Unique(['uniqueName', 'technicalFolder'])
 @Entity('resource')
 export class HnResource extends HnGeneratedDocTypingEntity {
-  @Column({ name: 'variables', type: 'simple-json', nullable: true })
+  @Column({ type: 'simple-json', nullable: true })
   variables?: Record<string, any>;
 
-  @Column({ name: 'methods', type: 'simple-json', nullable: true })
+  @Column({ type: 'simple-json', nullable: true })
   methods?: Record<string, any>;
 
   getFolderName(): string {
