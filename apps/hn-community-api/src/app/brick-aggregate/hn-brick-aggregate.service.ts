@@ -612,10 +612,7 @@ export class HnBrickAggregateService {
 
   private async checkLabBrickAccessByName(brickName: string): Promise<void> {
     const request = BlRequestContextHelper.getCurrentRequest();
-    const result = await this.spaceApiService.checkBrickAccessByName(
-      request.header('authorization'),
-      brickName
-    );
+    const result = await this.spaceApiService.checkLabBrickAccess(request.header('authorization'), brickName);
     if (!result?.hasAccess) {
       throw new BlUnauthorizedException(HnErrorText.PRIVATE_BRICK_ACCESS_DENIED, {
         detailArgs: { brickName },

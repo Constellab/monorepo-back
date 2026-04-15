@@ -9,13 +9,14 @@ import { CnLabsModule } from '../cn-labs/cn-labs.module';
 import { CnSpacesModule } from '../cn-spaces/cn-spaces.module';
 import { CnSupportModule } from '../cn-support/cn-support.module';
 import { CnUsersModule } from '../cn-users/cn-users.module';
+import { CnExternalCommunityController } from './cn-external-community.controller';
 import { CnExternalCommunityLabsController } from './cn-external-community-labs.controller';
 import { CnExternalDatahubController } from './cn-external-datahub.controller';
 import { CnExternalLabsController } from './cn-external-labs.controller';
 import { CnExternalLabsManagerController } from './cn-external-labs-manager.controller';
 
 /**
- * Module for incoming calls from the labs
+ * Module for incoming calls from the labs and community
  */
 @Module({
   controllers: [
@@ -23,6 +24,7 @@ import { CnExternalLabsManagerController } from './cn-external-labs-manager.cont
     CnExternalDatahubController,
     CnExternalLabsManagerController,
     CnExternalCommunityLabsController,
+    CnExternalCommunityController,
   ],
   imports: [
     CnCoreModule,

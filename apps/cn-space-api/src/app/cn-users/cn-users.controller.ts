@@ -50,13 +50,6 @@ export class CnUsersController {
     return this.usersService.updateTheme(theme);
   }
 
-  // TODO: remove this endpoint when the community user status check is stable
-  @BlPublic()
-  @Get('valid/:id')
-  findOneValid(@Param('id') id: string): Promise<CnUser> {
-    return this.usersService.findOneValid(id);
-  }
-
   @CnUserCategories(BlUserCategory.ADMIN)
   @Get()
   findAll(

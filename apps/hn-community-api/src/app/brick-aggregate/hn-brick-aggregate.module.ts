@@ -19,6 +19,7 @@ import { HnBrickController } from './hn-brick.controller';
 import { HnBrickListener } from './hn-brick.listener';
 import { HnBrickAggregateService } from './hn-brick-aggregate.service';
 import { HnBrickDeprecatedController } from './hn-brick-deprecated.controller';
+import { HnBrickLabController } from './hn-brick-lab.controller';
 import { HnBrickSpaceController } from './hn-brick-space.controller';
 import { HnBrickVersionController } from './hn-brick-version.controller';
 import { HnDocumentationController } from './hn-documentation.controller';
@@ -46,6 +47,7 @@ import { HnBrickSecurity } from './security/hn-brick.security';
   controllers: [
     HnBrickController,
     HnBrickDeprecatedController,
+    HnBrickLabController,
     HnBrickSpaceController,
     HnBrickVersionController,
     HnFolderController,

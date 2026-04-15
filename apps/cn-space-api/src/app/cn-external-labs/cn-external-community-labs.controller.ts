@@ -15,10 +15,11 @@ export class CnExternalCommunityLabsController {
   constructor(private readonly labConfigsService: CnLabConfigsService) {}
 
   /**
-   * Verify rights of the lab user requesting Community based on the Api token and the user id
+   * Verify that the provided lab API key is valid and that the user belongs to the lab.
+   * Returns labId and userId.
    */
-  @Get('verify-rights')
-  verifyRights(): any {
+  @Get(['verify-lab-api-key', 'verify-rights'])
+  verifyLabApiKey(): { labId: string; userId: string } {
     return {
       labId: CnCurrentUserHelper.getAndCheckCurrentLab().id,
       userId: CnCurrentUserHelper.getAndCheckCurrentUser().id,
@@ -26,48 +27,28 @@ export class CnExternalCommunityLabsController {
   }
 
   /**
-   * Verify rights of the lab requesting Community based on the
-   * Api token without user id, mostly non-user based requests
+   * Verify that the provided lab API key is valid without requiring a user.
+   * Used for automated lab requests. Returns labId only.
    */
   @CnLabRobotAuthentication()
-  @Get('verify-without-user-rights')
-  verifyWithoutUserRights(): { labId: string } {
+  @Get(['verify-lab-api-key-no-user', 'verify-without-user-rights'])
+  verifyLabApiKeyWithoutUser(): { labId: string } {
     return {
       labId: CnCurrentUserHelper.getAndCheckCurrentLab().id,
     };
   }
 
   /**
-   * Check if the lab has access to a specific brick based on its lab config
+   * Check if the lab has access to a specific private brick based on its lab config.
    */
   @CnLabRobotAuthentication()
-  @Get('check-brick-access/:brickName')
-  async checkBrickAccessByName(@Param('brickName') brickName: string): Promise<{ hasAccess: boolean }> {
+  @Get(['check-lab-brick-access/:brickName', 'check-brick-access/:brickName'])
+  async checkLabBrickAccess(@Param('brickName') brickName: string): Promise<{ hasAccess: boolean }> {
     const lab = CnCurrentUserHelper.getAndCheckCurrentLab();
     if (lab.labConfigId == null) {
       return { hasAccess: false };
     }
     const brickVersion = await this.labConfigsService.getLabBrickVersion(lab.labConfigId, brickName);
     return { hasAccess: brickVersion != null };
-  }
-
-  /**
-   * Check if the lab has access to a specific brick version based on its lab config
-   */
-  @CnLabRobotAuthentication()
-  @Get('check-brick-access/:brickName/:version')
-  async checkBrickAccess(
-    @Param('brickName') brickName: string,
-    @Param('version') version: string
-  ): Promise<{ hasAccess: boolean }> {
-    const lab = CnCurrentUserHelper.getAndCheckCurrentLab();
-    if (lab.labConfigId == null) {
-      return { hasAccess: false };
-    }
-    const brickVersion = await this.labConfigsService.getLabBrickVersion(lab.labConfigId, brickName);
-    if (brickVersion == null) {
-      return { hasAccess: false };
-    }
-    return { hasAccess: brickVersion.version.toString() === version };
   }
 }

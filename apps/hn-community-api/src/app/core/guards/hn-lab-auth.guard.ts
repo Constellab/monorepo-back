@@ -7,11 +7,6 @@ import { hnIsLabAllowWithoutUserAuth } from '../decorators/hn-lab-auth-guard.dec
 import { HnExternalSpaceApiService } from '../service/hn-external-space-api.service';
 import { HnCurrentUserHelper } from '../utils/hn-current-user.helper';
 
-interface HnLabAuthGuardResult {
-  labId: string;
-  userId?: string;
-}
-
 @Injectable()
 export class HnLabAuthGuard implements CanActivate {
   constructor(
@@ -30,30 +25,30 @@ export class HnLabAuthGuard implements CanActivate {
       throw new BlUnauthorizedException();
     }
 
-    let checkApiKeyUserResult: HnLabAuthGuardResult;
+    let checkApiKeyResult: { labId: string; userId?: string };
 
     if (hnIsLabAllowWithoutUserAuth(this.reflector, context)) {
-      checkApiKeyUserResult = await this.spaceApiService.verifyLabRightsWithoutUser(
+      checkApiKeyResult = await this.spaceApiService.verifyLabApiKeyWithoutUser(
         request.header('authorization')
       );
     } else {
       if (request.header('user') == null) {
         throw new BlUnauthorizedException();
       }
-      checkApiKeyUserResult = await this.spaceApiService.verifyLabRights(
+      checkApiKeyResult = await this.spaceApiService.verifyLabApiKey(
         request.header('authorization'),
         request.header('user')
       );
     }
 
-    if (!checkApiKeyUserResult?.labId) {
+    if (!checkApiKeyResult?.labId) {
       throw new BlUnauthorizedException();
     }
 
     if (hnIsLabAllowWithoutUserAuth(this.reflector, context)) {
       HnCurrentUserHelper.setAuthContext({
         type: 'labNoUser',
-        labId: checkApiKeyUserResult.labId,
+        labId: checkApiKeyResult.labId,
       });
       return true;
     }
@@ -64,7 +59,7 @@ export class HnLabAuthGuard implements CanActivate {
     HnCurrentUserHelper.setAuthContext({
       type: 'lab',
       user: currentUser,
-      labId: checkApiKeyUserResult.labId,
+      labId: checkApiKeyResult.labId,
     });
 
     return true;
