@@ -284,22 +284,6 @@ export class HnBrickAggregateService {
     return brick;
   }
 
-  async findBrickByNameForSpace(name: string): Promise<HnBrick> {
-    const brick = await this.brickService.findOne({ name });
-
-    if (brick == null) {
-      throw new BlBadRequestException(HnErrorText.BRICK_NOT_FOUND, {
-        detailArgs: { name: name },
-      });
-    }
-
-    if (brick.visibility === HnBrickVisibility.PRIVATE) {
-      await this.checkLabBrickAccessByName(name);
-    }
-
-    return brick;
-  }
-
   /**
    * Lightweight findBrickByName that skips eager relations.
    * Use when only brick columns (id, name, etc.) are needed.
@@ -635,20 +619,6 @@ export class HnBrickAggregateService {
     if (!result?.hasAccess) {
       throw new BlUnauthorizedException(HnErrorText.PRIVATE_BRICK_ACCESS_DENIED, {
         detailArgs: { brickName },
-      });
-    }
-  }
-
-  private async checkLabBrickAccess(brickName: string, version: string): Promise<void> {
-    const request = BlRequestContextHelper.getCurrentRequest();
-    const result = await this.spaceApiService.checkBrickAccess(
-      request.header('authorization'),
-      brickName,
-      version
-    );
-    if (!result?.hasAccess) {
-      throw new BlUnauthorizedException(HnErrorText.PRIVATE_BRICK_ACCESS_DENIED, {
-        detailArgs: { brickName, version },
       });
     }
   }
@@ -1196,17 +1166,11 @@ export class HnBrickAggregateService {
   async createVersionFromSettings(settings: HnBrickSettingsDTO): Promise<HnNewVersionDTO> {
     const repoType = settings.environment?.pip?.length > 0 ? HnRepoType.PIP : HnRepoType.GIT;
 
-    const technicalInfo = {
-      ...settings.technical_info,
-      environment: settings.environment,
-      variables: settings.variables,
-    };
-
     const newVersionDTO = new HnNewVersionDTO();
     newVersionDTO.brickName = settings.name;
     newVersionDTO.version = settings.version;
     newVersionDTO.repoType = repoType;
-    newVersionDTO.technicalInfo = technicalInfo;
+    newVersionDTO.technicalInfo = settings.technical_info;
 
     return this.createNewVersion(newVersionDTO);
   }
