@@ -7,6 +7,7 @@ import {
   BlJwtModule,
   BlLoggerConfig,
   BlMailModule,
+  BlNamingStrategy,
   BlObjectStorageModule,
   BlRequestContextMiddleware,
   BlTranslateModule,
@@ -124,6 +125,7 @@ function typeOrmConfig(configService: HnCoreConfigService): TypeOrmModuleOptions
     maxQueryExecutionTime: 1000, // log query longer than 1s,
     bigNumberStrings: false,
     charset: 'utf8mb4',
+    namingStrategy: new BlNamingStrategy(),
   };
 }
 

@@ -20,3 +20,10 @@ To build the api in a local docker :
 
 - build the docker image : `cn-space-api:build-image-dev`
 - to run the image use the cn-space-api repository and run the command : `docker compose -f docker-compose-dev.yml up -d cn-space-api` (the maria db image must be running)
+
+## Initialize the database
+
+- Open the `cn-app.module.ts` file and set `synchronize: true` in the TypeOrmModule configuration (only for dev environment)
+- Serve the application using `cn-space-api:serve` command, the database will be automatically created and initialized with the default data.
+- After the database is initialized, set back `synchronize: false` to avoid accidental database schema changes in the future.
+- Then in db, call the script `db-init.sql` to initialize the database with the default data.

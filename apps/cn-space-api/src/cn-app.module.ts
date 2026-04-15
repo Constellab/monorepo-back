@@ -6,6 +6,7 @@ import {
   BlJwtModule,
   BlLoggerConfig,
   BlMailModule,
+  BlNamingStrategy,
   BlObjectStorageModule,
   BlRequestContextMiddleware,
   BlTimeoutInterceptor,
@@ -91,6 +92,7 @@ function typeOrmConfig(configService: CnCoreConfigService): TypeOrmModuleOptions
     bigNumberStrings: false,
     charset: 'utf8mb4',
     logging: false, // use to enable query logging, the logger must be disabled
+    namingStrategy: new BlNamingStrategy(),
   };
 }
 
