@@ -1,5 +1,7 @@
 import { HttpException } from '@nestjs/common';
 
+import { BlApiError } from '../models/bl-nest-api-error.class';
+
 export interface BlExceptionOptions {
   /**
    * Parameter for the error message
@@ -25,5 +27,12 @@ export class BlHttpException extends HttpException {
     public customOptions: BlExceptionOptions = {}
   ) {
     super(message, status);
+  }
+
+  /**
+   * Build a BlHttpException from a BlApiError
+   */
+  static fromApiError(apiError: BlApiError): BlHttpException {
+    return new BlHttpException(apiError.status, apiError.detail, { instanceId: apiError.instanceId });
   }
 }

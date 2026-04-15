@@ -2,12 +2,11 @@ import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 
 import { CnCoreModule } from '../cn-core/cn-core.module';
-import { CnLabsModule } from '../cn-labs/cn-labs.module';
 import { CnCommunityController } from './cn-community.controller';
 import { CnCommunityService } from './cn-community.service';
 
 @Module({
-  imports: [CnCoreModule, HttpModule, CnLabsModule],
+  imports: [CnCoreModule, HttpModule],
   controllers: [CnCommunityController],
   providers: [CnCommunityService],
 })

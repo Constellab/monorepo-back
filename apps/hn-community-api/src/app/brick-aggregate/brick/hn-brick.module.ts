@@ -20,12 +20,12 @@ import { HnBrickMajorVersionModule } from '../brick-major-version/hn-brick-major
 import { HnBrickVersionModule } from '../brick-version/hn-brick-version.module';
 import { HnDocumentationModule } from '../documentation/hn-documentation.module';
 import { HnFolderModule } from '../folder/hn-folder.module';
-import { HnBrick } from './hn-brick.entity';
+import { HnBrickEntity } from './hn-brick.entity';
 import { HnBrickService } from './hn-brick.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([HnBrick]),
+    TypeOrmModule.forFeature([HnBrickEntity]),
     HnBrickMajorVersionModule,
     HnBrickVersionModule,
     HnFolderModule,

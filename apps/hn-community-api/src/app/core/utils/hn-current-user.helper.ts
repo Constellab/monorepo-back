@@ -37,9 +37,22 @@ export interface HnAuthContextCron {
 }
 
 /**
+ * Auth for requests from the Space API (trusted source)
+ */
+export interface HnAuthContextSpace {
+  type: 'space';
+  user?: HnUser;
+}
+
+/**
  * Type representing all type of auth context
  */
-export type HnAuthContext = HnAuthContextUser | HnAuthContextLab | HnAuthContextLabNoUser | HnAuthContextCron;
+export type HnAuthContext =
+  | HnAuthContextUser
+  | HnAuthContextLab
+  | HnAuthContextLabNoUser
+  | HnAuthContextCron
+  | HnAuthContextSpace;
 
 export type HnRequest = Request & {
   user?: HnUser;
@@ -61,7 +74,7 @@ export class HnCurrentUserHelper extends BlRequestContextHelper {
     const authContext = this.getAuthContext();
 
     if (authContext && authContext.type !== 'labNoUser') {
-      return authContext.user;
+      return authContext.user ?? null;
     }
     return null;
   }

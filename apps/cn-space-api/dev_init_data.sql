@@ -26,6 +26,33 @@ VALUES -- Robot Gencovery -> Robot Gencovery group
         'cc041136-3e20-48e6-bf9d-9aa8ecaad21f');
 
 
+------------------ Test use ------------------
+INSERT INTO `user` (`id`, `firstname`, `lastname`, `email`, `password`, `category`, `activity`, `biography`,
+                    `failedLoginCount`, `lastLoginAttempt`, `lastLoginSuccess`, `lang`, `theme`, `status`, `createdAt`,
+                    `photo`, `company`, `has2FA`, `phone`, `license`)
+VALUES -- Robot Gencovery (system user)
+       ('98ed7a54-9ee4-4257-811f-e1dfe730b97d', 'Michel', 'Larousse', 'test@gencovery.com',
+      --  password: 'test1234'
+        '$argon2id$v=19$m=65536,t=3,p=4$+83vEDOdAi2HD+q7WxAA5w$xp68MlL+QKOtBINcYZVW0O+Nx3jt2UYVw/G1JtstdXQ',
+         'ADMIN',
+        NULL,
+        NULL,
+        0, NULL, NULL, 'en', 'dark-theme', 'WAITING_FOR_EMAIL', '2023-02-27 17:15:47',
+        NULL, 'Gencovery', 0, NULL, 'ENTERPRISE');
+
+-- Test user group
+INSERT INTO `group` (`id`, `createdAt`, `lastModifiedAt`, `label`, `type`, `userId`, `spaceId`, `createdById`,
+                     `lastModifiedById`)
+VALUES -- Test user group
+       ('d70c8820-232a-43dd-b54d-7ff71bdf3931', '2023-02-27 17:19:36', '2023-02-27 17:19:36', 'Test group',
+        'SINGLE_USER', '98ed7a54-9ee4-4257-811f-e1dfe730b97d', NULL, '98ed7a54-9ee4-4257-811f-e1dfe730b97d',
+        '98ed7a54-9ee4-4257-811f-e1dfe730b97d');
+
+-- Test user -> Test user group
+INSERT INTO `user_group` (`userId`, `groupId`, `createdAt`, `createdById`)
+VALUES -- Test user -> Test user group
+       ('98ed7a54-9ee4-4257-811f-e1dfe730b97d', 'd70c8820-232a-43dd-b54d-7ff71bdf3931', '2023-08-07 15:27:18',
+        '98ed7a54-9ee4-4257-811f-e1dfe730b97d');
 
 ------------------ Countries ------------------
 INSERT INTO `country` (`id`, `name`, `shortName`)

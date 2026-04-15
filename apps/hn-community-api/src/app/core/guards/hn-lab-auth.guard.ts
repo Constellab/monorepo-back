@@ -1,11 +1,10 @@
-import { BlExternalApiService, BlUnauthorizedException } from '@monorepo/back-core-lib';
+import { BlUnauthorizedException } from '@monorepo/back-core-lib';
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { lastValueFrom } from 'rxjs';
 
 import { HnUserService } from '../../users/hn-user.service';
 import { hnIsLabAllowWithoutUserAuth } from '../decorators/hn-lab-auth-guard.decorator';
-import { HnCoreConfigService } from '../modules/core-config/hn-core-config.service';
+import { HnExternalSpaceApiService } from '../service/hn-external-space-api.service';
 import { HnCurrentUserHelper } from '../utils/hn-current-user.helper';
 
 interface HnLabAuthGuardResult {
@@ -16,8 +15,7 @@ interface HnLabAuthGuardResult {
 @Injectable()
 export class HnLabAuthGuard implements CanActivate {
   constructor(
-    private readonly blExternalApiService: BlExternalApiService,
-    private readonly coreConfigService: HnCoreConfigService,
+    private readonly spaceApiService: HnExternalSpaceApiService,
     private readonly userService: HnUserService,
     private reflector: Reflector
   ) {}
@@ -32,27 +30,21 @@ export class HnLabAuthGuard implements CanActivate {
       throw new BlUnauthorizedException();
     }
 
-    const headers: any = {
-      authorization: request.header('authorization'),
-    };
+    let checkApiKeyUserResult: HnLabAuthGuardResult;
 
-    let url: string =
-      this.coreConfigService.getSpaceApiUrl() + '/external-community-labs/verify-without-user-rights';
-
-    if (!hnIsLabAllowWithoutUserAuth(this.reflector, context)) {
+    if (hnIsLabAllowWithoutUserAuth(this.reflector, context)) {
+      checkApiKeyUserResult = await this.spaceApiService.verifyLabRightsWithoutUser(
+        request.header('authorization')
+      );
+    } else {
       if (request.header('user') == null) {
         throw new BlUnauthorizedException();
       }
-
-      headers['user'] = request.header('user');
-      url = this.coreConfigService.getSpaceApiUrl() + '/external-community-labs/verify-rights';
+      checkApiKeyUserResult = await this.spaceApiService.verifyLabRights(
+        request.header('authorization'),
+        request.header('user')
+      );
     }
-
-    const checkApiKeyUserResult: HnLabAuthGuardResult = await lastValueFrom(
-      this.blExternalApiService.get(url, null, {
-        headers: headers,
-      })
-    );
 
     if (!checkApiKeyUserResult?.labId) {
       throw new BlUnauthorizedException();

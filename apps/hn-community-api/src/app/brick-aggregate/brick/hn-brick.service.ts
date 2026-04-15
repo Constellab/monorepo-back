@@ -20,21 +20,21 @@ import { FindOptionsWhere, Repository } from 'typeorm';
 
 import { HnCoreConfigService } from '../../core/modules/core-config/hn-core-config.service';
 import { HnBrickDto, HnEditBrickDTO } from './hn-brick.dto';
-import { HnBrick, HnBrickVisibility } from './hn-brick.entity';
+import { HnBrick, HnBrickEntity, HnBrickVisibility } from './hn-brick.entity';
 
 @Injectable()
-export class HnBrickService extends BlAbstractService<HnBrick> {
+export class HnBrickService extends BlAbstractService<HnBrickEntity> {
   constructor(
-    @InjectRepository(HnBrick)
-    private bricksRepository: Repository<HnBrick>,
+    @InjectRepository(HnBrickEntity)
+    private bricksRepository: Repository<HnBrickEntity>,
     private configService: HnCoreConfigService,
     private objectStorageService: BlObjectStorageService
   ) {
-    super(bricksRepository, HnBrick);
+    super(bricksRepository, HnBrickEntity);
   }
 
   public async search(searchParams: BlSearchParams, page: number, size: number): Promise<ClPage<HnBrick>> {
-    const searchBuilder = new BlSearchBuilder<HnBrick>();
+    const searchBuilder = new BlSearchBuilder<HnBrickEntity>();
     searchBuilder.addSearchParams(searchParams);
 
     return this.findPaginated(page, size, searchBuilder.build());
@@ -45,7 +45,7 @@ export class HnBrickService extends BlAbstractService<HnBrick> {
   }
 
   async findBrickList(
-    whereConditions: FindOptionsWhere<HnBrick>[] | FindOptionsWhere<HnBrick>,
+    whereConditions: FindOptionsWhere<HnBrickEntity>[] | FindOptionsWhere<HnBrickEntity>,
     sortsCriteria: BlSearchSortCriteria[],
     page: number,
     size: number
@@ -68,12 +68,14 @@ export class HnBrickService extends BlAbstractService<HnBrick> {
           order: order,
         },
         this.bricksRepository.manager,
-        HnBrick
+        HnBrickEntity
       )
     ).map((b) => new HnBrickDto(b));
   }
 
-  async findOne(whereConditions: FindOptionsWhere<HnBrick>[] | FindOptionsWhere<HnBrick>): Promise<HnBrick> {
+  async findOne(
+    whereConditions: FindOptionsWhere<HnBrickEntity>[] | FindOptionsWhere<HnBrickEntity>
+  ): Promise<HnBrick> {
     return this.bricksRepository.findOne({ where: whereConditions });
   }
 
@@ -81,7 +83,9 @@ export class HnBrickService extends BlAbstractService<HnBrick> {
    * Lightweight findOne that skips eager relations (brickUsers, createdBy, space, etc.)
    * Use this when only the brick's own columns (id, name, etc.) are needed.
    */
-  async findOneLight(whereConditions: FindOptionsWhere<HnBrick>[] | FindOptionsWhere<HnBrick>): Promise<HnBrick> {
+  async findOneLight(
+    whereConditions: FindOptionsWhere<HnBrickEntity>[] | FindOptionsWhere<HnBrickEntity>
+  ): Promise<HnBrick> {
     return this.bricksRepository.findOne({ where: whereConditions, loadEagerRelations: false });
   }
 

@@ -85,7 +85,7 @@ function typeOrmConfig(configService: CnCoreConfigService): TypeOrmModuleOptions
     password: dbConfig.password,
     database: dbConfig.database,
     // disable for start speed, can be enabled to synchronize the database
-    synchronize: configService.isDev() && false, // only activate synchronization in local
+    synchronize: configService.isDev() && true, // only activate synchronization in local
     autoLoadEntities: true,
     maxQueryExecutionTime: 1000, // log query longer than 1s,
     bigNumberStrings: false,

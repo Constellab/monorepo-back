@@ -77,25 +77,7 @@ export default tseslint.config(
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
 
     rules: {
-      indent: [
-        'error',
-        2,
-        {
-          SwitchCase: 1,
-
-          FunctionDeclaration: {
-            parameters: 'first',
-            body: 1,
-          },
-
-          FunctionExpression: {
-            parameters: 'first',
-            body: 1,
-          },
-
-          ignoredNodes: ['PropertyDefinition'],
-        },
-      ],
+      indent: 'off',
 
       'max-len': [
         'error',

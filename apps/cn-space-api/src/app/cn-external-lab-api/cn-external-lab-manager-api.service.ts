@@ -383,12 +383,7 @@ export class CnExternalLabManagerApiService {
     // convert the known error from the lab manager to a BlHttpException
     // to show the message to the user
     if (error?.knownError) {
-      return throwError(
-        () =>
-          new BlHttpException(error.knownError.status, error.knownError.detail, {
-            instanceId: error.knownError.instanceId,
-          })
-      );
+      return throwError(() => BlHttpException.fromApiError(error.knownError));
     }
 
     return throwError(() => error as any);

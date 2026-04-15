@@ -5,6 +5,7 @@ import { MulterModule } from '@nestjs/platform-express';
 
 import { HnDbBackupCron } from './cron/hn-db-backup.cron';
 import { HnCoreConfigModule } from './modules/core-config/hn-core-config.module';
+import { HnExternalSpaceApiService } from './service/hn-external-space-api.service';
 import { HnFrontService } from './service/hn-front.service';
 
 /**
@@ -26,7 +27,7 @@ import { HnFrontService } from './service/hn-front.service';
       limits: { fileSize: 100 * 1024 * 1024 },
     }),
   ],
-  providers: [HnFrontService, HnDbBackupCron],
+  providers: [HnFrontService, HnExternalSpaceApiService, HnDbBackupCron],
   exports: [
     HnCoreConfigModule,
 
@@ -36,6 +37,7 @@ import { HnFrontService } from './service/hn-front.service';
 
     // Providers
     HnFrontService,
+    HnExternalSpaceApiService,
   ],
 })
 export class HnCoreModule {}

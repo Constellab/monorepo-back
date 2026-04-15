@@ -1,6 +1,5 @@
 import {
   BlBadRequestException,
-  BlExternalApiService,
   BlFile,
   BlFileResponse,
   BlNotFoundException,
@@ -18,7 +17,6 @@ import {
   TeRichTextBlockModificationWithUser,
 } from '@monorepo/te-text-editor';
 import { Injectable, Logger } from '@nestjs/common';
-import { lastValueFrom } from 'rxjs';
 import { DataSource, FindOptionsWhere, In, IsNull, Like } from 'typeorm';
 
 import { HnErrorText } from '../core/model/config/hn-error-text.class';
@@ -26,6 +24,7 @@ import { HnSiteMapEnumChangefreq, HnSitemapItemBase } from '../core/model/config
 import { HnGeneratedDocEntity } from '../core/model/entities/hn-generated-doc-typing.entity';
 import { HnCoreConfigService } from '../core/modules/core-config/hn-core-config.service';
 import { HnCommunitySecurity } from '../core/security/hn-community-security.service';
+import { HnExternalSpaceApiService } from '../core/service/hn-external-space-api.service';
 import { HnFrontService } from '../core/service/hn-front.service';
 import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
 import { HnMarkdownHelper } from '../core/utils/hn-markdown.helper';
@@ -41,22 +40,6 @@ import { HnTechnicalFolder } from '../technical-folder/hn-technical-folder.entit
 import { HnTechnicalFolderService } from '../technical-folder/hn-technical-folder.service';
 import { HnUser } from '../users/hn-user.entity';
 import { HnUserService } from '../users/hn-user.service';
-import { HnBrickMajorVersion } from './brick-major-version/hn-brick-major-version.entity';
-import { HnBrickMajorVersionService } from './brick-major-version/hn-brick-major-version.service';
-import { HnBrickUserInviteDto } from './brick-user-invite/hn-brick-user-invite.dto';
-import { HnBrickUserInvite } from './brick-user-invite/hn-brick-user-invite.entity';
-import { HnBrickUserInviteService } from './brick-user-invite/hn-brick-user-invite.service';
-import { HnBrickUser } from './brick-user/hn-brick-user.entity';
-import { HnBrickUserService } from './brick-user/hn-brick-user.service';
-import { HnBrickVersionDto } from './brick-version/hn-brick-version.dto';
-import {
-  HnBrickSettingsDTO,
-  HnBrickVersion,
-  HnNewVersionDTO,
-  HnReferenceDTO,
-  HnRepoType,
-} from './brick-version/hn-brick-version.entity';
-import { HnBrickVersionService } from './brick-version/hn-brick-version.service';
 import {
   HnBrickDto,
   HnBrickVersionDownloadDTO,
@@ -68,8 +51,24 @@ import {
   HnIsActualBrickAndNewVersionResponseDTO,
   HnTechnicalDocInputDTO,
 } from './brick/hn-brick.dto';
-import { HnBrick, HnBrickVisibility } from './brick/hn-brick.entity';
+import { HnBrick, HnBrickEntity, HnBrickVisibility } from './brick/hn-brick.entity';
 import { HnBrickService } from './brick/hn-brick.service';
+import { HnBrickMajorVersion } from './brick-major-version/hn-brick-major-version.entity';
+import { HnBrickMajorVersionService } from './brick-major-version/hn-brick-major-version.service';
+import { HnBrickUser } from './brick-user/hn-brick-user.entity';
+import { HnBrickUserService } from './brick-user/hn-brick-user.service';
+import { HnBrickUserInviteDto } from './brick-user-invite/hn-brick-user-invite.dto';
+import { HnBrickUserInvite } from './brick-user-invite/hn-brick-user-invite.entity';
+import { HnBrickUserInviteService } from './brick-user-invite/hn-brick-user-invite.service';
+import { HnBrickVersionDto } from './brick-version/hn-brick-version.dto';
+import {
+  HnBrickSettingsDTO,
+  HnBrickVersion,
+  HnNewVersionDTO,
+  HnReferenceDTO,
+  HnRepoType,
+} from './brick-version/hn-brick-version.entity';
+import { HnBrickVersionService } from './brick-version/hn-brick-version.service';
 import { HnDocumentationDto } from './documentation/hn-documentation.dto';
 import {
   HnDocumentation,
@@ -107,7 +106,7 @@ export class HnBrickAggregateService {
     private frontService: HnFrontService,
     private fileDocumentationService: HnFileDocumentationService,
     private readonly spaceAggregateService: HnSpaceAggregateService,
-    private readonly externalApiService: BlExternalApiService,
+    private readonly spaceApiService: HnExternalSpaceApiService,
     private readonly brickSecurity: HnBrickSecurity,
     private readonly communitySecurity: HnCommunitySecurity
   ) {}
@@ -126,19 +125,12 @@ export class HnBrickAggregateService {
     titleFilter: string,
     sortsCriteria: BlSearchSortCriteria[],
     page: number,
-    size: number,
-    userId: string = null
+    size: number
   ): Promise<ClPage<HnBrickDto>> {
     let publicSelected = false;
     let myBricks = false;
-    let user: HnUser;
 
-    if (userId) {
-      user = await this.userService.findOne(userId);
-      if (user == null) throw new BlBadRequestException('User not found');
-    } else {
-      user = HnCurrentUserHelper.getCurrentUser();
-    }
+    const user = HnCurrentUserHelper.getAndCheckCurrentUser();
 
     for (const spaceId of spacesFilter) {
       if (spaceId === 'public') publicSelected = true;
@@ -154,7 +146,7 @@ export class HnBrickAggregateService {
     if (publicSelected) spacesFilter = spacesFilter.filter((s) => s !== 'public');
     if (myBricks) spacesFilter = spacesFilter.filter((s) => s !== 'my-bricks');
 
-    const whereConditions: FindOptionsWhere<HnBrick>[] | FindOptionsWhere<HnBrick> = myBricks
+    const whereConditions: FindOptionsWhere<HnBrickEntity>[] | FindOptionsWhere<HnBrickEntity> = myBricks
       ? await this.getMyBricksWhereBrickConditions(publicSelected, spacesFilter, user)
       : await this.getUserBasedWhereBrickConditions(publicSelected, {
           spacesFilter: spacesFilter,
@@ -179,7 +171,7 @@ export class HnBrickAggregateService {
     page: number,
     size: number
   ): Promise<ClPage<HnBrickDto>> {
-    const whereConditions: FindOptionsWhere<HnBrick>[] | FindOptionsWhere<HnBrick> = [];
+    const whereConditions: FindOptionsWhere<HnBrickEntity>[] | FindOptionsWhere<HnBrickEntity> = [];
 
     const coAuthorBrickIds: string[] = (await this.brickUserService.getBrickUsersByUser(user)).map(
       (b) => b.brick.id
@@ -233,7 +225,7 @@ export class HnBrickAggregateService {
   }
 
   async findBrickById(id: string, user: HnUser = null): Promise<HnBrick> {
-    const whereConditions: FindOptionsWhere<HnBrick>[] | FindOptionsWhere<HnBrick> =
+    const whereConditions: FindOptionsWhere<HnBrickEntity>[] | FindOptionsWhere<HnBrickEntity> =
       await this.getUserBasedWhereBrickConditions(null, { spacesFilter: null, user: user });
     if (whereConditions instanceof Array) {
       whereConditions.map((wc) => (wc.id = id));
@@ -248,7 +240,7 @@ export class HnBrickAggregateService {
    * Use when only brick columns (id, name, etc.) are needed.
    */
   async findBrickByIdLight(id: string, user: HnUser = null): Promise<HnBrick> {
-    const whereConditions: FindOptionsWhere<HnBrick>[] | FindOptionsWhere<HnBrick> =
+    const whereConditions: FindOptionsWhere<HnBrickEntity>[] | FindOptionsWhere<HnBrickEntity> =
       await this.getUserBasedWhereBrickConditions(null, { spacesFilter: null, user: user });
     if (whereConditions instanceof Array) {
       whereConditions.map((wc) => (wc.id = id));
@@ -269,7 +261,7 @@ export class HnBrickAggregateService {
   }
 
   async findBrickByName(name: string, userId: string = null, strict: boolean = true): Promise<HnBrick> {
-    let whereConditions: FindOptionsWhere<HnBrick>[] | FindOptionsWhere<HnBrick> = {};
+    let whereConditions: FindOptionsWhere<HnBrickEntity>[] | FindOptionsWhere<HnBrickEntity> = {};
 
     if (strict) {
       whereConditions = await this.getUserBasedWhereBrickConditions(null, {
@@ -315,7 +307,7 @@ export class HnBrickAggregateService {
    * Use when only brick columns (id, name, etc.) are needed.
    */
   async findBrickByNameLight(name: string, userId: string = null, strict: boolean = true): Promise<HnBrick> {
-    let whereConditions: FindOptionsWhere<HnBrick>[] | FindOptionsWhere<HnBrick> = {};
+    let whereConditions: FindOptionsWhere<HnBrickEntity>[] | FindOptionsWhere<HnBrickEntity> = {};
 
     if (strict) {
       whereConditions = await this.getUserBasedWhereBrickConditions(null, {
@@ -446,7 +438,7 @@ export class HnBrickAggregateService {
         throw new BlBadRequestException(HnErrorText.BRICK_ALREADY_EXIST);
       }
 
-      const newBrick = new HnBrick();
+      const newBrick = new HnBrickEntity();
       newBrick.initialize(body);
 
       if (newBrick.visibility === HnBrickVisibility.PRIVATE && !newBrick.space) {
@@ -638,12 +630,9 @@ export class HnBrickAggregateService {
 
   private async checkLabBrickAccessByName(brickName: string): Promise<void> {
     const request = BlRequestContextHelper.getCurrentRequest();
-    const url =
-      this.configService.getSpaceApiUrl() + `/external-community-labs/check-brick-access/${brickName}`;
-    const result: { hasAccess: boolean } = await lastValueFrom(
-      this.externalApiService.get(url, null, {
-        headers: { authorization: request.header('authorization') },
-      })
+    const result = await this.spaceApiService.checkBrickAccessByName(
+      request.header('authorization'),
+      brickName
     );
     if (!result?.hasAccess) {
       throw new BlUnauthorizedException(HnErrorText.PRIVATE_BRICK_ACCESS_DENIED, {
@@ -654,13 +643,10 @@ export class HnBrickAggregateService {
 
   private async checkLabBrickAccess(brickName: string, version: string): Promise<void> {
     const request = BlRequestContextHelper.getCurrentRequest();
-    const url =
-      this.configService.getSpaceApiUrl() +
-      `/external-community-labs/check-brick-access/${brickName}/${version}`;
-    const result: { hasAccess: boolean } = await lastValueFrom(
-      this.externalApiService.get(url, null, {
-        headers: { authorization: request.header('authorization') },
-      })
+    const result = await this.spaceApiService.checkBrickAccess(
+      request.header('authorization'),
+      brickName,
+      version
     );
     if (!result?.hasAccess) {
       throw new BlUnauthorizedException(HnErrorText.PRIVATE_BRICK_ACCESS_DENIED, {
@@ -681,7 +667,7 @@ export class HnBrickAggregateService {
         };
       }
 
-      this.brickSecurity.assertIsCreatorOrCoAuthor(brick, HnCurrentUserHelper.getAndCheckCurrentUser());
+      await this.brickSecurity.assertIsCreatorOrCoAuthor(brick, HnCurrentUserHelper.getAndCheckCurrentUser());
 
       const brickMajorVersion: HnBrickMajorVersion =
         await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(
@@ -717,7 +703,7 @@ export class HnBrickAggregateService {
     const folder: HnFolder = await this.folderService.findById(id);
     const brickMajorVersion: HnBrickMajorVersion = folder.brickMajorVersion;
     const brick: HnBrick = brickMajorVersion.brick;
-    this.brickSecurity.assertIsCreatorOrCoAuthor(brick, HnCurrentUserHelper.getAndCheckCurrentUser());
+    await this.brickSecurity.assertIsCreatorOrCoAuthor(brick, HnCurrentUserHelper.getAndCheckCurrentUser());
   }
 
   async createFolder(createFolder: HnNodeDTO): Promise<HnFolder> {
@@ -996,7 +982,7 @@ export class HnBrickAggregateService {
     const folder: HnFolder = doc.folder;
     const brickMajorVersion: HnBrickMajorVersion = folder.brickMajorVersion;
     const brick: HnBrick = brickMajorVersion.brick;
-    this.brickSecurity.assertIsCreatorOrCoAuthor(brick, HnCurrentUserHelper.getAndCheckCurrentUser());
+    await this.brickSecurity.assertIsCreatorOrCoAuthor(brick, HnCurrentUserHelper.getAndCheckCurrentUser());
   }
 
   async findDocsByParentId(id: string): Promise<HnDocumentationDto[]> {
@@ -1201,7 +1187,10 @@ export class HnBrickAggregateService {
       throw new BlBadRequestException('Impossible to create a new major version');
     }
 
-    await this.brickVersionService.createNewBrickVersion(brickMajorVersion, newVersion);
+    const newBrickVersion = await this.dataSource.transaction(async (entityManager) => {
+      return this.brickVersionService.createNewBrickVersion(brickMajorVersion, newVersion, entityManager);
+    });
+    await this.brickVersionService.sendBrickVersionIdToTransport(newBrickVersion.id);
 
     return newVersion;
   }
@@ -1238,11 +1227,12 @@ export class HnBrickAggregateService {
     brickId: string
   ): Promise<ClPage<HnBrickVersionDto>> {
     const brick: HnBrick = await this.findBrickById(brickId);
+    const brickUsers = await this.brickUserService.getBrickUsers(brick);
     return this.brickVersionService.getCurrentBrickVersion(
       page,
       size,
       brickId,
-      this.communitySecurity.isCreatorOrCoAuthor(brick, brick.brickUsers, HnCurrentUserHelper.getCurrentUser()?.id)
+      this.communitySecurity.isCreatorOrCoAuthor(brick, brickUsers, HnCurrentUserHelper.getCurrentUser()?.id)
     );
   }
 
@@ -1347,14 +1337,14 @@ export class HnBrickAggregateService {
     publicSelected: boolean,
     spacesFilter: string[],
     user: HnUser = null
-  ): Promise<FindOptionsWhere<HnBrick>[] | FindOptionsWhere<HnBrick>> {
+  ): Promise<FindOptionsWhere<HnBrickEntity>[] | FindOptionsWhere<HnBrickEntity>> {
     const currentUser: HnUser = user ?? HnCurrentUserHelper.getCurrentUser();
 
     if (currentUser == null) {
       throw new BlUnauthorizedException('You are not authorized to perform this action');
     }
 
-    let whereConditions: FindOptionsWhere<HnBrick>[] | FindOptionsWhere<HnBrick>;
+    let whereConditions: FindOptionsWhere<HnBrickEntity>[] | FindOptionsWhere<HnBrickEntity>;
 
     const brickCoAuthor: HnBrickUser[] = await this.brickUserService.getBrickUsersByUser(currentUser);
     const brickCoAuthorBricksId: string[] = brickCoAuthor.map((bu) => bu.brick.id);
@@ -1499,9 +1489,9 @@ export class HnBrickAggregateService {
   private async getUserBasedWhereBrickConditions(
     publicSelected: boolean = null,
     optionalParams?: HnBrickUserBasedWhereOptionalParams
-  ): Promise<FindOptionsWhere<HnBrick>[] | FindOptionsWhere<HnBrick>> {
+  ): Promise<FindOptionsWhere<HnBrickEntity>[] | FindOptionsWhere<HnBrickEntity>> {
     const currentUser: HnUser = optionalParams?.user ?? HnCurrentUserHelper.getCurrentUser();
-    let whereConditions: FindOptionsWhere<HnBrick>[] | FindOptionsWhere<HnBrick>;
+    let whereConditions: FindOptionsWhere<HnBrickEntity>[] | FindOptionsWhere<HnBrickEntity>;
 
     if (currentUser == null) {
       whereConditions = [

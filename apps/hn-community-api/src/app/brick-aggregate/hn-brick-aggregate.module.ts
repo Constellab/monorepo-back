@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 
 import { HnCoreModule } from '../core/hn-core.module';
-import { HnCommunitySecurityModule } from '../core/security/hn-community-security.module';
 import { HnCoreConfigModule } from '../core/modules/core-config/hn-core-config.module';
+import { HnCommunitySecurityModule } from '../core/security/hn-community-security.module';
 import { HnFileDocumentationModule } from '../file-aggregate/file-documentation/hn-file-documentation.module';
 import { HnSpaceAggregateModule } from '../space-aggregate/hn-space-aggregate.module';
 import { HnSpaceUserModule } from '../space-aggregate/space-user/hn-space-user.module';
@@ -16,13 +16,14 @@ import { HnBrickVersionModule } from './brick-version/hn-brick-version.module';
 import { HnDocumentationModule } from './documentation/hn-documentation.module';
 import { HnFolderModule } from './folder/hn-folder.module';
 import { HnBrickController } from './hn-brick.controller';
-import { HnBrickForSpaceController } from './hn-brick-for-space.controller';
 import { HnBrickListener } from './hn-brick.listener';
 import { HnBrickAggregateService } from './hn-brick-aggregate.service';
-import { HnBrickSecurity } from './security/hn-brick.security';
+import { HnBrickDeprecatedController } from './hn-brick-deprecated.controller';
+import { HnBrickSpaceController } from './hn-brick-space.controller';
 import { HnBrickVersionController } from './hn-brick-version.controller';
 import { HnDocumentationController } from './hn-documentation.controller';
 import { HnFolderController } from './hn-folder.controller';
+import { HnBrickSecurity } from './security/hn-brick.security';
 
 @Module({
   imports: [
@@ -42,7 +43,14 @@ import { HnFolderController } from './hn-folder.controller';
     HnUserModule,
     HnFileDocumentationModule,
   ],
-  controllers: [HnBrickController, HnBrickForSpaceController, HnBrickVersionController, HnFolderController, HnDocumentationController],
+  controllers: [
+    HnBrickController,
+    HnBrickDeprecatedController,
+    HnBrickSpaceController,
+    HnBrickVersionController,
+    HnFolderController,
+    HnDocumentationController,
+  ],
   providers: [HnBrickAggregateService, HnBrickSecurity, HnBrickListener],
   exports: [HnBrickAggregateService, HnBrickSecurity],
 })

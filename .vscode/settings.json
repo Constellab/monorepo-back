@@ -1,14 +1,14 @@
 {
-  "javascript.preferences.quoteStyle": "single",
-  "javascript.preferences.importModuleSpecifier": "project-relative",
-  "typescript.preferences.quoteStyle": "single",
-  "typescript.preferences.importModuleSpecifier": "project-relative",
+  "js/ts.preferences.quoteStyle": "single",
+  "js/ts.preferences.importModuleSpecifier": "project-relative",
   "editor.tabSize": 2,
   "editor.detectIndentation": false,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
   "eslint.format.enable": true,
   "[typescript]": {
     "editor.codeActionsOnSave": {
-      "source.organizeImports": "always"
+      "source.fixAll.eslint": "explicit"
     }
   },
   "prettier.configPath": ".prettierrc"

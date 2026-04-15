@@ -4,6 +4,7 @@ import { DataSource, EntityManager } from 'typeorm';
 import { HnAgentVersion } from '../agent-aggregate/agent-version/hn-agent-version.entity';
 import { HnAgentAggregateService } from '../agent-aggregate/hn-agent-aggregate.service';
 import { HnBrick } from '../brick-aggregate/brick/hn-brick.entity';
+import { HnBrickUserService } from '../brick-aggregate/brick-user/hn-brick-user.service';
 import { HnBrickAggregateService } from '../brick-aggregate/hn-brick-aggregate.service';
 import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
 import { HnTypingName } from '../core/utils/hn-typing-name.class';
@@ -24,6 +25,7 @@ export class HnRunStatAgService {
     private readonly runStatAggregateService: HnRunStatAggregateService,
     private readonly userService: HnUserService,
     private readonly brickAggregateService: HnBrickAggregateService,
+    private readonly brickUserService: HnBrickUserService,
     private readonly agentAggregateService: HnAgentAggregateService,
     private datasource: DataSource
   ) {}
@@ -147,8 +149,9 @@ export class HnRunStatAgService {
     const brickName: string = HnTypingName.getBrickName(runStat.processTypingName);
     const brick: HnBrick = await this.brickAggregateService.findBrickByName(brickName, null, false);
     const creators: string[] = [brick.createdBy.id];
-    if (brick.brickUsers?.length > 0) {
-      for (const brickUser of brick.brickUsers) {
+    const brickUsers = await this.brickUserService.getBrickUsers(brick);
+    if (brickUsers?.length > 0) {
+      for (const brickUser of brickUsers) {
         if (!creators.includes(brickUser.user.id)) creators.push(brickUser.user.id);
       }
     }

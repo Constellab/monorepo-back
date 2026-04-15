@@ -2,7 +2,7 @@ import { BlNotUpdatable } from '@monorepo/back-core-lib';
 import { Column, Entity, ManyToOne, Unique } from 'typeorm';
 
 import { HnBaseEntity } from '../../core/model/entities/hn-base.entity';
-import { HnBrick } from '../brick/hn-brick.entity';
+import { HnBrick, HnBrickEntity } from '../brick/hn-brick.entity';
 
 export enum HnVersionState {
   STABLE = 'STABLE',
@@ -13,7 +13,7 @@ export enum HnVersionState {
 @Entity('brick_major_version')
 export class HnBrickMajorVersion extends HnBaseEntity {
   @BlNotUpdatable()
-  @ManyToOne(() => HnBrick, { eager: true, onDelete: 'CASCADE' })
+  @ManyToOne(() => HnBrickEntity, { eager: true, onDelete: 'CASCADE' })
   brick: HnBrick;
 
   @Column({ default: 1 })

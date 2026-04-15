@@ -2,6 +2,7 @@ import { BlExternalApiModule } from '@monorepo/back-core-lib';
 import { Module } from '@nestjs/common';
 
 import { HnAgentAggregateModule } from '../agent-aggregate/hn-agent-aggregate.module';
+import { HnBrickUserModule } from '../brick-aggregate/brick-user/hn-brick-user.module';
 import { HnBrickAggregateModule } from '../brick-aggregate/hn-brick-aggregate.module';
 import { HnCoreModule } from '../core/hn-core.module';
 import { HnCoreConfigModule } from '../core/modules/core-config/hn-core-config.module';
@@ -22,6 +23,7 @@ import { HnRunStatAggregateModule } from './run-stat-aggregate/hn-run-stat-aggre
     HnUserModule,
     HnAgentAggregateModule,
     HnBrickAggregateModule,
+    HnBrickUserModule,
   ],
   providers: [HnRunStatAgService],
   controllers: [HnRunStatAggregateController, HnRunStatLabController],

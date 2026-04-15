@@ -6,7 +6,6 @@ import {
   BlResponseHelper,
   BlSearchParams,
   BlSearchSortCriteria,
-  BlUnauthorizedException,
   BlUploadedFile,
 } from '@monorepo/back-core-lib';
 import { ClPage } from '@monorepo/core-lib';
@@ -35,11 +34,9 @@ import { HnIsAdminGuard } from '../core/guards/hn-is-admin.guard';
 import { HnSitemapItemBase } from '../core/model/config/hn-site-map.class';
 import { HnSimpleGeneratedDocDto } from '../core/model/entities/hn-generated-doc.dto';
 import { HnGeneratedDocEntity } from '../core/model/entities/hn-generated-doc-typing.entity';
-import { HnCoreConfigService } from '../core/modules/core-config/hn-core-config.service';
 import { HnUserDto } from '../users/hn-user.dto';
 import {
   HnBrickDto,
-  HnBrickVersionDownloadDTO,
   HnCreateBrickDTO,
   HnCreateTechnicalDocContent,
   HnEditBrickDTO,
@@ -59,10 +56,7 @@ import { HnBrickAggregateService } from './hn-brick-aggregate.service';
 @Controller('brick')
 @UseGuards(HnIsAdminGuard)
 export class HnBrickController {
-  constructor(
-    private readonly brickAggregateService: HnBrickAggregateService,
-    private readonly configService: HnCoreConfigService
-  ) {}
+  constructor(private readonly brickAggregateService: HnBrickAggregateService) {}
 
   @IsAdmin()
   @Post('search')
@@ -104,22 +98,6 @@ export class HnBrickController {
   @Get('check-brick-existence/:name')
   async checkBrickExistence(@Param('name') name: string): Promise<boolean> {
     return this.brickAggregateService.checkIfBrickExistence(name);
-  }
-
-  /**
-   * @deprecated Use HnBrickForSpaceController.getBrickVersionForDownload instead.
-   * Special route that is called by the lab using the space API key to retrieve info about the brick.
-   * If the key is present and valid, private bricks can be accessed.
-   * TODO remove central route once all lab manager are on v 1.20 and lab are on v 0.15.0
-   */
-  @BlPublic()
-  @Get(['central/name/:name/:version', 'space/name/:name/:version'])
-  findOneByNameSpace(
-    @Param('name') name: string,
-    @Param('version') version: string,
-    @Req() request: Request
-  ): Promise<HnBrickVersionDownloadDTO> {
-    return this.brickAggregateService.findBrickByNameSpace(name, version, request.header('X-Api-Key'));
   }
 
   @BlPublic()
@@ -206,23 +184,6 @@ export class HnBrickController {
   }
 
   @BlPublic()
-  @Post('space-filters')
-  async getBricksByFilterFromSpace(
-    @Body('spacesFilter') spacesFilter: string[],
-    @Body('titleFilter') titleFilter: string,
-    @Query('page', new ParseIntPipe()) page: number,
-    @Query('size', new ParseIntPipe()) size: number,
-    @Body('userId') userId: string,
-    @Req() request: Request
-  ): Promise<ClPage<HnBrickDto>> {
-    const spaceApiKey = request.header('X-Api-Key');
-    if (spaceApiKey == null || this.configService.getSpaceApiKey() !== spaceApiKey) {
-      throw new BlUnauthorizedException();
-    }
-    return this.brickAggregateService.findBricksWithFilter(spacesFilter, titleFilter, [], page, size, userId);
-  }
-
-  @BlPublic()
   @Get('first-doc/:brickName/:version')
   async findFirstDoc(
     @Param('brickName') brickName: string,
@@ -271,20 +232,6 @@ export class HnBrickController {
   @Get('versions-list/:brickId')
   public getVersionsList(@Param('brickId') brickId: string): Promise<string[]> {
     return this.brickAggregateService.getVersionsList(brickId);
-  }
-
-  @BlPublic()
-  @Post('space-versions-list/:brickId')
-  public getVersionsListForSpace(
-    @Param('brickId') brickId: string,
-    @Body('userId') userId: string,
-    @Req() request: Request
-  ): Promise<string[]> {
-    const spaceApiKey = request.header('X-Api-Key');
-    if (spaceApiKey == null || this.configService.getSpaceApiKey() !== spaceApiKey) {
-      throw new BlUnauthorizedException();
-    }
-    return this.brickAggregateService.getVersionsList(brickId, userId);
   }
 
   @BlPublic()
@@ -405,19 +352,5 @@ export class HnBrickController {
     @Param('brickAuthorUserId', new ParseUUIDPipe()) brickAuthorUserId: string
   ): Promise<void> {
     return this.brickAggregateService.removeBrickCoAuthor(id, brickAuthorUserId);
-  }
-
-  @BlPublic()
-  @Post('space-name/:name')
-  async findOneByNameSpaceClean(
-    @Param('name') name: string,
-    @Body('userId') userId: string,
-    @Req() request: Request
-  ): Promise<HnBrickDto> {
-    const spaceApiKey = request.header('X-Api-Key');
-    if (spaceApiKey == null || this.configService.getSpaceApiKey() !== spaceApiKey) {
-      throw new BlUnauthorizedException();
-    }
-    return new HnBrickDto(await this.brickAggregateService.findBrickByName(name, userId));
   }
 }

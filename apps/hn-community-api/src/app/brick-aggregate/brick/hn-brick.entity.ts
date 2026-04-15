@@ -2,12 +2,11 @@ import { BlEntityWithId, BlLuxonDateTimeColumn, BlNotUpdatable } from '@monorepo
 import { ClDateHelper } from '@monorepo/core-lib';
 import { Type } from 'class-transformer';
 import { DateTime } from 'luxon';
-import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne, OneToMany, Unique } from 'typeorm';
+import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne, Unique } from 'typeorm';
 
 import { HnCurrentUserHelper } from '../../core/utils/hn-current-user.helper';
 import { HnSpace } from '../../space-aggregate/space/hn-space.entity';
 import { HnUser } from '../../users/hn-user.entity';
-import { HnBrickUser } from '../brick-user/hn-brick-user.entity';
 import { HnCreateBrickDTO } from './hn-brick.dto';
 
 export enum HnBrickVisibility {
@@ -23,7 +22,7 @@ export class HnBrickFilter {
 
 @Unique(['name'])
 @Entity('brick')
-export class HnBrick extends BlEntityWithId {
+export class HnBrickEntity extends BlEntityWithId {
   @BlNotUpdatable()
   @Column()
   name: string;
@@ -51,9 +50,6 @@ export class HnBrick extends BlEntityWithId {
 
   @Column({ nullable: true })
   credentialPassword?: string;
-
-  @OneToMany(() => HnBrickUser, (brickUser) => brickUser.brick, { nullable: true, eager: true })
-  brickUsers: HnBrickUser[];
 
   @BlLuxonDateTimeColumn({ nullable: true, update: false })
   createdAt: DateTime;
@@ -121,3 +117,5 @@ export class HnBrick extends BlEntityWithId {
     return url;
   }
 }
+
+export type HnBrick = HnBrickEntity;
