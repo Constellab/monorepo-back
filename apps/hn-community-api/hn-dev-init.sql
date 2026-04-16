@@ -4,6 +4,7 @@ SET @adminUserId = '98ed7a54-9ee4-4257-811f-e1dfe730b97d';
 SET @secondaryUserId = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890';
 SET @gwsCoreBrickId = 'b34d3952-732b-479b-ad26-b34f9d5d43aa';
 SET @gwsAcademyBrickId = '041b33e8-9476-42e3-b8cc-3894584c22d8';
+SET @adminPrivateBrickId = 'c5f1e8a2-4d2b-4a6e-9c3f-7b8e1d2a3c4f';
 SET @adminUserSpaceId = '696072d7-1eb3-4161-a6bb-d3b46d0a2b6e';
 SET @secondaryUserSpaceId = '34a3b327-a185-45c5-8a77-4e7be24f7763';
 SET @enterpriseSpaceId = '2bd030ba-158f-45ba-ab18-093fcdfa7b1a';
@@ -13,6 +14,8 @@ SET @gwsCoreMajorVersionId = '4bae6d80-39e2-40e9-9927-a54eb7a7fa2d';
 SET @gwsAcademyMajorVersionId = 'a344dc51-a6f6-40c5-8455-f45d73ebd7c0';
 SET @gwsCoreMainFolderId = '7c4310ea-a999-439a-b308-e43f3046f480';
 SET @gwsAcademyMainFolderId = 'e7d16cb5-287a-4e4a-a22c-936e4e50c44e';
+SET @adminPrivateBrickMajorVersionId = 'd1e2f3a4-b5c6-4d7e-8f9a-0b1c2d3e4f50';
+SET @adminPrivateBrickMainFolderId = 'e2f3a4b5-c6d7-4e8f-9a0b-1c2d3e4f5061';
 
 -- Robot user
 INSERT INTO `user` (`id`, `user_code`, `alias`, `firstname`, `lastname`, `email`, `photo`, `github_link`, `linkedin_link`,
@@ -181,6 +184,51 @@ INSERT INTO `documentation` (`id`, `title`, `path`, `complete_path`, `order`, `f
 VALUES ('9300732e-9463-44d6-b570-7a9821192bf3', 'Getting Started', 'getting-started', 'getting-started/', 0,
         @gwsAcademyMainFolderId,
         '2023-02-27 17:15:47', '2023-02-27 17:15:47',
+        @adminUserId, @adminUserId);
+
+
+-- Private brick for Test user (Michel Larousse) attached to his personal space
+INSERT INTO `brick` (`id`, `name`, `description`, `is_certified`, `visibility`, `pip_repo`, `git_repo`, `image_link`,
+                     `credential_username`, `credential_password`, `likes`, `comments`, `created_at`, `last_modified_at`,
+                     `created_by_id`, `last_modified_by_id`, `space_id`)
+VALUES (@adminPrivateBrickId, 'michel_private_brick', 'Private brick owned by Michel Larousse', 0, 'private',
+        NULL, NULL, NULL, NULL, NULL, 0, 0,
+        '2023-03-01 10:00:00', '2023-03-01 10:00:00',
+        @adminUserId, @adminUserId, @adminUserSpaceId);
+
+-- Brick user for the private brick
+INSERT INTO `brick_user` (`id`, `brick_id`, `user_id`)
+VALUES ('f3a4b5c6-d7e8-4f9a-0b1c-2d3e4f506172', @adminPrivateBrickId, @adminUserId);
+
+-- Private brick major version 0
+INSERT INTO `brick_major_version` (`id`, `major`, `version_state`, `created_at`, `last_modified_at`,
+                                   `created_by_id`, `last_modified_by_id`, `brick_id`)
+VALUES (@adminPrivateBrickMajorVersionId, 0, 'LATEST', '2023-03-01 10:00:00', '2023-03-01 10:00:00',
+        @adminUserId, @adminUserId,
+        @adminPrivateBrickId);
+
+-- Private brick version
+INSERT INTO `brick_version` (`id`, `minor`, `patch`, `sub_patch`, `version_type`, `repo_type`, `technical_info`,
+                             `created_at`, `last_modified_at`, `created_by_id`, `last_modified_by_id`, `brick_major_version_id`)
+VALUES ('a4b5c6d7-e8f9-4a0b-1c2d-3e4f50617283', 1, 0, NULL, 'NORMAL', 'GIT', NULL,
+        '2023-03-01 10:00:00', '2023-03-01 10:00:00',
+        @adminUserId, @adminUserId,
+        @adminPrivateBrickMajorVersionId);
+
+-- Private brick main folder (root folder for brick major version)
+INSERT INTO `folder` (`id`, `title`, `path`, `complete_path`, `order`, `brick_major_version_id`, `folder_id`, `mpath`,
+                      `created_at`, `last_modified_at`, `created_by_id`, `last_modified_by_id`)
+VALUES (@adminPrivateBrickMainFolderId, NULL, NULL, NULL, 0,
+        @adminPrivateBrickMajorVersionId, NULL, CONCAT(@adminPrivateBrickMainFolderId, '.'),
+        '2023-03-01 10:00:00', '2023-03-01 10:00:00',
+        @adminUserId, @adminUserId);
+
+-- Private brick Getting Started doc
+INSERT INTO `documentation` (`id`, `title`, `path`, `complete_path`, `order`, `folder_id`,
+                             `created_at`, `last_modified_at`, `created_by_id`, `last_modified_by_id`)
+VALUES ('b5c6d7e8-f9a0-4b1c-2d3e-4f5061728394', 'Getting Started', 'getting-started', 'getting-started/', 0,
+        @adminPrivateBrickMainFolderId,
+        '2023-03-01 10:00:00', '2023-03-01 10:00:00',
         @adminUserId, @adminUserId);
 
 

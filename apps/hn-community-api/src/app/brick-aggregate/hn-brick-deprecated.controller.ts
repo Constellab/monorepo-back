@@ -6,7 +6,7 @@ import {
   HnLabAllowWithoutUserAuthentication,
   HnLabGuard,
 } from '../core/decorators/hn-lab-auth-guard.decorator';
-import { HnBrickVersionDownloadDTO } from './brick/hn-brick.dto';
+import { HnBrickVersionCloneInfoDTO } from './brick/hn-brick.dto';
 import { HnBrickAggregateService } from './hn-brick-aggregate.service';
 
 /**
@@ -26,7 +26,7 @@ export class HnBrickDeprecatedController {
     @Param('name') name: string,
     @Param('version') version: string,
     @Req() request: Request
-  ): Promise<HnBrickVersionDownloadDTO> {
+  ): Promise<HnBrickVersionCloneInfoDTO> {
     return this.brickAggregateService.findBrickByNameSpace(name, version, request.header('X-Api-Key'));
   }
 
@@ -36,10 +36,10 @@ export class HnBrickDeprecatedController {
   @HnLabGuard()
   @HnLabAllowWithoutUserAuthentication()
   @Get('for-space/name/:name/:version')
-  getBrickVersionForDownload(
+  getBrickVersionCloneInfo(
     @Param('name') name: string,
     @Param('version') version: string
-  ): Promise<HnBrickVersionDownloadDTO> {
-    return this.brickAggregateService.getBrickVersionForDownload(name, version);
+  ): Promise<HnBrickVersionCloneInfoDTO> {
+    return this.brickAggregateService.getBrickVersionCloneInfo(name, version);
   }
 }

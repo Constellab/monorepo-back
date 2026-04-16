@@ -12,20 +12,14 @@ export interface HnAuthContextUser {
 }
 
 /**
- * Auth when a user triggers a request from the lab
+ * Auth for requests from the lab. The user is optional because some
+ * requests are triggered automatically by the lab without a user.
  */
 export interface HnAuthContextLab {
   type: 'lab';
-  user: HnUser;
+  user?: HnUser;
   labId: string;
-}
-
-/**
- * Auth for automatic request from the lab
- */
-export interface HnAuthContextLabNoUser {
-  type: 'labNoUser';
-  labId: string;
+  labApiKey: string;
 }
 
 /**
@@ -47,12 +41,7 @@ export interface HnAuthContextSpace {
 /**
  * Type representing all type of auth context
  */
-export type HnAuthContext =
-  | HnAuthContextUser
-  | HnAuthContextLab
-  | HnAuthContextLabNoUser
-  | HnAuthContextCron
-  | HnAuthContextSpace;
+export type HnAuthContext = HnAuthContextUser | HnAuthContextLab | HnAuthContextCron | HnAuthContextSpace;
 
 export type HnRequest = Request & {
   user?: HnUser;
@@ -73,7 +62,7 @@ export class HnCurrentUserHelper extends BlRequestContextHelper {
   static getCurrentUser(): HnUser | null {
     const authContext = this.getAuthContext();
 
-    if (authContext && authContext.type !== 'labNoUser') {
+    if (authContext) {
       return authContext.user ?? null;
     }
     return null;
@@ -96,7 +85,7 @@ export class HnCurrentUserHelper extends BlRequestContextHelper {
   static getAndCheckLabInstanceCurrentLabId(): string {
     const authContext = this.getAuthContext();
 
-    if (authContext != null && (authContext.type === 'lab' || authContext.type === 'labNoUser')) {
+    if (authContext != null && authContext.type === 'lab') {
       return authContext.labId;
     }
     return null;

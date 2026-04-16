@@ -172,9 +172,10 @@ export class HnBrickVersionInfoDTO {
 }
 
 /**
- * DTO containing minimum information to download a brick version
+ * DTO containing the information needed by a lab to clone a brick version's repository,
+ * including the authenticated access URL when credentials are required.
  */
-export class HnBrickVersionDownloadDTO extends HnBrickVersionInfoDTO {
+export class HnBrickVersionCloneInfoDTO extends HnBrickVersionInfoDTO {
   repositoryAccessUrl: string;
 }
 

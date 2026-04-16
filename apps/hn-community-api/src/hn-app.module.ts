@@ -120,7 +120,7 @@ function typeOrmConfig(configService: HnCoreConfigService): TypeOrmModuleOptions
     database: dbConfig.database,
     // disable for start speed, can be enabled to synchronize the database
     // only activate synchronization in local
-    synchronize: configService.isDev() && false,
+    synchronize: configService.isDev() && true,
     autoLoadEntities: true,
     maxQueryExecutionTime: 1000, // log query longer than 1s,
     bigNumberStrings: false,

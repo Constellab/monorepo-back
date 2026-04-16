@@ -4,6 +4,7 @@ SET @adminUserId = '98ed7a54-9ee4-4257-811f-e1dfe730b97d';
 SET @secondaryUserId = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890';
 SET @gwsCoreBrickId = 'b34d3952-732b-479b-ad26-b34f9d5d43aa';
 SET @gwsAcademyBrickId = '041b33e8-9476-42e3-b8cc-3894584c22d8';
+SET @adminPrivateBrickId = 'c5f1e8a2-4d2b-4a6e-9c3f-7b8e1d2a3c4f';
 SET @adminUserSpaceId = '696072d7-1eb3-4161-a6bb-d3b46d0a2b6e';
 SET @secondaryUserSpaceId = '34a3b327-a185-45c5-8a77-4e7be24f7763';
 SET @enterpriseSpaceId = '2bd030ba-158f-45ba-ab18-093fcdfa7b1a';
@@ -285,6 +286,14 @@ INSERT INTO `brick` (`id`, `name`, `pip_repo`, `git_repo`, `visibility`) VALUES
 -- gws_academy version 0.5.1
 INSERT INTO `brick_version` (`id`, `major`, `minor`, `patch`, `sub_patch`, `version_type`, `version_state`, `repo_type`, `technical_info`, `brick_id`) VALUES
 ('456dd68e-b5b5-44c0-846b-f4aa3768fc5d',	0,	5,	1,	NULL,	'NORMAL',	'STABLE',	'GIT',	NULL,	@gwsAcademyBrickId);
+
+-- Private brick for Test user (Michel Larousse) - space attachment tracked in hn-community-api (adminUserSpaceId)
+INSERT INTO `brick` (`id`, `name`, `pip_repo`, `git_repo`, `visibility`) VALUES
+(@adminPrivateBrickId,	'michel_private_brick',	NULL,	NULL,	'private');
+
+-- Private brick version 0.1.0
+INSERT INTO `brick_version` (`id`, `major`, `minor`, `patch`, `sub_patch`, `version_type`, `version_state`, `repo_type`, `technical_info`, `brick_id`) VALUES
+('a4b5c6d7-e8f9-4a0b-1c2d-3e4f50617283',	0,	1,	0,	NULL,	'NORMAL',	'STABLE',	'GIT',	NULL,	@adminPrivateBrickId);
 
 
 
