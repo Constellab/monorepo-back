@@ -19,7 +19,7 @@ import { CnBucketLocationDTO } from '../cn-object-storages/cn-buckets/cn-bucket.
 import { CnSpaceAggregateService } from '../cn-spaces/cn-space-aggregate.service';
 import { CnUser } from '../cn-users/cn-user.entity';
 import { CnUsersService } from '../cn-users/cn-users.service';
-import { getFakeUserEveryoneMention } from './cn-chat/cn-chat-message.entity';
+import { cnGetFakeUserEveryoneMention } from './cn-chat/cn-chat-message.entity';
 import { CnChatMessageService } from './cn-chat/cn-chat-message.service';
 import { CnDocumentType } from './cn-documents/cn-document.entity';
 import { CnDocumentService } from './cn-documents/cn-document.service';
@@ -544,7 +544,7 @@ export class CnFolderAggregateService {
     const users = result.map((user) => user.user);
 
     if (ClHelpService.isNullOrEmpty(name)) {
-      users.objects.unshift(getFakeUserEveryoneMention());
+      users.objects.unshift(cnGetFakeUserEveryoneMention());
     }
 
     return users;

@@ -101,7 +101,7 @@ export class CnUserEntity extends BlEntityWithId implements BlUser {
   @ManyToOne(() => CnSpaceEntity, { onDelete: 'SET NULL', nullable: true })
   lastConnectedSpace?: CnSpace;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, length: 36 })
   lastConnectedSpaceId?: string;
 
   //////////////////// TRANSIENT METHODS //////////////////

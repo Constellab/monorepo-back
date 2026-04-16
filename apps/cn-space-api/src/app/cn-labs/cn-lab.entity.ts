@@ -91,7 +91,7 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
   @ManyToOne(() => CnLabConfig, { nullable: true })
   labConfig: CnLabConfig;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, length: 36 })
   labConfigId?: string;
 
   @Type(() => CnLabStatusHistory)
@@ -142,7 +142,7 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
   @ManyToOne(() => CnSpaceEntity, { nullable: false })
   space: CnSpace;
 
-  @Column({ nullable: false })
+  @Column({ nullable: false, length: 36 })
   spaceId?: string;
 
   @OneToMany(() => CnLabUserEntity, (instanceGroup) => instanceGroup.lab, { cascade: ['insert'] })

@@ -19,4 +19,19 @@ export class BlNamingStrategy extends DefaultNamingStrategy {
     const tableName = typeof tableOrName === 'string' ? tableOrName : tableOrName.name;
     return `FK_${tableName}_${columnNames.join('_')}`;
   }
+
+  indexName(tableOrName: Table | string, columnNames: string[]): string {
+    const tableName = typeof tableOrName === 'string' ? tableOrName : tableOrName.name;
+    return `IDX_${tableName}_${columnNames.join('_')}`;
+  }
+
+  uniqueConstraintName(tableOrName: Table | string, columnNames: string[]): string {
+    const tableName = typeof tableOrName === 'string' ? tableOrName : tableOrName.name;
+    return `UQ_${tableName}_${columnNames.join('_')}`;
+  }
+
+  relationConstraintName(tableOrName: Table | string, columnNames: string[]): string {
+    const tableName = typeof tableOrName === 'string' ? tableOrName : tableOrName.name;
+    return `REL_${tableName}_${columnNames.join('_')}`;
+  }
 }

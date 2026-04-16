@@ -12,7 +12,7 @@ import { CnNotificationType } from '../cn-notification/cn-notification.entity';
 import { CnNotificationService } from '../cn-notification/cn-notification.service';
 import { CnSpaceEvent, cnSpaceEventName } from '../cn-spaces/cn-space.event';
 import { CnUser } from '../cn-users/cn-user.entity';
-import { CnChatMessage, getFakeUserEveryoneMention } from './cn-chat/cn-chat-message.entity';
+import { CnChatMessage, cnGetFakeUserEveryoneMention } from './cn-chat/cn-chat-message.entity';
 import { CnDocument } from './cn-documents/cn-document.entity';
 import { CnFolderEvent, cnFolderEventName, CnFolderEventType } from './cn-folder.event';
 import { CnFolderAggregateService } from './cn-folder-aggregate.service';
@@ -552,7 +552,7 @@ export class CnFolderListener {
     );
 
     // if the user selected the special 'Everyone' fake user
-    const everyoneUser = getFakeUserEveryoneMention();
+    const everyoneUser = cnGetFakeUserEveryoneMention();
     if (mentions.find((mention) => mention.id == everyoneUser.id)) {
       return otherUsers;
     }

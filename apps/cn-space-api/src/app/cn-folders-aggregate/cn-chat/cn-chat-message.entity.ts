@@ -12,7 +12,7 @@ import {
 /**
  * special user for mentioning everyone
  */
-export function getFakeUserEveryoneMention(): CnUser {
+export function cnGetFakeUserEveryoneMention(): CnUser {
   const user = new CnUserEntity();
   user.id = 'everyone';
   user.firstname = 'Everyone';
@@ -27,7 +27,7 @@ export class CnChatMessageEntity extends CnMessage {
   @BlNotUpdatable()
   folderHierarchy: CnHierarchyObjectEntity;
 
-  @Column({ nullable: false, update: false })
+  @Column({ nullable: false, update: false, length: 36 })
   folderHierarchyId: string;
 
   static create(newMessageDTO: CnNewMessageDTO, folderHierarchy: CnHierarchyObject): CnChatMessageEntity {

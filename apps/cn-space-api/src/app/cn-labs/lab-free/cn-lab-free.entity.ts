@@ -25,7 +25,7 @@ export class CnLabFree extends CnBaseEntity {
   @Exclude()
   lab?: CnLabEntity;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, length: 36 })
   labId?: string;
 
   // the number of hours the user can use the lab per month

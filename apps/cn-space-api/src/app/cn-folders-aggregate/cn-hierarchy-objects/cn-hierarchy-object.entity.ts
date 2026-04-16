@@ -67,14 +67,14 @@ export class CnHierarchyObjectEntity extends BlEntityWithId {
   @TreeParent({ onDelete: 'RESTRICT' })
   parent: CnHierarchyObject;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, length: 36 })
   parentId: string | null;
 
   // @Exclude()
   @ManyToOne(() => CnHierarchyObjectEntity, { nullable: true, onDelete: 'RESTRICT', onUpdate: 'RESTRICT' })
   rootParent: CnHierarchyObject;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, length: 36 })
   rootParentId: string | null;
 
   @TreeChildren()
@@ -85,7 +85,7 @@ export class CnHierarchyObjectEntity extends BlEntityWithId {
   @ManyToOne(() => CnSpaceEntity, { nullable: false })
   space: CnSpace;
 
-  @Column({ nullable: false, update: false })
+  @Column({ nullable: false, update: false, length: 36 })
   spaceId: string;
 
   @Exclude()

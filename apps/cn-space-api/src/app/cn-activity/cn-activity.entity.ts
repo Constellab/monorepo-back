@@ -27,7 +27,7 @@ export class CnActivity extends BlEntityWithId {
   @Column({ type: 'enum', enum: CnActivityEntityType, update: false })
   entityType: CnActivityEntityType;
 
-  @Column({ update: false })
+  @Column({ update: false, length: 36 })
   entityId: string;
 
   @Column({ update: false })
@@ -40,7 +40,7 @@ export class CnActivity extends BlEntityWithId {
   @Column({ update: false })
   title: string;
 
-  @Column({ update: false })
+  @Column({ update: false, length: 36 })
   userId: string;
 
   @Type(() => CnUserEntity)
@@ -51,7 +51,7 @@ export class CnActivity extends BlEntityWithId {
   @BlLuxonDateTimeColumn({ nullable: false, update: false })
   createdAt: DateTime;
 
-  @Column({ update: false, nullable: true })
+  @Column({ update: false, nullable: true, length: 36 })
   spaceId: string | null;
 
   @Type(() => CnSpaceEntity)
@@ -59,7 +59,7 @@ export class CnActivity extends BlEntityWithId {
   @BlNotUpdatable()
   space: Relation<CnSpace> | null;
 
-  @Column({ update: false, nullable: true })
+  @Column({ update: false, nullable: true, length: 36 })
   parentEntityId: string | null;
 
   @Expose({ name: 'title' })

@@ -29,13 +29,6 @@ export enum HnStoryStatus {
   PUBLISHED = 'PUBLISHED',
 }
 
-export enum HnStoryCategory {
-  DOCUMENTATION = 'DOCUMENTATION',
-  PRODUCT_DOCUMENTATION = 'PRODUCT_DOCUMENTATION',
-  USE_CASE = 'USE_CASE',
-  ARTICLE = 'ARTICLE',
-}
-
 @Entity('story')
 export class HnStory extends BlEntityWithId {
   @Column()

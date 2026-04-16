@@ -39,7 +39,7 @@ export class CnLabGreenOption extends CnBaseEntity {
   @ManyToOne(() => CnLabEntity, { nullable: false, onDelete: 'CASCADE' })
   lab: CnLabEntity;
 
-  @Column()
+  @Column({ nullable: false, length: 36 })
   labId: string;
 
   /**

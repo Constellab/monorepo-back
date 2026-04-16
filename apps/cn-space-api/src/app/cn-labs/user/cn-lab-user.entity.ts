@@ -27,14 +27,14 @@ export enum CnLabUserRole {
  */
 @Entity('lab_user')
 export class CnLabUserEntity {
-  @PrimaryColumn()
+  @PrimaryColumn({ length: 36 })
   labId: string;
 
   @JoinColumn()
   @ManyToOne(() => CnLabEntity, (lab) => lab.sharedGroups, { onDelete: 'CASCADE', nullable: false })
   lab: CnLabEntity;
 
-  @PrimaryColumn()
+  @PrimaryColumn({ length: 36 })
   userId: string;
 
   @JoinColumn()

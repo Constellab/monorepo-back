@@ -9,7 +9,7 @@ import { CnBaseEntity } from '../../cn-core/model/entities/cn-base.entity';
 import { CnBucket } from '../../cn-object-storages/cn-buckets/cn-bucket.entity';
 import { CnLabEntity } from '../cn-lab.entity';
 import { CnLabBackupFrequency, CnLabBackupStatus, CnLabBackupTriggerMode } from './cn-lab-backup.dto';
-import { CnLabBackupHistoryDetail } from './cn-lab-backup-history-detail.entity';
+import { CnLabBackupHistoryDetail, CnLabBackupType } from './cn-lab-backup-history-detail.entity';
 
 @Entity('lab_backup_history')
 export class CnLabBackupHistoryEntity extends CnBaseEntity {
@@ -41,8 +41,8 @@ export class CnLabBackupHistoryEntity extends CnBaseEntity {
   @BlLuxonDateTimeColumn({ nullable: true })
   endedAt: DateTime;
 
-  @Column({ nullable: false, length: 60, unique: true })
-  backupId: string;
+  @Column({ nullable: true, length: 60, unique: true })
+  backupId?: string;
 
   @Column({ nullable: false, type: 'enum', enum: CnLabBackupStatus })
   status: CnLabBackupStatus;
@@ -52,7 +52,7 @@ export class CnLabBackupHistoryEntity extends CnBaseEntity {
   details?: CnLabBackupHistoryDetail[];
 
   @Column({ nullable: true })
-  s3Prefix: string;
+  s3Prefix?: string;
 
   // expose only the region, not the bucket
   @Type(() => CnCloudProviderRegion)
@@ -64,13 +64,13 @@ export class CnLabBackupHistoryEntity extends CnBaseEntity {
   @Expose()
   get dataDetails(): CnLabBackupHistoryDetail | null {
     if (!this.details) return null;
-    return this.details.find((detail) => detail.type === 'DATA');
+    return this.details.find((detail) => detail.type === CnLabBackupType.DATA);
   }
 
   @Expose()
   get dbDetails(): CnLabBackupHistoryDetail | null {
     if (!this.details) return null;
-    return this.details.find((detail) => detail.type === 'DB');
+    return this.details.find((detail) => detail.type === CnLabBackupType.DB);
   }
 
   /**

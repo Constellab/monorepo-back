@@ -39,7 +39,7 @@ export class CnGroupSingleUser extends CnGroup {
   @JoinColumn()
   user: CnUser;
 
-  @Column({ update: false })
+  @Column({ update: false, length: 36, nullable: true })
   userId: string;
 
   type: CnGroupType.SINGLE_USER;
@@ -70,7 +70,7 @@ export class CnGroupTeam extends CnGroup {
   @ManyToOne(() => CnSpaceEntity, { nullable: true })
   space?: CnSpace;
 
-  @Column({ nullable: true, update: false })
+  @Column({ nullable: true, update: false, length: 36 })
   spaceId: string;
 }
 

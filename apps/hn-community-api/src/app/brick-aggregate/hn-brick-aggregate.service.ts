@@ -163,6 +163,28 @@ export class HnBrickAggregateService {
     return this.brickService.findBrickList(whereConditions, sortsCriteria, page, size);
   }
 
+  /**
+   * Find public bricks with filters (no space association).
+   * Used by lab-facing routes to list bricks installable without
+   * any space-level authorization.
+   */
+  async findPublicBricksWithFilter(
+    titleFilter: string,
+    page: number,
+    size: number
+  ): Promise<ClPage<HnBrickDto>> {
+    const whereConditions: FindOptionsWhere<HnBrickEntity> = {
+      visibility: HnBrickVisibility.PUBLIC,
+      space: IsNull(),
+    };
+
+    if (titleFilter) {
+      whereConditions.name = Like(`%${ClStringHelper.escapeSqlLike(titleFilter)}%`);
+    }
+
+    return this.brickService.findBrickList(whereConditions, [], page, size);
+  }
+
   async findUserBricksWithCommonSpaces(
     user: HnUser,
     commonSpacesIds: string[],
@@ -1212,6 +1234,16 @@ export class HnBrickAggregateService {
       }
     }
     return this.brickVersionService.getVersionsList(brickId);
+  }
+
+  /**
+   * Returns the versions list for a brick identified by name.
+   * Does not perform any space-level access check — intended for
+   * lab-authenticated routes where access is controlled via lab API key.
+   */
+  async getVersionsListByName(brickName: string): Promise<string[]> {
+    const brick: HnBrick = await this.findBrickByNameLight(brickName, null, false);
+    return this.brickVersionService.getVersionsList(brick.id);
   }
 
   async sendAllBrickVersionToQueue(): Promise<void> {

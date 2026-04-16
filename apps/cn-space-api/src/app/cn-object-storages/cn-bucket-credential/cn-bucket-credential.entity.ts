@@ -35,7 +35,7 @@ export class CnBucketCredentials extends CnBaseEntity {
   @ManyToOne(() => CnSpaceEntity, { nullable: true })
   space: CnSpace;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, length: 36 })
   spaceId: string;
 
   @Column({ nullable: true, length: 50 })

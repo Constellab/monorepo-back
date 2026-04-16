@@ -16,7 +16,7 @@ export class CnHierarchyObjectTokenEntity extends CnBaseEntity {
   @ManyToOne(() => CnHierarchyObjectEntity, { nullable: false, eager: true })
   hierarchyObject: CnHierarchyObject;
 
-  @Column({ nullable: false, update: false })
+  @Column({ nullable: false, update: false, length: 36 })
   hierarchyObjectId: string;
 
   @Column({ nullable: false, update: false })
