@@ -12,14 +12,14 @@ export abstract class HnAbstractLikeEntity<T extends BlEntityWithId> extends BlE
   likedAt: DateTime;
 
   @Type(() => HnUser)
-  @ManyToOne(() => HnUser, { eager: true })
-  likedBy?: HnUser;
+  @ManyToOne(() => HnUser, { eager: true, nullable: false })
+  likedBy: HnUser;
 
   abstract entity: T;
 
   @BeforeInsert()
   setLikedByUser(): void {
-    this.likedBy = HnCurrentUserHelper.getCurrentUser();
+    this.likedBy = HnCurrentUserHelper.getAndCheckCurrentUser();
     this.likedAt = ClDateHelper.getDate();
   }
 }

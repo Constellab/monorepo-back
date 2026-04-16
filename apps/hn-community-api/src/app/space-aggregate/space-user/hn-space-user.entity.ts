@@ -16,13 +16,13 @@ export class HnSpaceUser {
   @PrimaryColumn({ type: 'varchar', length: 36 })
   userId: string;
 
-  @ManyToOne(() => HnUser, { onUpdate: 'CASCADE', onDelete: 'CASCADE' })
+  @ManyToOne(() => HnUser, { onUpdate: 'CASCADE', onDelete: 'CASCADE', nullable: false })
   user: HnUser;
 
   @PrimaryColumn({ type: 'varchar', length: 36 })
   spaceId: string;
 
-  @ManyToOne(() => HnSpace, { onUpdate: 'CASCADE', onDelete: 'CASCADE' })
+  @ManyToOne(() => HnSpace, { onUpdate: 'CASCADE', onDelete: 'CASCADE', nullable: false })
   space: HnSpace;
 
   @Column({

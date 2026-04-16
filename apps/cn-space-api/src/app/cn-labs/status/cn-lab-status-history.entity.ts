@@ -19,6 +19,6 @@ export class CnLabStatusHistory extends CnStatusHistory<CnLabStatus> {
   @Exclude()
   @BlNotUpdatable()
   @Type(() => CnLabEntity)
-  @ManyToOne(() => CnLabEntity, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  @ManyToOne(() => CnLabEntity, { onDelete: 'CASCADE', onUpdate: 'CASCADE', nullable: false })
   entity: CnLabEntity;
 }

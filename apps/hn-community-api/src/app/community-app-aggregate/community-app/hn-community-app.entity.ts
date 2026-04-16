@@ -34,7 +34,7 @@ export class HnCommunityAppEntity extends HnBaseEntity {
   @Column({ default: 0 })
   executions: number;
 
-  @ManyToOne(() => HnSpace, { eager: true, onUpdate: 'CASCADE', onDelete: 'CASCADE' })
+  @ManyToOne(() => HnSpace, { eager: true, onUpdate: 'CASCADE', onDelete: 'CASCADE', nullable: true })
   space?: HnSpace;
 
   @OneToMany(() => HnFileApp, (appFile) => appFile.entity, { nullable: true })

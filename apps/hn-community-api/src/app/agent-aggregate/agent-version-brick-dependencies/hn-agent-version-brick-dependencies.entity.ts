@@ -8,13 +8,13 @@ export class HnAgentVersionBrickDependencies {
   @PrimaryColumn({ type: 'varchar', length: 36 })
   agentVersionId: string;
 
-  @ManyToOne(() => HnAgentVersion, { eager: true, onUpdate: 'CASCADE', onDelete: 'CASCADE' })
+  @ManyToOne(() => HnAgentVersion, { eager: true, onUpdate: 'CASCADE', onDelete: 'CASCADE', nullable: false })
   agentVersion: HnAgentVersion;
 
   @PrimaryColumn({ type: 'varchar', length: 36 })
   brickVersionId: string;
 
-  @ManyToOne(() => HnBrickVersion, { eager: true, onUpdate: 'CASCADE', onDelete: 'CASCADE' })
+  @ManyToOne(() => HnBrickVersion, { eager: true, onUpdate: 'CASCADE', onDelete: 'CASCADE', nullable: false })
   brickVersion: HnBrickVersion;
 
   init(agentVersion: HnAgentVersion, brickVersion: HnBrickVersion): void {

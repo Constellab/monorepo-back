@@ -31,14 +31,14 @@ export class CnLabUserEntity {
   labId: string;
 
   @JoinColumn()
-  @ManyToOne(() => CnLabEntity, (lab) => lab.sharedGroups, { onDelete: 'CASCADE' })
+  @ManyToOne(() => CnLabEntity, (lab) => lab.sharedGroups, { onDelete: 'CASCADE', nullable: false })
   lab: CnLabEntity;
 
   @PrimaryColumn()
   userId: string;
 
   @JoinColumn()
-  @ManyToOne(() => CnUserEntity)
+  @ManyToOne(() => CnUserEntity, { nullable: false })
   user: CnUser;
 
   @Column({
@@ -61,7 +61,7 @@ export class CnLabUserEntity {
   lastModifiedAt: DateTime;
 
   @Type(() => CnUserEntity)
-  @ManyToOne(() => CnUserEntity, { eager: true })
+  @ManyToOne(() => CnUserEntity, { eager: true, nullable: false })
   lastModifiedBy: Relation<CnUser>;
 
   @BeforeInsert()

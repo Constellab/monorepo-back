@@ -12,7 +12,7 @@ export class HnFolder extends HnBaseEntity {
   title: string;
 
   @BlNotUpdatable()
-  @ManyToOne(() => HnBrickMajorVersion, { eager: true, onDelete: 'CASCADE' })
+  @ManyToOne(() => HnBrickMajorVersion, { eager: true, onDelete: 'CASCADE', nullable: false })
   brickMajorVersion: HnBrickMajorVersion;
 
   @Column({ nullable: true })

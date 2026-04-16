@@ -13,8 +13,8 @@ export class HnCommunityAppStat extends BlEntityWithId {
   @BlLuxonDateTimeColumn({ nullable: true, update: false })
   executionDate: DateTime;
 
-  @ManyToOne(() => HnUser, { eager: true, onUpdate: 'CASCADE', onDelete: 'CASCADE' })
-  creator?: HnUser;
+  @ManyToOne(() => HnUser, { eager: true, onUpdate: 'CASCADE', onDelete: 'CASCADE', nullable: false })
+  creator: HnUser;
 
   @BeforeInsert()
   setCreatedByUser(): void {

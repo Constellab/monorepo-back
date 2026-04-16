@@ -59,7 +59,7 @@ export class HnTagKey extends BlEntityWithId {
   @Column({ nullable: true, type: 'simple-json' })
   additionalInfosSpecs?: HnTagAdditionalInfoSpecs;
 
-  @ManyToOne(() => HnSpace, { eager: true, onUpdate: 'CASCADE', onDelete: 'CASCADE' })
+  @ManyToOne(() => HnSpace, { eager: true, onUpdate: 'CASCADE', onDelete: 'CASCADE', nullable: true })
   space?: HnSpace;
 
   @OneToMany(() => HnTagCoAuthor, (tagCoAuthor) => tagCoAuthor.tagKey, {

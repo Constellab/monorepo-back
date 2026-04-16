@@ -5,6 +5,6 @@ import { HnCommunityApp, HnCommunityAppEntity } from '../community-app/hn-commun
 
 @Entity('app_co_author_invite')
 export class HnCommunityAppCoAuthorInvite extends HnUserInvite {
-  @ManyToOne(() => HnCommunityAppEntity, { eager: true })
+  @ManyToOne(() => HnCommunityAppEntity, { eager: true, nullable: false })
   communityApp: HnCommunityApp;
 }

@@ -33,7 +33,7 @@ export class HnAgentVersion extends BlEntityWithId {
   version: number;
 
   @BlNotUpdatable()
-  @ManyToOne(() => HnAgent, { eager: true, onDelete: 'CASCADE' })
+  @ManyToOne(() => HnAgent, { eager: true, onDelete: 'CASCADE', nullable: false })
   agent: HnAgent;
 
   @Column({ type: 'enum', enum: HnAgentVersionState, nullable: false, default: HnAgentVersionState.DRAFT })

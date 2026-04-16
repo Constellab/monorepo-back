@@ -22,7 +22,7 @@ export class HnPartner extends HnBaseEntity {
 
   @Type(() => HnUser)
   @JoinColumn()
-  @OneToOne(() => HnUser, { eager: true, onDelete: 'CASCADE' })
+  @OneToOne(() => HnUser, { eager: true, onDelete: 'CASCADE', nullable: false })
   user: HnUser;
 
   @Column({ default: 0 })
@@ -49,7 +49,7 @@ export const HN_PARTNER_INFO_TEMPLATE: TeRichTextDTO = {
       type: TeBlockType.PARAGRAPH,
       data: {
         // eslint-disable-next-line max-len
-        text: "Describe in a few lines who you are: your area of expertise, years of experience, target markets, and mission. Explain how your company brings unique value to your sector.<strong>Expected structure example:</strong>[Partner Name] is a company specialized in […]. We help organizations […]. Our mission is to […].",
+        text: 'Describe in a few lines who you are: your area of expertise, years of experience, target markets, and mission. Explain how your company brings unique value to your sector.<strong>Expected structure example:</strong>[Partner Name] is a company specialized in […]. We help organizations […]. Our mission is to […].',
       },
     },
     {
@@ -65,7 +65,7 @@ export const HN_PARTNER_INFO_TEMPLATE: TeRichTextDTO = {
       type: TeBlockType.PARAGRAPH,
       data: {
         // eslint-disable-next-line max-len
-        text: "Explain precisely what you bring to clients when they use Constellab. Describe your added value in the ecosystem.<strong>You can specify for example:</strong>",
+        text: 'Explain precisely what you bring to clients when they use Constellab. Describe your added value in the ecosystem.<strong>You can specify for example:</strong>',
       },
     },
     {
@@ -76,8 +76,8 @@ export const HN_PARTNER_INFO_TEMPLATE: TeRichTextDTO = {
         meta: {},
         items: [
           {
-            // eslint-disable-next-line max-len
-            content: 'What types of Constellab projects you support (laboratory, clinical, data, AI, automation…)\n',
+            content:
+              'What types of Constellab projects you support (laboratory, clinical, data, AI, automation…)\n',
             meta: {},
             items: [],
           },
@@ -87,7 +87,6 @@ export const HN_PARTNER_INFO_TEMPLATE: TeRichTextDTO = {
             items: [],
           },
           {
-            // eslint-disable-next-line max-len
             content: 'How you help teams structure, exploit, analyze or leverage their data\n',
             meta: {},
             items: [],
@@ -110,7 +109,7 @@ export const HN_PARTNER_INFO_TEMPLATE: TeRichTextDTO = {
       type: TeBlockType.PARAGRAPH,
       data: {
         // eslint-disable-next-line max-len
-        text: "The goal is to show how your company makes Constellab even more powerful and useful for clients.",
+        text: 'The goal is to show how your company makes Constellab even more powerful and useful for clients.',
       },
     },
     {
@@ -137,7 +136,6 @@ export const HN_PARTNER_INFO_TEMPLATE: TeRichTextDTO = {
         meta: {},
         items: [
           {
-            // eslint-disable-next-line max-len
             content: '<strong>Integration &amp; deployment</strong>: what you install, configure, connect\n',
             meta: {},
             items: [],
@@ -148,8 +146,8 @@ export const HN_PARTNER_INFO_TEMPLATE: TeRichTextDTO = {
             items: [],
           },
           {
-            // eslint-disable-next-line max-len
-            content: '<strong>Laboratory &amp; R&amp;D</strong>: regulatory support, digitalization, instruments\n',
+            content:
+              '<strong>Laboratory &amp; R&amp;D</strong>: regulatory support, digitalization, instruments\n',
             meta: {},
             items: [],
           },
@@ -174,7 +172,7 @@ export const HN_PARTNER_INFO_TEMPLATE: TeRichTextDTO = {
       type: TeBlockType.PARAGRAPH,
       data: {
         // eslint-disable-next-line max-len
-        text: "Explain what sets you apart from other players: sectoral expertise, certifications, mastered technologies, methodologies, local presence, speed of execution, etc.<strong>Points to include:</strong>",
+        text: 'Explain what sets you apart from other players: sectoral expertise, certifications, mastered technologies, methodologies, local presence, speed of execution, etc.<strong>Points to include:</strong>',
       },
     },
     {

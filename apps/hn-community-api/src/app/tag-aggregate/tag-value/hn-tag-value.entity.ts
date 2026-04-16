@@ -18,6 +18,11 @@ export class HnTagValue extends BlEntityWithId {
   @Column({ nullable: true, type: 'simple-json' })
   additionalInfos?: Record<string, any>;
 
-  @ManyToOne(() => HnTagKey, (tagKey) => tagKey, { eager: true, onUpdate: 'CASCADE', onDelete: 'CASCADE' })
+  @ManyToOne(() => HnTagKey, (tagKey) => tagKey, {
+    eager: true,
+    onUpdate: 'CASCADE',
+    onDelete: 'CASCADE',
+    nullable: false,
+  })
   tagKey: HnTagKey;
 }

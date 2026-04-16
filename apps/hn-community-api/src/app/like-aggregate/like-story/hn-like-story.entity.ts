@@ -8,6 +8,6 @@ import { HnAbstractLikeEntity } from '../like-core/hn-abstract-like.entity';
 @Entity('like_story')
 export class HnLikeStory extends HnAbstractLikeEntity<HnStory> {
   @Type(() => HnStory)
-  @ManyToOne(() => HnStory, { eager: true, onDelete: 'CASCADE' })
+  @ManyToOne(() => HnStory, { eager: true, onDelete: 'CASCADE', nullable: false })
   entity: HnStory;
 }

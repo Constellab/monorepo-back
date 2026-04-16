@@ -17,13 +17,13 @@ export class CnSpaceUserEntity {
   @PrimaryColumn({ type: 'varchar', length: 36 })
   userId: string;
 
-  @ManyToOne(() => CnUserEntity, { onUpdate: 'CASCADE', onDelete: 'CASCADE' })
+  @ManyToOne(() => CnUserEntity, { onUpdate: 'CASCADE', onDelete: 'CASCADE', nullable: false })
   user: CnUser;
 
   @PrimaryColumn({ type: 'varchar', length: 36 })
   spaceId: string;
 
-  @ManyToOne(() => CnSpaceEntity, { onUpdate: 'CASCADE', onDelete: 'CASCADE' })
+  @ManyToOne(() => CnSpaceEntity, { onUpdate: 'CASCADE', onDelete: 'CASCADE', nullable: false })
   space: CnSpace;
 
   @Column({

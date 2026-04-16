@@ -21,7 +21,7 @@ export class CnLabFolderEntity {
   labId: string;
 
   @JoinColumn()
-  @ManyToOne(() => CnLabEntity, (lab) => lab.sharedGroups, { onDelete: 'CASCADE' })
+  @ManyToOne(() => CnLabEntity, (lab) => lab.sharedGroups, { onDelete: 'CASCADE', nullable: false })
   lab: CnLab;
 
   @PrimaryColumn({ type: 'varchar', length: 36 })
@@ -29,7 +29,7 @@ export class CnLabFolderEntity {
 
   @Type(() => CnHierarchyObjectEntity)
   @JoinColumn()
-  @ManyToOne(() => CnHierarchyObjectEntity)
+  @ManyToOne(() => CnHierarchyObjectEntity, { nullable: false })
   rootFolder: CnHierarchyObject;
 
   @BlLuxonDateTimeColumn({ nullable: false, update: false })

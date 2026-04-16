@@ -6,10 +6,10 @@ import { HnCommunityApp, HnCommunityAppEntity } from '../community-app/hn-commun
 
 @Entity('app_co_author')
 export class HnCommunityAppCoAuthor extends BlEntityWithId {
-  @ManyToOne(() => HnCommunityAppEntity, (agent) => agent.communityAppCoAuthors)
+  @ManyToOne(() => HnCommunityAppEntity, (agent) => agent.communityAppCoAuthors, { nullable: false })
   communityApp: HnCommunityApp;
 
-  @ManyToOne(() => HnUser, { eager: true, onDelete: 'CASCADE' })
+  @ManyToOne(() => HnUser, { eager: true, onDelete: 'CASCADE', nullable: false })
   user: HnUser;
 
   initCoAuthor(communityApp: HnCommunityAppEntity, user: HnUser): void {

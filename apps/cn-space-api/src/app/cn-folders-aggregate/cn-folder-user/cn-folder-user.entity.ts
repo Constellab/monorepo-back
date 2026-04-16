@@ -48,7 +48,7 @@ export class CnFolderUserEntity {
   userId: string;
 
   @Exclude()
-  @ManyToOne(() => CnUserEntity, { onUpdate: 'CASCADE', onDelete: 'CASCADE', eager: true })
+  @ManyToOne(() => CnUserEntity, { onUpdate: 'CASCADE', onDelete: 'CASCADE', eager: true, nullable: false })
   user: CnUser;
 
   @PrimaryColumn({ type: 'varchar', length: 36 })
@@ -56,7 +56,7 @@ export class CnFolderUserEntity {
 
   @Exclude()
   @JoinColumn()
-  @ManyToOne(() => CnHierarchyObjectEntity, { onUpdate: 'CASCADE', onDelete: 'CASCADE' })
+  @ManyToOne(() => CnHierarchyObjectEntity, { onUpdate: 'CASCADE', onDelete: 'CASCADE', nullable: false })
   rootFolder: CnHierarchyObjectEntity;
 
   @Column({ nullable: false, type: 'enum', enum: CnRootFolderUserRole })

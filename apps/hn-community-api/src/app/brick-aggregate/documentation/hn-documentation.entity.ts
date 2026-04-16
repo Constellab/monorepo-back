@@ -43,7 +43,7 @@ export class HnDocumentation extends HnBaseEntity {
   @Column()
   order: number;
 
-  @ManyToOne(() => HnFolder, { eager: true, onDelete: 'CASCADE' })
+  @ManyToOne(() => HnFolder, { eager: true, onDelete: 'CASCADE', nullable: false })
   folder: HnFolder;
 
   public setPath(path: string, folderCompletePath: string): void {

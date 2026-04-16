@@ -6,10 +6,10 @@ import { HnUser } from '../users/hn-user.entity';
 
 @Entity('story_co_author')
 export class HnStoryCoAuthor extends BlEntityWithId {
-  @ManyToOne(() => HnStory, (story) => story.storyAuthors)
+  @ManyToOne(() => HnStory, (story) => story.storyAuthors, { nullable: false })
   story: HnStory;
 
-  @ManyToOne(() => HnUser, { eager: true, onDelete: 'CASCADE' })
+  @ManyToOne(() => HnUser, { eager: true, onDelete: 'CASCADE', nullable: false })
   user: HnUser;
 
   initAuthor(story: HnStory, user: HnUser): void {

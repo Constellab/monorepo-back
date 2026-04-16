@@ -5,6 +5,6 @@ import { HnTagKey } from '../tag-key/hn-tag-key.entity';
 
 @Entity('tag_co_author_invite')
 export class HnTagCoAuthorInvite extends HnUserInvite {
-  @ManyToOne(() => HnTagKey, { eager: true })
+  @ManyToOne(() => HnTagKey, { eager: true, nullable: false })
   tagKey: HnTagKey;
 }

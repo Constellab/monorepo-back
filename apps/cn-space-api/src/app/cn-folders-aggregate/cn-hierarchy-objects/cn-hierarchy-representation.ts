@@ -15,7 +15,7 @@ export abstract class CnHierarchyRepresentation extends BlEntityWithId {
    * Representation of this object in the hierarchy structure
    */
   @JoinColumn({ name: 'id' })
-  @OneToOne(() => CnHierarchyObjectEntity, { cascade: ['insert'] })
+  @OneToOne(() => CnHierarchyObjectEntity, { cascade: ['insert'], nullable: false })
   hierarchyRepresentation: CnHierarchyObject;
 
   @BlLuxonDateTimeColumn({ nullable: false, update: false })

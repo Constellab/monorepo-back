@@ -11,6 +11,6 @@ import { HnAbstractLikeEntity } from '../like-core/hn-abstract-like.entity';
 @Entity('like_app')
 export class HnLikeApp extends HnAbstractLikeEntity<HnCommunityApp> {
   @Type(() => HnCommunityAppEntity)
-  @ManyToOne(() => HnCommunityAppEntity, { eager: true, onDelete: 'CASCADE' })
+  @ManyToOne(() => HnCommunityAppEntity, { eager: true, onDelete: 'CASCADE', nullable: false })
   entity: HnCommunityApp;
 }

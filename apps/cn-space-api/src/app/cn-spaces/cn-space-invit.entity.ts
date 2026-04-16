@@ -14,7 +14,7 @@ export class CnSpaceInvit extends CnBaseEntity {
   @Column({ type: 'varchar', length: 36 })
   spaceId: string;
 
-  @ManyToOne(() => CnSpaceEntity, { onUpdate: 'CASCADE', onDelete: 'CASCADE' })
+  @ManyToOne(() => CnSpaceEntity, { onUpdate: 'CASCADE', onDelete: 'CASCADE', nullable: false })
   space: CnSpace;
 
   @Column({

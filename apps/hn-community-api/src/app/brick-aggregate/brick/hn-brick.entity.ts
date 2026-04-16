@@ -65,7 +65,7 @@ export class HnBrickEntity extends BlEntityWithId {
   @ManyToOne(() => HnUser, { eager: true, nullable: true })
   lastModifiedBy: HnUser;
 
-  @ManyToOne(() => HnSpace, { eager: true, onUpdate: 'CASCADE', onDelete: 'CASCADE' })
+  @ManyToOne(() => HnSpace, { eager: true, onUpdate: 'CASCADE', onDelete: 'CASCADE', nullable: true })
   space?: HnSpace;
 
   @Column({ default: 0 })

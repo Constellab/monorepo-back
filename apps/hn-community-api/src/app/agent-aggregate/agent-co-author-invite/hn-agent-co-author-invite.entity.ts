@@ -5,6 +5,6 @@ import { HnAgent } from '../agent/hn-agent.entity';
 
 @Entity('agent_co_author_invite')
 export class HnAgentCoAuthorInvite extends HnUserInvite {
-  @ManyToOne(() => HnAgent, { eager: true })
+  @ManyToOne(() => HnAgent, { eager: true, nullable: false })
   agent: HnAgent;
 }

@@ -50,7 +50,7 @@ export class HnRunStat extends BlEntityWithId {
   @Column('simple-array')
   creators: string[];
 
-  @ManyToOne(() => HnUser, { eager: true, onUpdate: 'CASCADE', onDelete: 'CASCADE' })
+  @ManyToOne(() => HnUser, { eager: true, onUpdate: 'CASCADE', onDelete: 'CASCADE', nullable: false })
   executedBy: HnUser;
 
   @ManyToOne(() => HnAgentVersion, { nullable: true, eager: true, onUpdate: 'CASCADE', onDelete: 'CASCADE' })

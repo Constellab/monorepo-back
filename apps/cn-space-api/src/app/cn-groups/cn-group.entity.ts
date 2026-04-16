@@ -35,7 +35,7 @@ export class CnGroup extends CnBaseEntity {
 
 @ChildEntity(CnGroupType.SINGLE_USER)
 export class CnGroupSingleUser extends CnGroup {
-  @OneToOne(() => CnUserEntity, (user: CnUserEntity) => user.ownGroup, { eager: true })
+  @OneToOne(() => CnUserEntity, (user: CnUserEntity) => user.ownGroup, { eager: true, nullable: true })
   @JoinColumn()
   user: CnUser;
 
@@ -79,13 +79,17 @@ export class CnUserGroup {
   @PrimaryColumn({ type: 'varchar', length: 36 })
   userId: string;
 
-  @ManyToOne(() => CnUserEntity, { onUpdate: 'CASCADE', onDelete: 'CASCADE' })
+  @ManyToOne(() => CnUserEntity, { onUpdate: 'CASCADE', onDelete: 'CASCADE', nullable: false })
   user: CnUser;
 
   @PrimaryColumn({ type: 'varchar', length: 36 })
   groupId: string;
 
-  @ManyToOne(() => CnGroupTeam, (group) => group.users, { onUpdate: 'CASCADE', onDelete: 'CASCADE' })
+  @ManyToOne(() => CnGroupTeam, (group) => group.users, {
+    onUpdate: 'CASCADE',
+    onDelete: 'CASCADE',
+    nullable: false,
+  })
   group: CnGroupTeam;
 
   @BlLuxonDateTimeColumn({ nullable: false, update: false })

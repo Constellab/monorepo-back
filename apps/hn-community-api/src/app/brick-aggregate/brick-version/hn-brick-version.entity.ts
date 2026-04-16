@@ -77,7 +77,7 @@ export class HnBrickVersion extends HnBaseEntity {
   repoType: HnRepoType;
 
   @BlNotUpdatable()
-  @ManyToOne(() => HnBrickMajorVersion, { eager: true, onDelete: 'CASCADE' })
+  @ManyToOne(() => HnBrickMajorVersion, { eager: true, onDelete: 'CASCADE', nullable: false })
   brickMajorVersion: HnBrickMajorVersion;
 
   @Column({ type: 'simple-json', nullable: true })

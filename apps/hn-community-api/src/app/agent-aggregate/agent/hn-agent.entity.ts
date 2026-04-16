@@ -24,7 +24,7 @@ export class HnAgent extends BlEntityWithId {
   @Column({ nullable: true })
   latestPublishVersion?: number;
 
-  @ManyToOne(() => HnSpace, { eager: true, onUpdate: 'CASCADE', onDelete: 'CASCADE' })
+  @ManyToOne(() => HnSpace, { eager: true, onUpdate: 'CASCADE', onDelete: 'CASCADE', nullable: true })
   space?: HnSpace;
 
   @BlLuxonDateTimeColumn({ nullable: true, update: false })

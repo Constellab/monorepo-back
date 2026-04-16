@@ -13,7 +13,7 @@ export enum HnVersionState {
 @Entity('brick_major_version')
 export class HnBrickMajorVersion extends HnBaseEntity {
   @BlNotUpdatable()
-  @ManyToOne(() => HnBrickEntity, { eager: true, onDelete: 'CASCADE' })
+  @ManyToOne(() => HnBrickEntity, { eager: true, onDelete: 'CASCADE', nullable: false })
   brick: HnBrick;
 
   @Column({ default: 1 })
