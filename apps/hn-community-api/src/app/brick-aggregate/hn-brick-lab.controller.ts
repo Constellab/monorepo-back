@@ -19,21 +19,12 @@ import { HnBrickAggregateService } from './hn-brick-aggregate.service';
 export class HnBrickLabController {
   constructor(private readonly brickAggregateService: HnBrickAggregateService) {}
 
-  @BlPublic()
-  @Get(':name/:version/clone-info')
-  getBrickVersionCloneInfo(
-    @Param('name') name: string,
-    @Param('version') version: string
-  ): Promise<HnBrickVersionCloneInfoDTO> {
-    return this.brickAggregateService.getBrickVersionCloneInfo(name, version);
-  }
-
   /**
    * List public bricks for a lab. Public route: returns only bricks with
    * PUBLIC visibility and no space association — no lab auth required.
    */
   @BlPublic()
-  @Post('filters')
+  @Post('search')
   getPublicBricksByFilter(
     @Body('titleFilter') titleFilter: string,
     @Query('page', new ParseIntPipe()) page: number,
@@ -49,9 +40,20 @@ export class HnBrickLabController {
    */
   @HnLabGuard()
   @HnLabAllowWithoutUserAuthentication()
-  @Get('name/:name')
+  @Get(':name')
   async findOneByName(@Param('name') name: string): Promise<HnBrickDto> {
     return new HnBrickDto(await this.brickAggregateService.findBrickByName(name, null, false));
+  }
+
+  /**
+   * List versions for a brick by name. Lab-authenticated: returns versions
+   * for any brick (including private) without calling the space API.
+   */
+  @HnLabGuard()
+  @HnLabAllowWithoutUserAuthentication()
+  @Get(':name/versions')
+  getVersionsList(@Param('name') name: string): Promise<string[]> {
+    return this.brickAggregateService.getVersionsListByName(name);
   }
 
   /**
@@ -61,7 +63,7 @@ export class HnBrickLabController {
    */
   @HnLabGuard()
   @HnLabAllowWithoutUserAuthentication()
-  @Get('version-info/:name/:version')
+  @Get(':name/:version')
   getBrickVersionInfo(
     @Param('name') name: string,
     @Param('version') version: string
@@ -70,13 +72,16 @@ export class HnBrickLabController {
   }
 
   /**
-   * List versions for a brick by name. Lab-authenticated: returns versions
-   * for any brick (including private) without calling the space API.
+   * Get brick version clone info (including repository access URL).
+   * Public route: private-brick access is enforced in the service via
+   * checkLabBrickAccessByName using the lab API key.
    */
-  @HnLabGuard()
-  @HnLabAllowWithoutUserAuthentication()
-  @Get('versions-list/:brickName')
-  getVersionsList(@Param('brickName') brickName: string): Promise<string[]> {
-    return this.brickAggregateService.getVersionsListByName(brickName);
+  @BlPublic()
+  @Get(':name/:version/clone-info')
+  getBrickVersionCloneInfo(
+    @Param('name') name: string,
+    @Param('version') version: string
+  ): Promise<HnBrickVersionCloneInfoDTO> {
+    return this.brickAggregateService.getBrickVersionCloneInfo(name, version);
   }
 }
