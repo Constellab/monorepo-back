@@ -190,14 +190,16 @@ export class CnLabCron {
     // Always send email when stopping the lab
     await this.sendTempStatusMailIfAllowed(lab, 'stopping', message);
 
-    this.labServerService
-      .stopLab(lab)
-      .catch((error) =>
-        this.labService.markInstanceAsError(
-          lab.id,
-          `Error when stopping the lab after temp status limit reach: ${error}`
-        )
+    this.labServerService.stopLab(lab).catch((error) => {
+      this.logger.error(
+        `Error when stopping the lab ${lab.id} after temp status limit reached: ${error.message}`,
+        error.stack
       );
+      void this.labService.markInstanceAsError(
+        lab.id,
+        `Error when stopping the lab after temp status limit reach: ${error}`
+      );
+    });
   }
 
   /**
@@ -374,7 +376,14 @@ export class CnLabCron {
       // is not, stop the lab
       if (!value) {
         this.logger.log(`[Cron] Stopping free lab :${labFree.lab.id}`);
-        await this.labServerService.stopLab(labFree.lab);
+        await this.labServerService
+          .stopLab(labFree.lab)
+          .catch((error) =>
+            this.logger.error(
+              `Error while stopping free lab ${labFree.lab.id}: ${error.message}`,
+              error.stack
+            )
+          );
       }
     }
   }
