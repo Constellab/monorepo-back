@@ -18,6 +18,7 @@ import {
   CnCpVolumeStatus,
 } from '../cn-cloud-provider.class';
 import { CnCloudProviderService } from '../cn-cloud-provider.service';
+import { CnInstanceNotFoundException } from '../cn-instance-not-found.exception';
 import { CnOutscaleService } from './cn-outscale.service';
 
 @Injectable()
@@ -106,6 +107,9 @@ export class CnCloudProviderOutscaleService extends CnCloudProviderService {
 
   async getInstance(id: string): Promise<CnCpInstance> {
     const vm = await this.outscaleService.getVm(id);
+    if (vm == null) {
+      throw new CnInstanceNotFoundException(id, 'Outscale');
+    }
     return this.convertInstance(vm);
   }
 
@@ -241,15 +245,15 @@ export class CnCloudProviderOutscaleService extends CnCloudProviderService {
     return false;
   }
 
-  async createStaticIpAddress(): Promise<CnCpStaticIpAddress | null> {
-    return null;
+  createStaticIpAddress(): Promise<CnCpStaticIpAddress | null> {
+    return Promise.resolve(null);
   }
 
-  async deleteIpAddress(): Promise<void> {
-    return null;
+  deleteIpAddress(): Promise<void> {
+    return Promise.resolve();
   }
 
-  async getIpAddressFromId(): Promise<CnCpStaticIpAddress | null> {
-    return null;
+  getIpAddressFromId(): Promise<CnCpStaticIpAddress | null> {
+    return Promise.resolve(null);
   }
 }

@@ -42,6 +42,10 @@ export abstract class CnCloudProviderService {
     volumeRequest: CnCpCreateVolumeRequest
   ): Promise<CnCpInstanceWithVolume>;
 
+  /**
+   * Get an instance by id.
+   * @throws CnInstanceNotFoundException if the instance is not found in the cloud provider
+   */
   public abstract getInstance(id: string, region: string): Promise<CnCpInstance>;
 
   public abstract deleteInstance(id: string, region: string): Promise<void>;

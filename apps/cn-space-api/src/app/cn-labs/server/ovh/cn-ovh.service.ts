@@ -1,4 +1,4 @@
-import { BlBadRequestException } from '@monorepo/back-core-lib';
+import { BlBadRequestException, BlNotFoundException } from '@monorepo/back-core-lib';
 import { Injectable, Logger } from '@nestjs/common';
 import ovh from 'ovh';
 
@@ -205,6 +205,9 @@ export class CnOvhService {
       this.logger.error(
         `Error while calling OVH API route : ${route} | Method : ${method} | Error : ${strError}`
       );
+      if (e.error === 404) {
+        throw new BlNotFoundException(strError);
+      }
       throw new BlBadRequestException(strError);
     });
   }

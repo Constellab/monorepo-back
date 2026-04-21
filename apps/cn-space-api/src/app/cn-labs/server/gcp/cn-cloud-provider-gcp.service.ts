@@ -14,6 +14,7 @@ import {
   CnCpVolume,
 } from '../cn-cloud-provider.class';
 import { CnCloudProviderService } from '../cn-cloud-provider.service';
+import { CnInstanceNotFoundException } from '../cn-instance-not-found.exception';
 import { CnGcpHelper } from './cn-gcp.class';
 import { CnGcpService } from './cn-gcp.service';
 
@@ -92,8 +93,15 @@ export class CnCloudProviderGcpService extends CnCloudProviderService {
   }
 
   async getInstance(id: string, region: string): Promise<CnCpInstance> {
-    const instance = await this.gcpService.getInstance(id, region);
-    return instance.toStandardInstance();
+    try {
+      const instance = await this.gcpService.getInstance(id, region);
+      return instance.toStandardInstance();
+    } catch (error: any) {
+      if (error?.code === 404) {
+        throw new CnInstanceNotFoundException(id, 'GCP');
+      }
+      throw error;
+    }
   }
 
   async startInstance(id: string, region: string): Promise<void> {

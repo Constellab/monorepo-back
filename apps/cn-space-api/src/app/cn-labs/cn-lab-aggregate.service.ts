@@ -88,6 +88,7 @@ import { CnLabFreeService } from './lab-free/cn-lab-free.service';
 import { CnLabMailService } from './mail/cn-lab-mail.service';
 import { CnCpCompleteInfo } from './server/cn-cloud-provider.class';
 import { CnCloudProviderFactory } from './server/cn-cloud-provider.factory';
+import { CnInstanceNotFoundException } from './server/cn-instance-not-found.exception';
 import { CnLabConfigurerService } from './server/cn-lab-configurer.service';
 import { CnLabServerService } from './server/cn-lab-server.service';
 import { CnLabStatsRunningResponseDTO } from './stats/cn-lab-running-stats.dto';
@@ -662,22 +663,34 @@ export class CnLabAggregateService {
         return await this.labsService.markInstanceAsNoServer(labId);
       }
 
-      // manage all the server status, except running
-      const serverStatus = await this.labServerService.getLabServerStatus(lab);
-      if (serverStatus.status === 'CREATING' || serverStatus.status === 'RESTARTING') {
-        return await this.labsService.markInstanceAsServerStarting(labId);
-      }
-      if (serverStatus.status === 'STOPPING') {
-        return await this.labsService.markInstanceAsServerStopping(labId);
-      }
-      if (serverStatus.status === 'STOPPED') {
-        return await this.labsService.markInstanceAsServerStopped(labId);
-      }
-      // Specific case to handle error, mark as stopped and set the error in the server task
-      if (serverStatus.status === 'ERROR') {
-        const text =
-          serverStatus.message?.length > 0 ? serverStatus.message : 'No information about the error';
-        return await this.labsService.markInstanceAsError(labId, text);
+      try {
+        // manage all the server status, except running
+        const serverStatus = await this.labServerService.getLabServerStatus(lab);
+
+        if (serverStatus.status === 'CREATING' || serverStatus.status === 'RESTARTING') {
+          return await this.labsService.markInstanceAsServerStarting(labId);
+        }
+        if (serverStatus.status === 'STOPPING') {
+          return await this.labsService.markInstanceAsServerStopping(labId);
+        }
+        if (serverStatus.status === 'STOPPED') {
+          return await this.labsService.markInstanceAsServerStopped(labId);
+        }
+        // Specific case to handle error, mark as stopped and set the error in the server task
+        if (serverStatus.status === 'ERROR') {
+          const text =
+            serverStatus.message?.length > 0 ? serverStatus.message : 'No information about the error';
+          return await this.labsService.markInstanceAsError(labId, text);
+        }
+      } catch (error) {
+        if (error instanceof CnInstanceNotFoundException) {
+          return await this.labsService.markInstanceAsError(
+            labId,
+            `The cloud server instance (${lab.serverInstanceId}) could not be found. ` +
+              `It may have been deleted externally.`
+          );
+        }
+        throw error;
       }
     }
 

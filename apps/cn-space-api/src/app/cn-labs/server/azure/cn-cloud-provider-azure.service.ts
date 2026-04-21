@@ -17,6 +17,7 @@ import {
   CnCpVolumeStatus,
 } from '../cn-cloud-provider.class';
 import { CnCloudProviderService } from '../cn-cloud-provider.service';
+import { CnInstanceNotFoundException } from '../cn-instance-not-found.exception';
 import { CnAzureInstance, CnAzureVolumeStatus } from './cn-azure.class';
 import { CnAzureService } from './cn-azure.service';
 
@@ -95,13 +96,19 @@ export class CnCloudProviderAzureService extends CnCloudProviderService {
 
   async getInstance(id: string): Promise<CnCpInstance> {
     const instance = await this.getAzureInstance(id);
-
     return instance.toStandardInstance();
   }
 
   private async getAzureInstance(id: string): Promise<CnAzureInstance> {
-    const virtualMachine = await this.azureService.getInstance(id);
-    return new CnAzureInstance(virtualMachine);
+    try {
+      const virtualMachine = await this.azureService.getInstance(id);
+      return new CnAzureInstance(virtualMachine);
+    } catch (error: any) {
+      if (error?.statusCode === 404) {
+        throw new CnInstanceNotFoundException(id, 'Azure');
+      }
+      throw error;
+    }
   }
 
   startInstance(id: string): Promise<void> {

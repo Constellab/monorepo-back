@@ -1,4 +1,4 @@
-import { BlBadRequestException } from '@monorepo/back-core-lib';
+import { BlBadRequestException, BlNotFoundException } from '@monorepo/back-core-lib';
 import { Injectable, Logger } from '@nestjs/common';
 
 import { CnCloudProviderName } from '../../../cn-cloud-providers/cn-cloud-provider.entity';
@@ -17,6 +17,7 @@ import {
   CnCpVolumeStatus,
 } from '../cn-cloud-provider.class';
 import { CnCloudProviderService } from '../cn-cloud-provider.service';
+import { CnInstanceNotFoundException } from '../cn-instance-not-found.exception';
 import {
   CnDomainFieldType,
   CnOvhCreateDomainRecordRequest,
@@ -85,7 +86,7 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
       flavorId: flavor.id,
       imageId: image.id,
       sshKeyId: this.configService.getOvhSshKey(),
-      monthlyBilling: instance.billing === 'MONTHLY',
+      monthlyBilling: instance.billing === CnLabBillingMode.MONTHLY,
     };
 
     const ovhInstance = await this.ovhService.createInstance(request);
@@ -99,8 +100,15 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
   }
 
   public async getInstance(id: string): Promise<CnCpInstance> {
-    const ovhInstance = await this.ovhService.getInstance(id);
-    return this.convertOvhInstance(ovhInstance);
+    try {
+      const ovhInstance = await this.ovhService.getInstance(id);
+      return this.convertOvhInstance(ovhInstance);
+    } catch (error) {
+      if (error instanceof BlNotFoundException) {
+        throw new CnInstanceNotFoundException(id, 'OVH');
+      }
+      throw error;
+    }
   }
 
   private convertOvhInstance(instance: CnOvhInstance): CnCpInstance {
@@ -156,7 +164,7 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
       case 'UNKNOWN':
         return 'ERROR';
       default:
-        this.logger.error(`Unknown status ${status} for ovh instance ${id}`);
+        this.logger.error(`Unknown status ${status as string} for ovh instance ${id}`);
         return 'ERROR';
     }
   }
@@ -182,7 +190,7 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
     const request: CnOvhCreateVolumeRequest = {
       region: volume.region,
       size: volume.size,
-      type: volume.type === 'CLASSIC' ? 'classic' : 'high-speed-gen2',
+      type: volume.type === CnLabVolumeType.CLASSIC ? 'classic' : 'high-speed-gen2',
       name: volume.name,
       description: volume.description,
     };
@@ -263,16 +271,16 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
     return false;
   }
 
-  async createStaticIpAddress(): Promise<CnCpStaticIpAddress | null> {
-    return null;
+  createStaticIpAddress(): Promise<CnCpStaticIpAddress | null> {
+    return Promise.resolve(null);
   }
 
-  async deleteIpAddress(): Promise<void> {
-    return null;
+  deleteIpAddress(): Promise<void> {
+    return Promise.resolve();
   }
 
-  async getIpAddressFromId(): Promise<CnCpStaticIpAddress | null> {
-    return null;
+  getIpAddressFromId(): Promise<CnCpStaticIpAddress | null> {
+    return Promise.resolve(null);
   }
 
   async getIpAddressFromInstanceId(id: string): Promise<string> {

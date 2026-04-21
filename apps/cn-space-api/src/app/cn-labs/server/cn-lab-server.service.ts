@@ -125,15 +125,8 @@ export class CnLabServerService {
     if (!lab.serverInstanceId) {
       lab = await this.createLab(cloudProviderService, lab, ipAddress, labVolume);
     } else {
-      const serverInstance = await cloudProviderService.getInstance(
-        lab.serverInstanceId,
-        lab.region.technicalName
-      );
-      if (serverInstance == null) {
-        throw new BlBadRequestException(
-          `Server instance ${lab.serverInstanceId} not found in cloud provider ${cloudProviderName}`
-        );
-      }
+      // Verify the instance still exists in the cloud provider (throws CnInstanceNotFoundException if not)
+      await cloudProviderService.getInstance(lab.serverInstanceId, lab.region.technicalName);
       this.logger.log(
         `Server instance ${lab.serverInstanceId} already exists for lab ${lab.id}. Skipping creation`
       );

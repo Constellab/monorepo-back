@@ -72,7 +72,7 @@ export class CnOutscaleService {
     });
 
     if (response.vms.length === 0) {
-      throw new BlBadRequestException("Can't find the VM");
+      return null;
     }
     return response.vms[0];
   }
