@@ -1,6 +1,7 @@
 {
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
+    "baseUrl": ".",
     "paths": {
       "@monorepo/back-core-lib": ["libs/back-core-lib/src/index.ts"],
       "@monorepo/core-lib": ["libs/core-lib/src/index.ts"],

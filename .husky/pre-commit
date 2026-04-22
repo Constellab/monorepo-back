@@ -1,2 +1,2 @@
 # Run eslint and prettier on staged files
-npx lint-staged
+bunx lint-staged
