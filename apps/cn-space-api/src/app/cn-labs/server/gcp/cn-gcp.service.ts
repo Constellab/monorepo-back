@@ -9,7 +9,6 @@ import {
 } from '@google-cloud/compute';
 import { Injectable, Logger } from '@nestjs/common';
 import { existsSync } from 'fs';
-import { Exception } from 'handlebars';
 
 import { CnCoreConfigService } from '../../../cn-core/modules/cn-core-config/cn-core-config.service';
 import { CnGcpHelper, CnGcpInstance, CnGcpVolume } from './cn-gcp.class';
@@ -117,11 +116,13 @@ export class CnGcpService {
   async startInstance(name: string, zone: string): Promise<void> {
     const projectId = this.getProjectId();
     const instancesClient = this.getInstanceClient();
-    await instancesClient.start({
+    const [operation] = await instancesClient.start({
       project: projectId,
       zone,
       instance: name,
     });
+
+    await this.waitForZoneOperation(projectId, zone, operation.name);
   }
 
   async stopInstance(name: string, zone: string): Promise<void> {
@@ -332,7 +333,7 @@ export class CnGcpService {
 
     if (!credentialsPath || !existsSync(credentialsPath)) {
       this.logger.error(`GCP credentials file not found at ${credentialsPath}`);
-      throw new Exception(`GCP credentials file not found.`);
+      throw new Error(`GCP credentials file not found.`);
     }
 
     return new InstancesClient();
