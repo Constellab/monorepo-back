@@ -8,9 +8,15 @@
 
 # Ignore the tests
 e2e
+test
 
 # Ignore the current node modules
 node_modules
 
 # Ignore dist folder
 dist
+
+# Ignore CI and docs
+.github
+*.md
+.env*

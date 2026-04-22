@@ -11,7 +11,6 @@ jobs:
     with:
       registry: ghcr.io
       image_name: ghcr.io/constellab/space-api
-      github_ref: ${{ github.ref }}
       tag_prefix: cn_
       dockerfile_path: ./apps/cn-space-api/Dockerfile
     secrets:
