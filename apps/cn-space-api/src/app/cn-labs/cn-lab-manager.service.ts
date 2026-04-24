@@ -105,6 +105,11 @@ export class CnLabManagerService {
   }
 
   public getLabManagerInitConfig(lab: CnLab, spaceDomain: string): CnLabManagerInitConfig {
+    const codelabToken = lab.codelabToken;
+    const captchaSiteKey = lab.isConstellabDomain() ? this.configService.getCaptchaSiteKey() : null;
+    const enableBackup = lab.isCloud();
+    const openaiApiKey = lab.isDesktop() ? null : this.configService.getOpenaiAPIKey();
+
     return {
       space: {
         prodApiKey: lab.glabProdApiKey,
@@ -118,16 +123,29 @@ export class CnLabManagerService {
         // don't provide the community api key on desktop
         apiKey: lab.isDesktop() ? null : this.configService.getCommunityApiKey(),
       },
-      codelabToken: lab.codelabToken,
+      lab: {
+        id: lab.id,
+        name: lab.name,
+        codelabToken,
+        captchaSiteKey,
+      },
+      db: {
+        gwsCoreProdPassword: lab.gwsCoreProdDbPassword,
+        gwsCoreDevPassword: lab.gwsCoreDevDbPassword,
+      },
+      backup: {
+        enable: enableBackup,
+      },
+      openaiApiKey,
+
+      // @deprecated - to remove once all lab managers are on version 2.12.0 or higher
+      codelabToken,
       gwsCoreProdPassword: lab.gwsCoreProdDbPassword,
       gwsCoreDevPassword: lab.gwsCoreDevDbPassword,
-      // enable the captcha only on constellab standard domain
-      captchaSiteKey: lab.isConstellabDomain() ? this.configService.getCaptchaSiteKey() : null,
+      captchaSiteKey,
       labConfig: {
-        enableBackup: lab.isCloud(),
+        enableBackup,
       },
-      // disable openai on desktop
-      openaiApiKey: lab.isDesktop() ? null : this.configService.getOpenaiAPIKey(),
     };
   }
 

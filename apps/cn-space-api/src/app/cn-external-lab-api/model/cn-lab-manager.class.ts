@@ -94,14 +94,33 @@ export interface CnLabManagerInitConfig {
     // TODO : to remove once all lab manager are on version 2.11.0 or higher
     apiKey: string;
   };
+  lab: {
+    id: string;
+    name: string;
+    codelabToken: string | null;
+    captchaSiteKey: string | null;
+  };
+  db: {
+    gwsCoreProdPassword: string;
+    gwsCoreDevPassword: string;
+  };
+  backup: {
+    enable: boolean;
+  };
+  openaiApiKey: string | null;
+
+  // @deprecated - to remove once all lab managers are on version 2.12.0 or higher
   codelabToken: string;
+  // @deprecated - to remove once all lab managers are on version 2.12.0 or higher
   gwsCoreProdPassword: string;
+  // @deprecated - to remove once all lab managers are on version 2.12.0 or higher
   gwsCoreDevPassword: string;
+  // @deprecated - to remove once all lab managers are on version 2.12.0 or higher
   labConfig: {
     enableBackup: boolean;
   };
+  // @deprecated - to remove once all lab managers are on version 2.12.0 or higher
   captchaSiteKey: string;
-  openaiApiKey: string;
 }
 
 export interface CnLabManagerTaskStatusInfo {

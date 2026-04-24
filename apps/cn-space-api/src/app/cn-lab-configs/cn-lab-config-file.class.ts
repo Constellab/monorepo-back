@@ -2,7 +2,9 @@
  * Object that represent the config file of a lab (config.json)
  */
 export interface CnLabConfigFile {
+  // @deprecated - to remove once all lab managers are on version 2.12.0 or higher
   lab_id: string;
+  // @deprecated - to remove once all lab managers are on version 2.12.0 or higher
   name: string;
   front_version: string;
   // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
