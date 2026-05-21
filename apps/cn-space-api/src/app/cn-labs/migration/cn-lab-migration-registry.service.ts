@@ -11,6 +11,7 @@ import { CnLabMigrationDescriptionDTO, CnLabMigrationPlanDTO } from './cn-lab-mi
 import { CnLabMigration200 } from './migrations/cn-lab-migration-2.0.0';
 import { CnLabMigration230 } from './migrations/cn-lab-migration-2.3.0';
 import { CnLabMigration280 } from './migrations/cn-lab-migration-2.8.0';
+import { CnLabMigration2130 } from './migrations/cn-lab-migration-2.13.0';
 
 /**
  * Registry service for managing lab migrations.
@@ -46,6 +47,7 @@ export class CnLabMigrationRegistryService {
       ),
       new CnLabMigration230(this.labConfigurerService, this.labService),
       new CnLabMigration280(this.cloudProviderFactory, this.labConfigurerService, this.labService),
+      new CnLabMigration2130(this.labAggregateService, this.labService),
     ];
     return migrations.sort((a, b) => {
       const versionA = a.getDestinationVersionObject();
