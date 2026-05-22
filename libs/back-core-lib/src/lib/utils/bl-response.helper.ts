@@ -35,10 +35,10 @@ export class BlResponseHelper {
   public static setFileResponseAndCache(
     response: Response,
     file: BlFileResponse,
-    mode: 'download' | 'preview' = 'download'
+    options?: { mode?: 'download' | 'preview'; filename?: string }
   ): void {
     this.setCacheHeaderFor1Week(response);
-    this.setFileResponse(response, file, mode);
+    this.setFileResponse(response, file, options);
   }
 
   /**
@@ -50,14 +50,16 @@ export class BlResponseHelper {
   public static setFileResponse(
     response: Response,
     file: BlFileResponse,
-    mode: 'download' | 'preview' = 'download'
+    options?: { mode?: 'download' | 'preview'; filename?: string }
   ): void {
+    const mode = options?.mode ?? 'download';
     response.setHeader('Content-Type', file.contentType);
     response.setHeader('Content-Length', file.contentLength);
 
-    if (file.name) {
+    const name = options?.filename ?? file.name;
+    if (name) {
       const disposition = mode === 'download' ? 'attachment' : 'inline';
-      const encodedFilename = encodeURIComponent(file.name);
+      const encodedFilename = encodeURIComponent(name);
       response.setHeader('Content-Disposition', `${disposition}; filename*=UTF-8''${encodedFilename}`);
     }
 

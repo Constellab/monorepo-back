@@ -20,7 +20,7 @@ import {
 import { Injectable, Logger } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EntityManager, In, IsNull, Repository } from 'typeorm';
+import { EntityManager, In, IsNull, Not, Repository } from 'typeorm';
 
 import { CnErrorText } from '../../cn-core/model/config/cn-error-text.class';
 import { CnCoreConfigService } from '../../cn-core/modules/cn-core-config/cn-core-config.service';
@@ -167,7 +167,7 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
         name: documentName,
         entityId: entityId,
         hierarchyRepresentation: {
-          visibility: CnHierarchyObjectVisibility.VISIBLE, // only consider visible documents
+          visibility: Not(CnHierarchyObjectVisibility.TRASH), // exclude trashed documents
         },
       },
     });
@@ -192,7 +192,7 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
             name: newDocumentName,
             entityId: entityId,
             hierarchyRepresentation: {
-              visibility: CnHierarchyObjectVisibility.VISIBLE, // only consider visible documents
+              visibility: Not(CnHierarchyObjectVisibility.TRASH), // exclude trashed documents
             },
           },
         });
@@ -557,8 +557,8 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
         SELECT SUM(size) as totalSize
         FROM document
                JOIN hierarchy_object ON document.id = hierarchy_object.id
-        WHERE hierarchy_object.spaceId = ?
-          and document.bucketType != ?
+        WHERE hierarchy_object.space_id = ?
+          and document.bucket_type != ?
       `,
       [spaceId, BlBucketType.LAB]
     );

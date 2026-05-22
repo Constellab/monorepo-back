@@ -46,9 +46,6 @@ export class CnCreateNoteWithConfigDto {
   note: CnSaveNoteDto;
   lab_config: CnLabConfigDto;
   scenario_ids: string[];
-  // contains all the json view of the note
-  // key = view id, value = json view
-  resource_views: Record<string, any>;
 }
 
 export interface CnSaveNoteResultDTO {

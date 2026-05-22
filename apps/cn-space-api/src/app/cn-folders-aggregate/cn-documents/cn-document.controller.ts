@@ -72,7 +72,7 @@ export class CnDocumentController {
     @Res() response: Response
   ): Promise<void> {
     const file = await this.documentAggregateService.getUploadedDocument(documentId);
-    BlResponseHelper.setFileResponse(response, file, 'preview');
+    BlResponseHelper.setFileResponse(response, file, { mode: 'preview' });
   }
 
   @CnHierarchyObjectTokenDecorator()
@@ -86,7 +86,7 @@ export class CnDocumentController {
     const file = await this.documentAggregateService.getUploadedDocument(documentId);
 
     // use as any as this still works
-    BlResponseHelper.setFileResponse(response, file, 'download');
+    BlResponseHelper.setFileResponse(response, file);
   }
 
   @Put(':documentId/rename')
@@ -111,7 +111,7 @@ export class CnDocumentController {
   @Get('preview/:token')
   public async getDocumentPreview(@Param('token') token: string, @Res() response: Response): Promise<any> {
     const file = await this.documentAggregateService.getDocumentByPreviewToken(token);
-    BlResponseHelper.setFileResponse(response, file, 'download');
+    BlResponseHelper.setFileResponse(response, file);
   }
 
   //////////////////////////////////// ADMIN //////////////////////////////////////

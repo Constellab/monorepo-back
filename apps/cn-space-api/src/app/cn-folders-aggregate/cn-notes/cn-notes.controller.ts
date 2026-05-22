@@ -46,27 +46,27 @@ export class CnNotesController {
   ): Promise<any> {
     const file = await this.noteAggregateService.getNoteFile(id, filename);
     if (file) {
-      BlResponseHelper.setFileResponseAndCache(response, file);
+      BlResponseHelper.setFileResponseAndCache(response, file, { filename });
     } else {
       response.status(404).send('File not found');
     }
   }
 
   /**
-   * Return a view of the note
+   * Return the content of a json file of the note
    */
   @CnHierarchyObjectTokenDecorator()
-  @Get(':id/view/:viewId')
-  public async getView(
+  @Get(':id/json-file/:filename')
+  public async getNoteJsonFile(
     @Param('id', new ParseUUIDPipe()) id: string,
-    @Param('viewId') viewId: string,
+    @Param('filename') filename: string,
     @Res() response: Response
   ): Promise<any> {
-    const file = await this.noteAggregateService.getNoteView(id, viewId);
+    const file = await this.noteAggregateService.getNoteJsonFile(id, filename);
     if (file) {
-      BlResponseHelper.setFileResponseAndCache(response, file);
+      BlResponseHelper.setFileResponse(response, file);
     } else {
-      response.status(404).send('View not found');
+      response.status(404).send('File not found');
     }
   }
 

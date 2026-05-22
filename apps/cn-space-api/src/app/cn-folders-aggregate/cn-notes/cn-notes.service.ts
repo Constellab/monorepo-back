@@ -6,8 +6,9 @@ import { EntityManager, Repository } from 'typeorm';
 
 import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
 import { CnLabConfigsService } from '../../cn-lab-configs/cn-lab-configs.service';
-import { CnDocument, CnDocumentEntity, CnDocumentType } from '../cn-documents/cn-document.entity';
+import { CnDocument, CnDocumentType } from '../cn-documents/cn-document.entity';
 import { CnDocumentService } from '../cn-documents/cn-document.service';
+import { CnDocumentUploadOverrideMode } from '../cn-documents/cn-document-dto.class';
 import {
   CnHierarchyObject,
   CnHierarchyObjectEntity,
@@ -102,11 +103,15 @@ export class CnNotesService extends BlAbstractService<CnNoteEntity> {
     );
   }
 
-  async getView(viewId: string, parentFolder: CnHierarchyObject, noteId: string): Promise<BlFileResponse> {
+  async getJsonFile(
+    filename: string,
+    parentFolder: CnHierarchyObject,
+    noteId: string
+  ): Promise<BlFileResponse> {
     return await this.documentService.getDocumentContentByTypeAndName(
       parentFolder.getRootFolderId(),
       CnDocumentType.NOTE_CONTENT,
-      viewId + '.json',
+      filename + '.json',
       noteId
     );
   }
@@ -221,31 +226,10 @@ export class CnNotesService extends BlAbstractService<CnNoteEntity> {
     }
 
     // store document reference in the note
-    note = await this.updatePartial(note.id, { document: noteDocument as CnDocumentEntity });
+    note = await this.updatePartial(note.id, { document: noteDocument });
 
     // manage the file and image of the note
     await this.uploadNoteFiles(files, note.id, noteDocument, parentFolder);
-
-    // TODO : old view management, to remove once all labs are on v 0.16.0
-    if (createNoteDto.resource_views) {
-      // manage views of the note
-      await this.uploadNoteViews(
-        richTextAggregate.richText,
-        createNoteDto.resource_views,
-        note.id,
-        noteDocument,
-        parentFolder
-      );
-    } else {
-      // manage views of the note
-      await this.uploadNoteViewsFromFiles(
-        richTextAggregate.richText,
-        files,
-        note.id,
-        noteDocument,
-        parentFolder
-      );
-    }
 
     return note;
   }
@@ -271,83 +255,11 @@ export class CnNotesService extends BlAbstractService<CnNoteEntity> {
     parentDocument: CnDocument,
     parentFolder: CnHierarchyObject
   ): Promise<void> {
-    const filename = file.originalname;
-    const document = await this.documentService.findDocumentByTypeAndNameAndEntity(
-      CnDocumentType.NOTE_CONTENT,
-      filename,
-      noteId
-    );
-
-    // upload the image only if it does not exist
-    if (!document) {
-      await this.documentService.uploadDocument(file, parentFolder, CnDocumentType.NOTE_CONTENT, noteId, {
-        documentName: filename,
-        parentDocument: parentDocument,
-      });
-    }
-  }
-
-  /**
-   * Method to load the resource view of the note and store them in the object storage
-   */
-  private async uploadNoteViews(
-    richText: TeRichText,
-    resourceViews: Record<string, any>,
-    noteId: string,
-    parentDocument: CnDocument,
-    parentFolder: CnHierarchyObject
-  ): Promise<void> {
-    if (!resourceViews) return;
-
-    const views = [...richText.getResourceViewsBlocks(), ...richText.getFileViewsBlocks()];
-    for (const specialOp of views) {
-      const viewBlockData = specialOp.data;
-
-      const viewData = resourceViews[viewBlockData.id];
-
-      if (!viewData) continue;
-
-      const docName = `${viewBlockData.id}.json`;
-      await this.documentService.createOrUpdateJSONDocument(
-        parentFolder,
-        CnDocumentType.NOTE_CONTENT,
-        docName,
-        noteId,
-        viewData,
-        parentDocument
-      );
-    }
-  }
-
-  /**
-   * Method to load the resource view of the note and store them in the object storage
-   */
-  private async uploadNoteViewsFromFiles(
-    richText: TeRichText,
-    files: BlFile[],
-    noteId: string,
-    parentDocument: CnDocument,
-    parentFolder: CnHierarchyObject
-  ): Promise<void> {
-    if (!files) return;
-
-    const views = [...richText.getResourceViewsBlocks(), ...richText.getFileViewsBlocks()];
-    for (const specialOp of views) {
-      const viewBlockData = specialOp.data;
-
-      // find the file associated to the view
-      const file = files.find((f) => f.originalname === viewBlockData.id + '.json');
-      if (!file) continue; // skip if no file found for the view
-      // const viewData = file.buffer.toString();
-
-      // if (!viewData) continue;
-
-      const docName = `${viewBlockData.id}.json`;
-      await this.documentService.uploadDocument(file, parentFolder, CnDocumentType.NOTE_CONTENT, noteId, {
-        documentName: docName,
-        parentDocument: parentDocument,
-      });
-    }
+    await this.documentService.uploadDocument(file, parentFolder, CnDocumentType.NOTE_CONTENT, noteId, {
+      documentName: file.originalname,
+      parentDocument: parentDocument,
+      overrideMode: CnDocumentUploadOverrideMode.REPLACE,
+    });
   }
 
   public async deleteNote(note: CnNoteWithDocument, entityManager: EntityManager): Promise<void> {

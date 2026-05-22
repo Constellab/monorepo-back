@@ -19,7 +19,7 @@ VALUES -- Robot Gencovery (system user)
         ' ', 'ADMIN',
         NULL,
         NULL,
-        0, NULL, NULL, 'en', 'dark-theme', 'WAITING_FOR_EMAIL', '2023-02-27 17:15:47',
+        0, NULL, NULL, 'en', 'light-theme', 'WAITING_FOR_EMAIL', '2023-02-27 17:15:47',
         NULL, 'Gencovery', 0, NULL, 'ENTERPRISE');
 
 -- Robot user group
@@ -49,7 +49,7 @@ VALUES -- Robot Gencovery (system user)
          'ADMIN',
         NULL,
         NULL,
-        0, NULL, NULL, 'en', 'dark-theme', 'READY', '2023-02-27 17:15:47',
+        0, NULL, NULL, 'en', 'light-theme', 'READY', '2023-02-27 17:15:47',
         NULL, 'Gencovery', 0, NULL, 'ENTERPRISE');
 
 -- Test user group
@@ -79,7 +79,7 @@ VALUES (@secondaryUserId, 'Sophie', 'Dupont', 'sophie@gencovery.com',
         'USER',
         NULL,
         NULL,
-        0, NULL, NULL, 'en', 'dark-theme', 'READY', '2023-03-15 10:00:00',
+        0, NULL, NULL, 'en', 'light-theme', 'READY', '2023-03-15 10:00:00',
         NULL, 'Gencovery', 0, NULL, 'ENTERPRISE');
 
 -- Secondary user group
@@ -419,6 +419,68 @@ SET @serverDecisionTree = '{\"tree\":[{\"title\":\"Data office\",\"description\"
 SET @constellabSuite = '{\"apps\":[{\"name\":\"Constellab Project\",\"emoji\":\"📓\",\"background\":\"#22c55e\",\"shortDescription\":\"A lightweight, interactive project management tool designed for innovation-driven teams. It helps organizations track progress, manage resources, and visualize key performance indicators with ease. By centralizing all project data, Constellab Project offers dynamic Gantt charts, status tracking, and real-time insights—empowering teams to collaborate efficiently and make smarter decisions across their innovation projects.\"},{\"name\":\"Constellab Table\",\"emoji\":\"📊\",\"background\":\"#3b82f6\",\"shortDescription\":\"The AI assistant for managing all your tabular data with scientific precision. It transforms the way you work with Excel, CSV, or text files by combining intelligent visualization with conversational AI. Effortlessly upload and explore multiple datasets, clean and transform your data, and generate charts or statistical insights in seconds. Ideal for analysts, researchers, and non-technical users who want to analyze and report data—without writing a single formula or line of code.\",\"communityAppLink\":\"https://constellab.community/apps/ef742e82-6000-4326-b687-59b998a8354b/constellab-table\"},{\"name\":\"Constellab Search\",\"emoji\":\"🤖\",\"background\":\"#a855f7\",\"shortDescription\":\"The AI assistant that consolidates your large collections of unstructured documents, enabling you to explore data and enhance your analytics through natural language and scientific precision. Constellab Search transforms your organization knowledge into an accessible, searchable resource for your teams, partners, and clients—empowering everyone to find, understand, and value information instantly.\",\"communityAppLink\":\"https://constellab.community/apps/76a51a59-58c5-494f-8ea9-775ca60ccfb5/chromato-ai\"},{\"name\":\"Constellab Bioprocess\",\"emoji\":\"🧬\",\"background\":\"#f97316\",\"shortDescription\":\"The playground for monitoring, analyzing, and optimizing your bioprocess experiments. It centralizes data from instruments, sensors, and lab records to provide real-time insights into culture performance, productivity, and process parameters. With built-in and customizable visualization, QC checks, AI-driven analytics, and automated reporting, Constellab Bioprocess helps scientists accelerate process development, ensure data integrity, and make faster, evidence-based decisions across R&D and production environments.\"},{\"name\":\"Constellab 16S rRNASeq\",\"emoji\":\"🦠\",\"background\":\"#f1ee63\",\"shortDescription\":\"The bioinformatics workspace for exploring and interpreting microbial communities with clarity and precision. It streamlines your entire 16S rRNA sequencing workflow—from raw data import to taxonomy and functional profiling and comparative analysis—while offering intuitive visualization. Designed to make complex bioinformatics accessible, Constellab 16S rRNASeq helps scientists work smoothly, collaborate easily, and uncover microbial patterns without the usual technical friction.\",\"communityAppLink\":\"https://constellab.community/apps/f1f107de-68ad-4b7c-82bf-bbaacb27c117/constellab-16s-rrna-seq\"},{\"name\":\"Constellab Digital Twin\",\"emoji\":\"🔬\",\"background\":\"#c03c72\",\"shortDescription\":\"The discovery workspace for creating, visualizing, and simulating digital twins of cellular metabolism and accelerate your discovery pipelines. It connects experimental data, models, and metabolic pathways to help you understand complex behaviors and predict outcomes in silico. With interactive dashboards, dynamic visualizations, and seamless collaboration tools, Constellab Digital Twin turns data into living models—making your research more intuitive, exploratory, and enjoyable.\",\"communityAppLink\":\"https://constellab.community/apps/8fa00164-1b33-4f94-8ad2-d4376635423b/constellab-digital-twin\"}]}';
 
 SET @freeLabConfig = '{\"cloudProvider\":\"GCP\",\"cloudProviderRegion\":\"europe-west1-b\",\"cloudProviderInstanceType\":\"e2-standard-2\",\"nbCpus\":2,\"ramSize\":8,\"volumeSize\":100,\"volumeType\":\"HIGH_SPEED\",\"billingMode\":\"HOURLY\",\"domain\":\"constellab.app\",\"greenOption\":\"STOP_AFTER_INACTIVITY_TIME\",\"greenOptionInactivityDuration\":60,\"bricks\":[\"gws_core\",\"gws_academy\"],\"hourLimit\":25,\"deletionAfterDays\":2}';
+
+-- =============================================
+-- Folders in Michel Larousse's personal space
+-- =============================================
+
+SET @rootFolderId = 'f0a1b2c3-d4e5-6789-abcd-000000000001';
+SET @subFolderId = 'f0a1b2c3-d4e5-6789-abcd-000000000002';
+
+-- Root folder hierarchy object
+INSERT INTO `hierarchy_object` (`id`, `name`, `user_id`, `last_modified_at`, `object_type`, `object_type_order`,
+                                `parent_id`, `root_parent_id`, `space_id`, `visibility`, `chat_enabled`,
+                                `has_description`, `is_validated`, `document_size`, `style`, `last_tags_str`, `mpath`)
+VALUES (@rootFolderId, 'Research Project', @adminUserId, '2026-01-10 10:00:00',
+        'FOLDER', 1, NULL, NULL, @adminUserSpaceId, 'VISIBLE', 0, 0, 0, NULL,
+        '{"icon_type":"MATERIAL_ICON","icon_technical_name":"folder_shared","background_color":"accent","icon_color":"accentContrast"}',
+        NULL, @rootFolderId);
+
+-- Sub folder hierarchy object
+INSERT INTO `hierarchy_object` (`id`, `name`, `user_id`, `last_modified_at`, `object_type`, `object_type_order`,
+                                `parent_id`, `root_parent_id`, `space_id`, `visibility`, `chat_enabled`,
+                                `has_description`, `is_validated`, `document_size`, `style`, `last_tags_str`, `mpath`)
+VALUES (@subFolderId, 'Experiments', @adminUserId, '2026-01-10 10:30:00',
+        'FOLDER', 1, @rootFolderId, @rootFolderId, @adminUserSpaceId, 'VISIBLE', 0, 0, 0, NULL,
+        '{"icon_type":"MATERIAL_ICON","icon_technical_name":"folder","background_color":"accent","icon_color":"accentContrast"}',
+        NULL, CONCAT(@rootFolderId, '.', @subFolderId));
+
+-- Root folder entity (with OVH storage)
+INSERT INTO `folder` (`id`, `name`, `code`, `description`, `starting_date`, `ending_date`,
+                      `main_storage_id`, `backup_storage_id`, `chat_enabled`,
+                      `style`, `created_at`, `created_by_id`, `last_modified_at`, `last_modified_by_id`)
+VALUES (@rootFolderId, 'Research Project', NULL, NULL, NULL, NULL,
+        '5a83422b-5604-401b-8c73-ac3bf0d122ef', 'dcaaa6f7-ef76-4692-9412-6687b3bfc272', 0,
+        '{"icon_type":"MATERIAL_ICON","icon_technical_name":"folder_shared","background_color":"accent","icon_color":"accentContrast"}',
+        '2026-01-10 10:00:00', @adminUserId, '2026-01-10 10:00:00', @adminUserId);
+
+-- Sub folder entity
+INSERT INTO `folder` (`id`, `name`, `code`, `description`, `starting_date`, `ending_date`,
+                      `main_storage_id`, `backup_storage_id`, `chat_enabled`,
+                      `style`, `created_at`, `created_by_id`, `last_modified_at`, `last_modified_by_id`)
+VALUES (@subFolderId, 'Experiments', NULL, NULL, NULL, NULL,
+        NULL, NULL, 0,
+        '{"icon_type":"MATERIAL_ICON","icon_technical_name":"folder","background_color":"accent","icon_color":"accentContrast"}',
+        '2026-01-10 10:30:00', @adminUserId, '2026-01-10 10:30:00', @adminUserId);
+
+-- Folder-User associations (Michel as OWNER, Sophie as USER)
+INSERT INTO `folder_user` (`user_id`, `root_folder_id`, `role`, `shared_at`, `shared_by_id`,
+                           `folder_notif`, `message_notif`, `scenario_notif`, `note_notif`, `document_notif`)
+VALUES -- Michel (owner)
+       (@adminUserId, @rootFolderId, 'OWNER', '2026-01-10 10:00:00', @adminUserId,
+        'NONE', 'NOTIF_ONLY', 'NONE', 'NONE', 'NONE'),
+       -- Sophie (shared user)
+       (@secondaryUserId, @rootFolderId, 'USER', '2026-01-10 11:00:00', @adminUserId,
+        'NONE', 'NOTIF_ONLY', 'NONE', 'NONE', 'NONE');
+
+-- Lab-Folder association (localhost lab -> root folder)
+INSERT INTO `lab_folder` (`lab_id`, `root_folder_id`, `created_at`, `created_by_id`)
+VALUES ('83afdd53-2509-4dcc-82d4-86af435447dc', @rootFolderId, '2026-01-10 10:00:00', @adminUserId);
+
+
+-- =============================================
+-- Settings
+-- =============================================
 
 INSERT INTO `settings` (`id`, `created_at`, `last_modified_at`, `server_decision_tree`, `created_by_id`, `last_modified_by_id`,
                          `constellab_suite`, `free_lab_config`)

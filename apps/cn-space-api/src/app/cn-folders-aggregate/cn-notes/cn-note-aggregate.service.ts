@@ -68,7 +68,18 @@ export class CnNoteAggregateService {
       scenarios.push(scenario);
     }
 
-    const noteResult = await this.noteService.saveNote(createNoteDto, scenarios, parentFolder, files);
+    const isCreation = !(await this.noteService.findById(createNoteDto.note.id));
+
+    let noteResult;
+    try {
+      noteResult = await this.noteService.saveNote(createNoteDto, scenarios, parentFolder, files);
+    } catch (error) {
+      // on creation failure, clean up the note, hierarchy object, and any partial documents
+      if (isCreation) {
+        await this.deleteNote(createNoteDto.note.id);
+      }
+      throw error;
+    }
 
     if (noteResult.mode === 'create') {
       this.eventService.emitFolderEvent({
@@ -112,10 +123,10 @@ export class CnNoteAggregateService {
     return this.noteService.getFile(filename, parentFolder, noteId);
   }
 
-  async getNoteView(noteId: string, viewId: string): Promise<BlFileResponse> {
+  async getNoteJsonFile(noteId: string, filename: string): Promise<BlFileResponse> {
     const noteFolder = await this.securityService.getAndCheckAuthorizationForFindOne(noteId);
     const parentFolder = await this.hierarchyObjectService.findByIdAndCheck(noteFolder.parentId);
-    return this.noteService.getView(viewId, parentFolder, noteId);
+    return this.noteService.getJsonFile(filename, parentFolder, noteId);
   }
 
   public getNotesByRootFolderAndLab(rootFolderId: string, labId: string): Promise<CnNote[]> {

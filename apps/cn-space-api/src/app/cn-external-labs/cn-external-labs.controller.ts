@@ -258,7 +258,7 @@ export class CnExternalLabsController {
     @Res() response: Response
   ): Promise<void> {
     const file = await this.documentAggregateService.getUploadedDocument(documentId);
-    BlResponseHelper.setFileResponse(response, file, 'download');
+    BlResponseHelper.setFileResponse(response, file);
   }
 
   /**
