@@ -19,8 +19,14 @@ export interface BlLoggerConfig {
 export function blConfigureLogger(config: BlLoggerConfig): WinstonModuleOptions {
   const transportsList: any[] = [];
 
-  const logFormat = (info: TransformableInfo): string =>
-    `${info.timestamp} - ${info.level} - ${info.message}`;
+  const logFormat = (info: TransformableInfo): string => {
+    const timestamp = info.timestamp as string;
+    let log = `${timestamp} - ${info.level} - ${info.message as string}`;
+    if (info.stack) {
+      log += `\n${info.stack as string}`;
+    }
+    return log;
+  };
 
   // Add the console transport to log into the console
   transportsList.push(
