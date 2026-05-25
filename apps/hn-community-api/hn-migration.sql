@@ -754,3 +754,7 @@ ALTER TABLE `tag_co_author_invite` MODIFY COLUMN `status` enum('ACCEPTED','PENDI
 ALTER TABLE `app_co_author_invite` MODIFY COLUMN `status` enum('ACCEPTED','PENDING','EXPIRED') NOT NULL DEFAULT 'PENDING';
 
 COMMIT;
+
+######################### 1.11.1 #######################
+
+-- add ROBOT_USER_MAIL env variable

@@ -1,4 +1,4 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, Logger } from '@nestjs/common';
 import { DataSource, EntityManager } from 'typeorm';
 
 import { HnAgentVersion } from '../agent-aggregate/agent-version/hn-agent-version.entity';
@@ -20,6 +20,8 @@ import { HnRunStatAggregateService } from './run-stat-aggregate/hn-run-stat-aggr
 
 @Injectable()
 export class HnRunStatAgService {
+  private readonly logger = new Logger(HnRunStatAgService.name);
+
   constructor(
     private readonly runStatService: HnRunStatService,
     private readonly runStatAggregateService: HnRunStatAggregateService,
@@ -38,7 +40,11 @@ export class HnRunStatAgService {
           throw new ConflictException(`Run stat with id ${stat.id} already exists`);
         }
 
-        const user = await this.userService.findOne(stat.executed_by);
+        let user = await this.userService.findOne(stat.executed_by);
+        if (!user) {
+          this.logger.warn(`User ${stat.executed_by} not found for run stat ${stat.id}, using robot user`);
+          user = await this.userService.getRobotUser();
+        }
         let agentVersion: HnAgentVersion;
         if (stat.community_agent_version_id) {
           agentVersion = await this.agentAggregateService.findAgentVersionById(

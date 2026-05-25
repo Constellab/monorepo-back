@@ -226,6 +226,10 @@ export class HnCoreConfigService {
     }
   }
 
+  public getRobotUserMail(): string {
+    return this.configService.get('ROBOT_USER_MAIL');
+  }
+
   public getCustomerSuccessMail(): string {
     return this.configService.get('CUSTOMER_SUCCESS_MAIL');
   }

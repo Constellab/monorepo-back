@@ -13,6 +13,7 @@ import { FindOptionsWhere, Like, Repository } from 'typeorm';
 
 import { HnExternalCheckCredentialResponse } from '../auth/hn-space-auth.service';
 import { HnSiteMapEnumChangefreq, HnSitemapItemBase } from '../core/model/config/hn-site-map.class';
+import { HnCoreConfigService } from '../core/modules/core-config/hn-core-config.service';
 import { HnExternalSpaceApiService } from '../core/service/hn-external-space-api.service';
 import { HnFrontService } from '../core/service/hn-front.service';
 import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
@@ -26,7 +27,8 @@ export class HnUserService implements BlUserService {
     @InjectRepository(HnUser)
     private userRepository: Repository<HnUser>,
     private frontService: HnFrontService,
-    private spaceApiService: HnExternalSpaceApiService
+    private spaceApiService: HnExternalSpaceApiService,
+    private configService: HnCoreConfigService
   ) {}
 
   async createOrUpdate(user: HnUserConstellabDTO): Promise<void> {
@@ -85,6 +87,10 @@ export class HnUserService implements BlUserService {
 
   async findOneByEmail(email: string): Promise<HnUser> {
     return await this.userRepository.findOneBy({ email: email });
+  }
+
+  public getRobotUser(): Promise<HnUser> {
+    return this.userRepository.findOneBy({ email: this.configService.getRobotUserMail() });
   }
 
   getCurrent(): HnUser {
