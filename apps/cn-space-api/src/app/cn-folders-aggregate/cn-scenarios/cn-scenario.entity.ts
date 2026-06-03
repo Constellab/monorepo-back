@@ -44,7 +44,14 @@ export class CnScenarioEntity extends CnHierarchyRepresentation {
   notes: CnNote[];
 
   @Exclude()
-  @Column({ type: 'simple-json', nullable: false, length: 'long' })
+  @Column({
+    type: 'longtext',
+    nullable: false,
+    transformer: {
+      to: (value: CnScenarioProtocol) => JSON.stringify(value),
+      from: (value: string) => JSON.parse(value),
+    },
+  })
   protocol: CnScenarioProtocol;
 
   @Column({ nullable: false, default: false })
