@@ -37,6 +37,10 @@ export class CnUserSpaceInfo {
   isSpaceAdmin(): boolean {
     return this.isAdmin() || this.roleInSpace === CnSpaceUserRole.ADMIN;
   }
+
+  isSpaceViewer(): boolean {
+    return !this.isAdmin() && this.roleInSpace === CnSpaceUserRole.VIEWER;
+  }
 }
 
 export interface CnUserUpdateLicenseDTO {

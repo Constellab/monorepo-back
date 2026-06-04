@@ -14,11 +14,15 @@ import { CnFoldersAggregateSecurityI } from './cn-folders-security.service';
 export class CnFoldersSecurityLabAccessToken implements CnFoldersAggregateSecurityI {
   constructor(private labAuthContext: CnAuthContextLabToken) {}
 
-  async checkFindAllBySpace(): Promise<void> {
+  checkFindAllBySpace(): void {
     throw new BlUnauthorizedException();
   }
 
-  async getRoleForObject(hierarchyObject: CnHierarchyObject): Promise<CnRootFolderUserRole> {
+  checkCreateRootFolder(): void {
+    // Lab tokens are allowed to create root folders
+  }
+
+  getRoleForObject(hierarchyObject: CnHierarchyObject): CnRootFolderUserRole {
     if (hierarchyObject.spaceId !== this.labAuthContext.space.id) {
       throw new BlUnauthorizedException('Wrong space');
     }

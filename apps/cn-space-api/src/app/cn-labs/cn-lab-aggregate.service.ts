@@ -169,6 +169,8 @@ export class CnLabAggregateService {
    * @param cloudCreateDTO
    */
   public async createCloudLab(cloudCreateDTO: CnLabCloudCreateDTO): Promise<CnLabEntity> {
+    this.security.checkAuthorizationToCreateLab(CnCurrentUserHelper.getAndCheckUserSpaceInfo());
+
     const lab = new CnLabEntity();
     lab.name = cloudCreateDTO.name;
     lab.type = CnLabType.CLOUD;
@@ -1590,6 +1592,8 @@ export class CnLabAggregateService {
     lab.type = CnLabType.DESKTOP;
 
     const userInfo = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
+    this.security.checkAuthorizationToCreateLab(userInfo);
+
     lab.setSpace(userInfo.space);
 
     this.security.checkAuthorizationCreateDesktopLab(lab);

@@ -15,9 +15,11 @@ import { CnFoldersSecurityLabAccessToken } from './cn-folders-security-lab-acces
 import { CnFoldersSecurityUser } from './cn-folders-security-user';
 
 export interface CnFoldersAggregateSecurityI {
-  getRoleForObject(hierarchyObject: CnHierarchyObject): Promise<CnRootFolderUserRole>;
+  getRoleForObject(hierarchyObject: CnHierarchyObject): CnRootFolderUserRole | Promise<CnRootFolderUserRole>;
 
-  checkFindAllBySpace(): Promise<void>;
+  checkFindAllBySpace(): void;
+
+  checkCreateRootFolder(): void;
 }
 
 /**
@@ -78,11 +80,16 @@ export class CnFoldersSecurityService {
     return await securityService.getRoleForObject(hierarchyObject);
   }
 
+  public checkAuthorizationToCreateRootFolder(): void {
+    const securityService = this.getSecurityService();
+    securityService.checkCreateRootFolder();
+  }
+
   ////////////////////////////// CHECKS //////////////////////////////
 
-  public async checkFindAllBySpace(): Promise<void> {
+  public checkFindAllBySpace(): void {
     const securityService = this.getSecurityService();
-    return securityService.checkFindAllBySpace();
+    securityService.checkFindAllBySpace();
   }
 
   private checkHierarchyObject(hierarchyObject: CnHierarchyObject): void {

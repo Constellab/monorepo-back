@@ -2,6 +2,8 @@
 SET @robotUserId = '65b2ebc3-9ed0-4513-825c-6b9bc7eeddff';
 SET @adminUserId = '98ed7a54-9ee4-4257-811f-e1dfe730b97d';
 SET @secondaryUserId = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890';
+SET @viewerUserId = 'b2c3d4e5-f6a7-8901-bcde-f12345678901';
+SET @viewerUserSpaceId = 'c3d4e5f6-a7b8-9012-cdef-123456789012';
 SET @gwsCoreBrickId = 'b34d3952-732b-479b-ad26-b34f9d5d43aa';
 SET @gwsAcademyBrickId = '041b33e8-9476-42e3-b8cc-3894584c22d8';
 SET @adminPrivateBrickId = 'c5f1e8a2-4d2b-4a6e-9c3f-7b8e1d2a3c4f';
@@ -11,7 +13,7 @@ SET @enterpriseSpaceId = '2bd030ba-158f-45ba-ab18-093fcdfa7b1a';
 
 
 -- Robot user
-INSERT INTO `user` (`id`, `firstname`, `lastname`, `email`, `password`, `category`, `activity`, `biography`,
+INSERT IGNORE INTO `user` (`id`, `firstname`, `lastname`, `email`, `password`, `category`, `activity`, `biography`,
                     `failed_login_count`, `last_login_attempt`, `last_login_success`, `lang`, `theme`, `status`, `created_at`,
                     `photo`, `company`, `has2_fa`, `phone`, `license`)
 VALUES -- Robot Gencovery (system user)
@@ -23,7 +25,7 @@ VALUES -- Robot Gencovery (system user)
         NULL, 'Gencovery', 0, NULL, 'ENTERPRISE');
 
 -- Robot user group
-INSERT INTO `group` (`id`, `created_at`, `last_modified_at`, `label`, `type`, `user_id`, `space_id`, `created_by_id`,
+INSERT IGNORE INTO `group` (`id`, `created_at`, `last_modified_at`, `label`, `type`, `user_id`, `space_id`, `created_by_id`,
                      `last_modified_by_id`)
 VALUES -- Robot Gencovery group
        ('2e589f29-873f-447a-8530-c55549c2c85c', '2023-02-27 17:15:47', '2023-02-27 17:15:47', 'Robot Gencovery',
@@ -32,14 +34,14 @@ VALUES -- Robot Gencovery group
 
 
 -- Robot user_group association
-INSERT INTO `user_group` (`user_id`, `group_id`, `created_at`, `created_by_id`)
+INSERT IGNORE INTO `user_group` (`user_id`, `group_id`, `created_at`, `created_by_id`)
 VALUES -- Robot Gencovery -> Robot Gencovery group
        (@robotUserId, '2e589f29-873f-447a-8530-c55549c2c85c', '2023-08-07 15:27:18',
         @robotUserId);
 
 
 -- Test user (Admin)
-INSERT INTO `user` (`id`, `firstname`, `lastname`, `email`, `password`, `category`, `activity`, `biography`,
+INSERT IGNORE INTO `user` (`id`, `firstname`, `lastname`, `email`, `password`, `category`, `activity`, `biography`,
                     `failed_login_count`, `last_login_attempt`, `last_login_success`, `lang`, `theme`, `status`, `created_at`,
                     `photo`, `company`, `has2_fa`, `phone`, `license`)
 VALUES -- Robot Gencovery (system user)
@@ -53,7 +55,7 @@ VALUES -- Robot Gencovery (system user)
         NULL, 'Gencovery', 0, NULL, 'ENTERPRISE');
 
 -- Test user group
-INSERT INTO `group` (`id`, `created_at`, `last_modified_at`, `label`, `type`, `user_id`, `space_id`, `created_by_id`,
+INSERT IGNORE INTO `group` (`id`, `created_at`, `last_modified_at`, `label`, `type`, `user_id`, `space_id`, `created_by_id`,
                      `last_modified_by_id`)
 VALUES -- Test user group
        ('d70c8820-232a-43dd-b54d-7ff71bdf3931', '2023-02-27 17:19:36', '2023-02-27 17:19:36', 'Test group',
@@ -61,7 +63,7 @@ VALUES -- Test user group
         @adminUserId);
 
 -- Test user -> Test user group
-INSERT INTO `user_group` (`user_id`, `group_id`, `created_at`, `created_by_id`)
+INSERT IGNORE INTO `user_group` (`user_id`, `group_id`, `created_at`, `created_by_id`)
 VALUES -- Test user -> Test user group
        (@adminUserId, 'd70c8820-232a-43dd-b54d-7ff71bdf3931', '2023-08-07 15:27:18',
         @adminUserId);
@@ -70,7 +72,7 @@ VALUES -- Test user -> Test user group
 -- =============================================
 -- Secondary user (non-admin)
 -- =============================================
-INSERT INTO `user` (`id`, `firstname`, `lastname`, `email`, `password`, `category`, `activity`, `biography`,
+INSERT IGNORE INTO `user` (`id`, `firstname`, `lastname`, `email`, `password`, `category`, `activity`, `biography`,
                     `failed_login_count`, `last_login_attempt`, `last_login_success`, `lang`, `theme`, `status`, `created_at`,
                     `photo`, `company`, `has2_fa`, `phone`, `license`)
 VALUES (@secondaryUserId, 'Sophie', 'Dupont', 'sophie@gencovery.com',
@@ -83,22 +85,48 @@ VALUES (@secondaryUserId, 'Sophie', 'Dupont', 'sophie@gencovery.com',
         NULL, 'Gencovery', 0, NULL, 'ENTERPRISE');
 
 -- Secondary user group
-INSERT INTO `group` (`id`, `created_at`, `last_modified_at`, `label`, `type`, `user_id`, `space_id`, `created_by_id`,
+INSERT IGNORE INTO `group` (`id`, `created_at`, `last_modified_at`, `label`, `type`, `user_id`, `space_id`, `created_by_id`,
                      `last_modified_by_id`)
 VALUES ('f1e2d3c4-b5a6-9780-1234-567890abcdef', '2023-03-15 10:00:00', '2023-03-15 10:00:00', 'Sophie Dupont',
         'SINGLE_USER', @secondaryUserId, NULL, @secondaryUserId,
         @secondaryUserId);
 
 -- Secondary user -> group association
-INSERT INTO `user_group` (`user_id`, `group_id`, `created_at`, `created_by_id`)
+INSERT IGNORE INTO `user_group` (`user_id`, `group_id`, `created_at`, `created_by_id`)
 VALUES (@secondaryUserId, 'f1e2d3c4-b5a6-9780-1234-567890abcdef', '2023-03-15 10:00:00',
         @secondaryUserId);
 
 
+-- =============================================
+-- Viewer user (read-only)
+-- =============================================
+INSERT IGNORE INTO `user` (`id`, `firstname`, `lastname`, `email`, `password`, `category`, `activity`, `biography`,
+                    `failed_login_count`, `last_login_attempt`, `last_login_success`, `lang`, `theme`, `status`, `created_at`,
+                    `photo`, `company`, `has2_fa`, `phone`, `license`)
+VALUES (@viewerUserId, 'Jean', 'Lecteur', 'viewer@gencovery.com',
+        --  password: 'test1234'
+        '$argon2id$v=19$m=65536,t=3,p=4$+83vEDOdAi2HD+q7WxAA5w$xp68MlL+QKOtBINcYZVW0O+Nx3jt2UYVw/G1JtstdXQ',
+        'USER',
+        NULL,
+        NULL,
+        0, NULL, NULL, 'en', 'light-theme', 'READY', '2023-04-01 10:00:00',
+        NULL, 'Gencovery', 0, NULL, 'ENTERPRISE');
+
+-- Viewer user group
+INSERT IGNORE INTO `group` (`id`, `created_at`, `last_modified_at`, `label`, `type`, `user_id`, `space_id`, `created_by_id`,
+                     `last_modified_by_id`)
+VALUES ('a1b2c3d4-0000-4000-8000-000000000001', '2023-04-01 10:00:00', '2023-04-01 10:00:00', 'Jean Lecteur',
+        'SINGLE_USER', @viewerUserId, NULL, @viewerUserId,
+        @viewerUserId);
+
+-- Viewer user -> group association
+INSERT IGNORE INTO `user_group` (`user_id`, `group_id`, `created_at`, `created_by_id`)
+VALUES (@viewerUserId, 'a1b2c3d4-0000-4000-8000-000000000001', '2023-04-01 10:00:00',
+        @viewerUserId);
 
 
 -- Countries
-INSERT INTO `country` (`id`, `name`, `short_name`)
+INSERT IGNORE INTO `country` (`id`, `name`, `short_name`)
 VALUES ('018bf5eb-0835-11ed-afdd-0242ac120004', 'Australia', 'au'),
        ('0a24ced9-0834-11ed-afdd-0242ac120004', 'France', 'fr'),
        ('263089da-0834-11ed-afdd-0242ac120004', 'Canada', 'ca'),
@@ -108,7 +136,7 @@ VALUES ('018bf5eb-0835-11ed-afdd-0242ac120004', 'Australia', 'au'),
        ('df6895a7-0834-11ed-afdd-0242ac120004', 'Singapore', 'sg');
 
 -- Cities 
-INSERT INTO `city` (`id`, `name`, `country_id`)
+INSERT IGNORE INTO `city` (`id`, `name`, `country_id`)
 VALUES ('2694a12e-0835-11ed-afdd-0242ac120004', 'Gravelines', '0a24ced9-0834-11ed-afdd-0242ac120004'),
        ('305860a7-0835-11ed-afdd-0242ac120004', 'Strasbourg', '0a24ced9-0834-11ed-afdd-0242ac120004'),
        ('6c9ef4b8-0835-11ed-afdd-0242ac120004', 'Beauharnois', '263089da-0834-11ed-afdd-0242ac120004'),
@@ -120,7 +148,7 @@ VALUES ('2694a12e-0835-11ed-afdd-0242ac120004', 'Gravelines', '0a24ced9-0834-11e
 
 
 -- Cloud providers 
-INSERT INTO `cloud_provider` (`id`, `created_at`, `last_modified_at`, `name`, `created_by_id`, `last_modified_by_id`,
+INSERT IGNORE INTO `cloud_provider` (`id`, `created_at`, `last_modified_at`, `name`, `created_by_id`, `last_modified_by_id`,
                               `description`, `logo`)
 VALUES -- AZURE
        ('57a6f823-6b73-4e0a-9818-f055cbd6d546', '2023-05-19 14:58:31', '2024-03-27 11:11:10', 'AZURE',
@@ -141,7 +169,7 @@ VALUES -- AZURE
 
 
 -- Cloud provider regions 
-INSERT INTO `cloud_provider_region` (`id`, `created_at`, `last_modified_at`, `technical_name`, `s3_endpoint`, `created_by_id`,
+INSERT IGNORE INTO `cloud_provider_region` (`id`, `created_at`, `last_modified_at`, `technical_name`, `s3_endpoint`, `created_by_id`,
                                      `last_modified_by_id`, `cloud_provider_id`, `city_id`, `name`, `type`)
 VALUES -- OVH gra (Gravelines) S3
        ('2f71581d-2882-476a-a6d5-e077dd2724ff', '2023-02-27 17:19:45', '2023-12-22 14:11:56', 'gra',
@@ -173,7 +201,7 @@ VALUES -- OVH gra (Gravelines) S3
 
 
 -- Bucket credentials 
-INSERT INTO `bucket_credentials` (`id`, `created_at`, `last_modified_at`, `name`, `access_key_id`, `secret_access_key`,
+INSERT IGNORE INTO `bucket_credentials` (`id`, `created_at`, `last_modified_at`, `name`, `access_key_id`, `secret_access_key`,
                                   `s3_username`, `short_description`, `created_by_id`, `last_modified_by_id`,
                                   `cloud_provider_id`, `space_id`)
 VALUES -- LAB_BACKUP credentials (OVH)
@@ -183,7 +211,7 @@ VALUES -- LAB_BACKUP credentials (OVH)
         '964ad825-6b0b-44f2-9825-7129b01a9df7', NULL);
 
 -- Buckets 
-INSERT INTO `bucket` (`id`, `created_at`, `last_modified_at`, `name`, `content_type`, `created_by_id`, `last_modified_by_id`,
+INSERT IGNORE INTO `bucket` (`id`, `created_at`, `last_modified_at`, `name`, `content_type`, `created_by_id`, `last_modified_by_id`,
                       `region_id`, `credentials_id`, `bucket_type`, `lab_id`)
 VALUES -- OVH gra (Gravelines)
        ('5a83422b-5604-401b-8c73-ac3bf0d122ef', '2023-10-18 16:08:03', '2023-10-18 16:08:03',
@@ -238,7 +266,7 @@ VALUES -- OVH gra (Gravelines)
 
 
 -- Storage price 
-INSERT INTO `storage_price` (`id`, `created_at`, `last_modified_at`, `start_date`, `end_date`, `created_by_id`,
+INSERT IGNORE INTO `storage_price` (`id`, `created_at`, `last_modified_at`, `start_date`, `end_date`, `created_by_id`,
                              `last_modified_by_id`, `volume_storage_price`, `backup_storage_price`, `backup_transfert_price`)
 VALUES -- Default storage price
        ('0c3c83db-f7cb-4c78-804e-11796476ed3e', '2024-04-25 11:17:43', '2024-04-25 11:17:43', '2000-01-01 00:00:00',
@@ -246,18 +274,18 @@ VALUES -- Default storage price
 
 
 -- Server standards 
-INSERT INTO `server_standard` (`id`, `created_at`, `last_modified_at`, `name`, `description`, `technical_description`, `created_by_id`, `last_modified_by_id`) VALUES
+INSERT IGNORE INTO `server_standard` (`id`, `created_at`, `last_modified_at`, `name`, `description`, `technical_description`, `created_by_id`, `last_modified_by_id`) VALUES
 -- General purpose (2 CPU, 8 GB RAM)
 ('c5714c74-c8c4-4175-b231-51a58a5a3522',	'2024-04-25 11:00:13',	'2024-04-25 11:00:13',	'General purpose',	'Basic usage',	'2 CPU\8 GB RAM',	@adminUserId,	@adminUserId);
 
 
 -- Server prices 
-INSERT INTO `server_price` (`id`, `price`, `start_date`, `end_date`, `created_at`, `last_modified_at`, `created_by_id`, `last_modified_by_id`, `server_standard_id`) VALUES
+INSERT IGNORE INTO `server_price` (`id`, `price`, `start_date`, `end_date`, `created_at`, `last_modified_at`, `created_by_id`, `last_modified_by_id`, `server_standard_id`) VALUES
 -- General purpose price
 ('2b0b9b80-ada8-49a0-bd0f-b06e6e0660b6',	3.14,	'2010-04-25 09:40:23',	NULL,	'2024-04-25 09:42:35',	'2024-04-25 09:42:35',	@adminUserId,	@adminUserId,	'c5714c74-c8c4-4175-b231-51a58a5a3522');
 
 -- Server cloud configurations 
-INSERT INTO `server_cloud` (`id`, `technical_name`, `ram`, `disk_space`, `disk_type`, `cpu_count`, `cpu_type`, `gpu_count`, `gpu_type`, `cloud_provider_id`, `created_at`, `last_modified_at`, `created_by_id`, `last_modified_by_id`, `server_standard_id`) VALUES
+INSERT IGNORE INTO `server_cloud` (`id`, `technical_name`, `ram`, `disk_space`, `disk_type`, `cpu_count`, `cpu_type`, `gpu_count`, `gpu_type`, `cloud_provider_id`, `created_at`, `last_modified_at`, `created_by_id`, `last_modified_by_id`, `server_standard_id`) VALUES
 -- GCP e2-medium (2 CPU, 4 GB RAM)
 ('0e69afcf-a477-45eb-9854-38854c0e8366',	'e2-medium',	4,	0,	'SSD',	2,	'Unknown',	NULL,	NULL,	'cce27e1c-71d3-4820-a65a-12baac537115',	'2025-04-30 09:08:20',	'2025-04-30 09:08:20',	@adminUserId,	@adminUserId,	'c5714c74-c8c4-4175-b231-51a58a5a3522'),
 -- GCP e2-standard-4 (4 CPU, 16 GB RAM)
@@ -272,27 +300,27 @@ INSERT INTO `server_cloud` (`id`, `technical_name`, `ram`, `disk_space`, `disk_t
 -- Create the bricks and bricks version 
 
 -- gws_core brick
-INSERT INTO `brick` (`id`, `name`, `pip_repo`, `git_repo`, `visibility`) VALUES
+INSERT IGNORE INTO `brick` (`id`, `name`, `pip_repo`, `git_repo`, `visibility`) VALUES
 (@gwsCoreBrickId,	'gws_core',	NULL,	'https://github.com/Constellab/gws_core.git',	'public');
 
 -- gws_core version 0.21.0
-INSERT INTO `brick_version` (`id`, `major`, `minor`, `patch`, `sub_patch`, `version_type`, `version_state`, `repo_type`, `technical_info`, `brick_id`) VALUES
+INSERT IGNORE INTO `brick_version` (`id`, `major`, `minor`, `patch`, `sub_patch`, `version_type`, `version_state`, `repo_type`, `technical_info`, `brick_id`) VALUES
 ('9e9beb89-ddd5-4c05-a502-14327cdd39ec',	0,	21,	0,	NULL,	'NORMAL',	'STABLE',	'GIT',	'{"FRONT_VERSION":"2.8.0","GLAB_VERSION":"2.16.0"}',	@gwsCoreBrickId);
 
 -- gws_academy brick
-INSERT INTO `brick` (`id`, `name`, `pip_repo`, `git_repo`, `visibility`) VALUES
+INSERT IGNORE INTO `brick` (`id`, `name`, `pip_repo`, `git_repo`, `visibility`) VALUES
 (@gwsAcademyBrickId,	'gws_academy',	NULL,	'https://github.com/Constellab/gws_academy.git',	'public');
 
 -- gws_academy version 0.5.1
-INSERT INTO `brick_version` (`id`, `major`, `minor`, `patch`, `sub_patch`, `version_type`, `version_state`, `repo_type`, `technical_info`, `brick_id`) VALUES
+INSERT IGNORE INTO `brick_version` (`id`, `major`, `minor`, `patch`, `sub_patch`, `version_type`, `version_state`, `repo_type`, `technical_info`, `brick_id`) VALUES
 ('456dd68e-b5b5-44c0-846b-f4aa3768fc5d',	0,	5,	1,	NULL,	'NORMAL',	'STABLE',	'GIT',	NULL,	@gwsAcademyBrickId);
 
 -- Private brick for Test user (Michel Larousse) - space attachment tracked in hn-community-api (adminUserSpaceId)
-INSERT INTO `brick` (`id`, `name`, `pip_repo`, `git_repo`, `visibility`) VALUES
+INSERT IGNORE INTO `brick` (`id`, `name`, `pip_repo`, `git_repo`, `visibility`) VALUES
 (@adminPrivateBrickId,	'michel_private_brick',	NULL,	NULL,	'private');
 
 -- Private brick version 0.1.0
-INSERT INTO `brick_version` (`id`, `major`, `minor`, `patch`, `sub_patch`, `version_type`, `version_state`, `repo_type`, `technical_info`, `brick_id`) VALUES
+INSERT IGNORE INTO `brick_version` (`id`, `major`, `minor`, `patch`, `sub_patch`, `version_type`, `version_state`, `repo_type`, `technical_info`, `brick_id`) VALUES
 ('a4b5c6d7-e8f9-4a0b-1c2d-3e4f50617283',	0,	1,	0,	NULL,	'NORMAL',	'STABLE',	'GIT',	NULL,	@adminPrivateBrickId);
 
 
@@ -302,7 +330,7 @@ INSERT INTO `brick_version` (`id`, `major`, `minor`, `patch`, `sub_patch`, `vers
 -- =============================================
 
 -- Personal space for Test user (Michel Larousse)
-INSERT INTO `space` (`id`, `name`, `domain`, `type`, `cloud_storage_limit`, `cloud_storage_usage`,
+INSERT IGNORE INTO `space` (`id`, `name`, `domain`, `type`, `cloud_storage_limit`, `cloud_storage_usage`,
                      `default_folder_bucket_id`, `default_folder_backup_bucket_id`,
                      `created_at`, `created_by_id`, `last_modified_at`, `last_modified_by_id`)
 VALUES (@adminUserSpaceId, 'Michel Larousse', 'michel-larousse',
@@ -312,7 +340,7 @@ VALUES (@adminUserSpaceId, 'Michel Larousse', 'michel-larousse',
         '2023-03-01 10:00:00', @adminUserId);
 
 -- Enterprise space for Test user
-INSERT INTO `space` (`id`, `name`, `domain`, `type`, `cloud_storage_limit`, `cloud_storage_usage`,
+INSERT IGNORE INTO `space` (`id`, `name`, `domain`, `type`, `cloud_storage_limit`, `cloud_storage_usage`,
                      `default_folder_bucket_id`, `default_folder_backup_bucket_id`,
                      `created_at`, `created_by_id`, `last_modified_at`, `last_modified_by_id`)
 VALUES (@enterpriseSpaceId, 'Enterprise', 'enterprise',
@@ -322,7 +350,7 @@ VALUES (@enterpriseSpaceId, 'Enterprise', 'enterprise',
         '2023-03-01 10:00:00', @adminUserId);
 
 -- Personal space for Sophie Dupont
-INSERT INTO `space` (`id`, `name`, `domain`, `type`, `cloud_storage_limit`, `cloud_storage_usage`,
+INSERT IGNORE INTO `space` (`id`, `name`, `domain`, `type`, `cloud_storage_limit`, `cloud_storage_usage`,
                      `default_folder_bucket_id`, `default_folder_backup_bucket_id`,
                      `created_at`, `created_by_id`, `last_modified_at`, `last_modified_by_id`)
 VALUES (@secondaryUserSpaceId, 'Sophie Dupont', 'sophie-dupont',
@@ -332,29 +360,49 @@ VALUES (@secondaryUserSpaceId, 'Sophie Dupont', 'sophie-dupont',
         '2023-03-15 10:00:00', @secondaryUserId);
 
 
+-- Personal space for Jean Lecteur (viewer)
+INSERT IGNORE INTO `space` (`id`, `name`, `domain`, `type`, `cloud_storage_limit`, `cloud_storage_usage`,
+                     `default_folder_bucket_id`, `default_folder_backup_bucket_id`,
+                     `created_at`, `created_by_id`, `last_modified_at`, `last_modified_by_id`)
+VALUES (@viewerUserSpaceId, 'Jean Lecteur', 'jean-lecteur',
+        'PERSONAL', 1073741824, 0,
+        '5a83422b-5604-401b-8c73-ac3bf0d122ef', 'dcaaa6f7-ef76-4692-9412-6687b3bfc272',
+        '2023-04-01 10:00:00', @viewerUserId,
+        '2023-04-01 10:00:00', @viewerUserId);
+
 -- =============================================
 -- Space-User associations
 -- =============================================
 
 -- Test user (Michel) -> own personal space (ADMIN)
-INSERT INTO `space_user` (`user_id`, `space_id`, `role`, `active`, `created_at`, `added_by_id`)
+INSERT IGNORE INTO `space_user` (`user_id`, `space_id`, `role`, `active`, `created_at`, `added_by_id`)
 VALUES (@adminUserId, @adminUserSpaceId, 'ADMIN', 1,
         '2023-03-01 10:00:00', @adminUserId);
 
 -- Test user (Michel) -> enterprise space (ADMIN)
-INSERT INTO `space_user` (`user_id`, `space_id`, `role`, `active`, `created_at`, `added_by_id`)
+INSERT IGNORE INTO `space_user` (`user_id`, `space_id`, `role`, `active`, `created_at`, `added_by_id`)
 VALUES (@adminUserId, @enterpriseSpaceId, 'ADMIN', 1,
         '2023-03-01 10:00:00', @adminUserId);
 
 -- Sophie -> own personal space (ADMIN)
-INSERT INTO `space_user` (`user_id`, `space_id`, `role`, `active`, `created_at`, `added_by_id`)
+INSERT IGNORE INTO `space_user` (`user_id`, `space_id`, `role`, `active`, `created_at`, `added_by_id`)
 VALUES (@secondaryUserId, @secondaryUserSpaceId, 'ADMIN', 1,
         '2023-03-15 10:00:00', @secondaryUserId);
 
 -- Sophie -> Michel's personal space (USER)
-INSERT INTO `space_user` (`user_id`, `space_id`, `role`, `active`, `created_at`, `added_by_id`)
+INSERT IGNORE INTO `space_user` (`user_id`, `space_id`, `role`, `active`, `created_at`, `added_by_id`)
 VALUES (@secondaryUserId, @adminUserSpaceId, 'USER', 1,
         '2023-03-15 10:00:00', @adminUserId);
+
+-- Jean (viewer) -> own personal space (ADMIN)
+INSERT IGNORE INTO `space_user` (`user_id`, `space_id`, `role`, `active`, `created_at`, `added_by_id`)
+VALUES (@viewerUserId, @viewerUserSpaceId, 'ADMIN', 1,
+        '2023-04-01 10:00:00', @viewerUserId);
+
+-- Jean (viewer) -> Michel's personal space (VIEWER)
+INSERT IGNORE INTO `space_user` (`user_id`, `space_id`, `role`, `active`, `created_at`, `added_by_id`)
+VALUES (@viewerUserId, @adminUserSpaceId, 'VIEWER', 1,
+        '2023-04-01 10:00:00', @adminUserId);
 
 
 -- =============================================
@@ -362,7 +410,7 @@ VALUES (@secondaryUserId, @adminUserSpaceId, 'USER', 1,
 -- =============================================
 
 -- Localhost lab in Michel's personal space
-INSERT INTO `lab` (`id`, `created_at`, `last_modified_at`, `name`, `cloud_name`, `type`, `lab_config_id`,
+INSERT IGNORE INTO `lab` (`id`, `created_at`, `last_modified_at`, `name`, `cloud_name`, `type`, `lab_config_id`,
                    `glab_prod_api_key`, `glab_dev_api_key`, `lab_manager_api_key`, `virtual_host`, `codelab_token`,
                    `gws_core_prod_db_password`, `gws_core_dev_db_password`, `space_id`,
                    `server_instance_id`, `server_volume_id`, `server_ip_address_id`, `dns_configured`,
@@ -381,7 +429,7 @@ VALUES ('83afdd53-2509-4dcc-82d4-86af435447dc', '2025-08-19 16:49:37', '2025-10-
         NULL, '0e69afcf-a477-45eb-9854-38854c0e8366', '588de190-d0a2-479c-a31e-792b98b89156');
 
 -- Lab status history for localhost lab (RUNNING)
-INSERT INTO `lab_status_history` (`id`, `created_at`, `last_modified_at`, `end_date`, `status`, `created_by_id`, `last_modified_by_id`, `entity_id`) VALUES
+INSERT IGNORE INTO `lab_status_history` (`id`, `created_at`, `last_modified_at`, `end_date`, `status`, `created_by_id`, `last_modified_by_id`, `entity_id`) VALUES
 ('05cda333-a519-4d75-8d38-adef76849f99',	'2026-01-05 12:54:15',	'2026-01-05 12:54:16',	null,	'LAB_RUNNING',	@adminUserId,	@adminUserId,	'83afdd53-2509-4dcc-82d4-86af435447dc');
 
 -- set the current status of the localhost lab to RUNNING
@@ -389,7 +437,7 @@ UPDATE `lab` SET `current_status_id` = '05cda333-a519-4d75-8d38-adef76849f99' WH
 
 -- Lab volume
 
-INSERT INTO `lab_volume` (`id`, `created_at`, `last_modified_at`, `start_date`, `end_date`, `size`, `type`, `created_by_id`, `last_modified_by_id`, `lab_id`) VALUES
+INSERT IGNORE INTO `lab_volume` (`id`, `created_at`, `last_modified_at`, `start_date`, `end_date`, `size`, `type`, `created_by_id`, `last_modified_by_id`, `lab_id`) VALUES
 ('844cb6f2-ca2d-49c2-a00b-74939a275ea4',	'2026-02-11 18:40:10',	'2026-02-11 18:40:10',	'2026-02-11 18:40:10',	NULL,	100,	'HIGH_SPEED',	@adminUserId,	@adminUserId,	'83afdd53-2509-4dcc-82d4-86af435447dc');
 
 
@@ -398,13 +446,13 @@ INSERT INTO `lab_volume` (`id`, `created_at`, `last_modified_at`, `start_date`, 
 -- =============================================
 
 -- Michel -> localhost lab (OWNER)
-INSERT INTO `lab_user` (`lab_id`, `user_id`, `role`, `created_at`, `created_by_id`, `last_modified_at`, `last_modified_by_id`)
+INSERT IGNORE INTO `lab_user` (`lab_id`, `user_id`, `role`, `created_at`, `created_by_id`, `last_modified_at`, `last_modified_by_id`)
 VALUES ('83afdd53-2509-4dcc-82d4-86af435447dc', @adminUserId, 'OWNER',
         '2025-08-19 16:49:37', @adminUserId,
         '2025-08-19 16:49:37', @adminUserId);
 
 -- Sophie -> localhost lab (USER)
-INSERT INTO `lab_user` (`lab_id`, `user_id`, `role`, `created_at`, `created_by_id`, `last_modified_at`, `last_modified_by_id`)
+INSERT IGNORE INTO `lab_user` (`lab_id`, `user_id`, `role`, `created_at`, `created_by_id`, `last_modified_at`, `last_modified_by_id`)
 VALUES ('83afdd53-2509-4dcc-82d4-86af435447dc', @secondaryUserId, 'USER',
         '2025-08-20 10:00:00', @adminUserId,
         '2025-08-20 10:00:00', @adminUserId);
@@ -428,7 +476,7 @@ SET @rootFolderId = 'f0a1b2c3-d4e5-6789-abcd-000000000001';
 SET @subFolderId = 'f0a1b2c3-d4e5-6789-abcd-000000000002';
 
 -- Root folder hierarchy object
-INSERT INTO `hierarchy_object` (`id`, `name`, `user_id`, `last_modified_at`, `object_type`, `object_type_order`,
+INSERT IGNORE INTO `hierarchy_object` (`id`, `name`, `user_id`, `last_modified_at`, `object_type`, `object_type_order`,
                                 `parent_id`, `root_parent_id`, `space_id`, `visibility`, `chat_enabled`,
                                 `has_description`, `is_validated`, `document_size`, `style`, `last_tags_str`, `mpath`)
 VALUES (@rootFolderId, 'Research Project', @adminUserId, '2026-01-10 10:00:00',
@@ -437,7 +485,7 @@ VALUES (@rootFolderId, 'Research Project', @adminUserId, '2026-01-10 10:00:00',
         NULL, @rootFolderId);
 
 -- Sub folder hierarchy object
-INSERT INTO `hierarchy_object` (`id`, `name`, `user_id`, `last_modified_at`, `object_type`, `object_type_order`,
+INSERT IGNORE INTO `hierarchy_object` (`id`, `name`, `user_id`, `last_modified_at`, `object_type`, `object_type_order`,
                                 `parent_id`, `root_parent_id`, `space_id`, `visibility`, `chat_enabled`,
                                 `has_description`, `is_validated`, `document_size`, `style`, `last_tags_str`, `mpath`)
 VALUES (@subFolderId, 'Experiments', @adminUserId, '2026-01-10 10:30:00',
@@ -446,7 +494,7 @@ VALUES (@subFolderId, 'Experiments', @adminUserId, '2026-01-10 10:30:00',
         NULL, CONCAT(@rootFolderId, '.', @subFolderId));
 
 -- Root folder entity (with OVH storage)
-INSERT INTO `folder` (`id`, `name`, `code`, `description`, `starting_date`, `ending_date`,
+INSERT IGNORE INTO `folder` (`id`, `name`, `code`, `description`, `starting_date`, `ending_date`,
                       `main_storage_id`, `backup_storage_id`, `chat_enabled`,
                       `style`, `created_at`, `created_by_id`, `last_modified_at`, `last_modified_by_id`)
 VALUES (@rootFolderId, 'Research Project', NULL, NULL, NULL, NULL,
@@ -455,7 +503,7 @@ VALUES (@rootFolderId, 'Research Project', NULL, NULL, NULL, NULL,
         '2026-01-10 10:00:00', @adminUserId, '2026-01-10 10:00:00', @adminUserId);
 
 -- Sub folder entity
-INSERT INTO `folder` (`id`, `name`, `code`, `description`, `starting_date`, `ending_date`,
+INSERT IGNORE INTO `folder` (`id`, `name`, `code`, `description`, `starting_date`, `ending_date`,
                       `main_storage_id`, `backup_storage_id`, `chat_enabled`,
                       `style`, `created_at`, `created_by_id`, `last_modified_at`, `last_modified_by_id`)
 VALUES (@subFolderId, 'Experiments', NULL, NULL, NULL, NULL,
@@ -464,17 +512,20 @@ VALUES (@subFolderId, 'Experiments', NULL, NULL, NULL, NULL,
         '2026-01-10 10:30:00', @adminUserId, '2026-01-10 10:30:00', @adminUserId);
 
 -- Folder-User associations (Michel as OWNER, Sophie as USER)
-INSERT INTO `folder_user` (`user_id`, `root_folder_id`, `role`, `shared_at`, `shared_by_id`,
+INSERT IGNORE INTO `folder_user` (`user_id`, `root_folder_id`, `role`, `shared_at`, `shared_by_id`,
                            `folder_notif`, `message_notif`, `scenario_notif`, `note_notif`, `document_notif`)
 VALUES -- Michel (owner)
        (@adminUserId, @rootFolderId, 'OWNER', '2026-01-10 10:00:00', @adminUserId,
         'NONE', 'NOTIF_ONLY', 'NONE', 'NONE', 'NONE'),
        -- Sophie (shared user)
        (@secondaryUserId, @rootFolderId, 'USER', '2026-01-10 11:00:00', @adminUserId,
+        'NONE', 'NOTIF_ONLY', 'NONE', 'NONE', 'NONE'),
+       -- Jean (viewer)
+       (@viewerUserId, @rootFolderId, 'VIEWER', '2026-01-10 12:00:00', @adminUserId,
         'NONE', 'NOTIF_ONLY', 'NONE', 'NONE', 'NONE');
 
 -- Lab-Folder association (localhost lab -> root folder)
-INSERT INTO `lab_folder` (`lab_id`, `root_folder_id`, `created_at`, `created_by_id`)
+INSERT IGNORE INTO `lab_folder` (`lab_id`, `root_folder_id`, `created_at`, `created_by_id`)
 VALUES ('83afdd53-2509-4dcc-82d4-86af435447dc', @rootFolderId, '2026-01-10 10:00:00', @adminUserId);
 
 
@@ -482,7 +533,7 @@ VALUES ('83afdd53-2509-4dcc-82d4-86af435447dc', @rootFolderId, '2026-01-10 10:00
 -- Settings
 -- =============================================
 
-INSERT INTO `settings` (`id`, `created_at`, `last_modified_at`, `server_decision_tree`, `created_by_id`, `last_modified_by_id`,
+INSERT IGNORE INTO `settings` (`id`, `created_at`, `last_modified_at`, `server_decision_tree`, `created_by_id`, `last_modified_by_id`,
                          `constellab_suite`, `free_lab_config`)
 VALUES ('10db47da-9aa0-417b-b5ff-3e34094fadbc', '2024-04-25 09:46:03', '2025-11-05 16:00:40',
         @serverDecisionTree,

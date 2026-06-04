@@ -139,7 +139,7 @@ export class CnSpaceAggregateService {
 
   public async findOne(id: string): Promise<CnSpace> {
     id = this.getSpaceId(id);
-    await this.checkSpaceMember(id);
+    await this.checkSpaceUser(id);
     return this.spaceService.findByIdAndCheck(id);
   }
 
@@ -274,7 +274,7 @@ export class CnSpaceAggregateService {
 
   public async getUsersOfSpace(id: string, page: number, size: number): Promise<ClPage<CnSpaceUserWithUser>> {
     id = this.getSpaceId(id);
-    await this.checkSpaceMember(id);
+    await this.checkSpaceUserOrAbove(id);
     return this.spaceUserService.findBySpace(id, page, size);
   }
 
@@ -285,7 +285,7 @@ export class CnSpaceAggregateService {
     size: number
   ): Promise<ClPage<CnSpaceUserWithUser>> {
     id = this.getSpaceId(id);
-    await this.checkSpaceMember(id);
+    await this.checkSpaceUserOrAbove(id);
 
     return this.spaceUserService.searchUser(id, searchParams, page, size);
   }
@@ -297,7 +297,7 @@ export class CnSpaceAggregateService {
     size: number
   ): Promise<ClPage<CnUser>> {
     id = this.getSpaceId(id);
-    await this.checkSpaceMember(id);
+    await this.checkSpaceUserOrAbove(id);
 
     const result = await this.spaceUserService.smartSearchByName(id, name, page, size);
     return result.map((spaceUser) => spaceUser.user);
@@ -381,7 +381,7 @@ export class CnSpaceAggregateService {
   public async updateUserRoleInSpace(spaceId: string, userId: string, role: CnSpaceUserRole): Promise<void> {
     spaceId = this.getSpaceId(spaceId);
     if (
-      role === CnSpaceUserRole.USER &&
+      role !== CnSpaceUserRole.ADMIN &&
       (await this.spaceUserService.isOnlyAdmin(spaceId, userId)) &&
       !CnCurrentUserHelper.getAndCheckCurrentUser().isAdmin()
     ) {
@@ -638,15 +638,19 @@ export class CnSpaceAggregateService {
     return { defaultFolderBucket: defaultBucket, defaultFolderBackupBucket: defaultBackupBucket };
   }
 
-  private async checkSpaceMember(spaceId: string): Promise<void> {
-    await this.spaceAggregateSecurity.checkIsSpaceMember(
+  private async checkSpaceUser(spaceId: string): Promise<void> {
+    await this.spaceAggregateSecurity.checkIsSpaceUser(spaceId, CnCurrentUserHelper.getAndCheckCurrentUser());
+  }
+
+  private checkSpaceAdmin(spaceId: string): Promise<void> {
+    return this.spaceAggregateSecurity.checkIsSpaceAdmin(
       spaceId,
       CnCurrentUserHelper.getAndCheckCurrentUser()
     );
   }
 
-  private checkSpaceAdmin(spaceId: string): Promise<void> {
-    return this.spaceAggregateSecurity.checkIsSpaceAdmin(
+  private async checkSpaceUserOrAbove(spaceId: string): Promise<void> {
+    await this.spaceAggregateSecurity.checkIsSpaceUserOrAbove(
       spaceId,
       CnCurrentUserHelper.getAndCheckCurrentUser()
     );

@@ -24,10 +24,19 @@ export class CnSpaceAggregateSecurity {
     }
   }
 
-  public async checkIsSpaceMember(spaceId: string, user: CnUser): Promise<void> {
+  public async checkIsSpaceUser(spaceId: string, user: CnUser): Promise<void> {
     if (this.isAdmin(user)) return;
 
     await this.getAndCheckSpaceUser(spaceId, user.id);
+  }
+
+  public async checkIsSpaceUserOrAbove(spaceId: string, user: CnUser): Promise<void> {
+    if (this.isAdmin(user)) return;
+
+    const spaceUser = await this.getAndCheckSpaceUser(spaceId, user.id);
+    if (spaceUser.isSpaceViewer()) {
+      throw new BlUnauthorizedException('Space visitors cannot access this resource');
+    }
   }
 
   private async isSpaceAdmin(spaceId: string, userId: string): Promise<boolean> {

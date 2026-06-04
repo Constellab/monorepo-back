@@ -72,6 +72,8 @@ export class CnGroupsAggregateService {
   ////////////////////////////////////// TEAMS  ////////////////////////////////
 
   public async createTeam(label: string): Promise<CnGroupTeam> {
+    this.groupSecurity.checkAuthorizationToCreateTeam(CnCurrentUserHelper.getAndCheckUserSpaceInfo());
+
     return await this.groupsService.createTeam(label);
   }
 

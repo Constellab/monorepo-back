@@ -62,4 +62,10 @@ export class CnGroupsSecurity {
     if (userInfo.space == null) throw new BlUnauthorizedException();
     return;
   }
+
+  public checkAuthorizationToCreateTeam(userInfo: CnUserSpaceInfo): void {
+    if (userInfo.isSpaceViewer()) {
+      throw new BlUnauthorizedException('Space visitors cannot create teams');
+    }
+  }
 }

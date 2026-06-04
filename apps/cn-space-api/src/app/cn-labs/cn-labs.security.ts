@@ -28,6 +28,12 @@ export class CnLabsSecurity {
     if (!userInfo.isAdmin()) throw new BlUnauthorizedException();
   }
 
+  public checkAuthorizationToCreateLab(userInfo: CnUserSpaceInfo): void {
+    if (userInfo.isSpaceViewer()) {
+      throw new BlUnauthorizedException('Space visitors cannot create labs');
+    }
+  }
+
   /**
    * Anyone can create a desktop  lab
    * @param lab

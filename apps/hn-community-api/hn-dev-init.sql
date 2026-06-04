@@ -18,66 +18,66 @@ SET @adminPrivateBrickMajorVersionId = 'd1e2f3a4-b5c6-4d7e-8f9a-0b1c2d3e4f50';
 SET @adminPrivateBrickMainFolderId = 'e2f3a4b5-c6d7-4e8f-9a0b-1c2d3e4f5061';
 
 -- Robot user
-INSERT INTO `user` (`id`, `user_code`, `alias`, `firstname`, `lastname`, `email`, `photo`, `github_link`, `linkedin_link`,
+INSERT IGNORE INTO `user` (`id`, `user_code`, `alias`, `firstname`, `lastname`, `email`, `photo`, `github_link`, `linkedin_link`,
                     `x_link`, `interests`, `category`, `created_at`, `lang`, `theme`)
 VALUES -- Robot Gencovery (system user)
        (@robotUserId, 'ROB_GENCOV', 'Roboy Gencovery', 'Roboy', 'Gencovery',
         'robot@gencovery.com', NULL, NULL, NULL, NULL, NULL, 'ADMIN', '2023-02-27 17:15:47', 'en', 'dark-theme');
 
 -- Test user (Admin)
-INSERT INTO `user` (`id`, `user_code`, `alias`, `firstname`, `lastname`, `email`, `photo`, `github_link`, `linkedin_link`,
+INSERT IGNORE INTO `user` (`id`, `user_code`, `alias`, `firstname`, `lastname`, `email`, `photo`, `github_link`, `linkedin_link`,
                     `x_link`, `interests`, `category`, `created_at`, `lang`, `theme`)
 VALUES -- Test user (Admin)
        (@adminUserId, 'MICH_123', 'M Larousse', 'Michel', 'Larousse',
         'test@gencovery.com', NULL, NULL, NULL, NULL, NULL, 'ADMIN', '2023-02-27 17:15:47', 'en', 'dark-theme');
 
 -- Secondary user (non-admin)
-INSERT INTO `user` (`id`, `user_code`, `alias`, `firstname`, `lastname`, `email`, `photo`, `github_link`, `linkedin_link`,
+INSERT IGNORE INTO `user` (`id`, `user_code`, `alias`, `firstname`, `lastname`, `email`, `photo`, `github_link`, `linkedin_link`,
                     `x_link`, `interests`, `category`, `created_at`, `lang`, `theme`)
 VALUES (@secondaryUserId, 'SOPH_456', 'S Dupont', 'Sophie', 'Dupont',
         'sophie@gencovery.com', NULL, NULL, NULL, NULL, NULL, 'USER', '2023-03-15 10:00:00', 'en', 'dark-theme');
 
 
 -- Personal space for Test user (Michel Larousse)
-INSERT INTO `space` (`id`, `name`, `photo`, `created_at`, `last_modified_at`, `created_by_id`, `last_modified_by_id`)
+INSERT IGNORE INTO `space` (`id`, `name`, `photo`, `created_at`, `last_modified_at`, `created_by_id`, `last_modified_by_id`)
 VALUES (@adminUserSpaceId, 'Michel Larousse', NULL, '2023-03-01 10:00:00', '2023-03-01 10:00:00',
         @adminUserId, @adminUserId);
 
 -- Default space (Enterprise)
-INSERT INTO `space` (`id`, `name`, `photo`, `created_at`, `last_modified_at`, `created_by_id`, `last_modified_by_id`)
+INSERT IGNORE INTO `space` (`id`, `name`, `photo`, `created_at`, `last_modified_at`, `created_by_id`, `last_modified_by_id`)
 VALUES -- Constellab default space
        (@enterpriseSpaceId, 'Constellab', NULL, '2023-02-27 17:15:47', '2023-02-27 17:15:47',
         @adminUserId, @adminUserId);
 
 -- Personal space for Sophie Dupont
-INSERT INTO `space` (`id`, `name`, `photo`, `created_at`, `last_modified_at`, `created_by_id`, `last_modified_by_id`)
+INSERT IGNORE INTO `space` (`id`, `name`, `photo`, `created_at`, `last_modified_at`, `created_by_id`, `last_modified_by_id`)
 VALUES (@secondaryUserSpaceId, 'Sophie Dupont', NULL, '2023-03-15 10:00:00', '2023-03-15 10:00:00',
         @secondaryUserId, @secondaryUserId);
 
 
 -- Space user (Robot -> Constellab space)
-INSERT INTO `space_user` (`user_id`, `space_id`, `role`, `active`, `created_at`, `added_by_id`)
+INSERT IGNORE INTO `space_user` (`user_id`, `space_id`, `role`, `active`, `created_at`, `added_by_id`)
 VALUES -- Robot Gencovery as admin of Constellab space
        (@robotUserId, @enterpriseSpaceId, 'ADMIN', 1,
         '2023-02-27 17:15:47', @robotUserId);
 
 -- Test user (Michel) -> own personal space (ADMIN)
-INSERT INTO `space_user` (`user_id`, `space_id`, `role`, `active`, `created_at`, `added_by_id`)
+INSERT IGNORE INTO `space_user` (`user_id`, `space_id`, `role`, `active`, `created_at`, `added_by_id`)
 VALUES (@adminUserId, @adminUserSpaceId, 'ADMIN', 1,
         '2023-03-01 10:00:00', @adminUserId);
 
 -- Test user (Michel) -> enterprise space (ADMIN)
-INSERT INTO `space_user` (`user_id`, `space_id`, `role`, `active`, `created_at`, `added_by_id`)
+INSERT IGNORE INTO `space_user` (`user_id`, `space_id`, `role`, `active`, `created_at`, `added_by_id`)
 VALUES (@adminUserId, @enterpriseSpaceId, 'ADMIN', 1,
         '2023-03-01 10:00:00', @adminUserId);
 
 -- Sophie -> own personal space (ADMIN)
-INSERT INTO `space_user` (`user_id`, `space_id`, `role`, `active`, `created_at`, `added_by_id`)
+INSERT IGNORE INTO `space_user` (`user_id`, `space_id`, `role`, `active`, `created_at`, `added_by_id`)
 VALUES (@secondaryUserId, @secondaryUserSpaceId, 'ADMIN', 1,
         '2023-03-15 10:00:00', @secondaryUserId);
 
 -- Sophie -> Michel's personal space (USER)
-INSERT INTO `space_user` (`user_id`, `space_id`, `role`, `active`, `created_at`, `added_by_id`)
+INSERT IGNORE INTO `space_user` (`user_id`, `space_id`, `role`, `active`, `created_at`, `added_by_id`)
 VALUES (@secondaryUserId, @adminUserSpaceId, 'USER', 1,
         '2023-03-15 10:00:00', @adminUserId);
 
@@ -85,7 +85,7 @@ VALUES (@secondaryUserId, @adminUserSpaceId, 'USER', 1,
 -- Create the bricks
 
 -- gws_core brick
-INSERT INTO `brick` (`id`, `name`, `description`, `is_certified`, `visibility`, `pip_repo`, `git_repo`, `image_link`,
+INSERT IGNORE INTO `brick` (`id`, `name`, `description`, `is_certified`, `visibility`, `pip_repo`, `git_repo`, `image_link`,
                      `credential_username`, `credential_password`, `likes`, `comments`, `created_at`, `last_modified_at`,
                      `created_by_id`, `last_modified_by_id`, `space_id`)
 VALUES (@gwsCoreBrickId, 'gws_core', 'Core brick of Constellab platform', 1, 'public',
@@ -94,7 +94,7 @@ VALUES (@gwsCoreBrickId, 'gws_core', 'Core brick of Constellab platform', 1, 'pu
         @adminUserId, @adminUserId, null);
 
 -- gws_academy brick
-INSERT INTO `brick` (`id`, `name`, `description`, `is_certified`, `visibility`, `pip_repo`, `git_repo`, `image_link`,
+INSERT IGNORE INTO `brick` (`id`, `name`, `description`, `is_certified`, `visibility`, `pip_repo`, `git_repo`, `image_link`,
                      `credential_username`, `credential_password`, `likes`, `comments`, `created_at`, `last_modified_at`,
                      `created_by_id`, `last_modified_by_id`, `space_id`)
 VALUES (@gwsAcademyBrickId, 'gws_academy', 'Academy brick for tutorials and learning', 1, 'public',
@@ -104,7 +104,7 @@ VALUES (@gwsAcademyBrickId, 'gws_academy', 'Academy brick for tutorials and lear
 
 
 -- Brick users
-INSERT INTO `brick_user` (`id`, `brick_id`, `user_id`)
+INSERT IGNORE INTO `brick_user` (`id`, `brick_id`, `user_id`)
 VALUES -- Robot Gencovery -> gws_core
        ('8ba5b426-3cba-4560-99a3-a1d9e65f911a', @gwsCoreBrickId,
         @adminUserId),
@@ -116,14 +116,14 @@ VALUES -- Robot Gencovery -> gws_core
 -- Brick major versions
 
 -- gws_core major version 0
-INSERT INTO `brick_major_version` (`id`, `major`, `version_state`, `created_at`, `last_modified_at`,
+INSERT IGNORE INTO `brick_major_version` (`id`, `major`, `version_state`, `created_at`, `last_modified_at`,
                                    `created_by_id`, `last_modified_by_id`, `brick_id`)
 VALUES (@gwsCoreMajorVersionId, 0, 'LATEST', '2023-02-27 17:15:47', '2023-02-27 17:15:47',
         @adminUserId, @adminUserId,
         @gwsCoreBrickId);
 
 -- gws_academy major version 0
-INSERT INTO `brick_major_version` (`id`, `major`, `version_state`, `created_at`, `last_modified_at`,
+INSERT IGNORE INTO `brick_major_version` (`id`, `major`, `version_state`, `created_at`, `last_modified_at`,
                                    `created_by_id`, `last_modified_by_id`, `brick_id`)
 VALUES (@gwsAcademyMajorVersionId, 0, 'LATEST', '2023-02-27 17:15:47', '2023-02-27 17:15:47',
         @adminUserId, @adminUserId,
@@ -133,7 +133,7 @@ VALUES (@gwsAcademyMajorVersionId, 0, 'LATEST', '2023-02-27 17:15:47', '2023-02-
 -- Brick versions
 
 -- gws_core version 0.16.6
-INSERT INTO `brick_version` (`id`, `minor`, `patch`, `sub_patch`, `version_type`, `repo_type`, `technical_info`,
+INSERT IGNORE INTO `brick_version` (`id`, `minor`, `patch`, `sub_patch`, `version_type`, `repo_type`, `technical_info`,
                              `created_at`, `last_modified_at`, `created_by_id`, `last_modified_by_id`, `brick_major_version_id`)
 VALUES ('9e9beb89-ddd5-4c05-a502-14327cdd39ec', 21, 0, NULL, 'NORMAL', 'GIT', '{"FRONT_VERSION":"2.8.0","GLAB_VERSION":"2.16.0"}',
         '2023-02-27 17:15:47', '2023-02-27 17:15:47',
@@ -141,7 +141,7 @@ VALUES ('9e9beb89-ddd5-4c05-a502-14327cdd39ec', 21, 0, NULL, 'NORMAL', 'GIT', '{
         @gwsCoreMajorVersionId);
 
 -- gws_academy version 0.5.1
-INSERT INTO `brick_version` (`id`, `minor`, `patch`, `sub_patch`, `version_type`, `repo_type`, `technical_info`,
+INSERT IGNORE INTO `brick_version` (`id`, `minor`, `patch`, `sub_patch`, `version_type`, `repo_type`, `technical_info`,
                              `created_at`, `last_modified_at`, `created_by_id`, `last_modified_by_id`, `brick_major_version_id`)
 VALUES ('456dd68e-b5b5-44c0-846b-f4aa3768fc5d', 5, 1, NULL, 'NORMAL', 'GIT', NULL,
         '2023-02-27 17:15:47', '2023-02-27 17:15:47',
@@ -152,7 +152,7 @@ VALUES ('456dd68e-b5b5-44c0-846b-f4aa3768fc5d', 5, 1, NULL, 'NORMAL', 'GIT', NUL
 -- Main folders for brick major versions
 
 -- gws_core main folder (root folder for brick major version)
-INSERT INTO `folder` (`id`, `title`, `path`, `complete_path`, `order`, `brick_major_version_id`, `folder_id`, `mpath`,
+INSERT IGNORE INTO `folder` (`id`, `title`, `path`, `complete_path`, `order`, `brick_major_version_id`, `folder_id`, `mpath`,
                       `created_at`, `last_modified_at`, `created_by_id`, `last_modified_by_id`)
 VALUES (@gwsCoreMainFolderId, NULL, NULL, NULL, 0,
         @gwsCoreMajorVersionId, NULL, CONCAT(@gwsCoreMainFolderId, '.'),
@@ -160,7 +160,7 @@ VALUES (@gwsCoreMainFolderId, NULL, NULL, NULL, 0,
         @adminUserId, @adminUserId);
 
 -- gws_academy main folder (root folder for brick major version)
-INSERT INTO `folder` (`id`, `title`, `path`, `complete_path`, `order`, `brick_major_version_id`, `folder_id`, `mpath`,
+INSERT IGNORE INTO `folder` (`id`, `title`, `path`, `complete_path`, `order`, `brick_major_version_id`, `folder_id`, `mpath`,
                       `created_at`, `last_modified_at`, `created_by_id`, `last_modified_by_id`)
 VALUES (@gwsAcademyMainFolderId, NULL, NULL, NULL, 0,
         @gwsAcademyMajorVersionId, NULL, CONCAT(@gwsAcademyMainFolderId, '.'),
@@ -171,7 +171,7 @@ VALUES (@gwsAcademyMainFolderId, NULL, NULL, NULL, 0,
 -- Main documentation (Getting Started) for each brick
 
 -- gws_core Getting Started doc
-INSERT INTO `documentation` (`id`, `title`, `path`, `complete_path`, `order`, `folder_id`,
+INSERT IGNORE INTO `documentation` (`id`, `title`, `path`, `complete_path`, `order`, `folder_id`,
                              `created_at`, `last_modified_at`, `created_by_id`, `last_modified_by_id`)
 VALUES ('8b1acb58-ee72-4994-9fbe-04022c7f4116', 'Getting Started', 'getting-started', 'getting-started/', 0,
         @gwsCoreMainFolderId,
@@ -179,7 +179,7 @@ VALUES ('8b1acb58-ee72-4994-9fbe-04022c7f4116', 'Getting Started', 'getting-star
         @adminUserId, @adminUserId);
 
 -- gws_academy Getting Started doc
-INSERT INTO `documentation` (`id`, `title`, `path`, `complete_path`, `order`, `folder_id`,
+INSERT IGNORE INTO `documentation` (`id`, `title`, `path`, `complete_path`, `order`, `folder_id`,
                              `created_at`, `last_modified_at`, `created_by_id`, `last_modified_by_id`)
 VALUES ('9300732e-9463-44d6-b570-7a9821192bf3', 'Getting Started', 'getting-started', 'getting-started/', 0,
         @gwsAcademyMainFolderId,
@@ -188,7 +188,7 @@ VALUES ('9300732e-9463-44d6-b570-7a9821192bf3', 'Getting Started', 'getting-star
 
 
 -- Private brick for Test user (Michel Larousse) attached to his personal space
-INSERT INTO `brick` (`id`, `name`, `description`, `is_certified`, `visibility`, `pip_repo`, `git_repo`, `image_link`,
+INSERT IGNORE INTO `brick` (`id`, `name`, `description`, `is_certified`, `visibility`, `pip_repo`, `git_repo`, `image_link`,
                      `credential_username`, `credential_password`, `likes`, `comments`, `created_at`, `last_modified_at`,
                      `created_by_id`, `last_modified_by_id`, `space_id`)
 VALUES (@adminPrivateBrickId, 'michel_private_brick', 'Private brick owned by Michel Larousse', 0, 'private',
@@ -197,18 +197,18 @@ VALUES (@adminPrivateBrickId, 'michel_private_brick', 'Private brick owned by Mi
         @adminUserId, @adminUserId, @adminUserSpaceId);
 
 -- Brick user for the private brick
-INSERT INTO `brick_user` (`id`, `brick_id`, `user_id`)
+INSERT IGNORE INTO `brick_user` (`id`, `brick_id`, `user_id`)
 VALUES ('f3a4b5c6-d7e8-4f9a-0b1c-2d3e4f506172', @adminPrivateBrickId, @adminUserId);
 
 -- Private brick major version 0
-INSERT INTO `brick_major_version` (`id`, `major`, `version_state`, `created_at`, `last_modified_at`,
+INSERT IGNORE INTO `brick_major_version` (`id`, `major`, `version_state`, `created_at`, `last_modified_at`,
                                    `created_by_id`, `last_modified_by_id`, `brick_id`)
 VALUES (@adminPrivateBrickMajorVersionId, 0, 'LATEST', '2023-03-01 10:00:00', '2023-03-01 10:00:00',
         @adminUserId, @adminUserId,
         @adminPrivateBrickId);
 
 -- Private brick version
-INSERT INTO `brick_version` (`id`, `minor`, `patch`, `sub_patch`, `version_type`, `repo_type`, `technical_info`,
+INSERT IGNORE INTO `brick_version` (`id`, `minor`, `patch`, `sub_patch`, `version_type`, `repo_type`, `technical_info`,
                              `created_at`, `last_modified_at`, `created_by_id`, `last_modified_by_id`, `brick_major_version_id`)
 VALUES ('a4b5c6d7-e8f9-4a0b-1c2d-3e4f50617283', 1, 0, NULL, 'NORMAL', 'GIT', NULL,
         '2023-03-01 10:00:00', '2023-03-01 10:00:00',
@@ -216,7 +216,7 @@ VALUES ('a4b5c6d7-e8f9-4a0b-1c2d-3e4f50617283', 1, 0, NULL, 'NORMAL', 'GIT', NUL
         @adminPrivateBrickMajorVersionId);
 
 -- Private brick main folder (root folder for brick major version)
-INSERT INTO `folder` (`id`, `title`, `path`, `complete_path`, `order`, `brick_major_version_id`, `folder_id`, `mpath`,
+INSERT IGNORE INTO `folder` (`id`, `title`, `path`, `complete_path`, `order`, `brick_major_version_id`, `folder_id`, `mpath`,
                       `created_at`, `last_modified_at`, `created_by_id`, `last_modified_by_id`)
 VALUES (@adminPrivateBrickMainFolderId, NULL, NULL, NULL, 0,
         @adminPrivateBrickMajorVersionId, NULL, CONCAT(@adminPrivateBrickMainFolderId, '.'),
@@ -224,7 +224,7 @@ VALUES (@adminPrivateBrickMainFolderId, NULL, NULL, NULL, 0,
         @adminUserId, @adminUserId);
 
 -- Private brick Getting Started doc
-INSERT INTO `documentation` (`id`, `title`, `path`, `complete_path`, `order`, `folder_id`,
+INSERT IGNORE INTO `documentation` (`id`, `title`, `path`, `complete_path`, `order`, `folder_id`,
                              `created_at`, `last_modified_at`, `created_by_id`, `last_modified_by_id`)
 VALUES ('b5c6d7e8-f9a0-4b1c-2d3e-4f5061728394', 'Getting Started', 'getting-started', 'getting-started/', 0,
         @adminPrivateBrickMainFolderId,
