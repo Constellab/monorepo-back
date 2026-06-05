@@ -674,8 +674,8 @@ export class CnFolderAggregateService {
     page: number,
     size: number
   ): Promise<ClPage<CnActivity>> {
-    // check that the user can view the folder
-    const folder = await this.securityService.getAndCheckAuthorizationForFindOne(folderId);
+    // check that the user can view the folder (VIEWER cannot see activities)
+    const folder = await this.securityService.getAndCheckAuthorizationForUpdate(folderId);
 
     const searchBuilder = new BlSearchBuilder<CnActivity>({ createdAt: 'DESC' });
 
