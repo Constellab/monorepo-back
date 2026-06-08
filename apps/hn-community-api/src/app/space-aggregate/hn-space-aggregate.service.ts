@@ -1,12 +1,19 @@
-import { BlBadRequestException, BlUnauthorizedException } from '@monorepo/back-core-lib';
+import {
+  BlBadRequestException,
+  BlTransportSpaceDeletePayload,
+  BlTransportSpaceUserCreateOrUpdatePayload,
+  BlTransportSpaceUserRemovePayload,
+  BlUnauthorizedException,
+} from '@monorepo/back-core-lib';
 import { Injectable } from '@nestjs/common';
 
 import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
+import { HnUser } from '../users/hn-user.entity';
 import { HnUserService } from '../users/hn-user.service';
 import { HnSpaceDto } from './space/hn-space.dto';
 import { HnSpace } from './space/hn-space.entity';
 import { HnSpaceService } from './space/hn-space.service';
-import { HnSpaceUser } from './space-user/hn-space-user.entity';
+import { HnSpaceUser, HnSpaceUserRole } from './space-user/hn-space-user.entity';
 import { HnSpaceUserService } from './space-user/hn-space-user.service';
 
 @Injectable()
@@ -58,7 +65,9 @@ export class HnSpaceAggregateService {
 
   //////////////////////////// SPACE USER ////////////////////////////
 
-  public async createOrUpdateSpaceUser(spaceUserDto: HnSpaceUser): Promise<void> {
+  public async createOrUpdateSpaceUser(
+    spaceUserDto: BlTransportSpaceUserCreateOrUpdatePayload
+  ): Promise<void> {
     if (!(await this.checkIfUserExists(spaceUserDto.userId))) {
       if (spaceUserDto.user == null) return;
 
@@ -66,7 +75,7 @@ export class HnSpaceAggregateService {
     }
 
     if (spaceUserDto.space != null && (await this.checkIfUserExists(spaceUserDto.space.createdBy.id))) {
-      await this.checkOrCreateSpace(spaceUserDto.space);
+      await this.checkOrCreateSpace(spaceUserDto.space as HnSpace);
     }
 
     await this.checkIfSpaceExists(spaceUserDto.spaceId);
@@ -77,29 +86,29 @@ export class HnSpaceAggregateService {
     );
 
     if (existentSpaceUser != null) {
-      existentSpaceUser.role = spaceUserDto.role ?? existentSpaceUser.role;
+      existentSpaceUser.role = (spaceUserDto.role as HnSpaceUserRole) ?? existentSpaceUser.role;
       existentSpaceUser.active = spaceUserDto.active ?? existentSpaceUser.active;
       await this.spaceUserService.updateSpaceUser(existentSpaceUser);
     } else {
       const spaceUserObj: HnSpaceUser = new HnSpaceUser();
       spaceUserObj.spaceId = spaceUserDto.spaceId;
       spaceUserObj.userId = spaceUserDto.userId;
-      spaceUserObj.role = spaceUserDto.role;
+      spaceUserObj.role = spaceUserDto.role as HnSpaceUserRole;
       spaceUserObj.active = spaceUserDto.active;
-      spaceUserObj.addedBy = spaceUserDto.addedBy;
+      spaceUserObj.addedBy = spaceUserDto.addedBy as HnUser;
       spaceUserObj.createdAt = spaceUserDto.createdAt;
 
       await this.spaceUserService.createSpaceUser(spaceUserObj);
     }
   }
 
-  public async deleteSpace(spaceDto: Partial<HnSpace>): Promise<void> {
+  public async deleteSpace(spaceDto: BlTransportSpaceDeletePayload): Promise<void> {
     await this.checkIfSpaceExists(spaceDto.id);
 
     await this.spaceService.delete(spaceDto.id);
   }
 
-  public async deleteSpaceUser(spaceUserDto: Partial<HnSpaceUser>): Promise<void> {
+  public async deleteSpaceUser(spaceUserDto: BlTransportSpaceUserRemovePayload): Promise<void> {
     if (!(await this.checkIfUserExists(spaceUserDto.userId))) return;
 
     await this.checkIfSpaceExists(spaceUserDto.spaceId);

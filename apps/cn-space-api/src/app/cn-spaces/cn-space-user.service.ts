@@ -1,10 +1,12 @@
 import {
+  BL_TRANSPORT_SPACE_SPACE_USER_QUEUE,
   BlAbstractPaginatedService,
   BlBadRequestException,
   BlSearchBuilder,
   BlSearchParams,
-  blTransportSpaceSpaceUserQueue,
+  BlTransportSpaceUserCreateOrUpdatePayload,
   BlTransportSpaceUserPattern,
+  BlTransportSpaceUserRemovePayload,
 } from '@monorepo/back-core-lib';
 import { ClHelpService, ClPage } from '@monorepo/core-lib';
 import { InjectQueue } from '@nestjs/bullmq';
@@ -24,7 +26,7 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUserEn
   private readonly logger = new Logger(CnSpaceUserService.name);
   constructor(
     @InjectRepository(CnSpaceUserEntity) private repository: Repository<CnSpaceUserEntity>,
-    @InjectQueue(blTransportSpaceSpaceUserQueue) private queue: Queue
+    @InjectQueue(BL_TRANSPORT_SPACE_SPACE_USER_QUEUE) private queue: Queue
   ) {
     super(repository, CnSpaceUserEntity);
   }
@@ -105,12 +107,7 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUserEn
       spaceId: spaceId,
     });
 
-    const spaceUserDeleted = {
-      userId: userId,
-      spaceId: spaceId,
-    };
-
-    this.sendActionOnSpaceUserToTransport(spaceUserDeleted, BlTransportSpaceUserPattern.REMOVE);
+    this.sendRemoveSpaceUserToTransport(userId, spaceId);
   }
 
   public async activateUser(spaceId: string, userId: string): Promise<CnSpaceUser> {
@@ -122,7 +119,7 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUserEn
     spaceUser.active = true;
     const spaceUserSave = await this.repository.save(spaceUser);
     if (!spaceUserSave.isSpaceViewer()) {
-      this.sendActionOnSpaceUserToTransport(spaceUserSave, BlTransportSpaceUserPattern.UPDATE);
+      this.sendUpdateSpaceUserToTransport(spaceUserSave);
     }
     return spaceUserSave;
   }
@@ -136,7 +133,7 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUserEn
     spaceUser.active = false;
     const spaceUserSave = await this.repository.save(spaceUser);
     if (!spaceUserSave.isSpaceViewer()) {
-      this.sendActionOnSpaceUserToTransport(spaceUserSave, BlTransportSpaceUserPattern.UPDATE);
+      this.sendUpdateSpaceUserToTransport(spaceUserSave);
     }
     return spaceUserSave;
   }
@@ -159,13 +156,13 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUserEn
 
     if (spaceUserSave.isSpaceViewer()) {
       // Downgraded to VIEWER: remove from community
-      this.sendActionOnSpaceUserToTransport(spaceUserSave, BlTransportSpaceUserPattern.REMOVE);
+      this.sendRemoveSpaceUserToTransport(spaceUserSave.userId, spaceUserSave.spaceId);
     } else if (wasViewer) {
       // Upgraded from VIEWER: create in community
-      this.sendSpaceUserToTransport(spaceUserSave);
+      await this.sendSpaceUserToTransportFromId(spaceUserSave.userId, spaceUserSave.spaceId);
     } else {
       // Regular role change (ADMIN <-> USER): update in community
-      this.sendActionOnSpaceUserToTransport(spaceUserSave, BlTransportSpaceUserPattern.UPDATE);
+      this.sendUpdateSpaceUserToTransport(spaceUserSave);
     }
 
     return spaceUserSave;
@@ -312,8 +309,46 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUserEn
       });
   }
 
+  public async sendSpaceUserToTransportFromId(userId: string, spaceId: string): Promise<void> {
+    const spaceUser = await this.repository.findOne({
+      where: { spaceId: spaceId, userId: userId },
+      relations: { user: true, space: true },
+    });
+    if (spaceUser) {
+      this.sendSpaceUserToTransport(spaceUser);
+    } else {
+      this.logger.warn(
+        `Space user with id ${userId} and space id ${spaceId} not found, cannot send to transport`
+      );
+    }
+  }
+
   public sendSpaceUserToTransport(spaceUser: CnSpaceUserEntity): void {
-    const sU: Partial<CnSpaceUserEntity> = {
+    const payload = this.toCreateOrUpdatePayload(spaceUser);
+    this.queue.add(BlTransportSpaceUserPattern.CREATE, payload).catch((err) => {
+      this.logger.error('Error adding space user to queue', err);
+    });
+  }
+
+  public sendRemoveSpaceUserToTransport(userId: string, spaceId: string): void {
+    const payload: BlTransportSpaceUserRemovePayload = {
+      userId,
+      spaceId,
+    };
+    this.queue.add(BlTransportSpaceUserPattern.REMOVE, payload).catch((err) => {
+      this.logger.error('Error sending remove space user to queue', err);
+    });
+  }
+
+  public sendUpdateSpaceUserToTransport(spaceUser: CnSpaceUserEntity): void {
+    const payload = this.toCreateOrUpdatePayload(spaceUser);
+    this.queue.add(BlTransportSpaceUserPattern.UPDATE, payload).catch((err) => {
+      this.logger.error('Error sending update space user to queue', err);
+    });
+  }
+
+  private toCreateOrUpdatePayload(spaceUser: CnSpaceUserEntity): BlTransportSpaceUserCreateOrUpdatePayload {
+    return {
       userId: spaceUser.userId,
       spaceId: spaceUser.spaceId,
       role: spaceUser.role,
@@ -323,17 +358,5 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUserEn
       addedBy: spaceUser.addedBy,
       createdAt: spaceUser.createdAt,
     };
-    this.queue.add(BlTransportSpaceUserPattern.CREATE, sU).catch((err) => {
-      this.logger.error('Error adding space user to queue', err);
-    });
-  }
-
-  public sendActionOnSpaceUserToTransport(
-    spaceUser: Partial<CnSpaceUserEntity>,
-    spaceUserAction: BlTransportSpaceUserPattern
-  ): void {
-    this.queue.add(spaceUserAction, spaceUser).catch((err) => {
-      this.logger.error('Error sending action on space user to queue', err);
-    });
   }
 }

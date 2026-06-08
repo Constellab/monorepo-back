@@ -1,6 +1,11 @@
+import { ClTheme } from '@monorepo/core-lib';
 import { SharedBullAsyncConfiguration } from '@nestjs/bullmq';
 import { ModuleMetadata } from '@nestjs/common/interfaces';
 import * as Bull from 'bullmq';
+import { DateTime } from 'luxon';
+
+import { BlUser } from '../../models/bl-user/bl-user.class';
+import { BlUserCategory } from '../../models/bl-user/bl-user-category.enum';
 
 export interface BlTransportModuleConfig {
   host: string;
@@ -41,8 +46,8 @@ export function blTransportRedisForRoot(
 }
 
 // queues filled from space
-export const blTransportSpaceUserQueue = 'user_queue';
-export const blTransportSpaceSpaceUserQueue = 'space_user_queue';
+export const BL_TRANSPORT_SPACE_USER_QUEUE = 'user_queue';
+export const BL_TRANSPORT_SPACE_SPACE_USER_QUEUE = 'space_user_queue';
 
 //
 export enum BlTransportSpaceUserPattern {
@@ -58,8 +63,42 @@ export enum BlTransportUserPattern {
 }
 
 //queues filled from community
-export const blTransportCommunityBrickQueue = 'brick_queue';
+export const BL_TRANSPORT_COMMUNITY_BRICK_QUEUE = 'brick_queue';
 
 // internal queues for the mail service
-export const blTransportSpaceMailQueue = 'space_mail_queue';
-export const blTransportCommunityMailQueue = 'community_mail_queue';
+export const BL_TRANSPORT_SPACE_MAIL_QUEUE = 'space_mail_queue';
+export const BL_TRANSPORT_COMMUNITY_MAIL_QUEUE = 'community_mail_queue';
+
+////////////////////// PAYLOADS //////////////////////
+
+export interface BlTransportSpaceUserPayloadUser extends BlUser {
+  category: BlUserCategory;
+  theme: ClTheme;
+}
+
+export interface BlTransportSpaceUserCreateOrUpdatePayload {
+  userId: string;
+  spaceId: string;
+  role: string;
+  active: boolean;
+  user: BlTransportSpaceUserPayloadUser;
+  space: BlTransportSpacePayload;
+  addedBy: BlUser;
+  createdAt: DateTime;
+}
+
+export interface BlTransportSpacePayload {
+  id: string;
+  name: string;
+  photo: string;
+  createdBy: BlUser;
+}
+
+export interface BlTransportSpaceUserRemovePayload {
+  userId: string;
+  spaceId: string;
+}
+
+export interface BlTransportSpaceDeletePayload {
+  id: string;
+}

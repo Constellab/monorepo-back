@@ -1,7 +1,7 @@
 import {
+  BL_TRANSPORT_COMMUNITY_BRICK_QUEUE,
   BlAbstractPaginatedService,
   BlAbstractService,
-  blTransportCommunityBrickQueue,
   BlUnauthorizedException,
   BlVersion,
 } from '@monorepo/back-core-lib';
@@ -30,7 +30,7 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
   constructor(
     @InjectRepository(HnBrickVersion)
     private brickVersionsRepository: Repository<HnBrickVersion>,
-    @InjectQueue(blTransportCommunityBrickQueue) private queue: Queue,
+    @InjectQueue(BL_TRANSPORT_COMMUNITY_BRICK_QUEUE) private queue: Queue,
     private brickVersionReferenceService: HnBrickVersionReferenceService
   ) {
     super(brickVersionsRepository, HnBrickVersion);

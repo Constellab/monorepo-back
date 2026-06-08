@@ -1,10 +1,10 @@
 import {
+  BL_TRANSPORT_SPACE_MAIL_QUEUE,
   BlCurrentUserIsAdmin,
   BlMailModuleAsyncOptions,
   BlMailModuleConfig,
   BlMailProcessor,
   BlMailService,
-  blTransportSpaceMailQueue,
 } from '@monorepo/back-core-lib';
 import { InjectQueue, Processor } from '@nestjs/bullmq';
 import { Injectable } from '@nestjs/common';
@@ -19,18 +19,18 @@ import { CnCurrentUserHelper } from '../../utils/cn-current-user.helper';
  * classes to configure the correct queue for the Mail module
  */
 @Injectable()
-@Processor(blTransportSpaceMailQueue)
+@Processor(BL_TRANSPORT_SPACE_MAIL_QUEUE)
 export class CnMailProcessor extends BlMailProcessor {}
 
 @Injectable()
 export class CnMailService extends BlMailService {
-  constructor(@InjectQueue(blTransportSpaceMailQueue) audioQueue: Queue) {
+  constructor(@InjectQueue(BL_TRANSPORT_SPACE_MAIL_QUEUE) audioQueue: Queue) {
     super(audioQueue);
   }
 }
 
 export class CnMailConfig {
-  public static queueName = blTransportSpaceMailQueue;
+  public static queueName = BL_TRANSPORT_SPACE_MAIL_QUEUE;
 
   public static mailServiceType = CnMailService;
 
@@ -44,14 +44,14 @@ export class CnMailConfig {
     };
   }
 
-  private static mailFactory(configService: CnCoreConfigService): BlMailModuleConfig {
+  private static mailFactory = (configService: CnCoreConfigService): BlMailModuleConfig => {
     return {
       mailConfig: configService.getMailConfig(),
       templateFolder: join(__dirname, 'assets/templates/'),
       defaultLayout: 'main',
       defaultData: { contactMail: configService.getCustomerSuccessMail() },
     };
-  }
+  };
 
   public static currentUserIsAdmin: BlCurrentUserIsAdmin = () => {
     return CnCurrentUserHelper.isAdmin();

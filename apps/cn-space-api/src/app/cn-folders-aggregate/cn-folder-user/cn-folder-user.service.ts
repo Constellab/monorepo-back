@@ -30,14 +30,15 @@ export class CnFolderUserService extends BlAbstractPaginatedService<CnFolderUser
   public async shareRootFolderToGroupOrUser(
     rootFolderId: string,
     groupOrUserId: string,
-    role: CnRootFolderUserRole
+    getRoleForUser: (userId: string) => Promise<CnRootFolderUserRole>
   ): Promise<CnUser[]> {
     const users = await this.groupService.getUsersOfGroups([groupOrUserId]);
 
     if (users.length === 0) {
       const user = await this.userService.findById(groupOrUserId);
       if (user) {
-        await this.shareRootFolderToUserIfNot(rootFolderId, user.id, role);
+        const effectiveRole = await getRoleForUser(user.id);
+        await this.shareRootFolderToUserIfNot(rootFolderId, user.id, effectiveRole);
         return [user];
       } else {
         throw new Error('The group or user does not exist');
@@ -45,7 +46,8 @@ export class CnFolderUserService extends BlAbstractPaginatedService<CnFolderUser
     }
 
     for (const user of users) {
-      await this.shareRootFolderToUserIfNot(rootFolderId, user.id, role);
+      const effectiveRole = await getRoleForUser(user.id);
+      await this.shareRootFolderToUserIfNot(rootFolderId, user.id, effectiveRole);
     }
 
     // return all users of the folder

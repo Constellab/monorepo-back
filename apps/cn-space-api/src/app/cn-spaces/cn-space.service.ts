@@ -1,4 +1,5 @@
 import {
+  BL_TRANSPORT_SPACE_SPACE_USER_QUEUE,
   BlAbstractService,
   BlBadRequestException,
   BlBucketConfig,
@@ -8,7 +9,6 @@ import {
   BlObjectStorageService,
   BlSearchBuilder,
   BlSearchParams,
-  blTransportSpaceSpaceUserQueue,
   BlTransportSpaceUserPattern,
 } from '@monorepo/back-core-lib';
 import { ClPage } from '@monorepo/core-lib';
@@ -30,7 +30,7 @@ export class CnSpaceService extends BlAbstractService<CnSpaceEntity> {
     @InjectRepository(CnSpaceEntity) private repository: Repository<CnSpaceEntity>,
     private objectStorageService: BlObjectStorageService,
     private configService: CnCoreConfigService,
-    @InjectQueue(blTransportSpaceSpaceUserQueue) private queue: Queue
+    @InjectQueue(BL_TRANSPORT_SPACE_SPACE_USER_QUEUE) private queue: Queue
   ) {
     super(repository, CnSpaceEntity);
   }

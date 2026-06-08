@@ -456,12 +456,10 @@ export class CnFolderAggregateService {
       throw new BlBadRequestException('Only root folders can be shared');
     }
 
-    await this.checkFolderRoleForSpaceViewer(folder.spaceId, groupOrUserId, role);
-
     const newUsers = await this.folderUserService.shareRootFolderToGroupOrUser(
       folder.id,
       groupOrUserId,
-      role
+      (userId) => this.getFolderRoleForUser(folder.spaceId, userId, role)
     );
 
     this.folderEventService.emitFolderEvent({
@@ -484,7 +482,10 @@ export class CnFolderAggregateService {
       throw new BlBadRequestException('Only root folders can be shared');
     }
 
-    await this.checkFolderRoleForSpaceViewer(folder.spaceId, userId, role);
+    const effectiveRole = await this.getFolderRoleForUser(folder.spaceId, userId, role);
+    if (effectiveRole !== role) {
+      throw new BlUnauthorizedException(CnErrorText.VISITOR_FOLDER_ROLE_RESTRICTED);
+    }
 
     const updatedUser = await this.folderUserService.updateRootFolderUserRole(folder.id, userId, role);
     this.folderEventService.emitFolderEvent({
@@ -735,16 +736,18 @@ export class CnFolderAggregateService {
   }
 
   /**
-   * If the target user is a space VIEWER, only the VIEWER folder role is allowed.
+   * Returns the effective folder role for a user.
+   * Space VIEWERs are always downgraded to folder VIEWER.
    */
-  private async checkFolderRoleForSpaceViewer(
+  private async getFolderRoleForUser(
     spaceId: string,
     userId: string,
-    role: CnRootFolderUserRole
-  ): Promise<void> {
+    requestedRole: CnRootFolderUserRole
+  ): Promise<CnRootFolderUserRole> {
     const spaceUser = await this.spaceAggregateService.getSpaceUserIfAccess(spaceId, userId);
-    if (spaceUser?.isSpaceViewer() && role !== CnRootFolderUserRole.VIEWER) {
-      throw new BlUnauthorizedException(CnErrorText.VISITOR_FOLDER_ROLE_RESTRICTED);
+    if (spaceUser?.isSpaceViewer()) {
+      return CnRootFolderUserRole.VIEWER;
     }
+    return requestedRole;
   }
 }

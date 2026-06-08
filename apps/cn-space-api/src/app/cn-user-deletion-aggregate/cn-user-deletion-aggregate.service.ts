@@ -1,6 +1,6 @@
 import {
+  BL_TRANSPORT_SPACE_USER_QUEUE,
   BlBadRequestException,
-  blTransportSpaceUserQueue,
   BlTransportUserPattern,
   BlUnauthorizedException,
   BlUserStatus,
@@ -37,7 +37,7 @@ export class CnUserDeletionAggregateService {
     private activityService: CnActivityService,
     private notificationService: CnNotificationService,
     private datasource: DataSource,
-    @InjectQueue(blTransportSpaceUserQueue) private queue: Queue
+    @InjectQueue(BL_TRANSPORT_SPACE_USER_QUEUE) private queue: Queue
   ) {}
 
   /**
