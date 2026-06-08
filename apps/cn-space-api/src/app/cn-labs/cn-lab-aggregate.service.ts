@@ -880,27 +880,39 @@ export class CnLabAggregateService {
     return this.removeUserFromLabNotSecure(lab, userId);
   }
 
-  private async removeUserFromLabNotSecure(lab: CnLab, userId: string): Promise<void> {
-    return await this.dataSource.transaction(async (entityManager) => {
+  private async removeUserFromLabNotSecure(
+    lab: CnLab,
+    userId: string,
+    externalEntityManager?: EntityManager
+  ): Promise<void> {
+    const execute = async (entityManager: EntityManager): Promise<void> => {
       await this.labUserService.deleteLabUser(lab, userId, entityManager);
 
       if (lab.isHttpAccessible()) {
-        // add the user to the lab is the lab is running
         const labIsRunning = await this.externalLabApiService.healthCheck(lab.getGlabSpaceApiInfo());
 
         if (labIsRunning) {
-          // deactivate the user in the lab
           await this.externalLabUserService.deactivateUser(lab.getGlabSpaceApiInfo(), userId);
         }
       }
-    });
+    };
+
+    if (externalEntityManager) {
+      await execute(externalEntityManager);
+    } else {
+      await this.dataSource.transaction(execute);
+    }
   }
 
-  public async removeUserFromAllLabs(userId: string, spaceId: string): Promise<void> {
+  public async removeUserFromAllLabs(
+    userId: string,
+    spaceId: string,
+    entityManager?: EntityManager
+  ): Promise<void> {
     const labs = await this.labsService.getAllLabsByUserAndSpace(userId, spaceId);
 
     for (const lab of labs) {
-      await this.removeUserFromLabNotSecure(lab, userId);
+      await this.removeUserFromLabNotSecure(lab, userId, entityManager);
     }
   }
 

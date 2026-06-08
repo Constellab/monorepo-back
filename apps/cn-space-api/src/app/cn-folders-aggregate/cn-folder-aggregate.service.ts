@@ -10,7 +10,7 @@ import { ClHelpService, ClPage, ClPageI } from '@monorepo/core-lib';
 import { TeBlockFigureUploadedResponse, TeRichText } from '@monorepo/te-text-editor';
 import { Injectable, Logger } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { DataSource, In } from 'typeorm';
+import { DataSource, EntityManager, In } from 'typeorm';
 
 import { CnActivity, CnActivityEntityType } from '../cn-activity/cn-activity.entity';
 import { CnActivityService } from '../cn-activity/cn-activity.service';
@@ -509,22 +509,34 @@ export class CnFolderAggregateService {
     });
   }
 
-  public async unshareAllFolderForUser(userId: string, spaceId: string): Promise<void> {
+  public async unshareAllFolderForUser(
+    userId: string,
+    spaceId: string,
+    entityManager?: EntityManager
+  ): Promise<void> {
     const rootFolders = await this.hierarchyObjectService.getAllRootFoldersOfUser(userId, spaceId);
 
     for (const rootFolder of rootFolders) {
-      await this.folderUserService.unshareRootFolderFromUser(rootFolder.id, userId);
+      await this.folderUserService.unshareRootFolderFromUser(rootFolder.id, userId, entityManager);
     }
   }
 
-  public async downgradeAllFolderRolesToViewer(userId: string, spaceId: string): Promise<void> {
+  public async downgradeAllFolderRolesToViewer(
+    userId: string,
+    spaceId: string,
+    entityManager?: EntityManager
+  ): Promise<void> {
     const rootFolders = await this.hierarchyObjectService.getAllRootFoldersOfUser(userId, spaceId);
 
     for (const rootFolder of rootFolders) {
       const folderUser = await this.folderUserService.findByRootFolderIdAndUserId(rootFolder.id, userId);
       if (folderUser && folderUser.role !== CnRootFolderUserRole.VIEWER) {
-        folderUser.role = CnRootFolderUserRole.VIEWER;
-        await this.folderUserService.updateFolderUser(folderUser);
+        await this.folderUserService.updateRootFolderUserRole(
+          rootFolder.id,
+          userId,
+          CnRootFolderUserRole.VIEWER,
+          entityManager
+        );
       }
     }
   }

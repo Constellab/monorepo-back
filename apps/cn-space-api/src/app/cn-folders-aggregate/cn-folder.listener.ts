@@ -659,13 +659,13 @@ export class CnFolderListener {
   async handleSpaceEvent(event: CnSpaceEvent): Promise<Error | null> {
     if (event.type === 'REMOVE_USER_FROM_SPACE') {
       return await this.folderAggregateService
-        .unshareAllFolderForUser(event.userId, event.spaceId)
+        .unshareAllFolderForUser(event.userId, event.spaceId, event.entityManager)
         .catch((err) => err);
     }
 
     if (event.type === 'DOWNGRADE_USER_TO_VIEWER') {
       return await this.folderAggregateService
-        .downgradeAllFolderRolesToViewer(event.userId, event.spaceId)
+        .downgradeAllFolderRolesToViewer(event.userId, event.spaceId, event.entityManager)
         .catch((err) => err);
     }
 

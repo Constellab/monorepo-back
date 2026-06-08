@@ -92,11 +92,18 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUserEn
     }
   }
 
-  public async removeUserFromSpace(spaceId: string, userId: string): Promise<void> {
+  public async removeUserFromSpace(
+    spaceId: string,
+    userId: string,
+    entityManager?: EntityManager
+  ): Promise<void> {
     if (!(await this.userIsSpaceMember(spaceId, userId))) {
       throw new BlBadRequestException(CnErrorText.USER_NOT_IN_SPACE);
     }
-    await this.repository.delete({ userId: userId, spaceId: spaceId });
+    await this.getEntityManager(entityManager).delete(CnSpaceUserEntity, {
+      userId: userId,
+      spaceId: spaceId,
+    });
 
     const spaceUserDeleted = {
       userId: userId,
@@ -134,7 +141,12 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUserEn
     return spaceUserSave;
   }
 
-  public async updateUserRole(spaceId: string, userId: string, role: CnSpaceUserRole): Promise<CnSpaceUser> {
+  public async updateUserRole(
+    spaceId: string,
+    userId: string,
+    role: CnSpaceUserRole,
+    entityManager?: EntityManager
+  ): Promise<CnSpaceUser> {
     const spaceUser = await this.findOneBySpaceIdAndUserId(spaceId, userId);
 
     if (spaceUser.role === role) {
@@ -143,7 +155,7 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUserEn
 
     const wasViewer = spaceUser.isSpaceViewer();
     spaceUser.role = role;
-    const spaceUserSave = await this.repository.save(spaceUser);
+    const spaceUserSave = await this.getEntityManager(entityManager).save(CnSpaceUserEntity, spaceUser);
 
     if (spaceUserSave.isSpaceViewer()) {
       // Downgraded to VIEWER: remove from community

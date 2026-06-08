@@ -346,14 +346,17 @@ export class CnSpaceAggregateService {
     await this.checkSpaceAdmin(spaceId);
     const user = await this.userService.findByIdAndCheck(userId);
 
-    // trigger the event and check if the user can be removed
-    await this.emitSpaceEventAndCheckResult({
-      type: 'REMOVE_USER_FROM_SPACE',
-      userId: user.id,
-      spaceId: spaceId,
-    });
+    await this.datasource.transaction(async (entityManager) => {
+      // trigger the event and check if the user can be removed
+      await this.emitSpaceEventAndCheckResult({
+        type: 'REMOVE_USER_FROM_SPACE',
+        userId: user.id,
+        spaceId: spaceId,
+        entityManager: entityManager,
+      });
 
-    await this.spaceUserService.removeUserFromSpace(spaceId, user.id);
+      await this.spaceUserService.removeUserFromSpace(spaceId, user.id, entityManager);
+    });
   }
 
   public async activateUserInSpace(spaceId: string, userId: string): Promise<void> {
@@ -390,16 +393,21 @@ export class CnSpaceAggregateService {
 
     await this.checkSpaceAdmin(spaceId);
 
-    // when downgrading to VIEWER, remove user from labs and downgrade folder roles
+    // when downgrading to VIEWER, wrap everything in a transaction
     if (role === CnSpaceUserRole.VIEWER) {
-      await this.emitSpaceEventAndCheckResult({
-        type: 'DOWNGRADE_USER_TO_VIEWER',
-        userId: userId,
-        spaceId: spaceId,
-      });
-    }
+      await this.datasource.transaction(async (entityManager) => {
+        await this.emitSpaceEventAndCheckResult({
+          type: 'DOWNGRADE_USER_TO_VIEWER',
+          userId: userId,
+          spaceId: spaceId,
+          entityManager: entityManager,
+        });
 
-    await this.spaceUserService.updateUserRole(spaceId, userId, role);
+        await this.spaceUserService.updateUserRole(spaceId, userId, role, entityManager);
+      });
+    } else {
+      await this.spaceUserService.updateUserRole(spaceId, userId, role);
+    }
   }
 
   public async getInvitationByCode(code: string): Promise<CnSpaceInvitReadDto> {

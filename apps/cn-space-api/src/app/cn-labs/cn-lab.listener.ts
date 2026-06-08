@@ -145,7 +145,7 @@ export class CnLabListener {
   async handleSpaceEvent(event: CnSpaceEvent): Promise<Error | null> {
     if (event.type === 'REMOVE_USER_FROM_SPACE' || event.type === 'DOWNGRADE_USER_TO_VIEWER') {
       return await this.labAggregateService
-        .removeUserFromAllLabs(event.userId, event.spaceId)
+        .removeUserFromAllLabs(event.userId, event.spaceId, event.entityManager)
         .catch((err) => err);
     }
 

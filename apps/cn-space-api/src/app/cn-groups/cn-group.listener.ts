@@ -12,7 +12,7 @@ export class CnGroupListener {
   async handleSpaceEvent(event: CnSpaceEvent): Promise<Error | null> {
     if (event.type === 'REMOVE_USER_FROM_SPACE') {
       return await this.groupAggregateService
-        .removeUserFromAllTeams(event.userId, event.spaceId)
+        .removeUserFromAllTeams(event.userId, event.spaceId, event.entityManager)
         .catch((err) => err);
     }
 
