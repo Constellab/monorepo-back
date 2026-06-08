@@ -23,7 +23,7 @@ import {
   CnSpaceUpdateStorageLocationDTO,
 } from './cn-space.dto';
 import { CnSpace, CnSpaceEntity, CnSpaceType } from './cn-space.entity';
-import { CnSpaceEvent, cnSpaceEventName } from './cn-space.event';
+import { CN_SPACE_EVENT_NAME, CnSpaceEvent } from './cn-space.event';
 import { CnSpaceService } from './cn-space.service';
 import { CnSpaceAggregateSecurity } from './cn-space-aggregate-security.service';
 import { CnSpaceInvit } from './cn-space-invit.entity';
@@ -390,6 +390,15 @@ export class CnSpaceAggregateService {
 
     await this.checkSpaceAdmin(spaceId);
 
+    // when downgrading to VIEWER, remove user from labs and downgrade folder roles
+    if (role === CnSpaceUserRole.VIEWER) {
+      await this.emitSpaceEventAndCheckResult({
+        type: 'DOWNGRADE_USER_TO_VIEWER',
+        userId: userId,
+        spaceId: spaceId,
+      });
+    }
+
     await this.spaceUserService.updateUserRole(spaceId, userId, role);
   }
 
@@ -415,8 +424,8 @@ export class CnSpaceAggregateService {
       throw new BlBadRequestException(CnErrorText.USER_ALREADY_IN_SPACE);
     }
 
-    // for entreprise space, only user with entreprise licence can be invited
-    if (space.isEntrepriseSpace()) {
+    // for entreprise space, only user with entreprise licence can be invited (except for VIEWER role)
+    if (space.isEntrepriseSpace() && invitDto.role !== CnSpaceUserRole.VIEWER) {
       const user = await this.userService.findByEmail(invitDto.userMail);
 
       if (user == null) {
@@ -493,7 +502,11 @@ export class CnSpaceAggregateService {
       throw new BlBadRequestException('The invitation email does not match the user email');
     }
 
-    if (invitation.space.isEntrepriseSpace() && user.isFreeLicence()) {
+    if (
+      invitation.space.isEntrepriseSpace() &&
+      user.isFreeLicence() &&
+      invitation.role !== CnSpaceUserRole.VIEWER
+    ) {
       throw new BlBadRequestException(CnErrorText.INVIT_ACCEPT_USER_FREE_LICENCE_ENTREPRISE_SPACE);
     }
 
@@ -675,7 +688,7 @@ export class CnSpaceAggregateService {
   //////////////////////////////// EVENT ///////////////////////////////////////
 
   private async emitSpaceEventAndCheckResult(event: CnSpaceEvent): Promise<void> {
-    const results = await this.eventEmitter.emitAsync(cnSpaceEventName, event);
+    const results = await this.eventEmitter.emitAsync(CN_SPACE_EVENT_NAME, event);
     // if a text is returned, it means an error occurred
     for (const res of results) {
       if (!res) continue;

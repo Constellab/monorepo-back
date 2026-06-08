@@ -59,7 +59,7 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUserEn
       throw new BlBadRequestException(CnErrorText.USER_ALREADY_IN_SPACE);
     }
 
-    if (space.isEntrepriseSpace() && user.isFreeLicence()) {
+    if (space.isEntrepriseSpace() && user.isFreeLicence() && role !== CnSpaceUserRole.VIEWER) {
       throw new BlBadRequestException(CnErrorText.USER_FREE_LICENCE_ENTREPRISE_SPACE_ERROR);
     }
 

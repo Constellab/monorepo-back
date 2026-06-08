@@ -1,6 +1,7 @@
 import { BlUnauthorizedException } from '@monorepo/back-core-lib';
 import { Injectable } from '@nestjs/common';
 
+import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
 import { CnUser } from '../cn-users/cn-user.entity';
 import { CnSpaceUser } from './cn-space-user.entity';
 import { CnSpaceUserService } from './cn-space-user.service';
@@ -35,7 +36,7 @@ export class CnSpaceAggregateSecurity {
 
     const spaceUser = await this.getAndCheckSpaceUser(spaceId, user.id);
     if (spaceUser.isSpaceViewer()) {
-      throw new BlUnauthorizedException('Space visitors cannot access this resource');
+      throw new BlUnauthorizedException(CnErrorText.VISITOR_CANNOT_ACCESS_RESOURCE);
     }
   }
 

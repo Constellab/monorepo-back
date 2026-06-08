@@ -24,7 +24,7 @@ export class CnFoldersSecurityUser implements CnFoldersAggregateSecurityI {
 
   checkCreateRootFolder(): void {
     if (this.userInfo.isSpaceViewer()) {
-      throw new BlUnauthorizedException('Space visitors cannot create folders');
+      throw new BlUnauthorizedException(CnErrorText.VISITOR_CANNOT_CREATE_FOLDER);
     }
   }
 

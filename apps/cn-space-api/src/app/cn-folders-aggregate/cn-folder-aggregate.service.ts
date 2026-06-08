@@ -517,6 +517,18 @@ export class CnFolderAggregateService {
     }
   }
 
+  public async downgradeAllFolderRolesToViewer(userId: string, spaceId: string): Promise<void> {
+    const rootFolders = await this.hierarchyObjectService.getAllRootFoldersOfUser(userId, spaceId);
+
+    for (const rootFolder of rootFolders) {
+      const folderUser = await this.folderUserService.findByRootFolderIdAndUserId(rootFolder.id, userId);
+      if (folderUser && folderUser.role !== CnRootFolderUserRole.VIEWER) {
+        folderUser.role = CnRootFolderUserRole.VIEWER;
+        await this.folderUserService.updateFolderUser(folderUser);
+      }
+    }
+  }
+
   /**
    * Return the complete list of user that have access to the folder
    * @param folderId
@@ -720,7 +732,7 @@ export class CnFolderAggregateService {
   ): Promise<void> {
     const spaceUser = await this.spaceAggregateService.getSpaceUserIfAccess(spaceId, userId);
     if (spaceUser?.isSpaceViewer() && role !== CnRootFolderUserRole.VIEWER) {
-      throw new BlUnauthorizedException('Space visitors can only have the Visitor role on folders');
+      throw new BlUnauthorizedException(CnErrorText.VISITOR_FOLDER_ROLE_RESTRICTED);
     }
   }
 }

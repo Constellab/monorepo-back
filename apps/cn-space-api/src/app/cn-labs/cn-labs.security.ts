@@ -34,7 +34,7 @@ export class CnLabsSecurity {
 
   public checkAuthorizationToCreateLab(userInfo: CnUserSpaceInfo): void {
     if (userInfo.isSpaceViewer()) {
-      throw new BlUnauthorizedException('Space visitors cannot create labs');
+      throw new BlUnauthorizedException(CnErrorText.VISITOR_CANNOT_CREATE_LAB);
     }
   }
 
@@ -102,14 +102,10 @@ export class CnLabsSecurity {
     if (!userInfo.isAdmin()) throw new BlUnauthorizedException();
   }
 
-  public async checkLabRoleForSpaceViewer(
-    spaceId: string,
-    userId: string,
-    role: CnLabUserRole
-  ): Promise<void> {
+  public async checkSpaceViewerCannotBeAddedToLab(spaceId: string, userId: string): Promise<void> {
     const spaceUser = await this.spaceUserService.findOneBySpaceIdAndUserId(spaceId, userId);
-    if (spaceUser?.isSpaceViewer() && role === CnLabUserRole.OWNER) {
-      throw new BlUnauthorizedException('Space visitors cannot be lab owners');
+    if (spaceUser?.isSpaceViewer()) {
+      throw new BlUnauthorizedException(CnErrorText.VISITOR_CANNOT_BE_ADDED_TO_LAB);
     }
   }
 }

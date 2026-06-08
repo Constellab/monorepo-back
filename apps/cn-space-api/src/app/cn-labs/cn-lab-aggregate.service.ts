@@ -843,7 +843,7 @@ export class CnLabAggregateService {
 
   public async addUserToLab(labId: string, userId: string, role: CnLabUserRole): Promise<CnLabUserWithUser> {
     const lab = await this.getAndCheckAuthorizationToManageLab(labId, false);
-    await this.security.checkLabRoleForSpaceViewer(lab.spaceId, userId, role);
+    await this.security.checkSpaceViewerCannotBeAddedToLab(lab.spaceId, userId);
     const user = await this.usersService.findByIdAndCheck(userId);
 
     return await this.dataSource.transaction(async (entityManager) => {
@@ -870,7 +870,6 @@ export class CnLabAggregateService {
     role: CnLabUserRole
   ): Promise<CnLabUserWithUser> {
     const lab = await this.getAndCheckAuthorizationToManageLab(labId, false);
-    await this.security.checkLabRoleForSpaceViewer(lab.spaceId, groupId, role);
 
     return this.labUserService.updateLabUserRole(lab, groupId, role);
   }
