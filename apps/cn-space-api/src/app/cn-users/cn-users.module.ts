@@ -1,4 +1,4 @@
-import { blTransportSpaceUserQueue } from '@monorepo/back-core-lib';
+import { BL_TRANSPORT_SPACE_USER_QUEUE } from '@monorepo/back-core-lib';
 import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -13,7 +13,7 @@ import { CnUsersService } from './cn-users.service';
     TypeOrmModule.forFeature([CnUserEntity]),
     CnCoreModule,
     BullModule.registerQueue({
-      name: blTransportSpaceUserQueue,
+      name: BL_TRANSPORT_SPACE_USER_QUEUE,
     }),
   ],
   providers: [CnUsersService],

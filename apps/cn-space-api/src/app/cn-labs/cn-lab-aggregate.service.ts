@@ -169,6 +169,8 @@ export class CnLabAggregateService {
    * @param cloudCreateDTO
    */
   public async createCloudLab(cloudCreateDTO: CnLabCloudCreateDTO): Promise<CnLabEntity> {
+    this.security.checkAuthorizationToCreateLab(CnCurrentUserHelper.getAndCheckUserSpaceInfo());
+
     const lab = new CnLabEntity();
     lab.name = cloudCreateDTO.name;
     lab.type = CnLabType.CLOUD;
@@ -841,6 +843,7 @@ export class CnLabAggregateService {
 
   public async addUserToLab(labId: string, userId: string, role: CnLabUserRole): Promise<CnLabUserWithUser> {
     const lab = await this.getAndCheckAuthorizationToManageLab(labId, false);
+    await this.security.checkSpaceViewerCannotBeAddedToLab(lab.spaceId, userId);
     const user = await this.usersService.findByIdAndCheck(userId);
 
     return await this.dataSource.transaction(async (entityManager) => {
@@ -877,27 +880,39 @@ export class CnLabAggregateService {
     return this.removeUserFromLabNotSecure(lab, userId);
   }
 
-  private async removeUserFromLabNotSecure(lab: CnLab, userId: string): Promise<void> {
-    return await this.dataSource.transaction(async (entityManager) => {
+  private async removeUserFromLabNotSecure(
+    lab: CnLab,
+    userId: string,
+    externalEntityManager?: EntityManager
+  ): Promise<void> {
+    const execute = async (entityManager: EntityManager): Promise<void> => {
       await this.labUserService.deleteLabUser(lab, userId, entityManager);
 
       if (lab.isHttpAccessible()) {
-        // add the user to the lab is the lab is running
         const labIsRunning = await this.externalLabApiService.healthCheck(lab.getGlabSpaceApiInfo());
 
         if (labIsRunning) {
-          // deactivate the user in the lab
           await this.externalLabUserService.deactivateUser(lab.getGlabSpaceApiInfo(), userId);
         }
       }
-    });
+    };
+
+    if (externalEntityManager) {
+      await execute(externalEntityManager);
+    } else {
+      await this.dataSource.transaction(execute);
+    }
   }
 
-  public async removeUserFromAllLabs(userId: string, spaceId: string): Promise<void> {
+  public async removeUserFromAllLabs(
+    userId: string,
+    spaceId: string,
+    entityManager?: EntityManager
+  ): Promise<void> {
     const labs = await this.labsService.getAllLabsByUserAndSpace(userId, spaceId);
 
     for (const lab of labs) {
-      await this.removeUserFromLabNotSecure(lab, userId);
+      await this.removeUserFromLabNotSecure(lab, userId, entityManager);
     }
   }
 
@@ -1590,6 +1605,8 @@ export class CnLabAggregateService {
     lab.type = CnLabType.DESKTOP;
 
     const userInfo = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
+    this.security.checkAuthorizationToCreateLab(userInfo);
+
     lab.setSpace(userInfo.space);
 
     this.security.checkAuthorizationCreateDesktopLab(lab);

@@ -1,11 +1,11 @@
-import { blTransportSpaceUserQueue, BlTransportUserPattern } from '@monorepo/back-core-lib';
+import { BL_TRANSPORT_SPACE_USER_QUEUE, BlTransportUserPattern } from '@monorepo/back-core-lib';
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Injectable, Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
 
 import { HnUserService } from './hn-user.service';
 
-@Processor(blTransportSpaceUserQueue)
+@Processor(BL_TRANSPORT_SPACE_USER_QUEUE)
 @Injectable()
 export class HnUserProcessor extends WorkerHost {
   private readonly logger = new Logger(HnUserProcessor.name);

@@ -1,6 +1,7 @@
 import { BlUnauthorizedException } from '@monorepo/back-core-lib';
 import { Injectable } from '@nestjs/common';
 
+import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
 import { CnUserSpaceInfo } from '../cn-users/cn-user.dto';
 import { CnGroupTeam } from './cn-group.entity';
 import { CnGroupsService } from './cn-groups.service';
@@ -61,5 +62,11 @@ export class CnGroupsSecurity {
   public checkAuthorizationToFindAllTeamBySpace(userInfo: CnUserSpaceInfo): void {
     if (userInfo.space == null) throw new BlUnauthorizedException();
     return;
+  }
+
+  public checkAuthorizationToCreateTeam(userInfo: CnUserSpaceInfo): void {
+    if (userInfo.isSpaceViewer()) {
+      throw new BlUnauthorizedException(CnErrorText.VISITOR_CANNOT_CREATE_TEAM);
+    }
   }
 }

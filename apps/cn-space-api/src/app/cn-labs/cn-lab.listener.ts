@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 
 import { CnLabConfigsService } from '../cn-lab-configs/cn-lab-configs.service';
-import { CnSpaceEvent, cnSpaceEventName } from '../cn-spaces/cn-space.event';
+import { CN_SPACE_EVENT_NAME, CnSpaceEvent } from '../cn-spaces/cn-space.event';
 import {
   CnLabEvent,
   cnLabEventName,
@@ -101,10 +101,7 @@ export class CnLabListener {
     const labManagerStatus = await this.labManagerService.getLabStatus(lab);
 
     // if there is already a running task or the lab is starting, we do nothing
-    if (
-      labManagerStatus.currentTask?.status === CnLabServerTaskStatus.RUNNING ||
-      labManagerStatus.labStatus === 'STARTING'
-    ) {
+    if (labManagerStatus.currentTask?.status === 'RUNNING' || labManagerStatus.labStatus === 'STARTING') {
       return false;
     }
 
@@ -144,11 +141,11 @@ export class CnLabListener {
     await this.labGreenOptionService.deleteNonPersistentRulesByLabId(labId);
   }
 
-  @OnEvent(cnSpaceEventName)
+  @OnEvent(CN_SPACE_EVENT_NAME)
   async handleSpaceEvent(event: CnSpaceEvent): Promise<Error | null> {
-    if (event.type === 'REMOVE_USER_FROM_SPACE') {
+    if (event.type === 'REMOVE_USER_FROM_SPACE' || event.type === 'DOWNGRADE_USER_TO_VIEWER') {
       return await this.labAggregateService
-        .removeUserFromAllLabs(event.userId, event.spaceId)
+        .removeUserFromAllLabs(event.userId, event.spaceId, event.entityManager)
         .catch((err) => err);
     }
 

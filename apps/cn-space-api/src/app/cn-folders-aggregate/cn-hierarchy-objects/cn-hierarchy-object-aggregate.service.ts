@@ -114,7 +114,7 @@ export class CnHierarchyObjectAggregateService {
     size: number
   ): Promise<ClPageI<CnHierarchyObject>> {
     const spaceId = CnCurrentUserHelper.getAndCheckCurrentSpace().id;
-    await this.securityService.checkFindAllBySpace();
+    this.securityService.checkFindAllBySpace();
     return this.hierarchyObjectService.searchInSpace(spaceId, searchParams, page, size);
   }
 

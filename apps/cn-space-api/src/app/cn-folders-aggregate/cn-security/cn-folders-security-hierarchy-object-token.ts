@@ -12,11 +12,15 @@ import { CnFoldersAggregateSecurityI } from './cn-folders-security.service';
 export class CnFoldersSecurityHierarchyObjectToken implements CnFoldersAggregateSecurityI {
   constructor(private authContextFolderToken: CnAuthContextHierarchyObjectToken) {}
 
-  async checkFindAllBySpace(): Promise<void> {
+  checkFindAllBySpace(): void {
     throw new BlUnauthorizedException();
   }
 
-  async getRoleForObject(hierarchyObject: CnHierarchyObject): Promise<CnRootFolderUserRole> {
+  checkCreateRootFolder(): void {
+    throw new BlUnauthorizedException();
+  }
+
+  getRoleForObject(hierarchyObject: CnHierarchyObject): CnRootFolderUserRole {
     if (hierarchyObject.spaceId !== this.authContextFolderToken.space.id) {
       throw new BlUnauthorizedException('Wrong space');
     }

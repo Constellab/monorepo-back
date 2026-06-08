@@ -2,7 +2,7 @@ import { BlAbstractPaginatedService, BlBadRequestException } from '@monorepo/bac
 import { ClPageI } from '@monorepo/core-lib';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { EntityManager, In, Repository } from 'typeorm';
 
 import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
 import { CnUserGroup } from './cn-group.entity';
@@ -30,7 +30,11 @@ export class CnUserTeamService extends BlAbstractPaginatedService<CnUserGroup> {
     return this.getByUserAndGroup(userId, groupId);
   }
 
-  public async removeUserFromTeam(groupId: string, userId: string): Promise<void> {
+  public async removeUserFromTeam(
+    groupId: string,
+    userId: string,
+    entityManager?: EntityManager
+  ): Promise<void> {
     if (!(await this.userIsInTeam(groupId, userId))) {
       throw new BlBadRequestException(CnErrorText.USER_NOT_IN_GROUP);
     }
@@ -41,7 +45,7 @@ export class CnUserTeamService extends BlAbstractPaginatedService<CnUserGroup> {
       throw new BlBadRequestException(CnErrorText.REMOVE_GROUP_LAST_USER);
     }
 
-    await this.repo.delete({
+    await this.getEntityManager(entityManager).delete(CnUserGroup, {
       groupId: groupId,
       userId: userId,
     });

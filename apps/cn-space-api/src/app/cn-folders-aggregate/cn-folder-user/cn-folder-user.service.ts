@@ -30,14 +30,15 @@ export class CnFolderUserService extends BlAbstractPaginatedService<CnFolderUser
   public async shareRootFolderToGroupOrUser(
     rootFolderId: string,
     groupOrUserId: string,
-    role: CnRootFolderUserRole
+    getRoleForUser: (userId: string) => Promise<CnRootFolderUserRole>
   ): Promise<CnUser[]> {
     const users = await this.groupService.getUsersOfGroups([groupOrUserId]);
 
     if (users.length === 0) {
       const user = await this.userService.findById(groupOrUserId);
       if (user) {
-        await this.shareRootFolderToUserIfNot(rootFolderId, user.id, role);
+        const effectiveRole = await getRoleForUser(user.id);
+        await this.shareRootFolderToUserIfNot(rootFolderId, user.id, effectiveRole);
         return [user];
       } else {
         throw new Error('The group or user does not exist');
@@ -45,7 +46,8 @@ export class CnFolderUserService extends BlAbstractPaginatedService<CnFolderUser
     }
 
     for (const user of users) {
-      await this.shareRootFolderToUserIfNot(rootFolderId, user.id, role);
+      const effectiveRole = await getRoleForUser(user.id);
+      await this.shareRootFolderToUserIfNot(rootFolderId, user.id, effectiveRole);
     }
 
     // return all users of the folder
@@ -77,17 +79,25 @@ export class CnFolderUserService extends BlAbstractPaginatedService<CnFolderUser
     return await this.getEntityManager(entityManager).save(newFolderUser);
   }
 
-  public async unshareRootFolderFromUser(rootFolderId: string, userId: string): Promise<DeleteResult> {
+  public async unshareRootFolderFromUser(
+    rootFolderId: string,
+    userId: string,
+    entityManager?: EntityManager
+  ): Promise<DeleteResult> {
     if (await this.userIsLastOwner(rootFolderId, userId)) {
       throw new BlBadRequestException(CnErrorText.CANT_UNSHARE_LAST_FOLDER_OWNER);
     }
-    return this.repository.delete({ rootFolderId: rootFolderId, userId: userId });
+    return this.getEntityManager(entityManager).delete(CnFolderUserEntity, {
+      rootFolderId: rootFolderId,
+      userId: userId,
+    });
   }
 
   public async updateRootFolderUserRole(
     rootFolderId: string,
     userId: string,
-    role: CnRootFolderUserRole
+    role: CnRootFolderUserRole,
+    entityManager?: EntityManager
   ): Promise<CnFolderUser> {
     if (await this.userIsLastOwner(rootFolderId, userId)) {
       throw new BlBadRequestException(CnErrorText.CANT_UPDATE_LAST_OWNER_ROLE);
@@ -95,7 +105,7 @@ export class CnFolderUserService extends BlAbstractPaginatedService<CnFolderUser
     const folderUser = await this.findByRootFolderIdAndUserIdAndCheck(rootFolderId, userId);
 
     folderUser.role = role;
-    return await this.updateFolderUser(folderUser);
+    return await this.updateFolderUser(folderUser, entityManager);
   }
 
   private async userIsLastOwner(rootFolderId: string, userId: string): Promise<boolean> {
@@ -152,8 +162,8 @@ export class CnFolderUserService extends BlAbstractPaginatedService<CnFolderUser
     return userFolder;
   }
 
-  public updateFolderUser(folderUser: CnFolderUser): Promise<CnFolderUser> {
-    return this.repository.save(folderUser);
+  public updateFolderUser(folderUser: CnFolderUser, entityManager?: EntityManager): Promise<CnFolderUser> {
+    return this.getEntityManager(entityManager).save(CnFolderUserEntity, folderUser);
   }
 
   public async smartSearchByName(

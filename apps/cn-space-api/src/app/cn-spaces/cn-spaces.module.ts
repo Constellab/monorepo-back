@@ -1,4 +1,4 @@
-import { blTransportSpaceSpaceUserQueue } from '@monorepo/back-core-lib';
+import { BL_TRANSPORT_SPACE_SPACE_USER_QUEUE } from '@monorepo/back-core-lib';
 import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
 import { EventEmitterModule } from '@nestjs/event-emitter';
@@ -36,7 +36,7 @@ import { CnSpacesMailService } from './cn-spaces-mail.service';
 
     EventEmitterModule,
     BullModule.registerQueue({
-      name: blTransportSpaceSpaceUserQueue,
+      name: BL_TRANSPORT_SPACE_SPACE_USER_QUEUE,
     }),
   ],
   controllers: [CnSpacesController, CnSpaceInvitController],

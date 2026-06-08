@@ -60,5 +60,11 @@
   "lab_free_expired": "Vos crédits gratuit pour le lab sont expirés. Le lab ne peut pas être démarré, veuillez contacter le support pour obtenir plus de crédits.",
   "remove_folder_use_as_storage_from_lab_error": "Le dossier utilise ce lab comme stockage, vous ne pouvez pas le supprimer du lab.",
   "remove_folder_sync_scenario_error": "Le dossier et ses sous dossiers ont {count} expériences synchronisées de ce lab, vous ne pouvez pas le supprimer du lab.",
-  "remove_folder_sync_note_error": "Le dossier et ses sous dossiers ont {count} notes synchronisées provenant de ce lab, vous ne pouvez pas le supprimer du lab."
+  "remove_folder_sync_note_error": "Le dossier et ses sous dossiers ont {count} notes synchronisées provenant de ce lab, vous ne pouvez pas le supprimer du lab.",
+  "visitor_cannot_create_folder": "Les visiteurs de l'espace ne peuvent pas créer de dossiers",
+  "visitor_cannot_create_lab": "Les visiteurs de l'espace ne peuvent pas créer de data labs",
+  "visitor_cannot_create_team": "Les visiteurs de l'espace ne peuvent pas créer d'équipes",
+  "visitor_cannot_access_resource": "Les visiteurs de l'espace ne peuvent pas accéder à cette ressource",
+  "visitor_folder_role_restricted": "Les visiteurs de l'espace ne peuvent avoir que le rôle Visiteur sur les dossiers",
+  "visitor_cannot_be_added_to_lab": "Les visiteurs de l'espace ne peuvent pas être ajoutés à un data lab"
 }

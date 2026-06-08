@@ -59,7 +59,7 @@ export class CnChatAggregateService {
   }
 
   public async createChatMessage(newMessageDTO: CnNewMessageDTO, folderId: string): Promise<CnChatMessage> {
-    const folder = await this.securityService.getAndCheckAuthorizationForUpdate(folderId);
+    const folder = await this.securityService.getAndCheckAuthorizationForFindOne(folderId);
 
     if (!folder.chatEnabled) {
       throw new BlBadRequestException('The chat is not enabled for this folder');
@@ -80,7 +80,7 @@ export class CnChatAggregateService {
     messageId: string,
     messageDTO: CnNewMessageDTO
   ): Promise<CnChatMessage> {
-    const folder = await this.securityService.getAndCheckAuthorizationForUpdate(folderId);
+    const folder = await this.securityService.getAndCheckAuthorizationForFindOne(folderId);
 
     const message = await this.chatMessageService.findByIdAndCheck(messageId);
     if (message.createdBy.id != CnCurrentUserHelper.getAndCheckCurrentUser().id) {
@@ -97,7 +97,7 @@ export class CnChatAggregateService {
   }
 
   public async deleteChatMessage(folderId: string, messageId: string): Promise<void> {
-    const folder = await this.securityService.getAndCheckAuthorizationForUpdate(folderId);
+    const folder = await this.securityService.getAndCheckAuthorizationForFindOne(folderId);
 
     const message = await this.chatMessageService.findByIdAndCheck(messageId);
     if (message.createdBy.id != CnCurrentUserHelper.getAndCheckCurrentUser().id) {
@@ -127,7 +127,7 @@ export class CnChatAggregateService {
   }
 
   public async saveMessageImage(file: BlFile, folderId: string): Promise<TeBlockFigureUploadedResponse> {
-    const folder = await this.securityService.getAndCheckAuthorizationForUpdate(folderId);
+    const folder = await this.securityService.getAndCheckAuthorizationForFindOne(folderId);
     if (!folder.chatEnabled) {
       throw new BlBadRequestException('The chat is not enabled for this folder');
     }

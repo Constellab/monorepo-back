@@ -4,12 +4,13 @@ import {
   BlFileResponse,
   BlSearchBuilder,
   BlSearchParams,
+  BlUnauthorizedException,
 } from '@monorepo/back-core-lib';
 import { ClHelpService, ClPage, ClPageI } from '@monorepo/core-lib';
 import { TeBlockFigureUploadedResponse, TeRichText } from '@monorepo/te-text-editor';
 import { Injectable, Logger } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { DataSource, In } from 'typeorm';
+import { DataSource, EntityManager, In } from 'typeorm';
 
 import { CnActivity, CnActivityEntityType } from '../cn-activity/cn-activity.entity';
 import { CnActivityService } from '../cn-activity/cn-activity.service';
@@ -75,6 +76,8 @@ export class CnFolderAggregateService {
   /////////////////////////////////////// FOLDER //////////////////////////////////
 
   async createRootFolder(folderDTO: CnSaveFolderDTO): Promise<CnFolderWithHierarchy> {
+    this.securityService.checkAuthorizationToCreateRootFolder();
+
     const newFolder = await this.datasource.transaction(async (manager) => {
       const entity = this.createFolderFromDTO(folderDTO);
 
@@ -308,7 +311,7 @@ export class CnFolderAggregateService {
 
   public async getByCurrentSpace(page: number, size: number): Promise<ClPageI<CnHierarchyObject>> {
     const spaceId = CnCurrentUserHelper.getAndCheckCurrentSpace().id;
-    await this.securityService.checkFindAllBySpace();
+    this.securityService.checkFindAllBySpace();
     return this.hierarchyObjectService.getRootFoldersBySpace(spaceId, page, size);
   }
 
@@ -456,7 +459,7 @@ export class CnFolderAggregateService {
     const newUsers = await this.folderUserService.shareRootFolderToGroupOrUser(
       folder.id,
       groupOrUserId,
-      role
+      (userId) => this.getFolderRoleForUser(folder.spaceId, userId, role)
     );
 
     this.folderEventService.emitFolderEvent({
@@ -477,6 +480,11 @@ export class CnFolderAggregateService {
 
     if (!folder.isRootFolder()) {
       throw new BlBadRequestException('Only root folders can be shared');
+    }
+
+    const effectiveRole = await this.getFolderRoleForUser(folder.spaceId, userId, role);
+    if (effectiveRole !== role) {
+      throw new BlUnauthorizedException(CnErrorText.VISITOR_FOLDER_ROLE_RESTRICTED);
     }
 
     const updatedUser = await this.folderUserService.updateRootFolderUserRole(folder.id, userId, role);
@@ -502,11 +510,35 @@ export class CnFolderAggregateService {
     });
   }
 
-  public async unshareAllFolderForUser(userId: string, spaceId: string): Promise<void> {
+  public async unshareAllFolderForUser(
+    userId: string,
+    spaceId: string,
+    entityManager?: EntityManager
+  ): Promise<void> {
     const rootFolders = await this.hierarchyObjectService.getAllRootFoldersOfUser(userId, spaceId);
 
     for (const rootFolder of rootFolders) {
-      await this.folderUserService.unshareRootFolderFromUser(rootFolder.id, userId);
+      await this.folderUserService.unshareRootFolderFromUser(rootFolder.id, userId, entityManager);
+    }
+  }
+
+  public async downgradeAllFolderRolesToViewer(
+    userId: string,
+    spaceId: string,
+    entityManager?: EntityManager
+  ): Promise<void> {
+    const rootFolders = await this.hierarchyObjectService.getAllRootFoldersOfUser(userId, spaceId);
+
+    for (const rootFolder of rootFolders) {
+      const folderUser = await this.folderUserService.findByRootFolderIdAndUserId(rootFolder.id, userId);
+      if (folderUser && folderUser.role !== CnRootFolderUserRole.VIEWER) {
+        await this.folderUserService.updateRootFolderUserRole(
+          rootFolder.id,
+          userId,
+          CnRootFolderUserRole.VIEWER,
+          entityManager
+        );
+      }
     }
   }
 
@@ -667,10 +699,10 @@ export class CnFolderAggregateService {
     page: number,
     size: number
   ): Promise<ClPage<CnActivity>> {
-    // check that the user can view the folder
-    const folder = await this.securityService.getAndCheckAuthorizationForFindOne(folderId);
+    // check that the user can view the folder (VIEWER cannot see activities)
+    const folder = await this.securityService.getAndCheckAuthorizationForUpdate(folderId);
 
-    const searchBuilder = new BlSearchBuilder<CnActivity>({ createdAt: 'DESC' as any });
+    const searchBuilder = new BlSearchBuilder<CnActivity>({ createdAt: 'DESC' });
 
     if (searchParam.hasFilter('includeSubFolders')) {
       const allFolders = await this.hierarchyObjectService.getFolderTreeAsList(folder);
@@ -701,5 +733,21 @@ export class CnFolderAggregateService {
     }
 
     return await this.activityService.search(searchBuilder.build(), page, size);
+  }
+
+  /**
+   * Returns the effective folder role for a user.
+   * Space VIEWERs are always downgraded to folder VIEWER.
+   */
+  private async getFolderRoleForUser(
+    spaceId: string,
+    userId: string,
+    requestedRole: CnRootFolderUserRole
+  ): Promise<CnRootFolderUserRole> {
+    const spaceUser = await this.spaceAggregateService.getSpaceUserIfAccess(spaceId, userId);
+    if (spaceUser?.isSpaceViewer()) {
+      return CnRootFolderUserRole.VIEWER;
+    }
+    return requestedRole;
   }
 }

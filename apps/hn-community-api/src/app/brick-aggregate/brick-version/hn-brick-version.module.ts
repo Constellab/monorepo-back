@@ -1,4 +1,4 @@
-import { blTransportCommunityBrickQueue } from '@monorepo/back-core-lib';
+import { BL_TRANSPORT_COMMUNITY_BRICK_QUEUE } from '@monorepo/back-core-lib';
 import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -19,7 +19,7 @@ import { HnBrickVersionService } from './hn-brick-version.service';
     HnBrickVersionReferenceModule,
     HnUserModule,
     BullModule.registerQueue({
-      name: blTransportCommunityBrickQueue,
+      name: BL_TRANSPORT_COMMUNITY_BRICK_QUEUE,
     }),
   ],
   exports: [TypeOrmModule, HnBrickVersionService],

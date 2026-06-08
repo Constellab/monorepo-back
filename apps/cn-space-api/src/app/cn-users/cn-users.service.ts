@@ -1,4 +1,5 @@
 import {
+  BL_TRANSPORT_SPACE_USER_QUEUE,
   BlAbstractService,
   BlBadRequestException,
   BlBucketConfig,
@@ -9,7 +10,6 @@ import {
   BlObjectStorageService,
   BlSearchBuilder,
   BlSearchParams,
-  blTransportSpaceUserQueue,
   BlTransportUserPattern,
   BlUnauthorizedException,
   BlUserService,
@@ -37,7 +37,7 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
     @InjectRepository(CnUserEntity) private repository: Repository<CnUser>,
     private objectStorageService: BlObjectStorageService,
     private configService: CnCoreConfigService,
-    @InjectQueue(blTransportSpaceUserQueue) private queue: Queue
+    @InjectQueue(BL_TRANSPORT_SPACE_USER_QUEUE) private queue: Queue
   ) {
     super(repository, CnUserEntity);
   }

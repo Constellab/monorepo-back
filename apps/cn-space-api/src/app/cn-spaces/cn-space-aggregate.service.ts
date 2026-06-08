@@ -23,7 +23,7 @@ import {
   CnSpaceUpdateStorageLocationDTO,
 } from './cn-space.dto';
 import { CnSpace, CnSpaceEntity, CnSpaceType } from './cn-space.entity';
-import { CnSpaceEvent, cnSpaceEventName } from './cn-space.event';
+import { CN_SPACE_EVENT_NAME, CnSpaceEvent } from './cn-space.event';
 import { CnSpaceService } from './cn-space.service';
 import { CnSpaceAggregateSecurity } from './cn-space-aggregate-security.service';
 import { CnSpaceInvit } from './cn-space-invit.entity';
@@ -139,7 +139,7 @@ export class CnSpaceAggregateService {
 
   public async findOne(id: string): Promise<CnSpace> {
     id = this.getSpaceId(id);
-    await this.checkSpaceMember(id);
+    await this.checkSpaceUser(id);
     return this.spaceService.findByIdAndCheck(id);
   }
 
@@ -274,7 +274,7 @@ export class CnSpaceAggregateService {
 
   public async getUsersOfSpace(id: string, page: number, size: number): Promise<ClPage<CnSpaceUserWithUser>> {
     id = this.getSpaceId(id);
-    await this.checkSpaceMember(id);
+    await this.checkSpaceUserOrAbove(id);
     return this.spaceUserService.findBySpace(id, page, size);
   }
 
@@ -285,7 +285,7 @@ export class CnSpaceAggregateService {
     size: number
   ): Promise<ClPage<CnSpaceUserWithUser>> {
     id = this.getSpaceId(id);
-    await this.checkSpaceMember(id);
+    await this.checkSpaceUserOrAbove(id);
 
     return this.spaceUserService.searchUser(id, searchParams, page, size);
   }
@@ -297,7 +297,7 @@ export class CnSpaceAggregateService {
     size: number
   ): Promise<ClPage<CnUser>> {
     id = this.getSpaceId(id);
-    await this.checkSpaceMember(id);
+    await this.checkSpaceUserOrAbove(id);
 
     const result = await this.spaceUserService.smartSearchByName(id, name, page, size);
     return result.map((spaceUser) => spaceUser.user);
@@ -346,14 +346,17 @@ export class CnSpaceAggregateService {
     await this.checkSpaceAdmin(spaceId);
     const user = await this.userService.findByIdAndCheck(userId);
 
-    // trigger the event and check if the user can be removed
-    await this.emitSpaceEventAndCheckResult({
-      type: 'REMOVE_USER_FROM_SPACE',
-      userId: user.id,
-      spaceId: spaceId,
-    });
+    await this.datasource.transaction(async (entityManager) => {
+      // trigger the event and check if the user can be removed
+      await this.emitSpaceEventAndCheckResult({
+        type: 'REMOVE_USER_FROM_SPACE',
+        userId: user.id,
+        spaceId: spaceId,
+        entityManager: entityManager,
+      });
 
-    await this.spaceUserService.removeUserFromSpace(spaceId, user.id);
+      await this.spaceUserService.removeUserFromSpace(spaceId, user.id, entityManager);
+    });
   }
 
   public async activateUserInSpace(spaceId: string, userId: string): Promise<void> {
@@ -381,7 +384,7 @@ export class CnSpaceAggregateService {
   public async updateUserRoleInSpace(spaceId: string, userId: string, role: CnSpaceUserRole): Promise<void> {
     spaceId = this.getSpaceId(spaceId);
     if (
-      role === CnSpaceUserRole.USER &&
+      role !== CnSpaceUserRole.ADMIN &&
       (await this.spaceUserService.isOnlyAdmin(spaceId, userId)) &&
       !CnCurrentUserHelper.getAndCheckCurrentUser().isAdmin()
     ) {
@@ -390,7 +393,21 @@ export class CnSpaceAggregateService {
 
     await this.checkSpaceAdmin(spaceId);
 
-    await this.spaceUserService.updateUserRole(spaceId, userId, role);
+    // when downgrading to VIEWER, wrap everything in a transaction
+    if (role === CnSpaceUserRole.VIEWER) {
+      await this.datasource.transaction(async (entityManager) => {
+        await this.emitSpaceEventAndCheckResult({
+          type: 'DOWNGRADE_USER_TO_VIEWER',
+          userId: userId,
+          spaceId: spaceId,
+          entityManager: entityManager,
+        });
+
+        await this.spaceUserService.updateUserRole(spaceId, userId, role, entityManager);
+      });
+    } else {
+      await this.spaceUserService.updateUserRole(spaceId, userId, role);
+    }
   }
 
   public async getInvitationByCode(code: string): Promise<CnSpaceInvitReadDto> {
@@ -415,8 +432,8 @@ export class CnSpaceAggregateService {
       throw new BlBadRequestException(CnErrorText.USER_ALREADY_IN_SPACE);
     }
 
-    // for entreprise space, only user with entreprise licence can be invited
-    if (space.isEntrepriseSpace()) {
+    // for entreprise space, only user with entreprise licence can be invited (except for VIEWER role)
+    if (space.isEntrepriseSpace() && invitDto.role !== CnSpaceUserRole.VIEWER) {
       const user = await this.userService.findByEmail(invitDto.userMail);
 
       if (user == null) {
@@ -493,7 +510,11 @@ export class CnSpaceAggregateService {
       throw new BlBadRequestException('The invitation email does not match the user email');
     }
 
-    if (invitation.space.isEntrepriseSpace() && user.isFreeLicence()) {
+    if (
+      invitation.space.isEntrepriseSpace() &&
+      user.isFreeLicence() &&
+      invitation.role !== CnSpaceUserRole.VIEWER
+    ) {
       throw new BlBadRequestException(CnErrorText.INVIT_ACCEPT_USER_FREE_LICENCE_ENTREPRISE_SPACE);
     }
 
@@ -638,15 +659,19 @@ export class CnSpaceAggregateService {
     return { defaultFolderBucket: defaultBucket, defaultFolderBackupBucket: defaultBackupBucket };
   }
 
-  private async checkSpaceMember(spaceId: string): Promise<void> {
-    await this.spaceAggregateSecurity.checkIsSpaceMember(
+  private async checkSpaceUser(spaceId: string): Promise<void> {
+    await this.spaceAggregateSecurity.checkIsSpaceUser(spaceId, CnCurrentUserHelper.getAndCheckCurrentUser());
+  }
+
+  private checkSpaceAdmin(spaceId: string): Promise<void> {
+    return this.spaceAggregateSecurity.checkIsSpaceAdmin(
       spaceId,
       CnCurrentUserHelper.getAndCheckCurrentUser()
     );
   }
 
-  private checkSpaceAdmin(spaceId: string): Promise<void> {
-    return this.spaceAggregateSecurity.checkIsSpaceAdmin(
+  private async checkSpaceUserOrAbove(spaceId: string): Promise<void> {
+    await this.spaceAggregateSecurity.checkIsSpaceUserOrAbove(
       spaceId,
       CnCurrentUserHelper.getAndCheckCurrentUser()
     );
@@ -671,7 +696,7 @@ export class CnSpaceAggregateService {
   //////////////////////////////// EVENT ///////////////////////////////////////
 
   private async emitSpaceEventAndCheckResult(event: CnSpaceEvent): Promise<void> {
-    const results = await this.eventEmitter.emitAsync(cnSpaceEventName, event);
+    const results = await this.eventEmitter.emitAsync(CN_SPACE_EVENT_NAME, event);
     // if a text is returned, it means an error occurred
     for (const res of results) {
       if (!res) continue;

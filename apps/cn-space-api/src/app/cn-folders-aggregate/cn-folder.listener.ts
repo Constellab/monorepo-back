@@ -10,7 +10,7 @@ import { CnFrontService } from '../cn-core/services/cn-front.service';
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
 import { CnNotificationType } from '../cn-notification/cn-notification.entity';
 import { CnNotificationService } from '../cn-notification/cn-notification.service';
-import { CnSpaceEvent, cnSpaceEventName } from '../cn-spaces/cn-space.event';
+import { CN_SPACE_EVENT_NAME, CnSpaceEvent } from '../cn-spaces/cn-space.event';
 import { CnUser } from '../cn-users/cn-user.entity';
 import { CnChatMessage, cnGetFakeUserEveryoneMention } from './cn-chat/cn-chat-message.entity';
 import { CnDocument } from './cn-documents/cn-document.entity';
@@ -655,11 +655,17 @@ export class CnFolderListener {
     await this.hierarchyObjectService.updateLastTags(hierarchyObject, tags.objects);
   }
 
-  @OnEvent(cnSpaceEventName)
+  @OnEvent(CN_SPACE_EVENT_NAME)
   async handleSpaceEvent(event: CnSpaceEvent): Promise<Error | null> {
     if (event.type === 'REMOVE_USER_FROM_SPACE') {
       return await this.folderAggregateService
-        .unshareAllFolderForUser(event.userId, event.spaceId)
+        .unshareAllFolderForUser(event.userId, event.spaceId, event.entityManager)
+        .catch((err) => err);
+    }
+
+    if (event.type === 'DOWNGRADE_USER_TO_VIEWER') {
+      return await this.folderAggregateService
+        .downgradeAllFolderRolesToViewer(event.userId, event.spaceId, event.entityManager)
         .catch((err) => err);
     }
 

@@ -1,5 +1,15 @@
 /**
- * List of error texts for translation
+ * Enum of i18n translation keys for error messages.
+ *
+ * Each value is a key in the format 'error.<key>' that maps to translated strings
+ * in the i18n JSON files located at:
+ *   - src/assets/i18n/en/error.json (English)
+ *   - src/assets/i18n/fr/error.json (French)
+ *
+ * When adding a new error, add the enum entry here AND the corresponding
+ * translation in both JSON files. The JSON key is the part after 'error.'
+ * (e.g. VISITOR_CANNOT_CREATE_FOLDER = 'error.visitor_cannot_create_folder'
+ *  -> JSON key: "visitor_cannot_create_folder").
  */
 export enum CnErrorText {
   SERVER_ERROR = 'error.server_error',
@@ -63,4 +73,10 @@ export enum CnErrorText {
   REMOVE_FOLDER_USE_LAB_AS_STORAGE_ERROR = 'error.remove_folder_use_as_storage_from_lab_error',
   REMOVE_FOLDER_SYNC_SCENARIO_ERROR = 'error.remove_folder_sync_scenario_error',
   REMOVE_FOLDER_SYNC_NOTE_ERROR = 'error.remove_folder_sync_note_error',
+  VISITOR_CANNOT_CREATE_FOLDER = 'error.visitor_cannot_create_folder',
+  VISITOR_CANNOT_CREATE_LAB = 'error.visitor_cannot_create_lab',
+  VISITOR_CANNOT_CREATE_TEAM = 'error.visitor_cannot_create_team',
+  VISITOR_CANNOT_ACCESS_RESOURCE = 'error.visitor_cannot_access_resource',
+  VISITOR_FOLDER_ROLE_RESTRICTED = 'error.visitor_folder_role_restricted',
+  VISITOR_CANNOT_BE_ADDED_TO_LAB = 'error.visitor_cannot_be_added_to_lab',
 }

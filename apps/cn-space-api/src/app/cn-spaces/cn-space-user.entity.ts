@@ -10,6 +10,7 @@ import { CnSpace, CnSpaceEntity } from './cn-space.entity';
 export enum CnSpaceUserRole {
   ADMIN = 'ADMIN',
   USER = 'USER',
+  VIEWER = 'VIEWER',
 }
 
 @Entity('space_user')
@@ -47,6 +48,10 @@ export class CnSpaceUserEntity {
 
   isSpaceAdmin(): boolean {
     return this.role === CnSpaceUserRole.ADMIN;
+  }
+
+  isSpaceViewer(): boolean {
+    return this.role === CnSpaceUserRole.VIEWER;
   }
 
   @BeforeInsert()

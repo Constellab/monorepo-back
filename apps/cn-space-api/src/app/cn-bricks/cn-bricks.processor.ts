@@ -1,4 +1,4 @@
-import { blTransportCommunityBrickQueue } from '@monorepo/back-core-lib';
+import { BL_TRANSPORT_COMMUNITY_BRICK_QUEUE } from '@monorepo/back-core-lib';
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Injectable, Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
@@ -6,7 +6,7 @@ import { Job } from 'bullmq';
 import { CnBrickSaveDTO } from './cn-brick.dto';
 import { CnBricksService } from './cn-bricks.service';
 
-@Processor(blTransportCommunityBrickQueue)
+@Processor(BL_TRANSPORT_COMMUNITY_BRICK_QUEUE)
 @Injectable()
 export class CnBricksProcessor extends WorkerHost {
   private readonly logger = new Logger(CnBricksProcessor.name);

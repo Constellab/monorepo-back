@@ -2,6 +2,7 @@ import { BlUnauthorizedException } from '@monorepo/back-core-lib';
 import { Injectable } from '@nestjs/common';
 
 import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
+import { CnSpaceUserService } from '../cn-spaces/cn-space-user.service';
 import { CnUserSpaceInfo } from '../cn-users/cn-user.dto';
 import { CnLab } from './cn-lab.entity';
 import { CnLabUserRole } from './user/cn-lab-user.entity';
@@ -9,7 +10,10 @@ import { CnLabUserService } from './user/cn-lab-user.service';
 
 @Injectable()
 export class CnLabsSecurity {
-  constructor(private labGroupService: CnLabUserService) {}
+  constructor(
+    private labGroupService: CnLabUserService,
+    private spaceUserService: CnSpaceUserService
+  ) {}
 
   public checkAuthorizationToCreateAdmin(lab: CnLab, userInfo: CnUserSpaceInfo): void {
     if (!userInfo.isAdmin()) throw new BlUnauthorizedException();
@@ -26,6 +30,12 @@ export class CnLabsSecurity {
 
   public checkAuthorizationToFindByIdAdmin(userInfo: CnUserSpaceInfo): void {
     if (!userInfo.isAdmin()) throw new BlUnauthorizedException();
+  }
+
+  public checkAuthorizationToCreateLab(userInfo: CnUserSpaceInfo): void {
+    if (userInfo.isSpaceViewer()) {
+      throw new BlUnauthorizedException(CnErrorText.VISITOR_CANNOT_CREATE_LAB);
+    }
   }
 
   /**
@@ -90,5 +100,12 @@ export class CnLabsSecurity {
 
   public checkAuthorizationToRestoreBackup(userInfo: CnUserSpaceInfo): void {
     if (!userInfo.isAdmin()) throw new BlUnauthorizedException();
+  }
+
+  public async checkSpaceViewerCannotBeAddedToLab(spaceId: string, userId: string): Promise<void> {
+    const spaceUser = await this.spaceUserService.findOneBySpaceIdAndUserId(spaceId, userId);
+    if (spaceUser?.isSpaceViewer()) {
+      throw new BlUnauthorizedException(CnErrorText.VISITOR_CANNOT_BE_ADDED_TO_LAB);
+    }
   }
 }

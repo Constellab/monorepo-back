@@ -1,7 +1,7 @@
 import { BlSearchParams, BlUnauthorizedException } from '@monorepo/back-core-lib';
 import { ClHelpService, ClPageI } from '@monorepo/core-lib';
 import { Injectable } from '@nestjs/common';
-import { DeleteResult } from 'typeorm';
+import { DeleteResult, EntityManager } from 'typeorm';
 
 import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
@@ -72,6 +72,8 @@ export class CnGroupsAggregateService {
   ////////////////////////////////////// TEAMS  ////////////////////////////////
 
   public async createTeam(label: string): Promise<CnGroupTeam> {
+    this.groupSecurity.checkAuthorizationToCreateTeam(CnCurrentUserHelper.getAndCheckUserSpaceInfo());
+
     return await this.groupsService.createTeam(label);
   }
 
@@ -152,11 +154,15 @@ export class CnGroupsAggregateService {
     await this.userGroupService.removeUserFromTeam(groupId, userId);
   }
 
-  public async removeUserFromAllTeams(userId: string, spaceId: string): Promise<void> {
+  public async removeUserFromAllTeams(
+    userId: string,
+    spaceId: string,
+    entityManager?: EntityManager
+  ): Promise<void> {
     const teams = await this.groupsService.getAllTeamsByUserAndSpace(userId, spaceId);
 
     for (const team of teams) {
-      await this.userGroupService.removeUserFromTeam(team.id, userId);
+      await this.userGroupService.removeUserFromTeam(team.id, userId, entityManager);
     }
   }
 

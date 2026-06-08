@@ -16,10 +16,16 @@ export class CnFoldersSecurityUser implements CnFoldersAggregateSecurityI {
     private folderUserService: CnFolderUserService
   ) {}
 
-  async checkFindAllBySpace(): Promise<void> {
+  checkFindAllBySpace(): void {
     // check the space context
     if (!this.userInfo.isSpaceAdmin())
       throw new BlUnauthorizedException('Only space admin can list all folders');
+  }
+
+  checkCreateRootFolder(): void {
+    if (this.userInfo.isSpaceViewer()) {
+      throw new BlUnauthorizedException(CnErrorText.VISITOR_CANNOT_CREATE_FOLDER);
+    }
   }
 
   async getRoleForObject(hierarchyObject: CnHierarchyObject): Promise<CnRootFolderUserRole> {
