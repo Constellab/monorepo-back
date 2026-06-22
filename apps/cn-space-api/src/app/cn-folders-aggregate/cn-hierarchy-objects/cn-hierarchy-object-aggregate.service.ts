@@ -553,7 +553,9 @@ export class CnHierarchyObjectAggregateService {
 
   public async bulkCreateTags(dto: CnBulkCreateTagsDto): Promise<ClBulkActionResult> {
     const runner = this.createBulkRunner(dto.context);
-    return runner.setAction((id) => this.createHierarchyObjectTags(id, dto.tags).then()).execute();
+    return runner.setAction(async (id) => {
+      await this.createHierarchyObjectTags(id, dto.tags);
+    }).execute();
   }
 
   ///////////////////////////////// SCENARIO /////////////////////////////
