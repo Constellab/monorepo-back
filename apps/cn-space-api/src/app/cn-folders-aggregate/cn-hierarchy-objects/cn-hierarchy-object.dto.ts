@@ -1,4 +1,3 @@
-import { BlSearchParams } from '@monorepo/back-core-lib';
 import { Type } from 'class-transformer';
 import { DateTime } from 'luxon';
 
@@ -10,7 +9,6 @@ import {
   CnHierarchyObject,
   CnHierarchyObjectEntity,
   CnHierarchyObjectType,
-  CnHierarchyObjectVisibility,
   CnHierarchyObjectWithChildren,
 } from './cn-hierarchy-object.entity';
 
@@ -49,10 +47,6 @@ export class CnLabFolderDTO {
 
 export class CnBulkActionContext {
   selectedIds: string[];
-  isAllSelected: boolean;
-  searchInput?: BlSearchParams;
-  folderId: string;
-  visibility: CnHierarchyObjectVisibility;
 }
 
 export class CnBulkMoveToFolderDto {

@@ -529,19 +529,8 @@ export class CnHierarchyObjectAggregateService {
 
   ///////////////////////////////// BULK /////////////////////////////////
 
-  private async resolveHierarchyObjectIds(context: CnBulkActionContext): Promise<string[]> {
-    if (!context.isAllSelected) {
-      return context.selectedIds;
-    }
-    return await this.hierarchyObjectService.findAllIdsByFolderChildren(
-      context.folderId,
-      context.visibility,
-      context.searchInput
-    );
-  }
-
-  private async createBulkRunner(context: CnBulkActionContext): Promise<ClBulkActionRunner> {
-    const ids = await this.resolveHierarchyObjectIds(context);
+  private createBulkRunner(context: CnBulkActionContext): ClBulkActionRunner {
+    const ids = context.selectedIds;
     return new ClBulkActionRunner(ids).setNameResolver(async (id) => {
       const item = await this.hierarchyObjectService.findByIdAndCheck(id);
       return item.name;
@@ -549,19 +538,19 @@ export class CnHierarchyObjectAggregateService {
   }
 
   public async bulkMoveToTrash(context: CnBulkActionContext): Promise<ClBulkActionResult> {
-    const runner = await this.createBulkRunner(context);
+    const runner = this.createBulkRunner(context);
     return runner.setAction((id) => this.moveToTrash(id).then()).execute();
   }
 
   public async bulkMoveToFolder(dto: CnBulkMoveToFolderDto): Promise<ClBulkActionResult> {
-    const runner = await this.createBulkRunner(dto.context);
+    const runner = this.createBulkRunner(dto.context);
     return runner
       .setAction((id) => this.moveHierarchyObjectToFolder(id, dto.targetFolderId).then())
       .execute();
   }
 
   public async bulkCreateTags(dto: CnBulkCreateTagsDto): Promise<ClBulkActionResult> {
-    const runner = await this.createBulkRunner(dto.context);
+    const runner = this.createBulkRunner(dto.context);
     return runner.setAction((id) => this.createHierarchyObjectTags(id, dto.tags).then()).execute();
   }
 
