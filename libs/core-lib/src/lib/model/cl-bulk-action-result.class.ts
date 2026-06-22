@@ -31,13 +31,19 @@ export class ClBulkActionRunner {
   }
 
   async execute(): Promise<ClBulkActionResult> {
+    if (!this.action) {
+      throw new Error('ClBulkActionRunner: action is not set. Call setAction() before execute().');
+    }
+    if (!this.nameResolver) {
+      this.nameResolver = async (id: string) => id;
+    }
+
     const result: ClBulkActionResult = {
       total: this.ids.length,
       successCount: 0,
       errorCount: 0,
       errors: [],
     };
-
     for (const id of this.ids) {
       try {
         await this.action(id);
