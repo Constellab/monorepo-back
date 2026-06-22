@@ -539,7 +539,9 @@ export class CnHierarchyObjectAggregateService {
 
   public async bulkMoveToTrash(context: CnBulkActionContext): Promise<ClBulkActionResult> {
     const runner = this.createBulkRunner(context);
-    return runner.setAction((id) => this.moveToTrash(id).then()).execute();
+    return runner.setAction(async (id) => {
+      await this.moveToTrash(id);
+    }).execute();
   }
 
   public async bulkMoveToFolder(dto: CnBulkMoveToFolderDto): Promise<ClBulkActionResult> {
