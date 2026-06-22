@@ -547,7 +547,9 @@ export class CnHierarchyObjectAggregateService {
   public async bulkMoveToFolder(dto: CnBulkMoveToFolderDto): Promise<ClBulkActionResult> {
     const runner = this.createBulkRunner(dto.context);
     return runner
-      .setAction((id) => this.moveHierarchyObjectToFolder(id, dto.targetFolderId).then())
+      .setAction(async (id) => {
+        await this.moveHierarchyObjectToFolder(id, dto.targetFolderId);
+      })
       .execute();
   }
 
