@@ -67,6 +67,7 @@ export class ClBulkActionRunner {
       typeof error === 'object' &&
       error !== null &&
       'message' in error &&
+      typeof (error as any).message === 'string' &&
       'getStatus' in error &&
       typeof (error as any).getStatus === 'function'
     );
