@@ -369,7 +369,7 @@ where freeLabConfig is null;
 
 -- Make spaceId ON DELETE CASCADE on activity table
 
-############################ VIEWER SPACE ROLE ##########################
+############################ 2.10.4 ##########################
 
 ALTER TABLE space_user MODIFY COLUMN role ENUM('ADMIN','USER','VIEWER') NOT NULL DEFAULT 'USER';
 ALTER TABLE space_invit MODIFY COLUMN role ENUM('ADMIN','USER','VIEWER') NOT NULL DEFAULT 'USER';
