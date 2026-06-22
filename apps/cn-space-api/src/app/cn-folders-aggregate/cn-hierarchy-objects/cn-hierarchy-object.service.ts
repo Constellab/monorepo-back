@@ -108,7 +108,7 @@ export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjec
         visibility: CnHierarchyObjectVisibility.VISIBLE,
       },
       order: {
-        lastModifiedAt: 'DESC' as any,
+        lastModifiedAt: 'DESC',
       },
     });
   }
@@ -126,7 +126,7 @@ export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjec
         visibility: visibility,
       },
       order: {
-        lastModifiedAt: 'DESC' as any,
+        lastModifiedAt: 'DESC',
       },
     });
   }
@@ -138,7 +138,7 @@ export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjec
       },
       order: {
         objectTypeOrder: 'ASC',
-        lastModifiedAt: 'DESC' as any,
+        lastModifiedAt: 'DESC',
       },
     });
   }
@@ -164,6 +164,19 @@ export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjec
     return await this.findPaginated(page, size, searchBuilder.build());
   }
 
+  private buildFolderChildrenSearch(
+    folderId: string,
+    visibility: CnHierarchyObjectVisibility,
+    searchParam: BlSearchParams
+  ): BlSearchBuilder<CnHierarchyObjectEntity> {
+    const searchBuilder: BlSearchBuilder<CnHierarchyObjectEntity> = new BlSearchBuilder();
+    // force the sort by objectType first
+    searchBuilder.mergeOrderOptions({ objectTypeOrder: 'ASC' });
+    searchBuilder.addSearchParams(searchParam);
+    searchBuilder.mergeWhereOptions({ parentId: folderId, visibility: visibility });
+    return searchBuilder;
+  }
+
   public async searchInFolderChildren(
     folderId: string,
     visibility: CnHierarchyObjectVisibility,
@@ -171,13 +184,23 @@ export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjec
     page: number,
     size: number
   ): Promise<ClPage<CnHierarchyObject>> {
-    const searchBuilder: BlSearchBuilder<CnHierarchyObjectEntity> = new BlSearchBuilder();
-    // force the sort by objectType first
-    searchBuilder.mergeOrderOptions({ objectTypeOrder: 'ASC' });
-    searchBuilder.addSearchParams(searchParam);
-    searchBuilder.mergeWhereOptions({ parentId: folderId, visibility: visibility });
-
+    const searchBuilder = this.buildFolderChildrenSearch(folderId, visibility, searchParam);
     return await this.findPaginated(page, size, searchBuilder.build());
+  }
+
+  public async findAllIdsByFolderChildren(
+    folderId: string,
+    visibility: CnHierarchyObjectVisibility,
+    searchParam: BlSearchParams
+  ): Promise<string[]> {
+    const searchBuilder = this.buildFolderChildrenSearch(folderId, visibility, searchParam);
+    const options = searchBuilder.build();
+    const entities = await this.repository.find({
+      ...options,
+      select: { id: true },
+    });
+
+    return entities.map((entity) => entity.id);
   }
 
   public async searchInRootFoldersAndChildren(
@@ -303,7 +326,7 @@ export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjec
       hierarchyObjectId,
       {
         parentId: newParent.id,
-        parent: newParent as CnHierarchyObjectEntity,
+        parent: newParent,
         rootParentId: newParent.getRootFolderId(),
       },
       entityManager
@@ -323,7 +346,7 @@ export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjec
   ): Promise<CnHierarchyObject> {
     if (hierarchyObject.getRootFolderId() !== newParent.getRootFolderId()) {
       // update the children rootParentId
-      const children = await this.getFolderTreeAsList(hierarchyObject as CnHierarchyObjectEntity);
+      const children = await this.getFolderTreeAsList(hierarchyObject);
       // get the children ids, exclude current object
       const childrenIds = children.map((child) => child.id).filter((id) => id !== hierarchyObject.id);
       if (childrenIds.length > 0) {

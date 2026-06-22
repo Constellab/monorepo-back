@@ -4,6 +4,7 @@ import { DateTime } from 'luxon';
 import { CnTypeStyle } from '../../cn-core/model/config/cn-type-style.class';
 import { CnUser } from '../../cn-users/cn-user.entity';
 import { CnRootFolderUserRole } from '../cn-folder-user/cn-folder-user.entity';
+import { CnTag } from '../cn-hierarchy-object-tags/cn-hierarchy-object-tag.dto';
 import {
   CnHierarchyObject,
   CnHierarchyObjectEntity,
@@ -42,6 +43,20 @@ export class CnLabFolderDTO {
   name: string;
   children: CnLabFolderDTO[];
   levelStatus: 'LEAF' | 'PARENT';
+}
+
+export class CnBulkActionContext {
+  selectedIds: string[];
+}
+
+export class CnBulkMoveToFolderDto {
+  context: CnBulkActionContext;
+  targetFolderId: string;
+}
+
+export class CnBulkCreateTagsDto {
+  context: CnBulkActionContext;
+  tags: CnTag[];
 }
 
 export class CnFolderDtoHelper {

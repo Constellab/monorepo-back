@@ -1,5 +1,5 @@
 import { BlBadRequestException, BlFile, BlSearchParams } from '@monorepo/back-core-lib';
-import { ClPage, ClPageI } from '@monorepo/core-lib';
+import { ClBulkActionResult, ClBulkActionRunner, ClPage, ClPageI } from '@monorepo/core-lib';
 import { Injectable } from '@nestjs/common';
 
 import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
@@ -17,7 +17,12 @@ import { CnResourceAggregateService } from '../cn-resources/cn-resource-aggregat
 import { CnCreateLabScenarioDto } from '../cn-scenarios/cn-scenario.dto';
 import { CnScenarioAggregateService } from '../cn-scenarios/cn-scenario-aggregate.service';
 import { CnFoldersSecurityService } from '../cn-security/cn-folders-security.service';
-import { CnHierarchyObjectFindOneDTO } from './cn-hierarchy-object.dto';
+import {
+  CnBulkActionContext,
+  CnBulkCreateTagsDto,
+  CnBulkMoveToFolderDto,
+  CnHierarchyObjectFindOneDTO,
+} from './cn-hierarchy-object.dto';
 import {
   CnHierarchyObject,
   CnHierarchyObjectType,
@@ -520,6 +525,39 @@ export class CnHierarchyObjectAggregateService {
       CnCurrentUserHelper.getAndCheckCurrentSpace().id,
       CnCurrentUserHelper.getAndCheckCurrentUser().id
     );
+  }
+
+  ///////////////////////////////// BULK /////////////////////////////////
+
+  private createBulkRunner(context: CnBulkActionContext): ClBulkActionRunner {
+    const ids = context.selectedIds;
+    return new ClBulkActionRunner(ids).setNameResolver(async (id) => {
+      const item = await this.hierarchyObjectService.findByIdAndCheck(id);
+      return item.name;
+    });
+  }
+
+  public async bulkMoveToTrash(context: CnBulkActionContext): Promise<ClBulkActionResult> {
+    const runner = this.createBulkRunner(context);
+    return runner.setAction(async (id) => {
+      await this.moveToTrash(id);
+    }).execute();
+  }
+
+  public async bulkMoveToFolder(dto: CnBulkMoveToFolderDto): Promise<ClBulkActionResult> {
+    const runner = this.createBulkRunner(dto.context);
+    return runner
+      .setAction(async (id) => {
+        await this.moveHierarchyObjectToFolder(id, dto.targetFolderId);
+      })
+      .execute();
+  }
+
+  public async bulkCreateTags(dto: CnBulkCreateTagsDto): Promise<ClBulkActionResult> {
+    const runner = this.createBulkRunner(dto.context);
+    return runner.setAction(async (id) => {
+      await this.createHierarchyObjectTags(id, dto.tags);
+    }).execute();
   }
 
   ///////////////////////////////// SCENARIO /////////////////////////////

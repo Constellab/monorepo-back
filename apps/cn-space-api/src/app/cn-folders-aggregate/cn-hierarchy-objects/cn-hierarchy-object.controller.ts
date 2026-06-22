@@ -1,5 +1,5 @@
 import { BlParsePipe, BlSearchParams } from '@monorepo/back-core-lib';
-import { ClPage, ClPageI } from '@monorepo/core-lib';
+import { ClBulkActionResult, ClPage, ClPageI } from '@monorepo/core-lib';
 import {
   Body,
   Controller,
@@ -15,7 +15,12 @@ import {
 
 import { CnAvailableTags, CnTag } from '../cn-hierarchy-object-tags/cn-hierarchy-object-tag.dto';
 import { CnHierarchyObjectTag } from '../cn-hierarchy-object-tags/cn-hierarchy-object-tag.entity';
-import { CnHierarchyObjectFindOneDTO } from './cn-hierarchy-object.dto';
+import {
+  CnBulkActionContext,
+  CnBulkCreateTagsDto,
+  CnBulkMoveToFolderDto,
+  CnHierarchyObjectFindOneDTO,
+} from './cn-hierarchy-object.dto';
 import { CnHierarchyObject, CnHierarchyObjectWithParent } from './cn-hierarchy-object.entity';
 import { CnHierarchyObjectAggregateService } from './cn-hierarchy-object-aggregate.service';
 
@@ -103,6 +108,23 @@ export class CnHierarchyObjectController {
     @Query('size', ParseIntPipe) size: number
   ): Promise<ClPageI<CnHierarchyObject>> {
     return await this.hierarchyObjectAggregateService.searchInCurrentSpace(searchParam, page, size);
+  }
+
+  ////////////////////// BULK ////////////////////
+
+  @Put('bulk/move-to-trash')
+  async bulkMoveToTrash(@Body() context: CnBulkActionContext): Promise<ClBulkActionResult> {
+    return this.hierarchyObjectAggregateService.bulkMoveToTrash(context);
+  }
+
+  @Put('bulk/move-to-folder')
+  async bulkMoveToFolder(@Body() dto: CnBulkMoveToFolderDto): Promise<ClBulkActionResult> {
+    return this.hierarchyObjectAggregateService.bulkMoveToFolder(dto);
+  }
+
+  @Post('bulk/tags/multiple')
+  async bulkCreateTags(@Body() dto: CnBulkCreateTagsDto): Promise<ClBulkActionResult> {
+    return this.hierarchyObjectAggregateService.bulkCreateTags(dto);
   }
 
   ////////////////////// UPDATE ////////////////////
