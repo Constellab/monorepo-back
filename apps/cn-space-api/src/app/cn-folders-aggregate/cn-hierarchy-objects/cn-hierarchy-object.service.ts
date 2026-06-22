@@ -194,11 +194,11 @@ export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjec
     searchParam: BlSearchParams
   ): Promise<string[]> {
     const searchBuilder = this.buildFolderChildrenSearch(folderId, visibility, searchParam);
-    const options = searchBuilder.build();
-    const entities = await this.repo.find({
+    const options = searchBuilder.build() as unknown as import('typeorm').FindManyOptions<CnHierarchyObjectEntity>;
+    const entities = await this.repository.find({
       ...options,
-      select: ['id'],
-    } as any);
+      select: { id: true },
+    });
 
     return entities.map((entity) => entity.id);
   }
