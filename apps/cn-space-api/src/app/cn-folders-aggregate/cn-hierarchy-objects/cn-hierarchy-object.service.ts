@@ -108,7 +108,7 @@ export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjec
         visibility: CnHierarchyObjectVisibility.VISIBLE,
       },
       order: {
-        lastModifiedAt: 'DESC' as any,
+        lastModifiedAt: 'DESC',
       },
     });
   }
@@ -126,7 +126,7 @@ export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjec
         visibility: visibility,
       },
       order: {
-        lastModifiedAt: 'DESC' as any,
+        lastModifiedAt: 'DESC',
       },
     });
   }
@@ -138,7 +138,7 @@ export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjec
       },
       order: {
         objectTypeOrder: 'ASC',
-        lastModifiedAt: 'DESC' as any,
+        lastModifiedAt: 'DESC',
       },
     });
   }
@@ -194,7 +194,7 @@ export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjec
     searchParam: BlSearchParams
   ): Promise<string[]> {
     const searchBuilder = this.buildFolderChildrenSearch(folderId, visibility, searchParam);
-    const options = searchBuilder.build() as unknown as import('typeorm').FindManyOptions<CnHierarchyObjectEntity>;
+    const options = searchBuilder.build();
     const entities = await this.repository.find({
       ...options,
       select: { id: true },
@@ -326,7 +326,7 @@ export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjec
       hierarchyObjectId,
       {
         parentId: newParent.id,
-        parent: newParent as CnHierarchyObjectEntity,
+        parent: newParent,
         rootParentId: newParent.getRootFolderId(),
       },
       entityManager
@@ -346,7 +346,7 @@ export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjec
   ): Promise<CnHierarchyObject> {
     if (hierarchyObject.getRootFolderId() !== newParent.getRootFolderId()) {
       // update the children rootParentId
-      const children = await this.getFolderTreeAsList(hierarchyObject as CnHierarchyObjectEntity);
+      const children = await this.getFolderTreeAsList(hierarchyObject);
       // get the children ids, exclude current object
       const childrenIds = children.map((child) => child.id).filter((id) => id !== hierarchyObject.id);
       if (childrenIds.length > 0) {
