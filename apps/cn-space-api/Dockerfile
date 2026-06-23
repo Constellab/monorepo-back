@@ -2,7 +2,7 @@
 # https://blog.logrocket.com/containerized-development-nestjs-docker/
 
 # Build step
-FROM oven/bun:1-alpine AS builder
+FROM oven/bun:1.3.14-alpine AS builder
 WORKDIR /app
 
 # Copy package and lockfile for modules installation
@@ -17,7 +17,7 @@ COPY . .
 RUN bun run cn-space-api:build
 
 ## Second Stage : Setup command to run your app using lightweight image
-FROM oven/bun:1-alpine
+FROM oven/bun:1.3.14-alpine
 WORKDIR /app
 
 # Set UTC timezone for the docker

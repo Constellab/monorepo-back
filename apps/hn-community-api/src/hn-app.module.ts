@@ -63,6 +63,7 @@ import { HnCoreExceptionHandlerFilter } from './app/core/filters/hn-core-excepti
 import { HnIsAdminGuard } from './app/core/guards/hn-is-admin.guard';
 import { HnJwtAuthGuard } from './app/core/guards/hn-jwt-auth.guard';
 import { HnCoreModule } from './app/core/hn-core.module';
+import { HnHealthController } from './app/core/hn-health.controller';
 import { HnLogRequestMiddleware } from './app/core/middleware/hn-log-request-middleware.service';
 import { HnDatabaseConfig } from './app/core/model/config/hn-database-config.class';
 import { HnMailConfig } from './app/core/model/config/hn-mail.config';
@@ -316,7 +317,7 @@ TeRichTextModifications.setBackTimeDifference();
 
     HnRagflowChatbotModule,
   ],
-  controllers: [],
+  controllers: [HnHealthController],
   providers: [
     // set global interceptor
     {
