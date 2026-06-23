@@ -47,6 +47,7 @@ import { CnCityModule } from './app/cn-city/cn-city.module';
 import { CnCloudProvidersModule } from './app/cn-cloud-providers/cn-cloud-providers.module';
 import { CnCommunityModule } from './app/cn-community/cn-community.module';
 import { CnCoreModule } from './app/cn-core/cn-core.module';
+import { CnHealthController } from './app/cn-core/cn-health.controller';
 import { CnCoreExceptionHandlerFilter } from './app/cn-core/filters/cn-core-exception-handler.filter';
 import { CnJwtAuthGuard } from './app/cn-core/guards/cn-jwt-auth.guard';
 import { CnUserCategoryGuard } from './app/cn-core/guards/cn-user-category-guard.service';
@@ -233,7 +234,7 @@ TeRichTextModifications.setBackTimeDifference();
     // TODO to see if we can remove this
     CnHierarchyObjectTokenModule,
   ],
-  controllers: [],
+  controllers: [CnHealthController],
   providers: [
     AppService,
     // set global interceptor

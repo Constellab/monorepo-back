@@ -35,4 +35,9 @@ RUN bun install --frozen-lockfile --production --ignore-scripts
 # copy dist
 COPY --from=builder /app/dist/apps/cn-space-api ./dist
 
+# Health check used by Docker / CapRover to route traffic only when the app is ready.
+# start-period gives NestJS time to boot without counting early failures.
+HEALTHCHECK --interval=10s --timeout=3s --start-period=40s --retries=3 \
+  CMD wget -qO- http://localhost:3001/health || exit 1
+
 CMD ["node", "dist/cn-main"]
