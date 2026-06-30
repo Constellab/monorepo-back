@@ -109,14 +109,20 @@ export abstract class CnCloudProviderService {
     regionName: string
   ): Promise<CnCpStaticIpAddress | null>;
 
-  public instantiateLabSshService(lab: CnLab): CnLabSshService {
+  /**
+   * @param sshHost optional IP address to ssh into directly, bypassing DNS
+   * resolution of the virtual host (used during server bootstrap before DNS
+   * has propagated).
+   */
+  public instantiateLabSshService(lab: CnLab, sshHost?: string): CnLabSshService {
     return new CnLabSshService(
       this.commandService,
       this.configService.isLocal(),
       this.getSshUserName(),
       lab.virtualHost,
       lab.id,
-      this.getSshPrivateKeyFilePath()
+      this.getSshPrivateKeyFilePath(),
+      sshHost
     );
   }
 }

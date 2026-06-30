@@ -123,6 +123,14 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
   @Column({ nullable: true, length: 255, unique: true })
   virtualHost: string;
 
+  // for on-premise labs only reachable on the client network: private IP the
+  // lab hostnames (glab/lab-manager, all subdomains of virtualHost) must resolve
+  // to, since the public DNS points elsewhere. When set, the external API calls
+  // override DNS resolution to this IP instead of relying on an /etc/hosts entry.
+  @BlTrim()
+  @Column({ nullable: true, length: 255 })
+  labIpOverride: string;
+
   // api key shared with the lab manager API
   @BlTrim()
   @Exclude()
@@ -279,6 +287,7 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
     return {
       apiKey: this.glabProdApiKey,
       apiUrl: this.glabUrl + '/' + CnLabEntity.SPACE_API_ROUTE,
+      ipOverride: this.labIpOverride ?? undefined,
     };
   }
 
@@ -294,6 +303,7 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
     return {
       apiKey: this.labManagerApiKey,
       apiUrl: this.labManagerUrl,
+      ipOverride: this.labIpOverride ?? undefined,
     };
   }
 

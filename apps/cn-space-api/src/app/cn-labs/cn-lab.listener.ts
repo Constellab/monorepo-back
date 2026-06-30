@@ -96,7 +96,7 @@ export class CnLabListener {
     const lab = await this.labsService.findByIdAndCheck(id, { space: true });
 
     // wait for the lab manager to be ready
-    await this.labManagerService.waitForHealthCheck(lab.getLabManagerApiInfo().apiUrl);
+    await this.labManagerService.waitForHealthCheck(lab.getLabManagerApiInfo());
 
     const labManagerStatus = await this.labManagerService.getLabStatus(lab);
 

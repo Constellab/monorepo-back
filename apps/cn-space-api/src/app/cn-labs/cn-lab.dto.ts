@@ -17,6 +17,13 @@ import { CnLabUserRole } from './user/cn-lab-user.entity';
 import { CnLabVolumeType } from './volume/cn-lab-volume-entity';
 
 /**
+ * Virtual search filter key for the admin lab search.
+ * It is not a column of the lab entity but a condition over the backup history:
+ * when the filter value is true, only labs that have at least one successful backup are returned.
+ */
+export const CN_LAB_SEARCH_FILTER_HAS_ACTIVE_BACKUP = 'hasActiveBackup';
+
+/**
  * DTO for the users that have access to a lab
  */
 export class CnLabDto extends BlBaseEntityDto {
@@ -66,6 +73,7 @@ export class CnLabAdminDto extends CnLabWithSpaceDto {
   serverInstanceId: string;
   serverVolumeId: string;
   serverIpAddressId: string;
+  labIpOverride: string;
   gwsCoreProdDbPassword: string;
   gwsCoreDevDbPassword: string;
   codelabToken: string;
@@ -79,6 +87,7 @@ export class CnLabAdminDto extends CnLabWithSpaceDto {
     this.serverInstanceId = entity.serverInstanceId;
     this.serverVolumeId = entity.serverVolumeId;
     this.serverIpAddressId = entity.serverIpAddressId;
+    this.labIpOverride = entity.labIpOverride;
     this.gwsCoreProdDbPassword = entity.gwsCoreProdDbPassword;
     this.gwsCoreDevDbPassword = entity.gwsCoreDevDbPassword;
     this.codelabToken = entity.codelabToken;
@@ -117,6 +126,8 @@ export class CnLabUpdateAdminDTO {
   type: CnLabType;
   @BlTrim()
   virtualHost: string;
+  @BlTrim()
+  labIpOverride: string;
   billingMode: CnLabBillingMode;
 
   @Type(() => CnServerCloud)

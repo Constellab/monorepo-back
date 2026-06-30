@@ -1,6 +1,7 @@
 import { BlBadRequestException } from '@monorepo/back-core-lib';
 import { Injectable, Logger } from '@nestjs/common';
 
+import { CnExternalApiInfo } from '../cn-core/model/config/cn-config.class';
 import { CnCoreConfigService } from '../cn-core/modules/cn-core-config/cn-core-config.service';
 import { CnExternalLabManagerApiService } from '../cn-external-lab-api/cn-external-lab-manager-api.service';
 import {
@@ -41,12 +42,12 @@ export class CnLabManagerService {
 
   ////////////////////////////////////////// HEALTH & STATUS //////////////////////////////////////////
 
-  public async healthCheck(labManagerUrl: string): Promise<boolean> {
-    return this.labManagerApiService.healthCheck(labManagerUrl);
+  public async healthCheck(apiInfo: CnExternalApiInfo): Promise<boolean> {
+    return this.labManagerApiService.healthCheck(apiInfo);
   }
 
   public async getLabStatus(lab: CnLab): Promise<CnLabManagerStatus> {
-    const isRunning = await this.healthCheck(lab.getLabManagerApiInfo().apiUrl);
+    const isRunning = await this.healthCheck(lab.getLabManagerApiInfo());
     if (!isRunning) {
       throw new BlBadRequestException('The lab manager is not running');
     }
@@ -62,11 +63,11 @@ export class CnLabManagerService {
     return this.configService.getLabManagerRecommendedVersion();
   }
 
-  public async waitForHealthCheck(labManagerUrl: string): Promise<void> {
+  public async waitForHealthCheck(apiInfo: CnExternalApiInfo): Promise<void> {
     // wait for server to reboot
     let count = 0;
     while (count < 15) {
-      const result = await this.healthCheck(labManagerUrl);
+      const result = await this.healthCheck(apiInfo);
       if (result) {
         return;
       }
@@ -75,13 +76,15 @@ export class CnLabManagerService {
         break;
       }
 
-      this.logger.log(`Waiting for lab manager ${labManagerUrl} to be available. Attempt ${count + 1} of 15`);
+      this.logger.log(
+        `Waiting for lab manager ${apiInfo.apiUrl} to be available. Attempt ${count + 1} of 15`
+      );
       // wait 15 seconds
       await new Promise((r) => setTimeout(r, 15000));
       count++;
     }
 
-    throw new BlBadRequestException(`Server is not available for lab manager ${labManagerUrl}`);
+    throw new BlBadRequestException(`Server is not available for lab manager ${apiInfo.apiUrl}`);
   }
 
   public async stopCurrentTask(lab: CnLab): Promise<void> {

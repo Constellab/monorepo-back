@@ -13,12 +13,12 @@ import { CnUser } from '../../cn-users/cn-user.entity';
 import { CnUsersService } from '../../cn-users/cn-users.service';
 import { cnIsAllowedDev, cnIsLabRobotAuth } from '../decorators/cn-lab-guard.decorator';
 import {
-  cnExternalLabApiKeyHeader,
-  cnExternalLabApiKeySchema,
-  cnExternalLabApiTokenHeader,
-  cnExternalLabManagerVersionHeader,
-  cnExternalLabQueryParamKeyHeader,
-  cnExternalLabUserHeader,
+  CN_EXTERNAL_LAB_API_KEY_HEADER,
+  CN_EXTERNAL_LAB_API_KEY_SCHEMA,
+  CN_EXTERNAL_LAB_API_TOKEN_HEADER,
+  CN_EXTERNAL_LAB_MANAGER_VERSION_HEADER,
+  CN_EXTERNAL_LAB_QUERY_PARAM_KEY_HEADER,
+  CN_EXTERNAL_LAB_USER_HEADER,
 } from '../model/config/cn-config.class';
 import { CnErrorText } from '../model/config/cn-error-text.class';
 import { CnCoreConfigService } from '../modules/cn-core-config/cn-core-config.service';
@@ -93,7 +93,7 @@ export abstract class CnLabAuthGuardBase implements CanActivate {
     let authContext: CnAuthContext;
     if (labInfo.labEnvironment === 'labManager') {
       // retrieve the lab manager version from header
-      const labManagerVersion = request.header(cnExternalLabManagerVersionHeader);
+      const labManagerVersion = request.header(CN_EXTERNAL_LAB_MANAGER_VERSION_HEADER);
 
       authContext = new CnAuthContextLabManager(userInfo, labInfo.lab, labManagerVersion);
     } else if (labInfo.labEnvironment === 'labToken') {
@@ -188,12 +188,12 @@ export abstract class CnLabAuthGuardBase implements CanActivate {
 
   private getLabApiKeyFromRequest(request: Request): string | null {
     // get the api-key from header without the 'API-KEY'
-    const authorization = request.header(cnExternalLabApiKeyHeader);
+    const authorization = request.header(CN_EXTERNAL_LAB_API_KEY_HEADER);
     if (authorization != null) {
-      return authorization.replace(`${cnExternalLabApiKeySchema} `, '');
+      return authorization.replace(`${CN_EXTERNAL_LAB_API_KEY_SCHEMA} `, '');
     }
 
-    const queryAuthorization = request.query[cnExternalLabQueryParamKeyHeader];
+    const queryAuthorization = request.query[CN_EXTERNAL_LAB_QUERY_PARAM_KEY_HEADER];
     if (queryAuthorization != null) {
       return queryAuthorization.toString();
     }
@@ -203,7 +203,7 @@ export abstract class CnLabAuthGuardBase implements CanActivate {
 
   private getLabUserIdFromRequest(request: Request): string | null {
     // get user id from the request if it exists
-    return request.header(cnExternalLabUserHeader) ?? null;
+    return request.header(CN_EXTERNAL_LAB_USER_HEADER) ?? null;
   }
 }
 
@@ -232,7 +232,7 @@ export class CnLabAuthGuard extends CnLabAuthGuardBase {
   async getLabFromApiKey(apiKey: string, request: Request): Promise<CnGetLab> {
     // TODO improve for lab token
     // if the header exist it means that the lab is using a token to authenticate
-    const labApiToken = request.header(cnExternalLabApiTokenHeader);
+    const labApiToken = request.header(CN_EXTERNAL_LAB_API_TOKEN_HEADER);
 
     const lab = await this.labsService.findLabByGlabProdApiKey(apiKey);
     if (lab) {

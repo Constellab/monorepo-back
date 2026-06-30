@@ -370,6 +370,12 @@ where freeLabConfig is null;
 -- Make spaceId ON DELETE CASCADE on activity table
 
 ############################ 2.10.4 ##########################
-
+-- /!\ FROM THIS POINT THE COLUMNS ARE SNAKE_CASED, NOT CAMEL_CASED
 ALTER TABLE space_user MODIFY COLUMN role ENUM('ADMIN','USER','VIEWER') NOT NULL DEFAULT 'USER';
 ALTER TABLE space_invit MODIFY COLUMN role ENUM('ADMIN','USER','VIEWER') NOT NULL DEFAULT 'USER';
+
+############################ 2.14.0 ##########################
+-- On-premise labs only reachable on the client network: optional private IP the
+-- lab hostnames must resolve to, instead of overriding DNS via /etc/hosts on the server.
+alter table lab
+  add column lab_ip_override varchar(255) null;

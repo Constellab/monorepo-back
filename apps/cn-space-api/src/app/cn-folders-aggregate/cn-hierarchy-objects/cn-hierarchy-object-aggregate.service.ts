@@ -539,9 +539,11 @@ export class CnHierarchyObjectAggregateService {
 
   public async bulkMoveToTrash(context: CnBulkActionContext): Promise<ClBulkActionResult> {
     const runner = this.createBulkRunner(context);
-    return runner.setAction(async (id) => {
-      await this.moveToTrash(id);
-    }).execute();
+    return runner
+      .setAction(async (id) => {
+        await this.moveToTrash(id);
+      })
+      .execute();
   }
 
   public async bulkMoveToFolder(dto: CnBulkMoveToFolderDto): Promise<ClBulkActionResult> {
@@ -555,9 +557,11 @@ export class CnHierarchyObjectAggregateService {
 
   public async bulkCreateTags(dto: CnBulkCreateTagsDto): Promise<ClBulkActionResult> {
     const runner = this.createBulkRunner(dto.context);
-    return runner.setAction(async (id) => {
-      await this.createHierarchyObjectTags(id, dto.tags);
-    }).execute();
+    return runner
+      .setAction(async (id) => {
+        await this.createHierarchyObjectTags(id, dto.tags);
+      })
+      .execute();
   }
 
   ///////////////////////////////// SCENARIO /////////////////////////////

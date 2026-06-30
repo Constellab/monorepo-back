@@ -13,10 +13,15 @@ import { CnLabBackupHistoryDetail, CnLabBackupType } from './cn-lab-backup-histo
 
 @Entity('lab_backup_history')
 export class CnLabBackupHistoryEntity extends CnBaseEntity {
-  // default relation to load the bucket
-  public static defaultRelation: FindOptionsRelations<CnLabBackupHistoryEntity> = {
-    bucket: CnBucket.configRelation,
-  };
+  // default relation to load the bucket.
+  // Lazy getter (not a static field) to avoid reading CnBucket.configRelation at
+  // class-init time: CnBucket and this entity form an import cycle, so an eager
+  // read can resolve to undefined depending on module load order.
+  public static get defaultRelation(): FindOptionsRelations<CnLabBackupHistoryEntity> {
+    return {
+      bucket: CnBucket.configRelation,
+    };
+  }
 
   @Type(() => CnLabEntity)
   @ManyToOne(() => CnLabEntity, { onDelete: 'CASCADE', nullable: false })

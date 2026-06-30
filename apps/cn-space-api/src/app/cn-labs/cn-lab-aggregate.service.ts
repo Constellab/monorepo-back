@@ -267,6 +267,7 @@ export class CnLabAggregateService {
     lab.name = updateLab.name;
     lab.type = updateLab.type;
     lab.virtualHost = updateLab.virtualHost;
+    lab.labIpOverride = updateLab.labIpOverride;
     lab.billingMode = updateLab.billingMode;
     lab.serverCloud = updateLab.serverCloud;
     lab.glabProdApiKey = updateLab.glabProdApiKey;
@@ -513,7 +514,7 @@ export class CnLabAggregateService {
 
   private async getStatus(lab: CnLab): Promise<CnLabStatusDTO> {
     const promises: [Promise<boolean>, Promise<boolean>] = [
-      this.labManagerService.healthCheck(lab.getLabManagerApiInfo().apiUrl),
+      this.labManagerService.healthCheck(lab.getLabManagerApiInfo()),
       this.externalLabApiService.healthCheck(lab.getGlabSpaceApiInfo()),
     ];
 
@@ -708,7 +709,7 @@ export class CnLabAggregateService {
     }
 
     // if the lab manager is running, mark the lab as configured
-    const labManagerHealthCheck = await this.labManagerService.healthCheck(lab.getLabManagerApiInfo().apiUrl);
+    const labManagerHealthCheck = await this.labManagerService.healthCheck(lab.getLabManagerApiInfo());
     if (labManagerHealthCheck) {
       return await this.labsService.markInstanceAsServerConfigured(labId);
     }
@@ -1311,9 +1312,10 @@ export class CnLabAggregateService {
   private async initServerAsync(lab: CnLab): Promise<void> {
     lab = await this.createServerAsync(lab, false);
 
-    // wait for the DNS to be ready
-    // wait for 2 consecutive success because DNS propagation can take some time
-    const labSshService = await this.cloudProviderFactory.getSshLabService(lab);
+    // wait for the server to accept ssh connections. Connect by IP so DNS
+    // propagation of the freshly created virtual host is not on the critical
+    // path (the subsequent bootstrap also connects by IP).
+    const labSshService = await this.cloudProviderFactory.getSshLabServiceByIp(lab);
     await labSshService.waitForSshConnection(3);
 
     await this.configureServerAsync(lab, false);
@@ -1348,7 +1350,7 @@ export class CnLabAggregateService {
   public async configureServer(labId: string): Promise<CnLabStatusDTO> {
     let lab: CnLab = await this.getAndCheckServerStatusBeforeAction(labId);
 
-    const labSshService = await this.cloudProviderFactory.getSshLabService(lab);
+    const labSshService = await this.cloudProviderFactory.getSshLabServiceByIp(lab);
     const sshTest = await labSshService.checkSshConnection();
     if (!sshTest) {
       throw new BlBadRequestException(`SSH connection to ${lab.virtualHost} failed`);

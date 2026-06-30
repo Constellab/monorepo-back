@@ -10,12 +10,13 @@ import { Injectable, Logger } from '@nestjs/common';
 import { catchError, lastValueFrom, Observable, throwError } from 'rxjs';
 
 import {
+  CN_EXTERNAL_LAB_API_KEY_HEADER,
+  CN_EXTERNAL_LAB_API_KEY_SCHEMA,
   CnExternalApiInfo,
-  cnExternalLabApiKeyHeader,
-  cnExternalLabApiKeySchema,
 } from '../cn-core/model/config/cn-config.class';
 import { CnLabConfigFile } from '../cn-lab-configs/cn-lab-config-file.class';
 import { CnLabBackupsHistory } from '../cn-labs/backup/cn-lab-backup.dto';
+import { cnApplyIpOverride } from './cn-external-api-ip-override.helper';
 import {
   CnLabManagerAdminerInfo,
   CnLabManagerBackupInfoDTO,
@@ -49,12 +50,13 @@ export class CnExternalLabManagerApiService {
 
   constructor(private apiService: BlExternalApiService) {}
 
-  public async healthCheck(labUrl: string): Promise<boolean> {
+  public async healthCheck(apiInfo: CnExternalApiInfo): Promise<boolean> {
     return lastValueFrom(
-      this.apiService.get(this.constructRoute(labUrl, `health-check`), null, {
-        logError: false,
-        timeout: 2500,
-      })
+      this.apiService.get(
+        this.constructRoute(apiInfo.apiUrl, `health-check`),
+        null,
+        this.getRequestOptions(apiInfo, { logError: false, timeout: 2500 })
+      )
     )
       .then(() => true)
       .catch(() => false);
@@ -298,7 +300,7 @@ export class CnExternalLabManagerApiService {
         this.constructRoute(apiInfo.apiUrl, route),
         body,
         classReference,
-        this.getRequestOptions(apiInfo.apiKey, options)
+        this.getRequestOptions(apiInfo, options)
       )
       .pipe(catchError((error) => this.catchError(error)));
   }
@@ -318,7 +320,7 @@ export class CnExternalLabManagerApiService {
         this.constructRoute(apiInfo.apiUrl, route),
         body,
         classReference,
-        this.getRequestOptions(apiInfo.apiKey, options)
+        this.getRequestOptions(apiInfo, options)
       )
       .pipe(catchError((error) => this.catchError(error)));
   }
@@ -336,7 +338,7 @@ export class CnExternalLabManagerApiService {
       .get(
         this.constructRoute(apiInfo.apiUrl, route),
         classReference,
-        this.getRequestOptions(apiInfo.apiKey, options)
+        this.getRequestOptions(apiInfo, options)
       )
       .pipe(catchError((error) => this.catchError(error)));
   }
@@ -354,7 +356,7 @@ export class CnExternalLabManagerApiService {
       .delete(
         this.constructRoute(apiInfo.apiUrl, route),
         classReference,
-        this.getRequestOptions(apiInfo.apiKey, options)
+        this.getRequestOptions(apiInfo, options)
       )
       .pipe(catchError((error) => this.catchError(error)));
   }
@@ -363,15 +365,21 @@ export class CnExternalLabManagerApiService {
     return `${labUrl}/${route}`;
   }
 
-  // get the axios request config with the api key in the header
-  private getRequestOptions(apiKey: string, options: BlExternalApiHttpOption): BlExternalApiHttpOption {
-    return Object.assign(options, { headers: this.getHeader(apiKey) });
+  // get the axios request config with the api key in the header, and a custom
+  // DNS resolution agent when the lab defines an ip override (on-premise labs)
+  private getRequestOptions(
+    apiInfo: CnExternalApiInfo,
+    options: BlExternalApiHttpOption
+  ): BlExternalApiHttpOption {
+    Object.assign(options, { headers: this.getHeader(apiInfo.apiKey) });
+    cnApplyIpOverride(apiInfo.ipOverride, options);
+    return options;
   }
 
   // get the header with api key
   private getHeader(apiKey: string): any {
     const header: any = {};
-    header[cnExternalLabApiKeyHeader] = `${cnExternalLabApiKeySchema} ${apiKey}`;
+    header[CN_EXTERNAL_LAB_API_KEY_HEADER] = `${CN_EXTERNAL_LAB_API_KEY_SCHEMA} ${apiKey}`;
     return header;
   }
 

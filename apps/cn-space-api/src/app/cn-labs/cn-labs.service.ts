@@ -12,6 +12,7 @@ import {
   In,
   IsNull,
   Not,
+  Raw,
   Repository,
 } from 'typeorm';
 
@@ -22,6 +23,8 @@ import { CnScenariosService } from '../cn-folders-aggregate/cn-scenarios/cn-scen
 import { CnLabConfig } from '../cn-lab-configs/cn-lab-config.entity';
 import { CnServerCloud } from '../cn-servers-info/server-cloud/cn-server-cloud.entity';
 import { CnServerStandard } from '../cn-servers-info/server-standard/cn-server-standard.entity';
+import { CnLabBackupStatus } from './backup/cn-lab-backup.dto';
+import { CN_LAB_SEARCH_FILTER_HAS_ACTIVE_BACKUP } from './cn-lab.dto';
 import { CnLab, CnLabEntity, CnLabFull, CnLabType, CnLabWithSpace } from './cn-lab.entity';
 import {
   CnLabEvent,
@@ -197,14 +200,14 @@ export class CnLabsService extends CnAbstractWithStatusService<CnLabEntity, CnLa
   ): Promise<ClPageI<CnLab>> {
     return this.findPaginated(page, size, {
       where: this.getLabByUserAndSpaceFindOptions(userId, spaceId),
-      order: { lastModifiedAt: 'DESC' as any },
+      order: { lastModifiedAt: 'DESC' },
     });
   }
 
   public async getAllLabsByUserAndSpace(userId: string, spaceId: string): Promise<CnLab[]> {
     return this.repository.find({
       where: this.getLabByUserAndSpaceFindOptions(userId, spaceId),
-      order: { lastModifiedAt: 'DESC' as any },
+      order: { lastModifiedAt: 'DESC' },
     });
   }
 
@@ -218,7 +221,7 @@ export class CnLabsService extends CnAbstractWithStatusService<CnLabEntity, CnLa
     return this.repository.find({
       where: findWhereOption,
       order: {
-        lastModifiedAt: 'DESC' as any,
+        lastModifiedAt: 'DESC',
       },
     });
   }
@@ -359,9 +362,39 @@ export class CnLabsService extends CnAbstractWithStatusService<CnLabEntity, CnLa
     page: number,
     size: number
   ): Promise<ClPage<CnLabFull>> {
+    // 'hasActiveBackup' is a virtual filter: it is not a column of the lab entity but a condition over
+    // the backup history. We extract it from the search params (so the generic search builder does not
+    // try to translate it into a where clause) and apply it as a sub-query on the backup history table.
+    const hasActiveBackup = searchParams.getFilterValue(CN_LAB_SEARCH_FILTER_HAS_ACTIVE_BACKUP) === true;
+    searchParams.removeFilter(CN_LAB_SEARCH_FILTER_HAS_ACTIVE_BACKUP);
+
     const searchBuilder = new BlSearchBuilder<CnLabEntity>();
     searchBuilder.addSearchParams(searchParams);
     searchBuilder.setRelations(CnLabEntity.relationFull);
+
+    // restrict the search to labs that currently have a backup stored. A backup is evaluated per
+    // frequency (daily / weekly): a frequency is "stored" when its most recent history row (by startedAt)
+    // is a SUCCESS. The lab matches if AT LEAST ONE frequency is still stored, so a lab keeps matching
+    // even if one frequency was deleted while another frequency still holds a successful backup.
+    // Done as a correlated sub-query so it stays a single query.
+    if (hasActiveBackup) {
+      searchBuilder.mergeWhereOptions({
+        id: Raw(
+          (labId) => `EXISTS (
+            SELECT 1 FROM lab_backup_history h
+            WHERE h.lab_id = ${labId}
+              AND h.status = :backupSuccessStatus
+              AND NOT EXISTS (
+                SELECT 1 FROM lab_backup_history newer
+                WHERE newer.lab_id = h.lab_id
+                  AND newer.frequency = h.frequency
+                  AND newer.started_at > h.started_at
+              )
+          )`,
+          { backupSuccessStatus: CnLabBackupStatus.SUCCESS }
+        ),
+      });
+    }
 
     return this.findPaginated(page, size, searchBuilder.build());
   }

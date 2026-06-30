@@ -1,7 +1,7 @@
 import { BlBadRequestException } from '@monorepo/back-core-lib';
 import { Injectable, Logger } from '@nestjs/common';
 
-import { cnExternalLabQueryParamKeyHeader } from '../../cn-core/model/config/cn-config.class';
+import { CN_EXTERNAL_LAB_QUERY_PARAM_KEY_HEADER } from '../../cn-core/model/config/cn-config.class';
 import { CnCoreConfigService } from '../../cn-core/modules/cn-core-config/cn-core-config.service';
 import { CnExecCommandMode } from '../../cn-core/services/cn-command.service';
 import { CnLab } from '../cn-lab.entity';
@@ -31,7 +31,9 @@ export class CnLabConfigurerService {
 
   public async configureServer(lab: CnLab): Promise<CnLab> {
     try {
-      const sshService = await this.cloudProviderFactory.getSshLabService(lab);
+      // Connect directly to the server IP during bootstrap so DNS propagation
+      // of the freshly created virtual host is not on the critical path.
+      const sshService = await this.cloudProviderFactory.getSshLabServiceByIp(lab);
 
       // get lab configurer repository
       await this.callUpdateLabConfigurerRepo(sshService, lab.id);
@@ -44,6 +46,11 @@ export class CnLabConfigurerService {
 
       await this.rebootAndWaitForServer(sshService, lab.id);
 
+      // From here on the virtual host must resolve through DNS (init.sh / Traefik
+      // routing, ACME DNS-01 challenge, lab manager health check). Verify DNS is
+      // correctly propagated to the server IP before continuing.
+      await this.waitForDnsConfigured(lab);
+
       // Execute init.sh
       await this.callInitScript(sshService, lab);
 
@@ -51,7 +58,7 @@ export class CnLabConfigurerService {
       await this.callDockerComposeUp(sshService, lab.id);
 
       // wait for lab manager
-      await this.labManagerService.waitForHealthCheck(lab.getLabManagerApiInfo().apiUrl);
+      await this.labManagerService.waitForHealthCheck(lab.getLabManagerApiInfo());
     } catch (e: any) {
       await this.labService.updateServerTask(
         lab.id,
@@ -108,10 +115,40 @@ export class CnLabConfigurerService {
       `Pulling lab-configurer repository`,
       CnLabServerTaskStatus.RUNNING
     );
-    await labSshService.execSshCommand([
-      `git clone -b ${this.coreConfigService.getLabConfigurerRepoBranch()} ` +
-        `${this.coreConfigService.getLabConfigurerRepoUrl()}`,
-    ]);
+    // This is the first real command run on a freshly created server. Retry it
+    // on transient failures (DNS not yet propagated, sshd/network still starting)
+    // instead of relying only on a prior connectivity probe.
+    await labSshService.execSshCommand(
+      [
+        `git clone -b ${this.coreConfigService.getLabConfigurerRepoBranch()} ` +
+          `${this.coreConfigService.getLabConfigurerRepoUrl()}`,
+      ],
+      undefined,
+      true,
+      { attempts: 5, initialDelayMs: 5000 }
+    );
+  }
+
+  /**
+   * Verify the lab virtual host resolves through DNS to the server IP before
+   * running steps that depend on DNS being live (init.sh, ACME challenge, lab
+   * manager health check).
+   */
+  private async waitForDnsConfigured(lab: CnLab): Promise<void> {
+    await this.labService.updateServerTask(
+      lab.id,
+      `Waiting for DNS to be configured`,
+      CnLabServerTaskStatus.RUNNING
+    );
+
+    const sshService = await this.cloudProviderFactory.getSshLabService(lab);
+    const expectedIp = await this.cloudProviderFactory.tryGetServerIpAddress(lab);
+
+    try {
+      await sshService.waitForDnsResolution(expectedIp);
+    } catch (e: any) {
+      throw new Error(`Error while waiting for DNS to be configured. Error : ${e}`);
+    }
   }
 
   private async mountVolume(lab: CnLab): Promise<void> {
@@ -157,7 +194,7 @@ export class CnLabConfigurerService {
   private async callInitScript(labSshService: CnLabSshService, lab: CnLab): Promise<void> {
     const challengeRoute =
       `${this.coreConfigService.getApiUrl()}/external-labs-manager/lab/dns` +
-      `?${cnExternalLabQueryParamKeyHeader}=${lab.labManagerApiKey}`;
+      `?${CN_EXTERNAL_LAB_QUERY_PARAM_KEY_HEADER}=${lab.labManagerApiKey}`;
     const variables = [
       `--virtual-host="${lab.virtualHost}"`,
       `--environment-profile="${this.coreConfigService.isProduction() ? 'prod' : 'pre-prod'}"`,

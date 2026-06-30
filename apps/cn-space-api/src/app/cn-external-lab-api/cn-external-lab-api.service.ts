@@ -4,12 +4,13 @@ import { Injectable } from '@nestjs/common';
 import { lastValueFrom, Observable } from 'rxjs';
 
 import {
+  CN_EXTERNAL_LAB_API_KEY_HEADER,
+  CN_EXTERNAL_LAB_API_KEY_SCHEMA,
+  CN_EXTERNAL_LAB_USER_HEADER,
   CnExternalApiInfo,
-  cnExternalLabApiKeyHeader,
-  cnExternalLabApiKeySchema,
-  cnExternalLabUserHeader,
 } from '../cn-core/model/config/cn-config.class';
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
+import { cnApplyIpOverride } from './cn-external-api-ip-override.helper';
 import { CnLabGlobalActivity } from './model/cn-external-lab-api.class';
 
 /**
@@ -47,7 +48,7 @@ export class CnExternalLabApiService {
       this.constructRoute(labInfo.apiUrl, route),
       body,
       classReference,
-      this.getRequestOptions(labInfo.apiKey, options)
+      this.getRequestOptions(labInfo, options)
     );
   }
 
@@ -65,7 +66,7 @@ export class CnExternalLabApiService {
       this.constructRoute(labInfo.apiUrl, route),
       body,
       classReference,
-      this.getRequestOptions(labInfo.apiKey, options)
+      this.getRequestOptions(labInfo, options)
     );
   }
 
@@ -81,7 +82,7 @@ export class CnExternalLabApiService {
     return this.apiService.delete(
       this.constructRoute(labInfo.apiUrl, route),
       classReference,
-      this.getRequestOptions(labInfo.apiKey, options)
+      this.getRequestOptions(labInfo, options)
     );
   }
 
@@ -97,7 +98,7 @@ export class CnExternalLabApiService {
     return this.apiService.get(
       this.constructRoute(labInfo.apiUrl, route),
       classReference,
-      this.getRequestOptions(labInfo.apiKey, options)
+      this.getRequestOptions(labInfo, options)
     );
   }
 
@@ -105,20 +106,25 @@ export class CnExternalLabApiService {
     return `${labUrl}/${route}`;
   }
 
-  // get the axios request config with the api key in the header
-  private getRequestOptions(apiKey: string, options: BlExternalApiHttpOption): BlExternalApiHttpOption {
-    return Object.assign(options, { headers: this.getHeader(apiKey) });
+  // get the axios request config with the api key in the header, and a custom
+  // DNS resolution agent when the lab defines an ip override (on-premise labs)
+  private getRequestOptions(
+    labInfo: CnExternalApiInfo,
+    options: BlExternalApiHttpOption
+  ): BlExternalApiHttpOption {
+    Object.assign(options, { headers: this.getHeader(labInfo.apiKey) });
+    return cnApplyIpOverride(labInfo.ipOverride, options);
   }
 
   // get the header with api key
   private getHeader(apiKey: string): any {
     const header: any = {};
-    header[cnExternalLabApiKeyHeader] = `${cnExternalLabApiKeySchema} ${apiKey}`;
+    header[CN_EXTERNAL_LAB_API_KEY_HEADER] = `${CN_EXTERNAL_LAB_API_KEY_SCHEMA} ${apiKey}`;
 
     // add the user id if this is a connected route
     const user = CnCurrentUserHelper.getCurrentUser();
     if (user) {
-      header[cnExternalLabUserHeader] = user.id;
+      header[CN_EXTERNAL_LAB_USER_HEADER] = user.id;
     }
     return header;
   }
