@@ -1,4 +1,5 @@
-import { Body, Controller, Get, Param, ParseUUIDPipe, Put } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseUUIDPipe, Put, Res } from '@nestjs/common';
+import { Response } from 'express';
 
 import { CnLabFolderAggregateService } from '../../cn-lab-folder-aggregate/cn-lab-folder-aggregate.service';
 import { CnResourceAccessDTO } from './cn-resource.dto';
@@ -15,6 +16,15 @@ export class CnResourcesController {
   @Get(':id')
   getById(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnResourceAccessDTO> {
     return this.labFolderAggregateService.getResourceAccess(id);
+  }
+
+  @Get(':id/redirect')
+  async redirectToAccessUrl(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Res() res: Response
+  ): Promise<void> {
+    const access = await this.labFolderAggregateService.getResourceAccess(id);
+    res.redirect(access.accessUrl);
   }
 
   @Put(':id/name')
