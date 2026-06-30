@@ -96,6 +96,14 @@ export class CnOvhService {
     );
   }
 
+  public async rebootInstance(instanceId: string): Promise<any> {
+    return await this.requestPromised(
+      'POST',
+      `/cloud/project/${this.serviceName}/instance/${instanceId}/reboot`,
+      { type: 'soft' }
+    );
+  }
+
   ///////////////////////////////////////// VOLUME /////////////////////////////////////////
 
   public async createVolume(request: CnOvhCreateVolumeRequest): Promise<CnOvhVolume> {

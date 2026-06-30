@@ -122,6 +122,15 @@ export class CnOutscaleService {
     return response.vms[0];
   }
 
+  public async rebootInstance(id: string): Promise<void> {
+    const api = this.getVmApi();
+
+    await api.rebootVms({ rebootVmsRequest: { vmIds: [id] } }).catch((error) => {
+      this.logger.error(error);
+      throw new BlBadRequestException("Can't reboot the VM");
+    });
+  }
+
   private getVmApi(): VmApi {
     return new VmApi(this.getConfig());
   }

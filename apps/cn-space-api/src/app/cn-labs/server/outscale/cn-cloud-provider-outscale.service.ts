@@ -121,6 +121,10 @@ export class CnCloudProviderOutscaleService extends CnCloudProviderService {
     await this.outscaleService.stopInstance(id);
   }
 
+  async restartInstance(id: string): Promise<void> {
+    await this.outscaleService.rebootInstance(id);
+  }
+
   private convertInstance(vm: Vm): CnCpInstance {
     return {
       id: vm.vmId,

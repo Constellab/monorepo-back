@@ -112,6 +112,10 @@ export class CnCloudProviderGcpService extends CnCloudProviderService {
     await this.gcpService.stopInstance(id, region);
   }
 
+  async restartInstance(id: string, region: string): Promise<void> {
+    await this.gcpService.rebootInstance(id, region);
+  }
+
   /////////////////////// VOLUME ///////////////////////
 
   volumeIsCreatedSeparately(): boolean {

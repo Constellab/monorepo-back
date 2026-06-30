@@ -119,6 +119,10 @@ export class CnCloudProviderAzureService extends CnCloudProviderService {
     return this.azureService.stopInstance(id);
   }
 
+  restartInstance(id: string): Promise<void> {
+    return this.azureService.rebootInstance(id);
+  }
+
   /////////////////////// VOLUME ///////////////////////
 
   volumeIsCreatedSeparately(): boolean {

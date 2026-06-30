@@ -530,6 +530,42 @@ export class CnLabServerService {
     return await this.labService.markInstanceAsServerStopping(lab.id);
   }
 
+  public async restartLab(lab: CnLab): Promise<CnLab> {
+    if (!lab.serverInstanceId) {
+      throw new BlBadRequestException(`Lab has no server instance was it correctly initialized?`);
+    }
+
+    const cloudProviderService = await this.cloudProviderFactory.getCloudProviderServiceFromLab(lab.id);
+
+    const serverInstance = await cloudProviderService.getInstance(
+      lab.serverInstanceId,
+      lab.region.technicalName
+    );
+
+    // a soft reboot only makes sense on a running instance
+    if (serverInstance.status.status !== 'RUNNING') {
+      throw new BlBadRequestException(`Server is currently ${serverInstance.status.status}`);
+    }
+
+    const user = CnCurrentUserHelper.getAndCheckCurrentUser();
+    this.logger.log(`Restarting server instance ${lab.serverInstanceId} for lab ${lab.id} by ${user.email}`);
+    try {
+      await cloudProviderService.restartInstance(lab.serverInstanceId, lab.region.technicalName);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      this.logger.error(
+        `Error while restarting instance ${lab.serverInstanceId} for lab ${lab.id}. Error: ${errorMessage}`
+      );
+      await this.labService.updateServerTask(
+        lab.id,
+        `Error restarting server: ${errorMessage}`,
+        CnLabServerTaskStatus.ERROR
+      );
+      throw err;
+    }
+    return await this.labService.markInstanceAsServerStarting(lab.id);
+  }
+
   public async checkBeforeStopLab(lab: CnLab): Promise<CnCloudProviderService> {
     if (!lab.serverInstanceId) {
       throw new BlBadRequestException(`Lab has no server instance was it correctly initialized?`);

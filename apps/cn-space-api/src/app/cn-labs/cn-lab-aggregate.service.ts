@@ -1447,6 +1447,11 @@ export class CnLabAggregateService {
     }
   }
 
+  async restartInstance(id: string): Promise<CnLab> {
+    const lab = await this.getAndCheckServerStatusBeforeAction(id, true);
+    return this.labServerService.restartLab(lab);
+  }
+
   async updateLabManager(labId: string, labManagerVersion: string): Promise<CnLabStatusDTO> {
     const lab = await this.getAndCheckServerStatusBeforeAction(labId);
     this.checkServerIsRunning(lab);

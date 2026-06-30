@@ -135,6 +135,17 @@ export class CnGcpService {
     });
   }
 
+  async rebootInstance(name: string, zone: string): Promise<void> {
+    const projectId = this.getProjectId();
+    const instancesClient = this.getInstanceClient();
+    // GCP exposes reset as the instance reboot primitive (the VM stays allocated and the disk attached)
+    await instancesClient.reset({
+      project: projectId,
+      zone,
+      instance: name,
+    });
+  }
+
   //////////////////////////// VOLUME ////////////////////////////
 
   async getVolume(name: string, zone: string): Promise<CnGcpVolume> {

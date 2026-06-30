@@ -181,6 +181,10 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
     return this.ovhService.stopInstance(id);
   }
 
+  restartInstance(id: string): Promise<void> {
+    return this.ovhService.rebootInstance(id);
+  }
+
   ///////////////////////////////////////// VOLUME //////////////////////////////////////////
   volumeIsCreatedSeparately(): boolean {
     return true;

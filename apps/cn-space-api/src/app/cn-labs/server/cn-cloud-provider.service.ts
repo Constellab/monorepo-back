@@ -54,6 +54,11 @@ export abstract class CnCloudProviderService {
 
   public abstract stopInstance(id: string, region: string): Promise<void>;
 
+  /**
+   * Soft (graceful) reboot of a running instance. The VM stays allocated and the volume attached.
+   */
+  public abstract restartInstance(id: string, region: string): Promise<void>;
+
   ////////////////////////////////// VOLUME //////////////////////////////////////
 
   public abstract volumeIsCreatedSeparately(): boolean;

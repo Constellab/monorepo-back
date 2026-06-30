@@ -112,6 +112,13 @@ export class CnAzureService {
     await computeClient.virtualMachines.beginDeallocate(this.getResourceGroup(), name);
   }
 
+  // Soft reboot an instance (keeps it allocated)
+  async rebootInstance(name: string): Promise<void> {
+    const computeClient = this.getComputeClient();
+
+    await computeClient.virtualMachines.beginRestart(this.getResourceGroup(), name);
+  }
+
   //////////////////////////// VOLUME ////////////////////////////
 
   // Create a volume

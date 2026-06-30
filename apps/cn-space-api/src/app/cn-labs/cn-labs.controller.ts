@@ -181,6 +181,15 @@ export class CnLabsController {
   }
 
   /**
+   * soft restart a lab's cloud instance
+   */
+  @Put(':id/restart')
+  public async restartInstance(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabDto> {
+    const lab = await this.aggregateService.restartInstance(id);
+    return new CnLabDto(lab);
+  }
+
+  /**
    * Route to update the lab configurer repository
    */
   @Put(':id/lab-configurer/update')
