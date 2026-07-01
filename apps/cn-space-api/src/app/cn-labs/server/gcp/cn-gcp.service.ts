@@ -285,12 +285,14 @@ export class CnGcpService {
 
   private async waitForZoneOperation(projectId: string, zone: string, operationName: string): Promise<void> {
     const zoneOperationsClient = new ZoneOperationsClient();
-    await this.waitForAnyOperation(() =>
-      zoneOperationsClient.get({
-        project: projectId,
-        zone,
-        operation: operationName,
-      })
+    await this.waitForAnyOperation(
+      () =>
+        zoneOperationsClient.get({
+          project: projectId,
+          zone,
+          operation: operationName,
+        }),
+      `zone operation ${operationName} (zone ${zone})`
     );
   }
 
@@ -300,35 +302,67 @@ export class CnGcpService {
     operationName: string
   ): Promise<void> {
     const regionOperationsClient = new RegionOperationsClient();
-    await this.waitForAnyOperation(() =>
-      regionOperationsClient.get({
-        project: projectId,
-        region,
-        operation: operationName,
-      })
+    await this.waitForAnyOperation(
+      () =>
+        regionOperationsClient.get({
+          project: projectId,
+          region,
+          operation: operationName,
+        }),
+      `region operation ${operationName} (region ${region})`
     );
   }
 
   private async waitForAnyOperation(
-    getOperation: () => Promise<[protos.google.cloud.compute.v1.IOperation, any, any]>
+    getOperation: () => Promise<[protos.google.cloud.compute.v1.IOperation, any, any]>,
+    label: string
   ): Promise<void> {
-    let i = 0;
+    const maxAttempts = 60;
+    // Per-poll timeout so a hung get() call (e.g. blocked credentials resolution
+    // or a stalled network request) cannot block the whole loop indefinitely.
+    const pollTimeoutMs = 30000;
 
-    while (true) {
-      const [operation] = await getOperation();
+    this.logger.log(`Waiting for GCP ${label} to complete`);
+
+    for (let i = 0; i < maxAttempts; i++) {
+      let operation: protos.google.cloud.compute.v1.IOperation;
+      try {
+        [operation] = await this.withTimeout(
+          getOperation(),
+          pollTimeoutMs,
+          `GCP ${label} status poll timed out after ${pollTimeoutMs}ms (attempt ${i + 1}/${maxAttempts})`
+        );
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        this.logger.error(`GCP ${label} failed while polling status: ${message}`);
+        throw error;
+      }
 
       if (operation.status === 'DONE') {
         if (operation.error) {
+          this.logger.error(`GCP ${label} finished with an error: ${JSON.stringify(operation.error)}`);
           throw new Error(`Operation failed: ${JSON.stringify(operation.error)}`);
         }
-        break;
+        this.logger.log(`GCP ${label} completed`);
+        return;
       }
 
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      i += 1;
-      if (i > 60) {
-        throw new Error('Operation timed out');
-      }
+    }
+
+    this.logger.error(`GCP ${label} timed out after ${maxAttempts} attempts`);
+    throw new Error(`GCP ${label} timed out`);
+  }
+
+  private async withTimeout<T>(promise: Promise<T>, timeoutMs: number, message: string): Promise<T> {
+    let timeoutHandle: NodeJS.Timeout;
+    const timeout = new Promise<never>((_, reject) => {
+      timeoutHandle = setTimeout(() => reject(new Error(message)), timeoutMs);
+    });
+    try {
+      return await Promise.race([promise, timeout]);
+    } finally {
+      clearTimeout(timeoutHandle);
     }
   }
 
