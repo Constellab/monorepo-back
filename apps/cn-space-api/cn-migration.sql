@@ -379,3 +379,21 @@ ALTER TABLE space_invit MODIFY COLUMN role ENUM('ADMIN','USER','VIEWER') NOT NUL
 -- lab hostnames must resolve to, instead of overriding DNS via /etc/hosts on the server.
 alter table lab
   add column lab_ip_override varchar(255) null;
+
+-- Normalize emails to lower case so invitation acceptance and user lookups are case-insensitive
+update `user`
+set email = lower(email)
+where email != lower(email);
+
+update space_invit
+set user_mail = lower(user_mail)
+where user_mail != lower(user_mail);
+
+-- Cascade delete access tokens when their hierarchy object is deleted, so
+-- emptying the trash no longer fails with a foreign key constraint error.
+ALTER TABLE hierarchy_object_token
+  DROP FOREIGN KEY FK_hierarchy_object_token_hierarchy_object_id;
+ALTER TABLE hierarchy_object_token
+  ADD CONSTRAINT FK_hierarchy_object_token_hierarchy_object_id
+  FOREIGN KEY (hierarchy_object_id) REFERENCES hierarchy_object (id)
+  ON DELETE CASCADE ON UPDATE NO ACTION;

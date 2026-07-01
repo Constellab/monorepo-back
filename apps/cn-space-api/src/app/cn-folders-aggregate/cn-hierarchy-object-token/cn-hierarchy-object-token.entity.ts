@@ -13,7 +13,7 @@ import {
 export class CnHierarchyObjectTokenEntity extends CnBaseEntity {
   @BlNotUpdatable()
   @Type(() => CnHierarchyObjectEntity)
-  @ManyToOne(() => CnHierarchyObjectEntity, { nullable: false, eager: true })
+  @ManyToOne(() => CnHierarchyObjectEntity, { nullable: false, eager: true, onDelete: 'CASCADE' })
   hierarchyObject: CnHierarchyObject;
 
   @Column({ nullable: false, update: false, length: 36 })

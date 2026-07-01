@@ -758,3 +758,10 @@ COMMIT;
 ######################### 1.11.1 #######################
 
 -- add ROBOT_USER_MAIL env variable
+
+######################### 1.11.2 #######################
+
+-- Normalize emails to lower case so invitation acceptance and user lookups are case-insensitive
+update `user`
+set email = lower(email)
+where email != lower(email);
