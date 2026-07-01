@@ -203,7 +203,7 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUserEn
     return this.repository.findOne({
       where: {
         spaceId: spaceId,
-        user: { email: email },
+        user: { email: email.toLowerCase() },
       },
       relations: { user: true },
     });

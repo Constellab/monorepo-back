@@ -85,7 +85,7 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
   findByEmail(email: string): Promise<CnUser> {
     return this.repository.findOne({
       where: {
-        email: email,
+        email: email.toLowerCase(),
       },
     });
   }

@@ -424,6 +424,10 @@ export class CnSpaceAggregateService {
     spaceId = this.getSpaceId(spaceId);
     await this.checkSpaceAdmin(spaceId);
 
+    // normalize the email to lower case so the invitation matches the user email
+    // (user emails are stored in lower case)
+    invitDto.userMail = invitDto.userMail.toLowerCase();
+
     const space = await this.spaceService.findByIdAndCheck(spaceId);
 
     const member = await this.spaceUserService.findOneBySpaceIdAndUserEmail(spaceId, invitDto.userMail);
@@ -506,7 +510,7 @@ export class CnSpaceAggregateService {
     user: CnUser,
     entityManager: EntityManager
   ): Promise<CnUser> {
-    if (invitation.userMail !== user.email) {
+    if (invitation.userMail.toLowerCase() !== user.email.toLowerCase()) {
       throw new BlBadRequestException('The invitation email does not match the user email');
     }
 

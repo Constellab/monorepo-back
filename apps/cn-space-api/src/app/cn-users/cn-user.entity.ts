@@ -1,5 +1,6 @@
 import {
   BlEntityWithId,
+  BlLowerCase,
   BlLuxonDateTimeColumn,
   BlUser,
   BlUserCategory,
@@ -33,6 +34,7 @@ export class CnUserEntity extends BlEntityWithId implements BlUser {
   @Column({ nullable: false, length: 50 })
   lastname: string;
 
+  @BlLowerCase()
   @Column({ unique: true, nullable: false, update: false })
   email: string;
 

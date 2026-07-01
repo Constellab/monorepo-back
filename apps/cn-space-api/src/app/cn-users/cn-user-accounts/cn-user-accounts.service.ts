@@ -71,7 +71,7 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
         user.firstname = createUser.firstname;
         user.lastname = createUser.lastname;
         user.password = createUser.password;
-        user.email = createUser.email;
+        user.email = createUser.email.toLowerCase();
         user.phone = createUser.phone;
         user.license = CnUserLicense.FREE;
 

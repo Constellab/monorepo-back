@@ -1,4 +1,4 @@
-import { BlLuxonDateTimeColumn } from '@monorepo/back-core-lib';
+import { BlLowerCase, BlLuxonDateTimeColumn } from '@monorepo/back-core-lib';
 import { ClDateHelper, ClStringHelper } from '@monorepo/core-lib';
 import { Exclude } from 'class-transformer';
 import { DateTime } from 'luxon';
@@ -25,6 +25,7 @@ export class CnSpaceInvit extends CnBaseEntity {
   })
   role: CnSpaceUserRole;
 
+  @BlLowerCase()
   @Column({ nullable: false })
   userMail: string;
 
