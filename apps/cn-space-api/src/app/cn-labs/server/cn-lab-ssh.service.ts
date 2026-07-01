@@ -137,6 +137,24 @@ export class CnLabSshService {
     return String(error);
   }
 
+  /**
+   * The host ssh actually connects to: the server IP when known, otherwise the
+   * DNS name of the lab virtual host.
+   */
+  private getConnectHost(): string {
+    return this.sshHost ?? `lab.${this.labVirtualHost}`;
+  }
+
+  /**
+   * Human-readable description of the ssh transport, for logging. Makes it
+   * explicit whether a connection uses the IP or the domain.
+   */
+  private getConnectionDescription(): string {
+    return this.sshHost
+      ? `IP ${this.sshHost} (host ${`lab.${this.labVirtualHost}`})`
+      : `domain lab.${this.labVirtualHost}`;
+  }
+
   private getSshCommand(commands: string[], options: string[] = []): string {
     // in pre-prod and prod env, set the path to the ssh key
     if (this.isLocal) {
@@ -150,16 +168,32 @@ export class CnLabSshService {
     // name so that DNS propagation is not on the critical path. We keep a
     // stable host-key alias on the virtual host so known_hosts stays consistent
     // whether we connect by IP or by name.
-    const target = `lab.${this.labVirtualHost}`;
     if (this.sshHost) {
-      options.push(`-o HostKeyAlias=${target}`);
+      options.push(`-o HostKeyAlias=lab.${this.labVirtualHost}`);
     }
-    const connectHost = this.sshHost ?? target;
 
     return (
       `ssh ${options.join(' ')} -o StrictHostKeyChecking=no ` +
-      `${this.sshUserName}@${connectHost} "${commands.join(';')}"`
+      `${this.sshUserName}@${this.getConnectHost()} "${commands.join(';')}"`
     );
+  }
+
+  /**
+   * Wait for the server to come back after a `sudo reboot`.
+   *
+   * `sudo reboot` returns immediately but sshd stays up for a few seconds while
+   * the OS tears down. Probing right away can connect to the *pre-reboot* sshd
+   * and wrongly conclude the server is ready. We first wait a fixed delay to let
+   * the reboot actually drop sshd, then wait for a single successful connection.
+   * This makes the reboot guard explicit instead of relying on a
+   * consecutive-success counter to accidentally bridge the teardown window.
+   */
+  public async waitForServerReboot(): Promise<void> {
+    const rebootTeardownDelay = 20000;
+    this.logger.log(`Waiting ${rebootTeardownDelay}ms for reboot to tear down sshd for lab ${this.labId}`);
+    await new Promise((r) => setTimeout(r, rebootTeardownDelay));
+
+    await this.waitForSshConnection(1);
   }
 
   /**
@@ -188,8 +222,9 @@ export class CnLabSshService {
       }
 
       this.logger.log(
-        `Waiting for server to be available for lab ${this.labId}. Attempt ${count + 1} of ${countLimit}. ` +
-          `Success ${successCount} of ${consecutiveRequiredSuccess}`
+        `Waiting for server to be available using ${this.getConnectionDescription()} ` +
+          `for lab ${this.labId}. ` +
+          `Attempt ${count + 1} of ${countLimit}. Success ${successCount} of ${consecutiveRequiredSuccess}`
       );
       // wait 15 seconds
       await new Promise((r) => setTimeout(r, waitTime));
@@ -313,7 +348,7 @@ export class CnLabSshService {
   public async checkSshConnection(): Promise<boolean> {
     // option to add host to fingerprint
     const command = this.getSshCommand(['exit'], ['-q', '-o ConnectTimeout=3']);
-    this.logger.log(`Checking ssh connection for ${this.labVirtualHost} lab ${this.labId}`);
+    this.logger.log(`Checking ssh connection using ${this.getConnectionDescription()} for lab ${this.labId}`);
     try {
       await this.commandService.execCommand(command, {
         errorMode: CnExecCommandMode.STDERR_AS_WARNING,

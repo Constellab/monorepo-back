@@ -1314,9 +1314,11 @@ export class CnLabAggregateService {
 
     // wait for the server to accept ssh connections. Connect by IP so DNS
     // propagation of the freshly created virtual host is not on the critical
-    // path (the subsequent bootstrap also connects by IP).
+    // path (the subsequent bootstrap also connects by IP). A single success is
+    // enough over IP: there is no resolver in the path to flap, and a freshly
+    // booted sshd does not go down again.
     const labSshService = await this.cloudProviderFactory.getSshLabServiceByIp(lab);
-    await labSshService.waitForSshConnection(3);
+    await labSshService.waitForSshConnection(1);
 
     await this.configureServerAsync(lab, false);
 

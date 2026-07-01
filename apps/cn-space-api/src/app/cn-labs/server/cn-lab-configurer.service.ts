@@ -118,12 +118,15 @@ export class CnLabConfigurerService {
     // This is the first real command run on a freshly created server. Retry it
     // on transient failures (DNS not yet propagated, sshd/network still starting)
     // instead of relying only on a prior connectivity probe.
+    // git writes its progress ("Cloning into ...") to stderr; STDERR_AS_SUCCESS
+    // keeps that out of the logs. We must NOT set ignoreError here: the retry
+    // path relies on a non-zero exit rejecting so transient failures are caught.
     await labSshService.execSshCommand(
       [
         `git clone -b ${this.coreConfigService.getLabConfigurerRepoBranch()} ` +
           `${this.coreConfigService.getLabConfigurerRepoUrl()}`,
       ],
-      undefined,
+      { errorMode: CnExecCommandMode.STDERR_AS_SUCCESS },
       true,
       { attempts: 5, initialDelayMs: 5000 }
     );
@@ -169,7 +172,19 @@ export class CnLabConfigurerService {
       CnLabServerTaskStatus.RUNNING
     );
     try {
-      await labSshService.execSshCommand([`cd ${labSshService.getUtilsFolder()}`, `bash prepare_server.sh`]);
+      // prepare_server.sh runs apt over a non-interactive ssh session, which
+      // otherwise floods the logs with debconf/dpkg-preconfigure noise on stderr.
+      // 1. DEBIAN_FRONTEND=noninteractive silences debconf at the source.
+      // 2. STDERR_AS_SUCCESS keeps the remaining verbose apt stderr out of the
+      //    logs while a real failure (non-zero exit) still rejects and is caught.
+      await labSshService.execSshCommand(
+        [
+          `export DEBIAN_FRONTEND=noninteractive`,
+          `cd ${labSshService.getUtilsFolder()}`,
+          `bash prepare_server.sh`,
+        ],
+        { errorMode: CnExecCommandMode.STDERR_AS_SUCCESS }
+      );
     } catch (e: any) {
       throw new Error(`Error while preparing server. Error : ${e}`);
     }
@@ -185,7 +200,7 @@ export class CnLabConfigurerService {
         ignoreError: true,
       });
 
-      await labSshService.waitForSshConnection(3);
+      await labSshService.waitForServerReboot();
     } catch (e: any) {
       throw new Error(`Error while rebooting server. Error : ${e}`);
     }
@@ -217,10 +232,13 @@ export class CnLabConfigurerService {
     // execute docker compose up
     await this.labService.updateServerTask(labId, `Starting lab manager`, CnLabServerTaskStatus.RUNNING);
     try {
-      await labSshService.execSshCommand([
-        `cd ${CnLabSshService.LAB_CONFIGURER_FOLDER}`,
-        'docker compose up -d',
-      ]);
+      // docker writes all its pull/build progress to stderr, which floods the
+      // logs. STDERR_AS_SUCCESS keeps that out of the logs while a real failure
+      // (non-zero exit) still rejects and is caught below.
+      await labSshService.execSshCommand(
+        [`cd ${CnLabSshService.LAB_CONFIGURER_FOLDER}`, 'docker compose up -d'],
+        { errorMode: CnExecCommandMode.STDERR_AS_SUCCESS }
+      );
     } catch (e: any) {
       throw new Error(`Error while starting lab manager. Error : ${e}`);
     }
@@ -230,10 +248,12 @@ export class CnLabConfigurerService {
     // execute docker compose down
     await this.labService.updateServerTask(labId, `Stopping lab manager`, CnLabServerTaskStatus.RUNNING);
     try {
-      await labSshService.execSshCommand([
-        `cd ${CnLabSshService.LAB_CONFIGURER_FOLDER}`,
-        'docker compose down',
-      ]);
+      // docker writes its progress to stderr; STDERR_AS_SUCCESS keeps it out of
+      // the logs while a real failure (non-zero exit) still rejects.
+      await labSshService.execSshCommand(
+        [`cd ${CnLabSshService.LAB_CONFIGURER_FOLDER}`, 'docker compose down'],
+        { errorMode: CnExecCommandMode.STDERR_AS_SUCCESS }
+      );
     } catch (e: any) {
       throw new Error(`Error while stopping lab manager. Error : ${e}`);
     }

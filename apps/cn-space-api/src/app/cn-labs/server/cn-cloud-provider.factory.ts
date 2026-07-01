@@ -39,6 +39,15 @@ export class CnCloudProviderFactory {
   public async getSshLabServiceByIp(lab: CnLab): Promise<CnLabSshService> {
     const cloudProviderService = await this.getCloudProviderServiceFromLab(lab.id);
     const ipAddress = await this.tryGetServerIpAddress(lab);
+
+    if (ipAddress) {
+      this.logger.log(`SSH for lab ${lab.id} will connect by IP ${ipAddress}`);
+    } else {
+      this.logger.log(
+        `SSH for lab ${lab.id} will connect by domain lab.${lab.virtualHost} ` + `(no IP could be resolved)`
+      );
+    }
+
     return cloudProviderService.instantiateLabSshService(lab, ipAddress);
   }
 
