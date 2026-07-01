@@ -69,7 +69,7 @@ export class BlS3BucketService implements BlObjectStorageInterface {
         contentType: result.ContentType,
         contentLength: result.ContentLength,
       };
-    } catch (e) {
+    } catch (e: any) {
       if (e instanceof NoSuchKey) {
         throw new BlNotFoundException('Object not found');
       }
@@ -86,7 +86,7 @@ export class BlS3BucketService implements BlObjectStorageInterface {
     try {
       await this.getObjectInfo(objectName);
       return true;
-    } catch (e) {
+    } catch {
       return false;
     }
   }
@@ -183,12 +183,22 @@ export class BlS3BucketService implements BlObjectStorageInterface {
     let start = 0;
     while (start < objectNames.length) {
       const end = Math.min(start + BlS3BucketService.MAX_DELETE_BATCH_SIZE, objectNames.length);
-      await s3Client.send(
-        new DeleteObjectsCommand({
-          Bucket: this.getBucketName(),
-          Delete: { Objects: objectNames.slice(start, end).map((key) => ({ Key: key })) },
-        })
-      );
+      try {
+        await s3Client.send(
+          new DeleteObjectsCommand({
+            Bucket: this.getBucketName(),
+            Delete: { Objects: objectNames.slice(start, end).map((key) => ({ Key: key })) },
+          })
+        );
+      } catch (e) {
+        // Deleting an object that no longer exists is a no-op: the desired end
+        // state (object gone) is already met, so ignore NoSuchKey errors.
+        if (e instanceof NoSuchKey) {
+          this.logger.warn('Some objects were already deleted, ignoring NoSuchKey.');
+        } else {
+          throw e;
+        }
+      }
       start += BlS3BucketService.MAX_DELETE_BATCH_SIZE;
     }
   }
@@ -231,7 +241,7 @@ export class BlS3BucketService implements BlObjectStorageInterface {
     try {
       await s3Client.send(new HeadBucketCommand({ Bucket: this.getBucketName() }));
       return true;
-    } catch (e) {
+    } catch {
       return false;
     }
   }
