@@ -26,9 +26,9 @@ This is a monorepo containing NestJS backend applications for Gencovery's platfo
 nest build cn-space-api
 nest build hn-community-api
 
-# Build using npm scripts
-npm run cn-space-api:build
-npm run hn-community-api:build
+# Build using bun scripts
+bun run cn-space-api:build
+bun run hn-community-api:build
 ```
 
 ### Development Server
@@ -39,8 +39,8 @@ nest serve cn-space-api
 nest serve hn-community-api
 
 # Alternative NestJS watch mode
-npm run cn-space-api:serve-nest
-npm run hn-community-api:serve-nest
+bun run cn-space-api:serve-nest
+bun run hn-community-api:serve-nest
 ```
 
 ## Architecture Guidelines
@@ -87,7 +87,7 @@ Both applications follow a similar modular structure:
 
 ## Development Workflow
 
-1. **Starting Development**: Use `nest serve <app-name>` or npm scripts for watch mode
+1. **Starting Development**: Use `nest serve <app-name>` or bun scripts for watch mode
 2. **Adding Features**: Follow the existing module structure and naming conventions
 3. **Database Changes**: Use TypeORM migrations (synchronize disabled in production)
 4. **Environment Setup**: Configure `.env` files in `environments/` directories

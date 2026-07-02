@@ -251,7 +251,7 @@ export class CnExternalLabsController {
    * @param response Express response object
    */
   @CnLabAllowDev()
-  @Get(['document/:documentId/download/:filename(*)'])
+  @Get(['document/:documentId/download/*filename'])
   async downloadDocument(
     @Param('documentId', new ParseUUIDPipe()) documentId: string,
     @Param('filename') _: string,

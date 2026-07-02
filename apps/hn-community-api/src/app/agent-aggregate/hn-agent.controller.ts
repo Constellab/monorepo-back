@@ -243,13 +243,14 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
    */
   @BlPublic()
   @HnLabGuard()
-  @Get(':agentId/version/latest/for-lab/:jsonVersionNumber?')
+  @Get([':agentId/version/latest/for-lab/:jsonVersionNumber', ':agentId/version/latest/for-lab'])
   getLatestPublishedAgentVersionForLabByAgentId(
     @Res() res: Response,
     @Param('agentId', ParseUUIDPipe) agentId: string,
     @Param('jsonVersionNumber') jsonVersionNumber?: string
   ): void {
-    return res.redirect(`/agent/for-lab/${agentId}/version/latest/${jsonVersionNumber}`);
+    const basePath = `/agent/for-lab/${agentId}/version/latest`;
+    return res.redirect(jsonVersionNumber ? `${basePath}/${jsonVersionNumber}` : basePath);
   }
 
   @BlPublic()

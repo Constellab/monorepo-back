@@ -9,6 +9,10 @@ import { HnAppModule } from './hn-app.module';
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create<NestExpressApplication>(HnAppModule);
 
+  // Express 5 defaults the query parser to 'simple' (no nested objects).
+  // Restore the v4 'extended' (qs) parser so ?a[b]=c keeps working.
+  app.set('query parser', 'extended');
+
   app.enableCors(hnCorsConfig());
 
   app.use(json({ limit: '50mb' }));

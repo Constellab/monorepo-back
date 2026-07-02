@@ -252,7 +252,7 @@ export class HnBrickController {
   }
 
   @BlPublic()
-  @Get('image/*')
+  @Get('image/*splat')
   public async getImage(@Req() request: Request, @Res() response: Response): Promise<any> {
     const splitIndex = request.url.indexOf('image/');
     const filename = request.url.slice(splitIndex + 6);
@@ -260,7 +260,7 @@ export class HnBrickController {
     BlResponseHelper.setFileResponseAndCache(response, file);
   }
 
-  @Delete('image/*')
+  @Delete('image/*splat')
   public async deleteImage(@Req() request: Request): Promise<void> {
     const splitIndex = request.url.indexOf('image/');
     const filename = request.url.slice(splitIndex + 6);

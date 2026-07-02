@@ -270,6 +270,6 @@ export class CnAppModule implements NestModule {
     consumer
       // register the RequestContextMiddleware to be able to access the request anywhere
       .apply(BlRequestContextMiddleware, CnLogRequestMiddleware)
-      .forRoutes({ path: '*', method: RequestMethod.ALL });
+      .forRoutes({ path: '*splat', method: RequestMethod.ALL });
   }
 }

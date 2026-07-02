@@ -65,7 +65,7 @@ export class CnDocumentController {
    * because the token is not in the cookie so we must pass it in the url
    */
   @CnHierarchyObjectTokenDecorator()
-  @Get(':documentId/preview/:filename(*)')
+  @Get(':documentId/preview/*filename')
   public async previewDocument(
     @Param('documentId') documentId: string,
     @Param('filename') _: string,
@@ -76,7 +76,7 @@ export class CnDocumentController {
   }
 
   @CnHierarchyObjectTokenDecorator()
-  @Get(':documentId/download/:filename(*)')
+  @Get(':documentId/download/*filename')
   public async downloadDocument(
     @Param('documentId') documentId: string,
 

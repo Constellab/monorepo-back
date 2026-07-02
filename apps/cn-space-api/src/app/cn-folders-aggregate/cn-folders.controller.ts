@@ -154,7 +154,7 @@ export class CnFoldersController {
     return BlDtoHelper.listToDto(CnFolderUserDTO, folderUsers);
   }
 
-  @Get(':id/users/search/name/:name?')
+  @Get([':id/users/search/name/:name', ':id/users/search/name'])
   searchFolderUsersByName(
     @Param('id', ParseUUIDPipe) id: string,
     @Param('name') name: string,
@@ -195,9 +195,9 @@ export class CnFoldersController {
 
   /**
    * Return an image of the description
-   * Use documentName(*) to catch all the documentName (including slashes)
+   * Use *documentName to catch all the documentName (including slashes)
    */
-  @Get(':folderId/description/image/:documentName(*)')
+  @Get(':folderId/description/image/*documentName')
   public async getDescriptionImage(
     @Param('folderId', new ParseUUIDPipe()) folderId: string,
     @Param('documentName') documentName: string,

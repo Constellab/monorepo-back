@@ -345,6 +345,6 @@ export class HnAppModule {
     consumer
       // register the RequestContextMiddleware to be able to access the request anywhere
       .apply(BlRequestContextMiddleware, HnLogRequestMiddleware)
-      .forRoutes({ path: '*', method: RequestMethod.ALL });
+      .forRoutes({ path: '*splat', method: RequestMethod.ALL });
   }
 }

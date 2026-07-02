@@ -51,7 +51,8 @@ export class CnCommandService {
    */
   public execCommand(command: string, options: CnExecOptions = cnExecCommandDefaultOptions): Promise<string> {
     return new Promise((resolve, reject) => {
-      exec(command, options, (error, stdout, stderr) => {
+      // stdout/stderr are strings here since no 'buffer' encoding is set in options.
+      exec(command, options, (error, stdout: string, stderr: string) => {
         if (error) {
           if (options.ignoreError) {
             return resolve(error.toString());
@@ -76,7 +77,7 @@ export class CnCommandService {
               this.logger.error(
                 `Error during the execution of the command '${command}'. Error : '${stderr}'`
               );
-              return reject(stderr);
+              return reject(new Error(stderr));
             }
             return resolve(stdout);
         }
@@ -126,8 +127,8 @@ export class CnCommandService {
     return new Promise((resolve, reject) => {
       execFile(file, options, (error, stdout, stderr) => {
         if (error) {
-          this.logger.error(`Error during the execution of the file '${file}'. Error : '${error}'`);
-          reject(error);
+          this.logger.error(`Error during the execution of the file '${file}'. Error : '${error.message}'`);
+          reject(error instanceof Error ? error : new Error(error.message));
           return;
         }
         if (stderr) {
@@ -135,7 +136,7 @@ export class CnCommandService {
             this.logger.warn(`Warning during the execution of the file '${file}'. Error : '${stderr}'`);
           } else {
             this.logger.error(`Error during the execution of the file '${file}'. Error : '${stderr}'`);
-            reject(stderr);
+            reject(new Error(stderr));
             return;
           }
         }

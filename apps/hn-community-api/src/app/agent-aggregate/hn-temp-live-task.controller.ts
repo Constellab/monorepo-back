@@ -82,7 +82,7 @@ export class HnTempLiveTaskController {
 
   @BlPublic()
   @HnLabGuard()
-  @Get('for-lab/version/:id/:jsonVersionNumber?')
+  @Get(['for-lab/version/:id/:jsonVersionNumber', 'for-lab/version/:id'])
   async getAgentVersionForLab(
     @Param('id', ParseUUIDPipe) versionId: string,
     @Param('jsonVersionNumber') jsonVersionNumber?: string
@@ -103,7 +103,7 @@ export class HnTempLiveTaskController {
    */
   @BlPublic()
   @HnLabGuard()
-  @Get(':agentId/version/latest/for-lab/:jsonVersionNumber?')
+  @Get([':agentId/version/latest/for-lab/:jsonVersionNumber', ':agentId/version/latest/for-lab'])
   async getLatestPublishedAgentVersionForLabByAgentId(
     @Param('agentId', ParseUUIDPipe) agentId: string,
     @Param('jsonVersionNumber') jsonVersionNumber?: string

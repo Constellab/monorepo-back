@@ -15,6 +15,10 @@ import { CnAppModule } from './cn-app.module';
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create<NestExpressApplication>(CnAppModule);
 
+  // Express 5 defaults the query parser to 'simple' (no nested objects).
+  // Restore the v4 'extended' (qs) parser so ?a[b]=c keeps working.
+  app.set('query parser', 'extended');
+
   // enable cors
   const env: CnEnvironmentProfile = process.env[CN_ENVIRONMENT_PROFILE_KEY] as CnEnvironmentProfile;
   console.log('CORS config - environment : ', env);

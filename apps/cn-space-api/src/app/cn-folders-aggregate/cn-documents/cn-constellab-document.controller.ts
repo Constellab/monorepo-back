@@ -75,7 +75,7 @@ export class CnConstellabDocumentController {
    * because the token is not in the cookie so we must pass it in the url
    */
   @CnHierarchyObjectTokenDecorator()
-  @Get(':documentId/file/:documentName(*)')
+  @Get(':documentId/file/*documentName')
   public async getConstellabDocumentImage(
     @Param('documentId') documentId: string,
     @Param('documentName') documentName: string,

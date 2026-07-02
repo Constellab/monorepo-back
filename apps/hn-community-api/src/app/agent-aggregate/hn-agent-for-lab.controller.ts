@@ -47,7 +47,7 @@ export class HnAgentForLabController {
     return this.agentAggregateService.createNewVersionForLab(agentId, versionFile);
   }
 
-  @Get('check-rights/version/:id/:jsonVersionNumber?')
+  @Get(['check-rights/version/:id/:jsonVersionNumber', 'check-rights/version/:id'])
   async getAgentForLabAndCheckRights(
     @Param('id', ParseUUIDPipe) agentId: string,
     @Param('jsonVersionNumber') jsonVersionNumber?: string
@@ -58,7 +58,7 @@ export class HnAgentForLabController {
     );
   }
 
-  @Get('version/:id/:jsonVersionNumber?')
+  @Get(['version/:id/:jsonVersionNumber', 'version/:id'])
   async getAgentForLab(
     @Param('id', ParseUUIDPipe) versionId: string,
     @Param('jsonVersionNumber') jsonVersionNumber?: string
@@ -75,7 +75,7 @@ export class HnAgentForLabController {
    * @param jsonVersionNumber
    * @return an agent version code
    */
-  @Get(':agentId/version/latest/:jsonVersionNumber?')
+  @Get([':agentId/version/latest/:jsonVersionNumber', ':agentId/version/latest'])
   async getLatestPublishedAgentVersionForLabByAgentId(
     @Param('agentId', ParseUUIDPipe) agentId: string,
     @Param('jsonVersionNumber') jsonVersionNumber?: string

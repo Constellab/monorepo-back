@@ -54,9 +54,9 @@ export class CnChatController {
 
   /**
    * Return an image of a message
-   * Use documentName(*) to catch all the documentName (including slashes)
+   * Use *documentName to catch all the documentName (including slashes)
    */
-  @Get('folder/:folderId/message/image/:documentName(*)')
+  @Get('folder/:folderId/message/image/*documentName')
   public async getMessageImage(
     @Param('folderId', new ParseUUIDPipe()) folderId: string,
     @Param('documentName') documentName: string,

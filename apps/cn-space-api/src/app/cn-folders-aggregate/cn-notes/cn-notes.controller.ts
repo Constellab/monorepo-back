@@ -38,7 +38,7 @@ export class CnNotesController {
    * because the token is not in the cookie so we must pass it in the url
    */
   @CnHierarchyObjectTokenDecorator()
-  @Get(':id/file/:filename(*)')
+  @Get(':id/file/*filename')
   public async getImage(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Param('filename') filename: string,

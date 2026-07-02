@@ -178,7 +178,7 @@ export class CnSpacesController {
     return this.spaceAggregateService.searchUserInSpace(id, searchParams, page, size);
   }
 
-  @Get(':id/user/search/name/:name?')
+  @Get([':id/user/search/name/:name', ':id/user/search/name'])
   public async searchUserByNameInSpace(
     @Param('id') id: string,
     @Param('name') name: string,

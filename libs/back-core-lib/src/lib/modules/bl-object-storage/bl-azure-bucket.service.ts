@@ -6,6 +6,7 @@ import {
   StorageSharedKeyCredential,
 } from '@azure/storage-blob';
 import { Logger } from '@nestjs/common';
+import { Readable } from 'stream';
 
 import { BlBadRequestException } from '../../exceptions/bl-bad-request.exception';
 import { BlAzureBlobContainerConfig, BlFileResponse, BlObject } from './bl-object-storage.class';
@@ -28,7 +29,7 @@ export class BlAzureBucketService implements BlObjectStorageInterface {
     const blockBlobClient = this.getBlockBlobClient(objectName);
 
     // Upload data to the blob
-    const uploadBlobResponse = await blockBlobClient.uploadData(obj as any, {
+    const uploadBlobResponse = await blockBlobClient.uploadData(obj, {
       blobHTTPHeaders: {
         blobContentType: contentType,
       },
@@ -72,7 +73,8 @@ export class BlAzureBucketService implements BlObjectStorageInterface {
 
     return {
       name: objectName,
-      file: downloadResponse.readableStreamBody,
+      // Azure SDK types the body as NodeJS.ReadableStream; at runtime it is a Node Readable.
+      file: downloadResponse.readableStreamBody as Readable,
       contentType: downloadResponse.contentType,
       contentLength: downloadResponse.contentLength,
     };
