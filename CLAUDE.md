@@ -43,6 +43,13 @@ bun run cn-space-api:serve-nest
 bun run hn-community-api:serve-nest
 ```
 
+### Compilation (SWC / webpack)
+
+- **Dev serve** (`nest start`) and **Jest** use **SWC** (fast). SWC config is in root `.swcrc` (`decoratorMetadata: true` and `keepClassNames: true` are required for TypeORM/class-validator/Nest DI; alias `paths` mirror `tsconfig.base.json`).
+- **Production build** keeps **webpack**: the `:build` scripts pass `--webpack`. Reason: the Nest SWC builder does **not** compile the `@monorepo/*` path-aliased libs, so a pure-SWC build crashes at boot with `Cannot find module`. Webpack bundles the libs, keeping the Dockerfile and `node dist/cn-main` entry unchanged. Do not drop `--webpack` without solving lib compilation.
+- **Type checking**: `nest-cli.json` sets `builder: swc` + `typeCheck: true` (forked tsc during dev serve); the webpack prod build type-checks via `ts-loader`.
+- **Tests**: Jest configs use `@swc/jest` with an explicit `moduleNameMapper` for the 3 `@monorepo/*` aliases (SWC does not resolve tsconfig `paths` in Jest).
+
 ## Architecture Guidelines
 
 ### Naming Conventions

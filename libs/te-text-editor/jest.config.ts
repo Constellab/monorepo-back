@@ -2,7 +2,7 @@ export default {
   displayName: 'te-text-editor',
   testEnvironment: 'node',
   transform: {
-    '^.+\\.[tj]s$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.spec.json' }],
+    '^.+\\.[tj]s$': '@swc/jest',
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
   coverageDirectory: '../coverage/te-text-editor',
