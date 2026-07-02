@@ -23,7 +23,7 @@ export class HnSpaceUserService {
         userId: userId,
         active: true,
       },
-      relations: ['space', 'user'],
+      relations: { space: true, user: true },
     });
   }
 

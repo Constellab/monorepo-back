@@ -137,7 +137,7 @@ export class HnStoryService extends BlAbstractService<HnStory> {
       where: {
         id: id,
       },
-      relations: ['storyAuthors'],
+      relations: { storyAuthors: true },
     });
     if (story == null && strict) {
       throw new BlBadRequestException('Story not found');
@@ -220,7 +220,7 @@ export class HnStoryService extends BlAbstractService<HnStory> {
         size,
         {
           where: where,
-          relations: ['storyAuthors'],
+          relations: { storyAuthors: true },
           order: order,
         },
         this.storyRepository.manager,
@@ -552,7 +552,7 @@ export class HnStoryService extends BlAbstractService<HnStory> {
 
   async setCreatedBy(): Promise<void> {
     const stories: HnStory[] = await this.storyRepository.find({
-      relations: ['storyAuthors'],
+      relations: { storyAuthors: true },
     });
     for (const story of stories) {
       story.createdBy = HnCurrentUserHelper.getCurrentUser();

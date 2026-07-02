@@ -1,5 +1,4 @@
-import imageSize from 'image-size';
-import { ISizeCalculationResult } from 'image-size/dist/types/interface';
+import { imageSize } from 'image-size';
 
 import { BlFile } from '../models/bl-file.class';
 
@@ -7,7 +6,7 @@ export class BlImageHelper {
   /**
    * Get width and height of an image
    */
-  public static getImageSize(file: BlFile): ISizeCalculationResult {
+  public static getImageSize(file: BlFile): ReturnType<typeof imageSize> {
     return imageSize(file.buffer);
   }
 }

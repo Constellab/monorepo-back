@@ -20,7 +20,7 @@ export class HnAgentCoAuthorService {
   }
 
   async getAgentCoAuthorsByUserId(userId: string): Promise<HnAgentCoAuthor[]> {
-    return this.agentCoAuthorRepository.find({ where: { user: { id: userId } }, relations: ['agent'] });
+    return this.agentCoAuthorRepository.find({ where: { user: { id: userId } }, relations: { agent: true } });
   }
 
   async removeAgentCoAuthor(agentId: string, agentCoAuthorUserId: string): Promise<void> {

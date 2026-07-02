@@ -10,7 +10,7 @@ export class CnCountryService {
 
   public get(): Promise<CnCountry[]> {
     return this.countryRepository.find({
-      relations: ['cities'],
+      relations: { cities: true },
       order: {
         name: 'ASC',
       },

@@ -68,7 +68,7 @@ export class CnBricksService extends BlAbstractService<CnBrick> {
         versionType: version.isBeta() ? CnVersionType.BETA : CnVersionType.NORMAL,
         subPatch: version.isBeta() ? version.subPatch : IsNull(),
       },
-      relations: ['brick'],
+      relations: { brick: true },
     });
   }
 
@@ -93,7 +93,7 @@ export class CnBricksService extends BlAbstractService<CnBrick> {
     }
     return this.brickRepo.find({
       where: where,
-      relations: ['versions'],
+      relations: { versions: true },
       order: { name: 'ASC' },
     });
   }
@@ -108,7 +108,7 @@ export class CnBricksService extends BlAbstractService<CnBrick> {
         minor: 'DESC',
         patch: 'DESC',
       },
-      relations: ['brick'],
+      relations: { brick: true },
     });
 
     // useful to sort with sub patch
@@ -124,7 +124,7 @@ export class CnBricksService extends BlAbstractService<CnBrick> {
     return (
       await this.brickVersionRepo.findOne({
         where: { id: brickVersionId },
-        relations: ['brick'],
+        relations: { brick: true },
       })
     ).brick;
   }
@@ -140,7 +140,7 @@ export class CnBricksService extends BlAbstractService<CnBrick> {
         minor: 'DESC',
         patch: 'DESC',
       },
-      relations: ['brick'],
+      relations: { brick: true },
     });
 
     if (brickVersion) return brickVersion;

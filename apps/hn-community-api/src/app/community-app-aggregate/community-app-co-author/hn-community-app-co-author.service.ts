@@ -22,7 +22,7 @@ export class HnCommunityAppCoAuthorService {
   async getCommunityAppCoAuthorsByUserId(userId: string): Promise<HnCommunityAppCoAuthor[]> {
     return this.communityAppCoAuthorRepository.find({
       where: { user: { id: userId } },
-      relations: ['communityApp'],
+      relations: { communityApp: true },
     });
   }
 

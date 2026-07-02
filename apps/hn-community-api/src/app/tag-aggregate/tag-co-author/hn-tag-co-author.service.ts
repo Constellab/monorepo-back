@@ -20,7 +20,7 @@ export class HnTagCoAuthorService {
   }
 
   async getTagCoAuthorsByUserId(userId: string): Promise<HnTagCoAuthor[]> {
-    return this.tagCoAuthorRepository.find({ where: { user: { id: userId } }, relations: ['tagKey'] });
+    return this.tagCoAuthorRepository.find({ where: { user: { id: userId } }, relations: { tagKey: true } });
   }
 
   async removeTagCoAuthor(tagKeyId: string, userId: string): Promise<void> {

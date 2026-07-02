@@ -35,7 +35,7 @@ export class HnCommunityAppUserService {
           id: user.id,
         },
       },
-      relations: ['app'],
+      relations: { app: true },
     });
   }
 
@@ -46,7 +46,7 @@ export class HnCommunityAppUserService {
           id: app.id,
         },
       },
-      relations: ['user'],
+      relations: { user: true },
     });
   }
 }

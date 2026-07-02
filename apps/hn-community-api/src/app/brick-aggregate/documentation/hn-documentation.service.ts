@@ -131,7 +131,7 @@ export class HnDocumentationService {
           },
         },
       },
-      relations: ['folder'],
+      relations: { folder: true },
     });
 
     if (documentation) {
@@ -162,14 +162,14 @@ export class HnDocumentationService {
 
   ///////////////////////////////////////// HISTORY /////////////////////////////////////////
 
-  async getUndoContent(doc: HnDocumentation, modificationId: string): Promise<TeRichTextAggregate> {
+  getUndoContent(doc: HnDocumentation, modificationId: string): TeRichTextAggregate {
     const richText = doc.getRichTextAggregate();
     richText.undoModifications(modificationId);
     return richText;
   }
 
   async rollbackContent(doc: HnDocumentation, modificationId: string): Promise<HnDocumentation> {
-    const newContent = await this.getUndoContent(doc, modificationId);
+    const newContent = this.getUndoContent(doc, modificationId);
 
     doc.setRichTextAggregate(newContent);
 

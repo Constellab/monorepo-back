@@ -167,7 +167,10 @@ export class HnFolderService {
   }
 
   findById(id: string): Promise<HnFolder> {
-    return this.foldersRepository.findOne({ where: { id: id }, relations: ['documentations', 'folders'] });
+    return this.foldersRepository.findOne({
+      where: { id: id },
+      relations: { documentations: true, folders: true },
+    });
   }
 
   async findFoldersByParentId(id: string): Promise<HnFolder[]> {

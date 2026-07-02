@@ -1,6 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import supertest, { SuperTest } from 'supertest';
+import supertest, { Agent } from 'supertest';
 
 import { CnCoreConfigService } from '../src/app/cn-core/modules/cn-core-config/cn-core-config.service';
 import { CnAppModule } from '../src/cn-app.module';
@@ -9,7 +9,7 @@ import { TestConfigService } from './test-config.service';
 import { TestGetOptions, TestIdOptions } from './test-e2e-helper.config';
 import { TestRequest } from './test-request.class';
 
-export class TestE2EHelper {
+export class CnTestE2EHelper {
   public app: INestApplication;
 
   private token?: string;
@@ -115,7 +115,7 @@ export class TestE2EHelper {
     return this.buildTestRequest(this.getSuperTest().get(this.constructGetRoute(route, options)));
   }
 
-  private getSuperTest(): SuperTest<supertest.Test> {
+  private getSuperTest(): Agent {
     return supertest(this.app.getHttpServer());
   }
 

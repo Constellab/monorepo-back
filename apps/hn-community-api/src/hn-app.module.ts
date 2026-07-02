@@ -127,6 +127,9 @@ function typeOrmConfig(configService: HnCoreConfigService): TypeOrmModuleOptions
     bigNumberStrings: false,
     charset: 'utf8mb4',
     namingStrategy: new BlNamingStrategy(),
+    // typeorm 1.0 throws on undefined values in where conditions
+    // by default; restore pre-1.0 behavior of skipping them
+    invalidWhereValuesBehavior: { undefined: 'ignore' },
   };
 }
 

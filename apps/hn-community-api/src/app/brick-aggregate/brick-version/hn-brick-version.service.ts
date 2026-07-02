@@ -142,7 +142,7 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
 
     // retrieve all the versions
     const brickVersions = await this.brickVersionsRepository.find({
-      relations: ['brickMajorVersion', 'brickMajorVersion.brick'],
+      relations: { brickMajorVersion: { brick: true } },
     });
 
     for (const brickVersion of brickVersions) {
@@ -160,7 +160,7 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
       where: {
         id: brickVersionId,
       },
-      relations: ['brickMajorVersion', 'brickMajorVersion.brick'],
+      relations: { brickMajorVersion: { brick: true } },
     });
 
     this.sendBrickVersionToTransport(brickVersion);
@@ -190,7 +190,7 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
             versionType: 'ASC',
             subPatch: 'DESC',
           },
-          relations: ['brickMajorVersion'],
+          relations: { brickMajorVersion: true },
         },
         this.brickVersionsRepository.manager,
         HnBrickVersion

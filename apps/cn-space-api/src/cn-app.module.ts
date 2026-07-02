@@ -94,6 +94,9 @@ function typeOrmConfig(configService: CnCoreConfigService): TypeOrmModuleOptions
     charset: 'utf8mb4',
     logging: false, // use to enable query logging, the logger must be disabled
     namingStrategy: new BlNamingStrategy(),
+    // typeorm 1.0 throws on undefined values in where conditions
+    // by default; restore pre-1.0 behavior of skipping them
+    invalidWhereValuesBehavior: { undefined: 'ignore' },
   };
 }
 

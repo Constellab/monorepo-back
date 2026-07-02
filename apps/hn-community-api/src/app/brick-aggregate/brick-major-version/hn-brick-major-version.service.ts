@@ -73,7 +73,7 @@ export class HnBrickMajorVersionService {
         },
         versionState: HnVersionState.LATEST,
       },
-      relations: ['brick'],
+      relations: { brick: true },
     });
   }
 
@@ -96,7 +96,7 @@ export class HnBrickMajorVersionService {
         },
         major: major,
       },
-      relations: ['brick'],
+      relations: { brick: true },
     });
   }
 }

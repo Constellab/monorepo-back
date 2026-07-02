@@ -33,7 +33,7 @@ export class HnBrickUserService {
           id: user.id,
         },
       },
-      relations: ['brick'],
+      relations: { brick: true },
     });
   }
 
@@ -44,7 +44,7 @@ export class HnBrickUserService {
           id: brick.id,
         },
       },
-      relations: ['user'],
+      relations: { user: true },
     });
   }
 }

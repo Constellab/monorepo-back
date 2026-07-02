@@ -78,7 +78,7 @@ export class CnUserTeamService extends BlAbstractPaginatedService<CnUserGroup> {
       where: {
         groupId: groupId,
       },
-      relations: ['user'],
+      relations: { user: true },
     });
   }
 
@@ -87,7 +87,7 @@ export class CnUserTeamService extends BlAbstractPaginatedService<CnUserGroup> {
       where: {
         groupId: groupId,
       },
-      relations: ['user'],
+      relations: { user: true },
     });
   }
 
