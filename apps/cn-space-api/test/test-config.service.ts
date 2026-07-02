@@ -1,24 +1,18 @@
 import { Injectable } from '@nestjs/common';
 
-import { CnDatabaseConfig, CnEnvironmentProfile } from '../src/app/cn-core/model/config/cn-config.class';
+import { CnEnvironmentProfile } from '../src/app/cn-core/model/config/cn-config.class';
 import { CnCoreConfigService } from '../src/app/cn-core/modules/cn-core-config/cn-core-config.service';
 
 /**
- * Override CnCoreConfigService for test to set Test env and correct DB
+ * Override CnCoreConfigService for tests to force the 'test' profile.
+ *
+ * The database connection itself comes from cn-test.env (loaded by CnAppModule
+ * when ENVIRONMENT_PROFILE=test), so the base class getDatabaseConfig() already
+ * returns the test database — no override needed here.
  */
 @Injectable()
 export class TestConfigService extends CnCoreConfigService {
   getEnvironmentProfile(): CnEnvironmentProfile {
     return 'test';
-  }
-
-  public getDatabaseConfig(): CnDatabaseConfig {
-    return {
-      host: 'localhost',
-      port: 3311,
-      username: 'gencoveryUserTest',
-      password: 'gencovery2020$',
-      database: 'gencoveryDbTest',
-    };
   }
 }

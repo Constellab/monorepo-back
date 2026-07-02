@@ -128,5 +128,15 @@ export default tseslint.config(
   // Libraries
   getSubConfigs('back-core-lib', 'bl', true),
   getSubConfigs('core-lib', 'cl', true),
-  getSubConfigs('te-text-editor', 'te', true)
+  getSubConfigs('te-text-editor', 'te', true),
+
+  // Test-support files are not part of the app's public API and use plain,
+  // un-prefixed names (e.g. the `JSDOM` stub must match the real jsdom export,
+  // TestConfigService, TEST_ADMIN_*). Exempt them from the prefix rule.
+  {
+    files: ['apps/*/test/**/*.ts'],
+    rules: {
+      '@typescript-eslint/naming-convention': 'off',
+    },
+  }
 );

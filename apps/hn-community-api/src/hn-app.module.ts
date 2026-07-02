@@ -65,6 +65,7 @@ import { HnJwtAuthGuard } from './app/core/guards/hn-jwt-auth.guard';
 import { HnCoreModule } from './app/core/hn-core.module';
 import { HnHealthController } from './app/core/hn-health.controller';
 import { HnLogRequestMiddleware } from './app/core/middleware/hn-log-request-middleware.service';
+import { HN_ENVIRONMENT_PROFILE_KEY } from './app/core/model/config/hn-config.class';
 import { HnDatabaseConfig } from './app/core/model/config/hn-database-config.class';
 import { HnMailConfig } from './app/core/model/config/hn-mail.config';
 import { HnCoreConfigModule } from './app/core/modules/core-config/hn-core-config.module';
@@ -167,7 +168,13 @@ TeRichTextModifications.setBackTimeDifference();
     // let the config module on top of the imports
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: join(__dirname, 'environments', 'hn-dev.env'),
+      // pick the env file matching the current profile (hn-test.env for e2e tests,
+      // which points at a throwaway database that gets dropped/recreated)
+      envFilePath: join(
+        __dirname,
+        'environments',
+        process.env[HN_ENVIRONMENT_PROFILE_KEY] === 'test' ? 'hn-test.env' : 'hn-dev.env'
+      ),
     }),
 
     TypeOrmModule.forRootAsync({

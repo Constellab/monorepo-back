@@ -21,7 +21,7 @@ SET @adminPrivateBrickMainFolderId = 'e2f3a4b5-c6d7-4e8f-9a0b-1c2d3e4f5061';
 INSERT IGNORE INTO `user` (`id`, `user_code`, `alias`, `firstname`, `lastname`, `email`, `photo`, `github_link`, `linkedin_link`,
                     `x_link`, `interests`, `category`, `created_at`, `lang`, `theme`)
 VALUES -- Robot Gencovery (system user)
-       (@robotUserId, 'ROB_GENCOV', 'Roboy Gencovery', 'Roboy', 'Gencovery',
+       (@robotUserId, 'ROB_GENCOV', 'Robot Gencovery', 'Robot', 'Gencovery',
         'robot@gencovery.com', NULL, NULL, NULL, NULL, NULL, 'ADMIN', '2023-02-27 17:15:47', 'en', 'dark-theme');
 
 -- Test user (Admin)

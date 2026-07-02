@@ -1,16 +1,17 @@
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import supertest, { Agent } from 'supertest';
+import * as supertest from 'supertest';
+import { Agent } from 'supertest';
 
-import { CnCoreConfigService } from '../src/app/cn-core/modules/cn-core-config/cn-core-config.service';
-import { CnAppModule } from '../src/cn-app.module';
-import { CnTestDbInitializerService } from './cn-test.module';
+import { HnCoreConfigService } from '../src/app/core/modules/core-config/hn-core-config.service';
+import { HnAppModule } from '../src/hn-app.module';
+import { HnTestDbInitializerService } from './hn-test.module';
 import { TestConfigService } from './test-config.service';
 import { TEST_ADMIN_EMAIL, TEST_ADMIN_PASSWORD } from './test-credentials';
 import { TestGetOptions, TestIdOptions } from './test-e2e-helper.config';
 import { TestRequest } from './test-request.class';
 
-export class CnTestE2EHelper {
+export class HnTestE2EHelper {
   public app: INestApplication;
 
   private token?: string;
@@ -20,24 +21,23 @@ export class CnTestE2EHelper {
   ///////////////////////////// INITIALIZATION /////////////////////////////
 
   /**
-   * Call this method in the beforeAll method in test to init
-   * the nest app
+   * Call this method in the beforeAll method in a test to init the nest app.
    */
   public async initAppModule(): Promise<INestApplication> {
     const moduleRef = await Test.createTestingModule({
-      imports: [CnAppModule],
-      providers: [CnTestDbInitializerService],
+      imports: [HnAppModule],
+      providers: [HnTestDbInitializerService],
     })
       // override the config service to set the test database and test profile
-      .overrideProvider(CnCoreConfigService)
+      .overrideProvider(HnCoreConfigService)
       .useClass(TestConfigService)
       .compile();
     this.app = moduleRef.createNestApplication();
 
     // Reset + seed the database BEFORE app.init(): some services query the DB in
-    // their onModuleInit lifecycle hook (e.g. CnUsersService loads the robot
-    // user), which app.init() triggers — so the schema must exist first.
-    const dbInitializer = moduleRef.get(CnTestDbInitializerService);
+    // their onModuleInit lifecycle hook, which app.init() triggers — so the
+    // schema must exist first.
+    const dbInitializer = moduleRef.get(HnTestDbInitializerService);
     await dbInitializer.initDb();
 
     await this.app.init();
@@ -95,8 +95,6 @@ export class CnTestE2EHelper {
 
   /**
    * Generate a test request for an HTTP POST and test status is 200
-   * @param route route to call
-   * @param body
    */
   public testPost(route: string, body: any): TestRequest {
     return this.post(route, body).expect(200);
@@ -104,8 +102,6 @@ export class CnTestE2EHelper {
 
   /**
    * Generate a test request for an HTTP POST
-   * @param route route to call
-   * @param body
    */
   public post(route: string, body: any): TestRequest {
     return this.buildTestRequest(this.getSuperTest().post(this.constructRoute(route)).send(body));
@@ -113,8 +109,6 @@ export class CnTestE2EHelper {
 
   /**
    * Generate a test request for an HTTP PUT and test status is 200
-   * @param route route to call
-   * @param body
    */
   public testPut(route: string, body: any): TestRequest {
     return this.put(route, body).expect(200);
@@ -122,8 +116,6 @@ export class CnTestE2EHelper {
 
   /**
    * Generate a test request for an HTTP PUT
-   * @param route route to call
-   * @param body
    */
   public put(route: string, body: any): TestRequest {
     return this.buildTestRequest(this.getSuperTest().put(this.constructRoute(route)).send(body));
@@ -131,8 +123,6 @@ export class CnTestE2EHelper {
 
   /**
    * Generate a test request for an HTTP DELETE and test status is 200
-   * @param route route to call
-   * @param options
    */
   public testDelete(route: string, options?: TestIdOptions): TestRequest {
     return this.delete(route, options).expect(200);
@@ -140,8 +130,6 @@ export class CnTestE2EHelper {
 
   /**
    * Generate a test request for an HTTP DELETE
-   * @param route route to call
-   * @param options
    */
   public delete(route: string, options?: TestIdOptions): TestRequest {
     return this.buildTestRequest(this.getSuperTest().delete(this.constructRoute(route, options)));
@@ -149,8 +137,6 @@ export class CnTestE2EHelper {
 
   /**
    * Generate a test request for an HTTP GET and test status is 200
-   * @param route route to call
-   * @param options option for the get
    */
   public testGet(route: string, options?: TestGetOptions): TestRequest {
     return this.get(route, options).expect(200);
@@ -158,8 +144,6 @@ export class CnTestE2EHelper {
 
   /**
    * Generate a test request for an HTTP GET
-   * @param route route to call
-   * @param options option for the get
    */
   public get(route: string, options?: TestGetOptions): TestRequest {
     return this.buildTestRequest(this.getSuperTest().get(this.constructGetRoute(route, options)));
@@ -180,8 +164,7 @@ export class CnTestE2EHelper {
   ///////////////////////////// INTERNAL /////////////////////////////
 
   /**
-   * Construct the get routes with pagination
-   * @private
+   * Construct the get route with pagination
    */
   private constructGetRoute(route: string, options?: TestGetOptions): string {
     let fullRoute: string = this.constructRoute(route, options);
@@ -213,7 +196,6 @@ export class CnTestE2EHelper {
 
   /**
    * Construct the route with the base route
-   * @private
    */
   private constructRoute(route: string, options?: TestIdOptions): string {
     let fullRoute: string;
@@ -233,7 +215,7 @@ export class CnTestE2EHelper {
   ///////////////////////////// CLOSE /////////////////////////////
 
   /**
-   * Function to call in afterAll method to class the nest app after the tests
+   * Function to call in the afterAll method to close the nest app after the tests
    */
   public async close(): Promise<void> {
     await this.app.close();
@@ -242,8 +224,7 @@ export class CnTestE2EHelper {
   ///////////////////////////// OTHER /////////////////////////////
 
   /**
-   * Set the token to all the requests
-   * @param token
+   * Set the token for all the requests
    */
   public setToken(token: string): void {
     this.token = token;

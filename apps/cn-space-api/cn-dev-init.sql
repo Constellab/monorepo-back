@@ -17,7 +17,7 @@ INSERT IGNORE INTO `user` (`id`, `firstname`, `lastname`, `email`, `password`, `
                     `failed_login_count`, `last_login_attempt`, `last_login_success`, `lang`, `theme`, `status`, `created_at`,
                     `photo`, `company`, `has2_fa`, `phone`, `license`)
 VALUES -- Robot Gencovery (system user)
-       (@robotUserId, 'Roboy', 'Gencovery', 'robot@gencovery.com',
+       (@robotUserId, 'Robot', 'Gencovery', 'robot@gencovery.com',
         ' ', 'ADMIN',
         NULL,
         NULL,

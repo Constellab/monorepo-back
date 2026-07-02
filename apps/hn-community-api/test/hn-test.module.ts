@@ -1,10 +1,9 @@
-import { BlUserCategory, BlUserStatus } from '@monorepo/back-core-lib';
+import { BlUserCategory } from '@monorepo/back-core-lib';
 import { Injectable } from '@nestjs/common';
-import * as argon2 from 'argon2';
 import { DataSource } from 'typeorm';
 
-import { CnUserEntity } from '../src/app/cn-users/cn-user.entity';
-import { TEST_ADMIN_EMAIL, TEST_ADMIN_ID, TEST_ADMIN_PASSWORD } from './test-credentials';
+import { HnUser } from '../src/app/users/hn-user.entity';
+import { TEST_ADMIN_EMAIL, TEST_ADMIN_ID } from './test-credentials';
 
 /**
  * Service for the test environment to reset and init the database.
@@ -13,11 +12,11 @@ import { TEST_ADMIN_EMAIL, TEST_ADMIN_ID, TEST_ADMIN_PASSWORD } from './test-cre
  * the current entity schema and never drifts when a column is added/renamed.
  *
  * Only the admin user is seeded here (the minimum needed to authenticate).
- * Suites that need more fixtures (spaces, groups, folders...) should create
- * them through the app's own endpoints/services so the data stays consistent.
+ * Suites that need more fixtures should create them through the app's own
+ * endpoints/services so the data stays consistent.
  */
 @Injectable()
-export class CnTestDbInitializerService {
+export class HnTestDbInitializerService {
   constructor(private datasource: DataSource) {}
 
   async initDb(): Promise<void> {
@@ -39,25 +38,23 @@ export class CnTestDbInitializerService {
     if (!/test/i.test(database)) {
       throw new Error(
         `Refusing to reset database "${database}": it does not look like a test database. ` +
-          `The test harness drops the database — check ENVIRONMENT_PROFILE=test and cn-test.env.`
+          `The test harness drops the database — check ENVIRONMENT_PROFILE=test and hn-test.env.`
       );
     }
   }
 
   private async seedAdminUser(): Promise<void> {
-    // Hash the known test password with the same argon2 lib the app uses
-    // (see CnUserEntity.comparePassword) so the login endpoint can be tested.
-    const passwordHash = await argon2.hash(TEST_ADMIN_PASSWORD);
-
-    const userRepository = this.datasource.getRepository(CnUserEntity);
+    // hn login is email-only for local auth (no password column on HnUser),
+    // so seeding a user with the known email is enough to log in.
+    const userRepository = this.datasource.getRepository(HnUser);
     const admin = userRepository.create({
       id: TEST_ADMIN_ID,
+      userCode: 'UA-06866542',
+      alias: 'User Admin',
       firstname: 'User',
       lastname: 'Admin',
       email: TEST_ADMIN_EMAIL,
-      password: passwordHash,
       category: BlUserCategory.ADMIN,
-      status: BlUserStatus.READY,
     });
     await userRepository.save(admin);
   }

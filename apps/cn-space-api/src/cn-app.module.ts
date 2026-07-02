@@ -52,7 +52,7 @@ import { CnCoreExceptionHandlerFilter } from './app/cn-core/filters/cn-core-exce
 import { CnJwtAuthGuard } from './app/cn-core/guards/cn-jwt-auth.guard';
 import { CnUserCategoryGuard } from './app/cn-core/guards/cn-user-category-guard.service';
 import { CnLogRequestMiddleware } from './app/cn-core/middleware/cn-log-request-middleware.service';
-import { CnDatabaseConfig } from './app/cn-core/model/config/cn-config.class';
+import { CN_ENVIRONMENT_PROFILE_KEY, CnDatabaseConfig } from './app/cn-core/model/config/cn-config.class';
 import { CnMailConfig } from './app/cn-core/model/config/cn-mail.config';
 import { CnCoreConfigModule } from './app/cn-core/modules/cn-core-config/cn-core-config.module';
 import { CnCoreConfigService } from './app/cn-core/modules/cn-core-config/cn-core-config.service';
@@ -130,7 +130,13 @@ TeRichTextModifications.setBackTimeDifference();
     // let the config module on top of the imports
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: join(__dirname, 'environments', 'cn-dev.env'),
+      // pick the env file matching the current profile (cn-test.env for e2e tests,
+      // which points at a throwaway database that gets dropped/recreated)
+      envFilePath: join(
+        __dirname,
+        'environments',
+        process.env[CN_ENVIRONMENT_PROFILE_KEY] === 'test' ? 'cn-test.env' : 'cn-dev.env'
+      ),
     }),
 
     CnCoreConfigModule.forRoot({ distFolder: join(__dirname) }),
