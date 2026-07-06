@@ -47,12 +47,19 @@ export class CnLabManagerService {
   }
 
   public async getLabStatus(lab: CnLab): Promise<CnLabManagerStatus> {
-    const isRunning = await this.healthCheck(lab.getLabManagerApiInfo());
+    const apiInfo = lab.getLabManagerApiInfo();
+    // Diagnostic for on-premise labs: log the URL/port/ip actually built from the
+    // entity, so we can tell whether the port/ip override reaches the request.
+    this.logger.debug(
+      `[getLabStatus] labId=${lab.id} apiUrl=${apiInfo.apiUrl} ` +
+        `portOverride=${lab.labPortOverride ?? 'none'} ipOverride=${apiInfo.ipOverride ?? 'none'}`
+    );
+    const isRunning = await this.healthCheck(apiInfo);
     if (!isRunning) {
       throw new BlBadRequestException('The lab manager is not running');
     }
 
-    return this.labManagerApiService.getStatus(lab.getLabManagerApiInfo());
+    return this.labManagerApiService.getStatus(apiInfo);
   }
 
   public async getStartingError(lab: CnLab): Promise<CnLabManagerErrorLogs> {

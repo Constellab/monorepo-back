@@ -1,4 +1,5 @@
 import { BlExternalApiHttpOption } from '@monorepo/back-core-lib';
+import { LookupAddress } from 'dns';
 import { Agent as HttpAgent } from 'http';
 import { Agent as HttpsAgent } from 'https';
 
@@ -20,13 +21,22 @@ export function cnApplyIpOverride(
   }
 
   const ip = ipOverride;
+
+  // Node may call `lookup` with `{ all: true }`, in which case it expects an
+  // array of addresses instead of a single (address, family) pair. Support both
+  // signatures, otherwise the resolution silently fails and the request never
+  // reaches the override IP.
   const lookup = (
     _hostname: string,
-    _opts: any,
-    callback: (err: NodeJS.ErrnoException | null, address: string, family: number) => void
+    opts: any,
+    callback: (err: NodeJS.ErrnoException | null, address: string | LookupAddress[], family?: number) => void
   ): void => {
     // always resolve the lab hostname to the configured private IP
-    callback(null, ip, 4);
+    if (opts && opts.all) {
+      callback(null, [{ address: ip, family: 4 }]);
+    } else {
+      callback(null, ip, 4);
+    }
   };
 
   options.httpAgent = new HttpAgent({ lookup });
