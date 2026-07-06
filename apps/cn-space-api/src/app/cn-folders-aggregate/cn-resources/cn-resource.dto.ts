@@ -20,6 +20,7 @@ export class CnResourceAccessDTO {
   name: string;
   typingName: string;
   style: CnTypeStyle;
+  isApplication: boolean;
 
   @ClLuxonDateTransform()
   validUntil: DateTime;
@@ -32,6 +33,7 @@ export class CnResourceAccessDTO {
     this.typingName = resource.typingName;
     this.style = resource.style;
     this.validUntil = validUntil;
+    this.isApplication = resource.isApplication;
   }
 }
 
