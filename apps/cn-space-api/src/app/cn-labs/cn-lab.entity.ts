@@ -136,7 +136,7 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
   // the default 443. The hostname is kept untouched (TLS/SNI still valid), only the
   // connection port changes. Combine with labIpOverride to reach e.g.
   // https://lab-manager.<host>:10443 while resolving the name to a private IP.
-  @Column({ nullable: true })
+  @Column({ type: 'int', nullable: true })
   labPortOverride: number;
 
   // api key shared with the lab manager API
