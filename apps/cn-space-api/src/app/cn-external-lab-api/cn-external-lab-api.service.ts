@@ -1,6 +1,6 @@
 import { BlExternalApiHttpOption, BlExternalApiService } from '@monorepo/back-core-lib';
 import { ClDeserializationRef } from '@monorepo/core-lib';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { lastValueFrom, Observable } from 'rxjs';
 
 import {
@@ -18,12 +18,25 @@ import { CnLabGlobalActivity } from './model/cn-external-lab-api.class';
  */
 @Injectable()
 export class CnExternalLabApiService {
+  private readonly logger = new Logger(CnExternalLabApiService.name);
+
   constructor(private apiService: BlExternalApiService) {}
 
   public async healthCheck(labInfo: CnExternalApiInfo): Promise<boolean> {
     return lastValueFrom(this.get(labInfo, `health-check`, null, { logError: false, timeout: 2500 }))
       .then(() => true)
-      .catch(() => false);
+      .catch((error) => {
+        // The health-check normally swallows every error into `false`, which hides
+        // connection/TLS problems (wrong port, unreachable IP, cert mismatch...).
+        // Log the actual attempt at debug level to diagnose on-premise labs.
+        this.logger.debug(
+          `[health-check] failed url=${this.constructRoute(labInfo.apiUrl, 'health-check')} ` +
+            `ipOverride=${labInfo.ipOverride ?? 'none'} ` +
+            `errCode=${error?.error?.code ?? error?.code ?? 'n/a'} ` +
+            `msg=${error?.message ?? error?.error?.message ?? 'n/a'}`
+        );
+        return false;
+      });
   }
 
   public async getSettings(labInfo: CnExternalApiInfo): Promise<any> {
