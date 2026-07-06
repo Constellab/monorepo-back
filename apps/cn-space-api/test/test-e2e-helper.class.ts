@@ -2,9 +2,17 @@ import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import supertest, { Agent } from 'supertest';
 
+import { DataSource } from 'typeorm';
+
 import { CnCoreConfigService } from '../src/app/cn-core/modules/cn-core-config/cn-core-config.service';
 import { CnAppModule } from '../src/cn-app.module';
 import { CnTestDbInitializerService } from './cn-test.module';
+import {
+  CnTestFixtureFactory,
+  CnTestFixtures,
+  TEST_USER_EMAIL,
+  TEST_USER_PASSWORD,
+} from './cn-test-fixture.factory';
 import { TestConfigService } from './test-config.service';
 import { TEST_ADMIN_EMAIL, TEST_ADMIN_PASSWORD } from './test-credentials';
 import { TestGetOptions, TestIdOptions } from './test-e2e-helper.config';
@@ -15,6 +23,15 @@ export class CnTestE2EHelper {
 
   private token?: string;
 
+  /**
+   * Domain of the "current space" sent as the `local-space` cookie on every
+   * request (see the JWT guard). null means no current space in the context.
+   */
+  private spaceDomain?: string;
+
+  /** Shared fixtures, populated when initAppModule is called with seed=true. */
+  public fixtures?: CnTestFixtures;
+
   constructor(private routeBase: string) {}
 
   ///////////////////////////// INITIALIZATION /////////////////////////////
@@ -23,7 +40,7 @@ export class CnTestE2EHelper {
    * Call this method in the beforeAll method in test to init
    * the nest app
    */
-  public async initAppModule(): Promise<INestApplication> {
+  public async initAppModule(options?: { seedFixtures?: boolean }): Promise<INestApplication> {
     const moduleRef = await Test.createTestingModule({
       imports: [CnAppModule],
       providers: [CnTestDbInitializerService],
@@ -40,6 +57,14 @@ export class CnTestE2EHelper {
     const dbInitializer = moduleRef.get(CnTestDbInitializerService);
     await dbInitializer.initDb();
 
+    // Seed the shared Phase-1 fixtures (second user + enterprise space) so
+    // permission/workflow suites don't hand-roll them. Done after the admin
+    // seed and before app.init for the same schema-first reason.
+    if (options?.seedFixtures) {
+      const factory = new CnTestFixtureFactory(moduleRef.get(DataSource));
+      this.fixtures = await factory.create();
+    }
+
     await this.app.init();
 
     return this.app;
@@ -54,6 +79,24 @@ export class CnTestE2EHelper {
    */
   public async loginAsAdmin(): Promise<void> {
     await this.login(TEST_ADMIN_EMAIL, TEST_ADMIN_PASSWORD);
+  }
+
+  /**
+   * Log in as the seeded second (non-admin) user. Requires fixtures to have been
+   * seeded (initAppModule({ seedFixtures: true })). Use this for every 403 /
+   * permission assertion where a non-admin must be rejected.
+   */
+  public async loginAsSecondUser(): Promise<void> {
+    await this.login(TEST_USER_EMAIL, TEST_USER_PASSWORD);
+  }
+
+  /**
+   * Set the "current space" for subsequent requests (sent as the `local-space`
+   * cookie the JWT guard reads in local/test env). Needed for `current-*`
+   * routes that read the space from the auth context. Pass undefined to clear.
+   */
+  public setCurrentSpaceDomain(spaceDomain?: string): void {
+    this.spaceDomain = spaceDomain;
   }
 
   /**
@@ -172,7 +215,7 @@ export class CnTestE2EHelper {
   private buildTestRequest(superTest: supertest.Test): TestRequest {
     const testRequest = new TestRequest(superTest);
     if (this.token) {
-      testRequest.setTokenInCookie(this.token);
+      testRequest.setTokenInCookie(this.token, this.spaceDomain);
     }
     return testRequest;
   }
@@ -247,5 +290,13 @@ export class CnTestE2EHelper {
    */
   public setToken(token: string): void {
     this.token = token;
+  }
+
+  /**
+   * Current auth token, for sharing an authenticated session with another helper
+   * instance that points at a different route base but the same app.
+   */
+  public getToken(): string | undefined {
+    return this.token;
   }
 }

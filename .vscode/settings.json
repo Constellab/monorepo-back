@@ -12,11 +12,11 @@
     }
   },
   "prettier.configPath": ".prettierrc",
-
   // --- Jest (native Test Explorer via Orta.vscode-jest) ---
   // One virtual folder per test suite so they all show in the Test Explorer.
-  // E2E (apps/cn-space-api/test/jest-e2e.json) needs ENVIRONMENT_PROFILE=test
-  // + a running MySQL, so it stays on the npm script, not here.
+  // The "*-e2e" folders point at test/jest-e2e.json and set
+  // ENVIRONMENT_PROFILE=test via cross-env; they only pass with the local MySQL
+  // test DB running (cn:3311 / hn:3312) — otherwise the suite errors at setup.
   "jest.runMode": "on-demand",
   "jest.virtualFolders": [
     {
@@ -25,9 +25,19 @@
       "jestCommandLine": "npx jest --config ./jest.config.ts"
     },
     {
+      "name": "cn-space-api-e2e",
+      "rootPath": "apps/cn-space-api",
+      "jestCommandLine": "npx cross-env ENVIRONMENT_PROFILE=test jest --config ./test/jest-e2e.json"
+    },
+    {
       "name": "hn-community-api",
       "rootPath": "apps/hn-community-api",
       "jestCommandLine": "npx jest --config ./jest.config.ts"
+    },
+    {
+      "name": "hn-community-api-e2e",
+      "rootPath": "apps/hn-community-api",
+      "jestCommandLine": "npx cross-env ENVIRONMENT_PROFILE=test jest --config ./test/jest-e2e.json"
     },
     {
       "name": "te-text-editor",

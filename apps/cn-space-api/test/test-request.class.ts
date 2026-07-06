@@ -32,10 +32,19 @@ export class TestRequest {
   }
 
   /**
-   * Set the token in the request
+   * Set the auth token, and optionally the current-space domain, as cookies.
+   *
+   * In local/test env the JWT guard resolves the "current space" from the
+   * `local-space` cookie (CN_LOCAL_SPACE_COOKIE), so space-scoped and
+   * `current-*` routes need it. Both cookies must be sent in a single `Cookie`
+   * header — calling `.set('Cookie', ...)` twice overwrites the first.
    */
-  public setTokenInCookie(token: string): this {
-    this.superTest.set('Cookie', [`Authorization=${token}`]);
+  public setTokenInCookie(token: string, spaceDomain?: string): this {
+    const cookies = [`Authorization=${token}`];
+    if (spaceDomain) {
+      cookies.push(`local-space=${spaceDomain}`);
+    }
+    this.superTest.set('Cookie', cookies);
     return this;
   }
 

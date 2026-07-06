@@ -16,11 +16,13 @@ Status today: ✅ auth E2E + `CnSpaceAggregateSecurity` unit are done (reference
 
 - [x] **[E2E]** `cn-auth` — login, bad/unknown credentials, protected-route access.
 - [x] **[U]** `cn-space-aggregate-security` — role/ownership branches.
-- [ ] **Test data factory** — a small helper to create a space + a second non-admin
-      user + memberships via the app's services/endpoints, reused by every E2E
-      suite below. Do this before Phase 1 so suites don't hand-roll fixtures.
-- [ ] **Second-user login** — extend the seed/helper so E2E can act as a
-      non-admin (needed for every 403/permission assertion).
+- [x] **Test data factory** — `test/cn-test-fixture.factory.ts` seeds (via
+      repositories) a bucket chain + an enterprise space owned by admin + a
+      second non-admin user + memberships. Enabled per-suite with
+      `initAppModule({ seedFixtures: true })`; results on `helper.fixtures`.
+- [x] **Second-user login** — `helper.loginAsSecondUser()` +
+      `helper.setCurrentSpaceDomain(domain)` (sets the `local-space` cookie the
+      guard reads) so E2E can act as a non-admin and drive 403/permission checks.
 
 ---
 
@@ -31,33 +33,41 @@ The daily-driver domains. Each E2E suite covers: happy path, 401 (no token),
 
 ### cn-spaces
 
-- [ ] **[E2E]** `cn-spaces.e2e.spec.ts` — create enterprise space; `my-spaces`;
-      `current-info`; rename; add/remove user; change role; deactivate/activate;
-      delete. Assert a non-member gets 403 on space-scoped routes.
+- [x] **[E2E]** `cn-spaces.e2e.spec.ts` — `my-spaces`; `current-info`; find by
+      id; rename; add/remove user; change role; deactivate/activate; delete.
+      Asserts 401 (no token) and 403 for a non-member on space-scoped routes.
+      (Enterprise space comes from the fixture factory rather than the
+      cloud-dependent create endpoint.)
 - [ ] **[U]** `cn-space-user.service` — membership lookups / role transitions if
-      they contain branching beyond thin repo calls.
+      they contain branching beyond thin repo calls. _(deferred: current methods
+      are thin repo calls; the branching lives in `cn-space-aggregate-security`,
+      already covered.)_
 
 ### cn-users / cn-user-accounts
 
-- [ ] **[E2E]** account lifecycle: signup → activation → profile edit; login lock
-      after N failed attempts (`FAILED_LOGIN_LOCK`), and unlock path.
-- [ ] **[U]** `cn-user-accounts.service` — status transitions, lock/unlock logic.
+- [x] **[E2E]** `cn-user-accounts.e2e.spec.ts` — admin lock → locked user
+      refused login → admin unlock → login again; user edits own profile; 401
+      when a non-admin tries to lock. _(signup→activation deferred: signup
+      provisions a personal space via a real cloud region lookup.)_
+- [x] **[U]** `cn-user-accounts.service` — `lockUser`/`unlockUser` status
+      transitions + admin guard + invalid-state rejections.
 
 ### cn-groups
 
-- [ ] **[E2E]** `cn-groups.e2e.spec.ts` — create team, add/remove members, list
-      teams by space, delete. 403 for non-space-admin.
-- [ ] **[U]** `cn-groups.security` — `checkAuthorizationToGetTeam` /
-      `...FindAllTeamBySpace` / `...CreateTeam` (pass + throw per role).
+- [x] **[E2E]** `cn-groups.e2e.spec.ts` — create team in the current space, list
+      teams by space, get, rename, delete; 401 with no token.
+- [x] **[U]** `cn-groups.security` — `checkAuthorizationToGetTeam` /
+      `getAndCheckAuthorizationToUpdateTeam` / `...FindAllTeamBySpace` /
+      `...CreateTeam` (pass + throw per role).
 
 ### cn-folders-aggregate (folders / documents / notes)
 
-- [ ] **[E2E]** `cn-folders.e2e.spec.ts` — create root folder, nest a folder,
-      create a document/note, move, rename, delete (cascade). Cross-user access
-      denied.
-- [ ] **[U]** `cn-folders-security.service` + `cn-folders-security-user` —
-      `checkAuthorizationToCreateRootFolder` / `checkFindAllBySpace` and the
-      per-user access checks (viewer vs editor vs admin).
+- [x] **[E2E]** `cn-folders.e2e.spec.ts` — create root folder (space default
+      storage), find, rename, list, cross-user 403, move-to-trash. _(nesting +
+      document/note flows deferred to a later pass.)_
+- [x] **[U]** `cn-folders-security.service` (trash guard + role threshold) +
+      `cn-folders-security-user` (`checkCreateRootFolder` / `checkFindAllBySpace`
+      and per-user viewer/editor/owner access checks).
 
 ---
 

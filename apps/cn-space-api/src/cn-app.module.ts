@@ -97,6 +97,26 @@ function typeOrmConfig(configService: CnCoreConfigService): TypeOrmModuleOptions
     // typeorm 1.0 throws on undefined values in where conditions
     // by default; restore pre-1.0 behavior of skipping them
     invalidWhereValuesBehavior: { undefined: 'ignore' },
+    // E2E-only connection resilience. The Docker-Desktop-for-Windows port
+    // forward to the test DB intermittently stalls a connection under
+    // concurrent bursts, which surfaces as `connect ETIMEDOUT` and randomly
+    // fails otherwise-correct tests. Retry connect attempts and give each a
+    // longer timeout so a single stalled hop is transparently retried instead
+    // of failing the request. Not applied to dev/prod (real DBs, no NAT hop).
+    ...(configService.isTest()
+      ? {
+          retryAttempts: 5,
+          retryDelay: 500,
+          extra: {
+            // mysql2 pool options
+            connectTimeout: 30_000,
+            // keep the pool small so we never open a burst the forward can't
+            // handle; sequential connections through the forward are reliable
+            connectionLimit: 5,
+            maxIdle: 5,
+          },
+        }
+      : {}),
   };
 }
 

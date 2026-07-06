@@ -1,6 +1,21 @@
 {
   "permissions": {
-    "allow": ["Bash(nest build:*)", "Bash(npx nest build:*)", "Bash(npx tsc:*)"],
+    "allow": [
+      "Bash(nest build:*)",
+      "Bash(npx nest build:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npx jest:*)",
+      "Bash(npm run cn-space-api:test:*)",
+      "Bash(npm run cn-space-api:test-e2e:*)",
+      "Bash(npm run cn-space-api:test-all:*)",
+      "Bash(npm run hn-community-api:test:*)",
+      "Bash(npm run hn-community-api:test-e2e:*)",
+      "Bash(npm run hn-community-api:test-all:*)",
+      "Bash(bun run cn-space-api:test:*)",
+      "Bash(bun run cn-space-api:test-e2e:*)",
+      "Bash(bun run hn-community-api:test:*)",
+      "Bash(bun run hn-community-api:test-e2e:*)"
+    ],
     "deny": [],
     "ask": []
   }

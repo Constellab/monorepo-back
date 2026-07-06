@@ -81,9 +81,32 @@ Both applications follow a similar modular structure:
 
 ### Testing Strategy
 
-- Jest for unit testing
-- E2E tests using Supertest
-- Test configuration in `test/` directories with dedicated test modules
+Two layers (see `apps/cn-space-api/TESTING.md` + `TESTING_ROADMAP.md` for the full guide):
+
+- **Unit** (`*.spec.ts` next to source): fast, no DB, mock the deps. Test real branching
+  (security services, guards, calculators). Run: `npm run cn-space-api:test`.
+- **E2E** (`test/*.e2e.spec.ts`): real HTTP + real MySQL via `CnTestE2EHelper`. Run:
+  `npm run cn-space-api:test-e2e` (needs the test DB container up — cn:3311 / hn:3312).
+- Shared E2E fixtures (a second non-admin user + an enterprise space) come from
+  `test/cn-test-fixture.factory.ts`, enabled with `initAppModule({ seedFixtures: true })`.
+
+**E2E pitfalls (these recur — don't re-break them):**
+
+- **E2E suites MUST run serially.** Every suite drops + `synchronize()`s the *same* test
+  database in `beforeAll`. Parallel Jest workers race on schema creation and fail with
+  `QueryFailedError: Table '...' already exists`. This is why `test/jest-e2e.json` sets
+  `"maxWorkers": 1` — keep it, and mirror it into any new app's `jest-e2e.json`.
+- **Import `CnAppModule` before app entities in test helpers/factories.** The entities form
+  a circular graph (`cn-base` ← … ← `cloud-provider-region`, which extends `cn-base`).
+  Importing an individual entity as the *first* app import evaluates the cycle in the wrong
+  order and throws `Class extends value undefined`. Put `import '../src/cn-app.module';`
+  first (as `cn-test-fixture.factory.ts` does) so the graph loads in resolved order.
+- **The "current space" is resolved per request from the `local-space` cookie** (not the
+  JWT) in local/test env. Space-context / `current-*` routes need
+  `helper.setCurrentSpaceDomain(space.domain)`. To assert a clean **403** for a non-member,
+  log in as the second user AND set that cookie (otherwise the guard yields **401** from a
+  no-space context). `checkSpace*` failures → 401; a guard returning `false` → 403;
+  `findByIdAndCheck` miss → 404.
 
 ## Development Workflow
 
