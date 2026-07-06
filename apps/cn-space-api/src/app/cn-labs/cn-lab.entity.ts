@@ -131,6 +131,14 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
   @Column({ nullable: true, length: 255 })
   labIpOverride: string;
 
+  // for on-premise labs reachable through a non-standard port (client NAT/reverse
+  // proxy): optional port injected into the lab URLs (glab/lab-manager) instead of
+  // the default 443. The hostname is kept untouched (TLS/SNI still valid), only the
+  // connection port changes. Combine with labIpOverride to reach e.g.
+  // https://lab-manager.<host>:10443 while resolving the name to a private IP.
+  @Column({ nullable: true })
+  labPortOverride: number;
+
   // api key shared with the lab manager API
   @BlTrim()
   @Exclude()
@@ -220,10 +228,16 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
   @Column({ nullable: false, default: false })
   isFreeLab: boolean;
 
+  // ':<port>' suffix to append to lab URLs when a port override is configured
+  // (on-premise labs behind a non-standard port), empty otherwise
+  private get labPortSuffix(): string {
+    return this.labPortOverride ? `:${this.labPortOverride}` : '';
+  }
+
   // url of the api server
   @Expose()
   get glabUrl(): string {
-    return `https://glab.${this.virtualHost}`;
+    return `https://glab.${this.virtualHost}${this.labPortSuffix}`;
   }
 
   @Expose()
@@ -233,7 +247,7 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
 
   @Expose()
   get labManagerUrl(): string {
-    return `https://lab-manager.${this.virtualHost}`;
+    return `https://lab-manager.${this.virtualHost}${this.labPortSuffix}`;
   }
 
   getCodelabUrl(): string {

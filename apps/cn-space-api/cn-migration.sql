@@ -380,6 +380,11 @@ ALTER TABLE space_invit MODIFY COLUMN role ENUM('ADMIN','USER','VIEWER') NOT NUL
 alter table lab
   add column lab_ip_override varchar(255) null;
 
+-- On-premise labs reachable through a non-standard port (client NAT/reverse proxy):
+-- optional port injected into the lab URLs (glab/lab-manager) instead of the default 443.
+alter table lab
+  add column lab_port_override int null;
+
 -- Normalize emails to lower case so invitation acceptance and user lookups are case-insensitive
 update `user`
 set email = lower(email)
