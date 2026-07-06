@@ -1,6 +1,6 @@
 import { BlExternalApiHttpOption, BlExternalApiService } from '@monorepo/back-core-lib';
 import { ClDeserializationRef } from '@monorepo/core-lib';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { lastValueFrom, Observable } from 'rxjs';
 
 import {
@@ -18,25 +18,12 @@ import { CnLabGlobalActivity } from './model/cn-external-lab-api.class';
  */
 @Injectable()
 export class CnExternalLabApiService {
-  private readonly logger = new Logger(CnExternalLabApiService.name);
-
   constructor(private apiService: BlExternalApiService) {}
 
   public async healthCheck(labInfo: CnExternalApiInfo): Promise<boolean> {
     return lastValueFrom(this.get(labInfo, `health-check`, null, { logError: false, timeout: 2500 }))
       .then(() => true)
-      .catch((error) => {
-        // The health-check normally swallows every error into `false`, which hides
-        // connection/TLS problems (wrong port, unreachable IP, cert mismatch...).
-        // Log the actual attempt at debug level to diagnose on-premise labs.
-        this.logger.debug(
-          `[health-check] failed url=${this.constructRoute(labInfo.apiUrl, 'health-check')} ` +
-            `ipOverride=${labInfo.ipOverride ?? 'none'} ` +
-            `errCode=${error?.error?.code ?? error?.code ?? 'n/a'} ` +
-            `msg=${error?.message ?? error?.error?.message ?? 'n/a'}`
-        );
-        return false;
-      });
+      .catch(() => false);
   }
 
   public async getSettings(labInfo: CnExternalApiInfo): Promise<any> {
@@ -57,11 +44,12 @@ export class CnExternalLabApiService {
     classReference?: ClDeserializationRef,
     options: BlExternalApiHttpOption = {}
   ): Observable<any> {
+    const requestOptions = this.getRequestOptions(labInfo, options);
     return this.apiService.post(
-      this.constructRoute(labInfo.apiUrl, route),
+      this.buildUrl(labInfo, route, requestOptions),
       body,
       classReference,
-      this.getRequestOptions(labInfo, options)
+      requestOptions
     );
   }
 
@@ -75,11 +63,12 @@ export class CnExternalLabApiService {
     classReference?: ClDeserializationRef,
     options: BlExternalApiHttpOption = {}
   ): Observable<any> {
+    const requestOptions = this.getRequestOptions(labInfo, options);
     return this.apiService.put(
-      this.constructRoute(labInfo.apiUrl, route),
+      this.buildUrl(labInfo, route, requestOptions),
       body,
       classReference,
-      this.getRequestOptions(labInfo, options)
+      requestOptions
     );
   }
 
@@ -92,10 +81,11 @@ export class CnExternalLabApiService {
     classReference?: ClDeserializationRef,
     options: BlExternalApiHttpOption = {}
   ): Observable<any> {
+    const requestOptions = this.getRequestOptions(labInfo, options);
     return this.apiService.delete(
-      this.constructRoute(labInfo.apiUrl, route),
+      this.buildUrl(labInfo, route, requestOptions),
       classReference,
-      this.getRequestOptions(labInfo, options)
+      requestOptions
     );
   }
 
@@ -108,25 +98,23 @@ export class CnExternalLabApiService {
     classReference?: ClDeserializationRef,
     options: BlExternalApiHttpOption = {}
   ): Observable<any> {
-    return this.apiService.get(
-      this.constructRoute(labInfo.apiUrl, route),
-      classReference,
-      this.getRequestOptions(labInfo, options)
-    );
+    const requestOptions = this.getRequestOptions(labInfo, options);
+    return this.apiService.get(this.buildUrl(labInfo, route, requestOptions), classReference, requestOptions);
   }
 
-  private constructRoute(labUrl: string, route: string): string {
-    return `${labUrl}/${route}`;
+  // build the target url for the route, redirecting to the ip override (and
+  // enriching the options with the Host header / SNI) for on-premise labs
+  private buildUrl(labInfo: CnExternalApiInfo, route: string, options: BlExternalApiHttpOption): string {
+    return cnApplyIpOverride(`${labInfo.apiUrl}/${route}`, labInfo.ipOverride, options);
   }
 
-  // get the axios request config with the api key in the header, and a custom
-  // DNS resolution agent when the lab defines an ip override (on-premise labs)
+  // get the axios request config with the api key in the header
   private getRequestOptions(
     labInfo: CnExternalApiInfo,
     options: BlExternalApiHttpOption
   ): BlExternalApiHttpOption {
     Object.assign(options, { headers: this.getHeader(labInfo.apiKey) });
-    return cnApplyIpOverride(labInfo.ipOverride, options);
+    return options;
   }
 
   // get the header with api key
