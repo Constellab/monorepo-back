@@ -268,6 +268,7 @@ export class CnLabAggregateService {
     lab.type = updateLab.type;
     lab.virtualHost = updateLab.virtualHost;
     lab.labIpOverride = updateLab.labIpOverride;
+    lab.labPortOverride = updateLab.labPortOverride;
     lab.billingMode = updateLab.billingMode;
     lab.serverCloud = updateLab.serverCloud;
     lab.glabProdApiKey = updateLab.glabProdApiKey;

@@ -74,6 +74,7 @@ export class CnLabAdminDto extends CnLabWithSpaceDto {
   serverVolumeId: string;
   serverIpAddressId: string;
   labIpOverride: string;
+  labPortOverride: number;
   gwsCoreProdDbPassword: string;
   gwsCoreDevDbPassword: string;
   codelabToken: string;
@@ -88,6 +89,7 @@ export class CnLabAdminDto extends CnLabWithSpaceDto {
     this.serverVolumeId = entity.serverVolumeId;
     this.serverIpAddressId = entity.serverIpAddressId;
     this.labIpOverride = entity.labIpOverride;
+    this.labPortOverride = entity.labPortOverride;
     this.gwsCoreProdDbPassword = entity.gwsCoreProdDbPassword;
     this.gwsCoreDevDbPassword = entity.gwsCoreDevDbPassword;
     this.codelabToken = entity.codelabToken;
@@ -128,6 +130,8 @@ export class CnLabUpdateAdminDTO {
   virtualHost: string;
   @BlTrim()
   labIpOverride: string;
+  @Type(() => Number)
+  labPortOverride: number;
   billingMode: CnLabBillingMode;
 
   @Type(() => CnServerCloud)
