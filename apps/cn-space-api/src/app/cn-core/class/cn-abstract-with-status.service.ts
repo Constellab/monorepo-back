@@ -1,5 +1,5 @@
 import { BlAbstractService, BlBadRequestException } from '@monorepo/back-core-lib';
-import { ClDateHelper, ClPageI } from '@monorepo/core-lib';
+import { ClDateHelper } from '@monorepo/core-lib';
 import { DataSource, DeleteResult, EntityManager, Repository } from 'typeorm';
 
 import { CnErrorText } from '../model/config/cn-error-text.class';

@@ -1,5 +1,5 @@
 import { CnServerPrices } from '../../cn-servers-info/server-price/cn-server-price.dto';
-import { cnLabRunningStatuses } from '../status/cn-lab-status.enum';
+import { CN_LAB_RUNNING_STATUSES } from '../status/cn-lab-status.enum';
 import { CnLabStatusHistory } from '../status/cn-lab-status-history.entity';
 import {
   CnLabStatsRunningBillingDTO,
@@ -14,9 +14,7 @@ export class CnLabStatsRunningService {
     private statusHistories: CnLabStatusHistory[]
   ) {}
 
-  public async getLabRunningKpisWithBilling(
-    serverPrices: CnServerPrices
-  ): Promise<CnLabStatsRunningResponseDTO> {
+  public getLabRunningKpisWithBilling(serverPrices: CnServerPrices): Promise<CnLabStatsRunningResponseDTO> {
     const runStatus = this.getRunningStatus();
     const totalBillInfo = new CnLabStatsRunningBillingDTO(0, 0);
 
@@ -35,7 +33,7 @@ export class CnLabStatsRunningService {
 
     runStatus.billInfo = totalBillInfo;
 
-    return runStatus;
+    return Promise.resolve(runStatus);
   }
 
   /**
@@ -54,7 +52,7 @@ export class CnLabStatsRunningService {
       if (!status.endsAfter(startDate)) continue;
 
       // if this is a stop status
-      if (!cnLabRunningStatuses.includes(status.status)) {
+      if (!CN_LAB_RUNNING_STATUSES.includes(status.status)) {
         // save the running status if exists
         if (currentRunningStatus) {
           currentRunningStatus.setToDate(status.createdAt);

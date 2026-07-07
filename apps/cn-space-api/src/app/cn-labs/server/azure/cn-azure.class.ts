@@ -91,7 +91,7 @@ export class CnAzureInstance {
       case 'ProvisioningState/failed/AllocationFailed':
         return 'ERROR';
       default:
-        this.logger.error(`Unknown status ${status} for azure instance ${this.name}`);
+        this.logger.error(`Unknown status ${String(status)} for azure instance ${this.name}`);
         return 'ERROR';
     }
   }

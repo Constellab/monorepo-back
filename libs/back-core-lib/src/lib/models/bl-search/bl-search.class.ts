@@ -50,6 +50,7 @@ export class BlSearchParams {
     this.filtersCriteria = this.filtersCriteria.filter((filter) => filter.key !== key);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   public getFilterValue(key: string): any | null {
     const filter = this.filtersCriteria.find((filter) => filter.key === key);
     return filter?.value ?? null;

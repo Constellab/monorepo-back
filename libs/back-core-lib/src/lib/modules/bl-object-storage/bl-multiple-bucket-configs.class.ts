@@ -1,8 +1,8 @@
 import {
+  BL_CLOUD_BUCKET_TYPES,
   BlAzureBlobContainerConfig,
   BlBucketConfig,
   BlBucketType,
-  blCloudBucketTypes,
   BlS3BucketConfig,
 } from './bl-object-storage.class';
 
@@ -10,7 +10,7 @@ export class BlMultipleBucketConfig {
   constructor(public bucketConfigs: BlBucketConfig[]) {}
 
   public containsCloudBuckets(): boolean {
-    return this.bucketConfigs.some((config) => blCloudBucketTypes.includes(config.type));
+    return this.bucketConfigs.some((config) => BL_CLOUD_BUCKET_TYPES.includes(config.type));
   }
 
   public getFirstBucket(): BlBucketConfig {

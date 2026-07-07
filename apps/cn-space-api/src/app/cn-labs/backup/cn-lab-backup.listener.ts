@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 
 import { CnLabMailService } from '../mail/cn-lab-mail.service';
-import { CnLabBackupEvent, cnLabBackupEventName } from './cn-lab-backup.event';
+import { CN_LAB_BACKUP_EVENT_NAME, CnLabBackupEvent } from './cn-lab-backup.event';
 
 @Injectable()
 export class CnLabBackupListener {
@@ -16,7 +16,7 @@ export class CnLabBackupListener {
 
   constructor(private labMailService: CnLabMailService) {}
 
-  @OnEvent(cnLabBackupEventName)
+  @OnEvent(CN_LAB_BACKUP_EVENT_NAME)
   async handleBackupEvent(event: CnLabBackupEvent): Promise<void> {
     try {
       if (event.payload.type === 'BACKUP_STATUS_ERROR') {

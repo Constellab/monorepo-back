@@ -77,7 +77,8 @@ export class ClCoreJsonConvert {
    * Tries to serialize a TypeScript object or array of objects to JSON.
    *
    * @param data object or array of objects
-   * @param useClass if a class is provided, the class object is created and data assign to it before serialization
+   * @param useClass if a class is provided, the class object is created and data assign to it
+   * before serialization
    */
   public static serialize<T>(data: T | T[], useClass?: ClClassReference): string {
     return JSON.stringify(this.instanceToPlain(ClCoreJsonConvert.getObject(data, useClass)));
@@ -87,13 +88,16 @@ export class ClCoreJsonConvert {
    * Tries to serialize a TypeScript object or array of objects to JSON.
    *
    * @param data object or array of objects
-   * @param useClass if a class is provided, the class object is created and data assign to it before class to plain
+   * @param useClass if a class is provided, the class object is created and data assign to it
+   * before class to plain
    */
+  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   public static instanceToPlain<T>(data: T | T[], useClass?: ClClassReference): any | any[] {
     return instanceToPlain(ClCoreJsonConvert.getObject(data, useClass));
   }
 
-  // for serialization and classToPlain, it creates the class and assign property to if if a class reference is provided
+  // for serialization and classToPlain, it creates the class and assign property to it
+  // if a class reference is provided
   public static getObject(data: any, useClass?: ClClassReference): any {
     // if we need to use a class for serialization
     if (useClass) {

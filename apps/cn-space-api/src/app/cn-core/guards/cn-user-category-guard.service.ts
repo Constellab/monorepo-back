@@ -3,7 +3,7 @@ import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
 import { CnUser } from '../../cn-users/cn-user.entity';
-import { cnUserCategoriesMetadata } from '../decorators/cn-user-category.decorator';
+import { CN_USER_CATEGORIES_METADATA } from '../decorators/cn-user-category.decorator';
 
 /**
  * Guard that work with the decorator @UserCategories to guard route based
@@ -18,7 +18,7 @@ export class CnUserCategoryGuard implements CanActivate {
     const userCategories: BlUserCategory[] = BlReflectorHelper.getClassOrMethodMetadata(
       this.reflector,
       context,
-      cnUserCategoriesMetadata
+      CN_USER_CATEGORIES_METADATA
     );
     // if not annotated, grant access
     if (!userCategories || userCategories.length === 0) {

@@ -966,7 +966,8 @@ describe('TeRichTextAggregate', () => {
     const V = 2;
     const EV = '2.30.2';
 
-    it('should handle text with HTML entities and &nbsp; (known: &nbsp; normalized to space after undo)', () => {
+    // known: &nbsp; normalized to space after undo
+    it('should handle text with HTML entities and &nbsp;', () => {
       const aggregate = new TeRichTextAggregate(
         new TeRichText({
           version: V,
@@ -1337,7 +1338,6 @@ describe('TeRichTextAggregate', () => {
         }),
         mockUserId
       );
-      const modsAfterAction1 = aggregate.modifications.getModifications().length;
 
       // Action 2: single (update p2)
       aggregate.updateContent(

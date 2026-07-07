@@ -394,7 +394,8 @@ export class CnLabServerService {
       await this.ovhCloudProviderService.createLabDomainHostRecord(ipv4, mainDomain, subDomainName);
     } catch (e) {
       throw new Error(
-        `Error while creating domain record for lab. Error: ${e instanceof Error ? e.message : String(e)}`
+        `Error while creating domain record for lab. Error: ${e instanceof Error ? e.message : String(e)}`,
+        { cause: e }
       );
     }
     this.logger.log(`Domain record created for lab ${lab.id} with subdomain ${subDomainName}`);

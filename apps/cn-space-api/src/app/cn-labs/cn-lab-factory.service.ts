@@ -19,10 +19,7 @@ import { CnUser } from '../cn-users/cn-user.entity';
 import { CnLabBillingMode, CnLabEntity, CnLabType } from './cn-lab.entity';
 import { CnLabAggregateService } from './cn-lab-aggregate.service';
 import { CnLabGreenOptionFormDto } from './green-option/cn-lab-green-option.dto';
-import {
-  CnLabGreenOptionStopAfterInactivityValue,
-  CnLabGreenOptionType,
-} from './green-option/cn-lab-green-option.entity';
+import { CnLabGreenOptionType } from './green-option/cn-lab-green-option.entity';
 import { CnLabGreenOptionService } from './green-option/cn-lab-green-option.service';
 import { CnLabUserRole } from './user/cn-lab-user.entity';
 import { CnLabUserService } from './user/cn-lab-user.service';

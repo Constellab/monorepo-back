@@ -9,7 +9,7 @@ import { CnNotificationType } from '../../cn-notification/cn-notification.entity
 import { CnNotificationService } from '../../cn-notification/cn-notification.service';
 import { CnUser } from '../cn-user.entity';
 import { CnUsersService } from '../cn-users.service';
-import { CnUserAccountEvent, cnUserAccountEventName } from './cn-user-account.event';
+import { CN_USER_ACCOUNT_EVENT_NAME, CnUserAccountEvent } from './cn-user-account.event';
 import { CnUserAccountsService } from './cn-user-accounts.service';
 
 @Injectable()
@@ -25,7 +25,7 @@ export class CnUserAccountListener {
     private usersService: CnUsersService
   ) {}
 
-  @OnEvent(cnUserAccountEventName)
+  @OnEvent(CN_USER_ACCOUNT_EVENT_NAME)
   handleAuthEvent(event: CnUserAccountEvent): void {
     if (event.type === 'ACCOUNT_LOCKED') {
       this.handleAccountLockedEvent(event.user, event.failedLoginLock);

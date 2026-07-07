@@ -14,11 +14,11 @@ import { CnNote } from './cn-notes/cn-note.entity';
 import { CnResource } from './cn-resources/cn-resource.entity';
 import { CnScenario } from './cn-scenarios/cn-scenario.entity';
 
-export const cnFolderEventName = 'cn-folder-event';
+export const CN_FOLDER_EVENT_NAME = 'cn-folder-event';
 
 // special event call before a folder is deleted to remove it from labs
 // that uses it, to avoid circular dependencies
-export const cnRemoveFolderFromAllLabsEventName = 'cn-remove-folder-from-all-labs-event';
+export const CN_REMOVE_FOLDER_FROM_ALL_LABS_EVENT_NAME = 'cn-remove-folder-from-all-labs-event';
 
 export type CnFolderEventType =
   | 'CREATE_ROOT_FOLDER'
@@ -197,6 +197,6 @@ export class CnFolderEventService {
       user: CnCurrentUserHelper.getAndCheckCurrentUser(),
       space: CnCurrentUserHelper.getAndCheckCurrentSpace(),
     };
-    this.eventEmitter.emit(cnFolderEventName, event);
+    this.eventEmitter.emit(CN_FOLDER_EVENT_NAME, event);
   }
 }

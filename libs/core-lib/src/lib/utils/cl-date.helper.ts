@@ -70,7 +70,7 @@ export class ClDateHelper {
     }
 
     if (typeof date !== 'string') {
-      this.logger.error(`[ClDateHelper][DeserializeDate] The date ${date} has a wrong format`);
+      this.logger.error(`[ClDateHelper][DeserializeDate] The date ${String(date)} has a wrong format`);
       return null;
     }
 
@@ -91,7 +91,7 @@ export class ClDateHelper {
     }
 
     if (!(date instanceof DateTime)) {
-      this.logger.error(`[ClDateHelper][SerializeDate] The date ${date} is not a DateTime`);
+      this.logger.error(`[ClDateHelper][SerializeDate] The date ${String(date)} is not a DateTime`);
       return null;
     }
 
@@ -107,7 +107,7 @@ export class ClDateHelper {
     }
 
     if (typeof date !== 'string') {
-      this.logger.error(`[ClDateHelper][DeserializeDateTime] The date ${date} has a wrong format`);
+      this.logger.error(`[ClDateHelper][DeserializeDateTime] The date ${String(date)} has a wrong format`);
       return null;
     }
 
@@ -123,7 +123,7 @@ export class ClDateHelper {
     }
 
     if (!(date instanceof DateTime)) {
-      this.logger.error(`[ClDateHelper][SerializeDate] The date ${date} is not a DateTime`);
+      this.logger.error(`[ClDateHelper][SerializeDate] The date ${String(date)} is not a DateTime`);
       return null;
     }
 

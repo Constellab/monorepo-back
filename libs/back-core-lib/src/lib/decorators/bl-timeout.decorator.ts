@@ -1,6 +1,6 @@
 import { CustomDecorator, SetMetadata } from '@nestjs/common';
 
-import { BL_TIMEOUT_KEY, BlTimeoutOptions } from '../interceptors/bl-timeout.interceptor';
+import { BL_TIMEOUT_KEY } from '../interceptors/bl-timeout.interceptor';
 
 /**
  * Decorator to set a custom timeout for a specific route.

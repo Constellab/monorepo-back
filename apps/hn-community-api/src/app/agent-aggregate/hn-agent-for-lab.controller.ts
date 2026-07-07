@@ -107,7 +107,7 @@ export class HnAgentForLabController {
   }
 
   private getVersionNumber(jsonVersionNumber: string): number {
-    let versionNumber = null;
+    let versionNumber: number;
     if (!jsonVersionNumber) {
       versionNumber = 1;
     } else {

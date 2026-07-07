@@ -1,8 +1,8 @@
 import { BlLuxonDateTimeColumn, BlUserCategory } from '@monorepo/back-core-lib';
 import {
+  CL_DEFAULT_LANG,
+  CL_DEFAULT_THEME,
   ClDateHelper,
-  clDefaultLang,
-  clDefaultTheme,
   ClSupportedLanguage,
   ClTheme,
 } from '@monorepo/core-lib';
@@ -51,10 +51,10 @@ export class HnUser {
   @BlLuxonDateTimeColumn({ nullable: false, update: false })
   createdAt: DateTime;
 
-  @Column({ nullable: false, type: 'enum', enum: ClSupportedLanguage, default: clDefaultLang })
+  @Column({ nullable: false, type: 'enum', enum: ClSupportedLanguage, default: CL_DEFAULT_LANG })
   lang: ClSupportedLanguage;
 
-  @Column({ nullable: false, type: 'enum', enum: ClTheme, default: clDefaultTheme })
+  @Column({ nullable: false, type: 'enum', enum: ClTheme, default: CL_DEFAULT_THEME })
   theme: ClTheme;
 
   @BeforeInsert()

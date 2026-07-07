@@ -1,8 +1,8 @@
 import {
+  BL_CLOUD_BUCKET_TYPES,
   BlAzureBlobContainerConfig,
   BlBucketConfig,
   BlBucketType,
-  blCloudBucketTypes,
   BlS3BucketConfig,
   BlTrim,
 } from '@monorepo/back-core-lib';
@@ -160,7 +160,7 @@ export class CnBucket extends CnBaseEntity {
   }
 
   isCloudBucket(): boolean {
-    return blCloudBucketTypes.includes(this.bucketType);
+    return BL_CLOUD_BUCKET_TYPES.includes(this.bucketType);
   }
 
   isLabBucket(): boolean {

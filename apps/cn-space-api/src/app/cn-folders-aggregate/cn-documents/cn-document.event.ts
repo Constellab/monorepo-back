@@ -1,6 +1,6 @@
 import { CnDocument } from './cn-document.entity';
 
-export const cnDocumentEventName = 'cn-document-event';
+export const CN_DOCUMENT_EVENT_NAME = 'cn-document-event';
 
 export type CnDocumentEventType = 'CREATE_DOCUMENT' | 'UPDATE_DOCUMENT' | 'DELETE_DOCUMENT';
 

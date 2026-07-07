@@ -32,6 +32,7 @@ export class BlUploadedFileUtf8Pipe implements PipeTransform {
  * Wrapper around the UploadedFile decorator to force the original name of an uploaded file to UTF-8
  * @constructor
  */
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export function BlUploadedFile(): ParameterDecorator {
   return UploadedFile(BlUploadedFileUtf8Pipe);
 }
@@ -40,6 +41,7 @@ export function BlUploadedFile(): ParameterDecorator {
  * Wrapper around the UploadedFiles decorator to force the original name of an uploaded file to UTF-8
  * @constructor
  */
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export function BlUploadedFiles(): ParameterDecorator {
   return UploadedFiles(BlUploadedFileUtf8Pipe);
 }

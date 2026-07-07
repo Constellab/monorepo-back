@@ -4,11 +4,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, In, Repository } from 'typeorm';
 
 import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
-import {
-  CnHierarchyObject,
-  CnHierarchyObjectEntity,
-} from '../cn-folders-aggregate/cn-hierarchy-objects/cn-hierarchy-object.entity';
-import { CnLab, CnLabEntity } from '../cn-labs/cn-lab.entity';
+import { CnHierarchyObject } from '../cn-folders-aggregate/cn-hierarchy-objects/cn-hierarchy-object.entity';
+import { CnLab } from '../cn-labs/cn-lab.entity';
 import {
   CnLabFolder,
   CnLabFolderEntity,

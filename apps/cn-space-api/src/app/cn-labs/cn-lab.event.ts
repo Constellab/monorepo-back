@@ -1,6 +1,6 @@
 import { CnLabServerTaskStatus, CnLabStatus } from './status/cn-lab-status.enum';
 
-export const cnLabEventName = 'cn-lab-event';
+export const CN_LAB_EVENT_NAME = 'cn-lab-event';
 
 export interface CnLabStatusChangedEvent {
   type: 'LAB_STATUS_CHANGED';

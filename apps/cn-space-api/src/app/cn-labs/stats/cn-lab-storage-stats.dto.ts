@@ -58,8 +58,10 @@ export class CnLabStorageStatsPeriods<T extends CnLabStorageStatsPeriod = CnLabS
     const lastPeriod = this.periods[this.periods.length - 1];
 
     // TODO : this might be improved. The period which starts the hour is considered as the period of the hour
-    // if the next period has an higher pricing, the hour will be billed to the previous period (which might not be the best)
-    // we need to round the hours to avoid counting twice the same hour due to the ceil (round to the next hour)
+    // if the next period has an higher pricing, the hour will be billed to the previous period
+    // (which might not be the best)
+    // we need to round the hours to avoid counting twice the same hour due to the ceil
+    // (round to the next hour)
     if (lastPeriod) {
       period.fromDate = lastPeriod.toDate;
     } else {

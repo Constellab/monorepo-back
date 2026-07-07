@@ -18,6 +18,7 @@ export interface BlLuxonDateColumnConfig {
  * Decorator to declare a Date TypeOrm column using Luxon date
  * It also includes the transformation using YYYY-MM-DD format
  */
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export function BlLuxonDateColumn(config?: BlLuxonDateColumnConfig): PropertyDecorator {
   // construct TypeOrm transformer
   const transformer: ValueTransformer = {
@@ -48,6 +49,7 @@ export function BlLuxonDateColumn(config?: BlLuxonDateColumnConfig): PropertyDec
  * Decorator to declare a DateTime TypeOrm column using Luxon date
  * It also includes the transformation using ISO string
  */
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export function BlLuxonDateTimeColumn(config?: BlLuxonDateColumnConfig): PropertyDecorator {
   // construct TypeOrm transformer
   const transformer: ValueTransformer = {

@@ -84,7 +84,7 @@ export class BlFileHelper {
         resolve(Buffer.concat(chunks));
       });
       fileStream.on('error', (error: any) => {
-        reject(error);
+        reject(error instanceof Error ? error : new Error(String(error)));
       });
     });
   }

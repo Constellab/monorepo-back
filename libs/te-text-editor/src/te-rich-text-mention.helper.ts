@@ -26,7 +26,9 @@ export class TeRichTextMentionHelper {
           const json = JSON.parse(attribute.replace(/\\"/g, ''));
           mentions.push(json);
         } catch (e) {
-          throw Error(`Error parsing mention: ${attribute}. Error message: ${e}`);
+          throw new Error(`Error parsing mention: ${attribute}. Error message: ${String(e)}`, {
+            cause: e,
+          });
         }
       }
     }

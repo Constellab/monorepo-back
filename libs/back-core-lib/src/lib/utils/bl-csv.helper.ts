@@ -7,7 +7,7 @@ export class BlCsvHelper {
 
     data.forEach((row: T) => {
       fields.forEach((field: keyof T) => {
-        csv += `${row[field]},`;
+        csv += `${String(row[field])},`;
       });
       csv += '\n';
     });

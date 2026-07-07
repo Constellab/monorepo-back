@@ -25,7 +25,7 @@ import { CnChatMessageService } from './cn-chat/cn-chat-message.service';
 import { CnDocumentType } from './cn-documents/cn-document.entity';
 import { CnDocumentService } from './cn-documents/cn-document.service';
 import { CnFolderStorageUsageDTO } from './cn-documents/cn-document-dto.class';
-import { CnFolderEventService, cnRemoveFolderFromAllLabsEventName } from './cn-folder.event';
+import { CN_REMOVE_FOLDER_FROM_ALL_LABS_EVENT_NAME, CnFolderEventService } from './cn-folder.event';
 import { CnFolderUserConfigDTO } from './cn-folder-user/cn-folder-user.dto';
 import {
   CnFolderUser,
@@ -252,7 +252,10 @@ export class CnFolderAggregateService {
     // remove folder from all lab using event to avoid circular dependencies.
     // If the user can delete the folder, we consider he can remove it from labs
     if (hierarchyObject.isRootFolder()) {
-      const results = await this.eventEmitter.emitAsync(cnRemoveFolderFromAllLabsEventName, hierarchyObject);
+      const results = await this.eventEmitter.emitAsync(
+        CN_REMOVE_FOLDER_FROM_ALL_LABS_EVENT_NAME,
+        hierarchyObject
+      );
       // if a text is returned, it means an error occurred
       for (const res of results) {
         if (!res) continue;

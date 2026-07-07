@@ -84,7 +84,7 @@ export class CnLabConfigurerService {
         `Error while updating lab-configurer repository. Error : ${e}`,
         CnLabServerTaskStatus.ERROR
       );
-      throw new Error(`Error while updating lab-configurer repository. Error : ${e}`);
+      throw new Error(`Error while updating lab-configurer repository. Error : ${e}`, { cause: e });
     }
     await this.labService.updateServerTask(
       lab.id,
@@ -150,7 +150,7 @@ export class CnLabConfigurerService {
     try {
       await sshService.waitForDnsResolution(expectedIp);
     } catch (e: any) {
-      throw new Error(`Error while waiting for DNS to be configured. Error : ${e}`);
+      throw new Error(`Error while waiting for DNS to be configured. Error : ${e}`, { cause: e });
     }
   }
 
@@ -161,7 +161,7 @@ export class CnLabConfigurerService {
       const cloudProvider = await this.cloudProviderFactory.getCloudProviderServiceFromLab(lab.id);
       await cloudProvider.mountVolume(lab);
     } catch (e: any) {
-      throw new Error(`Error while mounting volume. Error : ${e}`);
+      throw new Error(`Error while mounting volume. Error : ${e}`, { cause: e });
     }
   }
 
@@ -186,7 +186,7 @@ export class CnLabConfigurerService {
         { errorMode: CnExecCommandMode.STDERR_AS_SUCCESS }
       );
     } catch (e: any) {
-      throw new Error(`Error while preparing server. Error : ${e}`);
+      throw new Error(`Error while preparing server. Error : ${e}`, { cause: e });
     }
   }
 
@@ -202,7 +202,7 @@ export class CnLabConfigurerService {
 
       await labSshService.waitForServerReboot();
     } catch (e: any) {
-      throw new Error(`Error while rebooting server. Error : ${e}`);
+      throw new Error(`Error while rebooting server. Error : ${e}`, { cause: e });
     }
   }
 
@@ -240,7 +240,7 @@ export class CnLabConfigurerService {
         { errorMode: CnExecCommandMode.STDERR_AS_SUCCESS }
       );
     } catch (e: any) {
-      throw new Error(`Error while starting lab manager. Error : ${e}`);
+      throw new Error(`Error while starting lab manager. Error : ${e}`, { cause: e });
     }
   }
 
@@ -255,7 +255,7 @@ export class CnLabConfigurerService {
         { errorMode: CnExecCommandMode.STDERR_AS_SUCCESS }
       );
     } catch (e: any) {
-      throw new Error(`Error while stopping lab manager. Error : ${e}`);
+      throw new Error(`Error while stopping lab manager. Error : ${e}`, { cause: e });
     }
   }
 

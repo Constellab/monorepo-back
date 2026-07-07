@@ -1,6 +1,6 @@
 import { CnUser } from '../cn-user.entity';
 
-export const cnUserAccountEventName = 'cn-user-account-event';
+export const CN_USER_ACCOUNT_EVENT_NAME = 'cn-user-account-event';
 
 export type CnUserAccountEvent =
   | {

@@ -4,7 +4,7 @@ import { Response } from 'express';
 
 import { HnCoreConfigService } from '../core/modules/core-config/hn-core-config.service';
 import { HnAuthResponse, HnAuthService } from './hn-auth.service';
-import { hnJwtConfig } from './hn-jwt.config';
+import { HN_JWT_CONFIG } from './hn-jwt.config';
 
 @Controller('auth')
 export class HnAuthController {
@@ -26,7 +26,7 @@ export class HnAuthController {
 
     if (result.status === 'LOGGED_IN') {
       this.setTokenInCookie(result.token, response);
-      response.send({ status: 'LOGGED_IN', expiresIn: hnJwtConfig.tokenDurationInMilliseconds });
+      response.send({ status: 'LOGGED_IN', expiresIn: HN_JWT_CONFIG.tokenDurationInMilliseconds });
     } else {
       response.send({ status: '2FA_REQUIRED', twoFAUrlCode: result.twoFAUrlCode });
     }
@@ -42,18 +42,19 @@ export class HnAuthController {
     const token = await this.authService.loginWith2FA(credentials);
 
     this.setTokenInCookie(token, response);
-    response.send({ status: 'LOGGED_IN', expiresIn: hnJwtConfig.tokenDurationInMilliseconds });
+    response.send({ status: 'LOGGED_IN', expiresIn: HN_JWT_CONFIG.tokenDurationInMilliseconds });
   }
 
   @BlPublicSecure()
   @Post('logout')
+  // eslint-disable-next-line @typescript-eslint/require-await
   async logout(@Body() body: any, @Res() response: Response): Promise<void> {
     this.clearTokenCookie(response);
     response.send();
   }
 
   private setTokenInCookie(token: string, response: Response): void {
-    this.configureTokenCookie(token, hnJwtConfig.tokenDurationInMilliseconds, response);
+    this.configureTokenCookie(token, HN_JWT_CONFIG.tokenDurationInMilliseconds, response);
   }
 
   private clearTokenCookie(response: Response): void {
@@ -66,7 +67,7 @@ export class HnAuthController {
    */
   private configureTokenCookie(token: string, expiresInMilliseconds: number, response: Response): void {
     response.cookie(
-      hnJwtConfig.authorizationCookie,
+      HN_JWT_CONFIG.authorizationCookie,
       token,
       this.configService.getDomain()
         ? {

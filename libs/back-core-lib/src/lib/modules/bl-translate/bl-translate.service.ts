@@ -1,4 +1,4 @@
-import { clDefaultLang, ClSupportedLanguage } from '@monorepo/core-lib';
+import { CL_DEFAULT_LANG, ClSupportedLanguage } from '@monorepo/core-lib';
 import { Inject, Injectable } from '@nestjs/common';
 import { I18nService } from 'nestjs-i18n';
 import { from, Observable } from 'rxjs';
@@ -30,7 +30,7 @@ export class BlTranslateService {
       options.lang ??
       this.moduleConfig.getCurrentUserLang() ??
       BlRequestContextHelper.getLangHeader() ??
-      clDefaultLang;
+      CL_DEFAULT_LANG;
 
     return this.i18nService.translate(key, {
       lang: lang,

@@ -14,6 +14,7 @@ export interface BlJwtModuleAsyncOptions extends Pick<ModuleMetadata, 'imports'>
 }
 
 // use to configure the JWTModule from the config of the BlJwtModule
+// eslint-disable-next-line @typescript-eslint/require-await
 async function configureJwtModule(blJwtConfig: BlJwtConfig): Promise<JwtModuleOptions> {
   return {
     secret: blJwtConfig.jwtSecret,

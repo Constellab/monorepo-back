@@ -1,4 +1,4 @@
-import { clDefaultLang, clLangCookie, clLangIsSupported, ClSupportedLanguage } from '@monorepo/core-lib';
+import { CL_DEFAULT_LANG, CL_LANG_COOKIE, clLangIsSupported, ClSupportedLanguage } from '@monorepo/core-lib';
 import { Request } from 'express';
 
 import { BlCookieHelper } from '../../utils/bl-cookie.helper';
@@ -51,10 +51,10 @@ export class BlRequestContextHelper {
   }
 
   public static getLangHeader(): ClSupportedLanguage {
-    const lang: string = this.getHeaderFromContext(clLangCookie);
+    const lang: string = this.getHeaderFromContext(CL_LANG_COOKIE);
     // check that the lang exists
     if (!clLangIsSupported(lang)) {
-      return clDefaultLang;
+      return CL_DEFAULT_LANG;
     }
     return lang as ClSupportedLanguage;
   }

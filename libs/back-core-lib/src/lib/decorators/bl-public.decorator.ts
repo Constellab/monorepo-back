@@ -12,6 +12,7 @@ const publicMetadata = 'isPublic';
  * @Public decorator for method or class to make a route public so the guard
  * don't check the existence of the token
  */
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export const BlPublic = (): CustomDecorator => SetMetadata(publicMetadata, true);
 
 /**
@@ -20,6 +21,7 @@ export const BlPublic = (): CustomDecorator => SetMetadata(publicMetadata, true)
  * It also adds a BlThrottlerBehindProxyGuard to prevent brute force attack
  * @constructor
  */
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export const BlPublicSecure = (options?: { limit: number; ttl: number }): any => {
   const decorators = [SetMetadata(publicMetadata, true), UseGuards(BlThrottlerBehindProxyGuard)];
   if (options) {

@@ -23,7 +23,8 @@ export function blGetCorsConfig(
     credentials: true,
     // header If-None-Match useful for Safari with service workers
     allowedHeaders:
-      'Origin,X-Requested-With,Content-Type,Accept,Authorization,authorization,X-Forwarded-for,lang,If-None-Match' +
+      'Origin,X-Requested-With,Content-Type,Accept,Authorization,authorization,' +
+      'X-Forwarded-for,lang,If-None-Match' +
       (additionalAllowedHeader.length > 0 ? ',' + additionalAllowedHeader.join(',') : ''),
   };
 }

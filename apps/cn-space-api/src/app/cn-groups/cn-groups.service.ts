@@ -129,7 +129,7 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
       spaceId: spaceId,
     };
 
-    let userWheres: FindOptionsWhere<CnGroupSingleUser>[] = [];
+    let userWheres: FindOptionsWhere<CnGroupSingleUser>[];
     if (!ClHelpService.isNullOrEmpty(label)) {
       teamWhere.label = Like(`%${label}%`);
 

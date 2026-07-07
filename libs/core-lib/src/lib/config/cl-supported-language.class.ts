@@ -6,12 +6,12 @@ export enum ClSupportedLanguage {
   fr = 'fr',
 }
 
-export const clDefaultLang: ClSupportedLanguage = ClSupportedLanguage.en;
+export const CL_DEFAULT_LANG: ClSupportedLanguage = ClSupportedLanguage.en;
 
 /**
  * Name of the cookie that contains the lang
  */
-export const clLangCookie: string = 'lang';
+export const CL_LANG_COOKIE: string = 'lang';
 
 /**
  * Return true if the string lang is a supported lang
@@ -23,7 +23,7 @@ export function clLangIsSupported(lang: string): boolean {
 /**
  * Map to map the language code with language name in the language
  */
-export const clLangNameMap: Record<ClSupportedLanguage, string> = {
+export const CL_LANG_NAME_MAP: Record<ClSupportedLanguage, string> = {
   en: 'English',
   fr: 'Français',
 };

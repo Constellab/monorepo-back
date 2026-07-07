@@ -30,7 +30,8 @@ export class CnCoreExceptionHandlerFilter extends BlCoreExceptionHandlerFilter {
     const spaceString = CnCurrentUserHelper.getCurrentSpace()?.id ?? 'No space';
 
     this.logger.error(
-      `${requestString} | User : ${userString} | Space : ${spaceString} | InstanceId ${instanceId} | Error : ${error.message}`
+      `${requestString} | User : ${userString} | Space : ${spaceString} | ` +
+        `InstanceId ${instanceId} | Error : ${error.message}`
     );
     if (error.stack) {
       this.logger.error(error.stack);

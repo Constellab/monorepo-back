@@ -1,4 +1,4 @@
-import { SetMetadata } from '@nestjs/common';
+import { CustomDecorator, SetMetadata } from '@nestjs/common';
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export const IsAdmin = () => SetMetadata('isAdmin', true);
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export const IsAdmin = (): CustomDecorator => SetMetadata('isAdmin', true);

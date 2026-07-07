@@ -14,7 +14,7 @@ import {
   BlTransportModuleConfig,
   blTransportRedisForRoot,
 } from '@monorepo/back-core-lib';
-import { clDefaultLang } from '@monorepo/core-lib';
+import { CL_DEFAULT_LANG } from '@monorepo/core-lib';
 import { TeRichTextModifications } from '@monorepo/te-text-editor';
 import { BullModule } from '@nestjs/bullmq';
 import { ClassSerializerInterceptor, MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
@@ -36,7 +36,7 @@ import { HnAgentVersionModule } from './app/agent-aggregate/agent-version/hn-age
 import { HnAgentVersionBrickDependenciesModule } from './app/agent-aggregate/agent-version-brick-dependencies/hn-agent-version-brick-dependencies.module';
 import { HnAgentAggregateModule } from './app/agent-aggregate/hn-agent-aggregate.module';
 import { HnAuthModule } from './app/auth/hn-auth.module';
-import { hnJwtConfig } from './app/auth/hn-jwt.config';
+import { HN_JWT_CONFIG } from './app/auth/hn-jwt.config';
 import { HnBrickModule } from './app/brick-aggregate/brick/hn-brick.module';
 import { HnBrickMajorVersionModule } from './app/brick-aggregate/brick-major-version/hn-brick-major-version.module';
 import { HnBrickUserModule } from './app/brick-aggregate/brick-user/hn-brick-user.module';
@@ -159,11 +159,11 @@ function configureJwtModule(configService: HnCoreConfigService, userService: HnU
     jwtFromRequest: (request: Request) => {
       return (
         request.headers.authorization ??
-        BlCookieHelper.getCookieFromHeader(request.headers.cookie, hnJwtConfig.authorizationCookie)
+        BlCookieHelper.getCookieFromHeader(request.headers.cookie, HN_JWT_CONFIG.authorizationCookie)
       );
     },
     usersService: userService,
-    tokenDurationInSeconds: hnJwtConfig.tokenDurationInSeconds,
+    tokenDurationInSeconds: HN_JWT_CONFIG.tokenDurationInSeconds,
   };
 }
 
@@ -195,7 +195,7 @@ TeRichTextModifications.setBackTimeDifference();
     }),
 
     I18nModule.forRoot({
-      fallbackLanguage: clDefaultLang,
+      fallbackLanguage: CL_DEFAULT_LANG,
       loader: I18nJsonLoader,
       loaderOptions: {
         path: join(__dirname, 'assets/i18n/'),

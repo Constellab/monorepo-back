@@ -87,7 +87,7 @@ export class HnTempLiveTaskController {
     @Param('id', ParseUUIDPipe) versionId: string,
     @Param('jsonVersionNumber') jsonVersionNumber?: string
   ): Promise<HnAgentForLabDto> {
-    let versionNumber = null;
+    let versionNumber: number;
     if (!jsonVersionNumber) {
       versionNumber = 1;
     } else {
@@ -108,7 +108,7 @@ export class HnTempLiveTaskController {
     @Param('agentId', ParseUUIDPipe) agentId: string,
     @Param('jsonVersionNumber') jsonVersionNumber?: string
   ): Promise<HnAgentVersionForLabDtoOldFormat> {
-    let versionNumber = null;
+    let versionNumber: number;
     if (!jsonVersionNumber) {
       versionNumber = 1;
     } else {

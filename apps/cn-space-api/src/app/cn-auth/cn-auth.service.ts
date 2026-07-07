@@ -14,8 +14,8 @@ import { CnCoreConfigService } from '../cn-core/modules/cn-core-config/cn-core-c
 import { CnCaptchaService } from '../cn-core/services/cn-captcha.service';
 import { CnUser } from '../cn-users/cn-user.entity';
 import {
+  CN_USER_ACCOUNT_EVENT_NAME,
   CnUserAccountEvent,
-  cnUserAccountEventName,
 } from '../cn-users/cn-user-accounts/cn-user-account.event';
 import { CnUsersService } from '../cn-users/cn-users.service';
 import { CnUser2FAService } from './cn-user-2-f-a/cn-user-2-f-a.service';
@@ -136,7 +136,7 @@ export class CnAuthService {
           user: user,
           failedLoginLock,
         };
-        this.eventEmitter.emit(cnUserAccountEventName, lockEvent);
+        this.eventEmitter.emit(CN_USER_ACCOUNT_EVENT_NAME, lockEvent);
         throw new BlUnauthorizedException(CnErrorText.USER_LOCKED);
       } else {
         throw new BlUnauthorizedException(CnErrorText.WRONG_CREDENTIALS);

@@ -8,11 +8,12 @@ import { CnUser } from '../../cn-users/cn-user.entity';
  */
 @Injectable()
 export class CnConfigEntitySecurity {
-  public async checkAuthorizationToModifyEntity(user: CnUser): Promise<void> {
+  public checkAuthorizationToModifyEntity(user: CnUser): Promise<void> {
     if (!user.isAdmin()) throw new BlUnauthorizedException();
+    return Promise.resolve();
   }
 
-  public async checkAuthorizationToReadEntity(): Promise<void> {
-    return;
+  public checkAuthorizationToReadEntity(): Promise<void> {
+    return Promise.resolve();
   }
 }

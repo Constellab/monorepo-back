@@ -2,10 +2,10 @@ import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 
 import {
+  CN_FOLDER_EVENT_NAME,
+  CN_REMOVE_FOLDER_FROM_ALL_LABS_EVENT_NAME,
   CnFolderEvent,
   CnFolderEventMoveObjectToFolderData,
-  cnFolderEventName,
-  cnRemoveFolderFromAllLabsEventName,
 } from '../cn-folders-aggregate/cn-folder.event';
 import { CnFolderAggregateService } from '../cn-folders-aggregate/cn-folder-aggregate.service';
 import { CnFolder } from '../cn-folders-aggregate/cn-folders/cn-folder.entity';
@@ -26,7 +26,7 @@ export class CnLabFolderListener {
     private folderBucketService: CnFolderBucketService
   ) {}
 
-  @OnEvent(cnFolderEventName)
+  @OnEvent(CN_FOLDER_EVENT_NAME)
   async handleCnFolderEvent(event: CnFolderEvent): Promise<void> {
     try {
       switch (event.payload.type) {
@@ -181,7 +181,7 @@ export class CnLabFolderListener {
    * if an error is thrown, it will be returned as a string
    * @param rootFolder
    */
-  @OnEvent(cnRemoveFolderFromAllLabsEventName)
+  @OnEvent(CN_REMOVE_FOLDER_FROM_ALL_LABS_EVENT_NAME)
   async handleRemoveFolderFromLabs(rootFolder: CnHierarchyObject): Promise<string | null> {
     try {
       await this.labFolderAggregateService.removeFolderFromAllLabs(rootFolder.id);

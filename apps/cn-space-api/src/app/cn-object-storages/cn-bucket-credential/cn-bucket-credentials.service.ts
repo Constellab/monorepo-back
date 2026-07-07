@@ -22,10 +22,11 @@ export class CnBucketCredentialsService extends BlAbstractService<CnBucketCreden
     return super.update(entity, entityManager);
   }
 
-  private async checkBucketBeforeSave(credentials: CnBucketCredentials): Promise<void> {
+  private checkBucketBeforeSave(credentials: CnBucketCredentials): Promise<void> {
     if (credentials.cloudProvider == null && credentials.space == null) {
       throw new BlBadRequestException('Cloud provider or space must be defined');
     }
+    return Promise.resolve();
   }
 
   public findAll(page: number, size: number): Promise<ClPage<CnBucketCredentials>> {

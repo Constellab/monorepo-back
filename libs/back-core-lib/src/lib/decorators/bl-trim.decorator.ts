@@ -3,6 +3,7 @@ import { Transform } from 'class-transformer';
 
 export type BlTrimOptions = 'start' | 'end' | 'both';
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export function BlTrim(options: BlTrimOptions = 'both'): PropertyDecorator {
   // convert 'YYYY-MM-DD' to Date
   const transformToClass = Transform(

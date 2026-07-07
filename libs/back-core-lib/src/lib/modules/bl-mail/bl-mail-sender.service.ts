@@ -126,7 +126,7 @@ export class BlMailSenderService {
     } catch (e: any) {
       const error = `Error while generating mail ${templateName} in ${lang}. ${e}`;
       this.logger.error(error);
-      throw new Error(error);
+      throw new Error(error, { cause: e });
     }
 
     // if the default layout is set, we use it
@@ -139,7 +139,7 @@ export class BlMailSenderService {
           `Error while generating mail layout ${this.moduleConfig.defaultLayout} in ${lang}.` +
           ` Error: ${e}`;
         this.logger.error(error);
-        throw new Error(error);
+        throw new Error(error, { cause: e });
       }
     }
 

@@ -6,7 +6,6 @@ import {
   StorageSharedKeyCredential,
 } from '@azure/storage-blob';
 import { Logger } from '@nestjs/common';
-import { Readable } from 'stream';
 
 import { BlBadRequestException } from '../../exceptions/bl-bad-request.exception';
 import { BlAzureBlobContainerConfig, BlFileResponse, BlObject } from './bl-object-storage.class';

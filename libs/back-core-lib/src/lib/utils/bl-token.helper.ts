@@ -1,4 +1,4 @@
-import jwt = require('jsonwebtoken');
+import * as jwt from 'jsonwebtoken';
 
 /**
  * Class to encode/decode token manually

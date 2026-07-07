@@ -13,6 +13,7 @@ const cnLabManagerAuthMetadata = 'labManagerAuth';
  *
  * The {@link CnLabManagerAuthGuard} check this decorator
  */
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export function CnLabManagerGuard(): MethodDecorator & ClassDecorator {
   // use to combined 2 decorators
   return (target: any, property?: string | symbol, descriptor?: TypedPropertyDescriptor<any>): void => {

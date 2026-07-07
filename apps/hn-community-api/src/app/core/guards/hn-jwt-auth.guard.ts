@@ -41,7 +41,7 @@ export class HnJwtAuthGuard extends AuthGuard('jwt') {
         // if yes, authorize
         return this.contextIsPublic(context);
       }
-    } catch (error) {
+    } catch {
       // Check if the route is annotated with @Public
       // if yes, authorize
       if (this.contextIsPublic(context)) {

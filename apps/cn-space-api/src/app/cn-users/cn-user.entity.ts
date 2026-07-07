@@ -7,9 +7,9 @@ import {
   BlUserStatus,
 } from '@monorepo/back-core-lib';
 import {
+  CL_DEFAULT_LANG,
+  CL_DEFAULT_THEME,
   ClDateHelper,
-  clDefaultLang,
-  clDefaultTheme,
   ClSupportedLanguage,
   ClTheme,
 } from '@monorepo/core-lib';
@@ -62,10 +62,10 @@ export class CnUserEntity extends BlEntityWithId implements BlUser {
   @BlLuxonDateTimeColumn({ nullable: true })
   lastLoginSuccess: DateTime;
 
-  @Column({ nullable: false, type: 'enum', enum: ClSupportedLanguage, default: clDefaultLang })
+  @Column({ nullable: false, type: 'enum', enum: ClSupportedLanguage, default: CL_DEFAULT_LANG })
   lang: ClSupportedLanguage;
 
-  @Column({ nullable: false, type: 'enum', enum: ClTheme, default: clDefaultTheme })
+  @Column({ nullable: false, type: 'enum', enum: ClTheme, default: CL_DEFAULT_THEME })
   theme: ClTheme;
 
   // use the string name and import type to avoid circular dependency
@@ -115,8 +115,8 @@ export class CnUserEntity extends BlEntityWithId implements BlUser {
     this.createdAt = ClDateHelper.getDate();
 
     // force the lang to en
-    this.lang = clDefaultLang;
-    this.theme = clDefaultTheme;
+    this.lang = CL_DEFAULT_LANG;
+    this.theme = CL_DEFAULT_THEME;
   }
 
   async comparePassword(attempt: string): Promise<boolean> {

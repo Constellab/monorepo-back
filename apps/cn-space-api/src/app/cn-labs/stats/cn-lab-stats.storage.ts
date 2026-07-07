@@ -128,8 +128,8 @@ export class CnLabStatsStorage {
   /**
    * Merge the storage prices periods with the other periods to return a list of periods with the price.
    * The return periods starts at this.stats.fromDate and ends at this.stats.toDate.
-   * The returns periods are the intersection of the input periods and the storage prices periods, new periods are
-   * create if the storage price change during the period.
+   * The returns periods are the intersection of the input periods and the storage prices periods,
+   * new periods are create if the storage price change during the period.
    * @param periods periods to merge with the storage prices
    * @param storagePrices storage prices to merge with the periods
    * @param periodFactory factory to create the new period with the price

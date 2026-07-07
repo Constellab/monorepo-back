@@ -9,7 +9,7 @@ import { CnUser } from '../../cn-users/cn-user.entity';
 import { CnLab, CnLabEntity } from '../cn-lab.entity';
 import { CnLabStatsRequestDTO } from '../stats/cn-lab-stats.dto';
 import { CnLabStatsAggregateService } from '../stats/cn-lab-stats-aggregate.service';
-import { cnLabRunningStatuses, CnLabStatus } from '../status/cn-lab-status.enum';
+import { CN_LAB_RUNNING_STATUSES, CnLabStatus } from '../status/cn-lab-status.enum';
 import { CnLabFreeGetDto, CnLabFreeUpdateDto } from './cn-lab-free.dto';
 import { CnLabFree } from './cn-lab-free.entity';
 
@@ -139,7 +139,7 @@ export class CnLabFreeService extends BlAbstractService<CnLabFree> {
     return this.repo.find({
       where: {
         lab: {
-          currentStatus: { status: In([cnLabRunningStatuses]) },
+          currentStatus: { status: In([CN_LAB_RUNNING_STATUSES]) },
         },
       },
     });

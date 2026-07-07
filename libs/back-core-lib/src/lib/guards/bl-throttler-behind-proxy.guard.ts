@@ -7,6 +7,7 @@ import { ThrottlerGuard } from '@nestjs/throttler';
  */
 @Injectable()
 export class BlThrottlerBehindProxyGuard extends ThrottlerGuard {
+  // eslint-disable-next-line @typescript-eslint/require-await
   protected async getTracker(req: Record<string, any>): Promise<string> {
     return req.ips.length ? req.ips[0] : req.ip; // individualize IP extraction to meet your own needs
   }

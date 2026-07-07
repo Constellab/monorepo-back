@@ -27,12 +27,12 @@ import { CnLabBackupStatus } from './backup/cn-lab-backup.dto';
 import { CN_LAB_SEARCH_FILTER_HAS_ACTIVE_BACKUP } from './cn-lab.dto';
 import { CnLab, CnLabEntity, CnLabFull, CnLabType, CnLabWithSpace } from './cn-lab.entity';
 import {
+  CN_LAB_EVENT_NAME,
   CnLabEvent,
-  cnLabEventName,
   CnLabServerTaskStatusChangedEvent,
   CnLabStatusChangedEvent,
 } from './cn-lab.event';
-import { CnLabServerTaskStatus, CnLabStatus, cnLabTemporaryStatuses } from './status/cn-lab-status.enum';
+import { CN_LAB_TEMPORARY_STATUSES, CnLabServerTaskStatus, CnLabStatus } from './status/cn-lab-status.enum';
 import { CnLabStatusHistory } from './status/cn-lab-status-history.entity';
 
 @Injectable()
@@ -437,7 +437,7 @@ export class CnLabsService extends CnAbstractWithStatusService<CnLabEntity, CnLa
     return this.repository.find({
       where: {
         currentStatus: {
-          status: In(cnLabTemporaryStatuses),
+          status: In(CN_LAB_TEMPORARY_STATUSES),
         },
         type: CnLabType.CLOUD,
       },
@@ -455,7 +455,7 @@ export class CnLabsService extends CnAbstractWithStatusService<CnLabEntity, CnLa
   }
 
   private emitLabEvent(labEvent: CnLabEvent): void {
-    this.eventEmitter.emit(cnLabEventName, labEvent);
+    this.eventEmitter.emit(CN_LAB_EVENT_NAME, labEvent);
   }
 
   // TODO to remove

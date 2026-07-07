@@ -4,8 +4,8 @@ import { OnEvent } from '@nestjs/event-emitter';
 import { CnLabConfigsService } from '../cn-lab-configs/cn-lab-configs.service';
 import { CN_SPACE_EVENT_NAME, CnSpaceEvent } from '../cn-spaces/cn-space.event';
 import {
+  CN_LAB_EVENT_NAME,
   CnLabEvent,
-  cnLabEventName,
   CnLabServerTaskStatusChangedEvent,
   CnLabStatusChangedEvent,
 } from './cn-lab.event';
@@ -29,7 +29,7 @@ export class CnLabListener {
     private labGreenOptionService: CnLabGreenOptionService
   ) {}
 
-  @OnEvent(cnLabEventName)
+  @OnEvent(CN_LAB_EVENT_NAME)
   async handleLabEvent(event: CnLabEvent): Promise<void> {
     if (event.type === 'LAB_STATUS_CHANGED') {
       await this.handleLabStatusChanged(event);

@@ -12,6 +12,7 @@ const cnHierarchyObjectTokenMetadata = 'hierarchyObjectToken';
  *
  * The {@link CnLabAuthGuard} check this decorator
  */
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export function CnHierarchyObjectTokenDecorator(): MethodDecorator & ClassDecorator {
   // use to combined 2 decorators
   return (target: any, property?: string | symbol, descriptor?: TypedPropertyDescriptor<any>): void => {

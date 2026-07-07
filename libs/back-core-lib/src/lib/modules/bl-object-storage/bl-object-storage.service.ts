@@ -132,13 +132,13 @@ export class BlObjectStorageService {
               try {
                 resolve(JSON.parse(body));
               } catch (e) {
-                reject(e);
+                reject(e instanceof Error ? e : new Error(String(e)));
               }
             }
           });
         })
         .catch((e) => {
-          reject(e);
+          reject(e instanceof Error ? e : new Error(String(e)));
         });
     });
   }
@@ -337,7 +337,7 @@ export class BlObjectStorageService {
       const chunks: Buffer[] = [];
 
       stream.on('data', (chunk) => chunks.push(Buffer.from(chunk)));
-      stream.on('error', (err) => reject(err));
+      stream.on('error', (err) => reject(err instanceof Error ? err : new Error(String(err))));
       stream.on('end', () => resolve(Buffer.concat(chunks)));
     });
   }

@@ -12,7 +12,7 @@ import { Repository } from 'typeorm';
 
 import { HnEntityType } from '../../core/model/entities/hn-entity-type.enum';
 import { HnCurrentUserHelper } from '../../core/utils/hn-current-user.helper';
-import { HnCommentEventData, HnEventType } from '../../core/utils/hn-events.enum';
+import { HnEventType } from '../../core/utils/hn-events.enum';
 import { HnCommentEntity } from './hn-comment.entity';
 
 export abstract class HnAbstractCommentService<T extends BlEntityWithId> {

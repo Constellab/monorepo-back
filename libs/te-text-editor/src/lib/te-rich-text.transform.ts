@@ -8,6 +8,7 @@ import { TeRichText, TeRichTextInput } from './te-rich-text.class';
  * Deserialization --> create TeRichText from TeRichTextInput
  * Serialization --> create TeRichTextInput from TeRichText
  */
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export function TeRichTextTransform(): PropertyDecorator {
   // convert dateTime to ISI
   const transformToPlain = Transform(

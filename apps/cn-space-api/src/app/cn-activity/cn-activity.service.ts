@@ -23,7 +23,7 @@ export interface CnActivityCreateDTO {
   additionalData?: any;
 }
 
-export const cnActivityEvent = 'activity';
+export const CN_ACTIVITY_EVENT = 'activity';
 
 export interface CnActivityEventDTO<T extends BlEntityWithId = BlEntityWithId> {
   activity: CnActivity;
@@ -59,7 +59,7 @@ export class CnActivityService extends BlAbstractPaginatedService<CnActivity> {
       entity: activityDTO.entity,
       additionalData: activityDTO.additionalData,
     };
-    this.eventEmitter.emit(cnActivityEvent, event);
+    this.eventEmitter.emit(CN_ACTIVITY_EVENT, event);
     return dbActivity;
   }
 

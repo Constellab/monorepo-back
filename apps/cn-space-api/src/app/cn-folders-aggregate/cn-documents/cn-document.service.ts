@@ -32,7 +32,7 @@ import {
 } from '../cn-hierarchy-objects/cn-hierarchy-object.entity';
 import { CnHierarchyObjectService } from '../cn-hierarchy-objects/cn-hierarchy-object.service';
 import { CnDocument, CnDocumentEntity, CnDocumentType, CnDocumentWithHierarchy } from './cn-document.entity';
-import { CnDocumentEvent, cnDocumentEventName, CnDocumentEventType } from './cn-document.event';
+import { CN_DOCUMENT_EVENT_NAME, CnDocumentEvent, CnDocumentEventType } from './cn-document.event';
 import {
   CnConstellabDocumentDTO,
   CnDocumentPreviewDTO,
@@ -801,7 +801,7 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
       entity: document,
       spaceId: CnCurrentUserHelper.getAndCheckCurrentSpace().id,
     };
-    this.eventEmitter.emit(cnDocumentEventName, event);
+    this.eventEmitter.emit(CN_DOCUMENT_EVENT_NAME, event);
   }
 
   /**

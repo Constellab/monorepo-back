@@ -202,7 +202,8 @@ export abstract class HnAbstractFileService<T extends BlEntityWithId> {
     };
   }
 
-  //--------------------------------------- RESOURCE VIEW FUNCTIONS --------------------------------------------
+  //--------------------------------------- RESOURCE VIEW FUNCTIONS
+  //---------------------------------------
   async saveResourceView(entity: T, file: BlFile): Promise<string> {
     file.originalname = entity.id + '/views/' + ClStringHelper.generateUUID() + '.json';
     const filename = await this.objectStorageService.uploadObject(

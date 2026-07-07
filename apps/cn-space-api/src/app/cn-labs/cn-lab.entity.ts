@@ -21,7 +21,7 @@ import { CnEntityWithStatus } from '../cn-core/model/entities/cn-entity-with-sta
 import { CnLabConfig } from '../cn-lab-configs/cn-lab-config.entity';
 import { CnServerCloud } from '../cn-servers-info/server-cloud/cn-server-cloud.entity';
 import { CnSpace, CnSpaceEntity } from '../cn-spaces/cn-space.entity';
-import { CnLabServerTaskStatus, CnLabStatus, cnLabStoppedStatuses } from './status/cn-lab-status.enum';
+import { CN_LAB_STOPPED_STATUSES, CnLabServerTaskStatus, CnLabStatus } from './status/cn-lab-status.enum';
 import { CnLabStatusHistory } from './status/cn-lab-status-history.entity';
 import { CnLabUser, CnLabUserEntity } from './user/cn-lab-user.entity';
 
@@ -287,7 +287,7 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
 
   serverIsStopped(): boolean {
     if (this.currentStatus == null) return false;
-    return cnLabStoppedStatuses.includes(this.currentStatus?.status);
+    return CN_LAB_STOPPED_STATUSES.includes(this.currentStatus?.status);
   }
 
   getGlabSpaceApiInfo(): CnExternalApiInfo {

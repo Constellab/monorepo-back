@@ -87,7 +87,7 @@ export class ClStringHelper {
       return [];
     }
     let startIndex = 0;
-    let index = 0;
+    let index: number;
     const indices = [];
     if (!caseSensitive) {
       str = str.toLowerCase();

@@ -28,7 +28,7 @@ import { CnSupportService } from '../../cn-support/cn-support.service';
 import { CnCreateUserDto, CnUserUpdateLicenseDTO } from '../cn-user.dto';
 import { CnUser, CnUserEntity, CnUserLicense } from '../cn-user.entity';
 import { CnUsersService } from '../cn-users.service';
-import { CnUserAccountEvent, cnUserAccountEventName } from './cn-user-account.event';
+import { CN_USER_ACCOUNT_EVENT_NAME, CnUserAccountEvent } from './cn-user-account.event';
 
 /**
  * Service to handle users' account (signup, mail validation, password forgotten, reset password...)
@@ -340,6 +340,6 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
   }
 
   private emitUserAccountEvent(userEvent: CnUserAccountEvent): void {
-    this.eventEmitter.emit(cnUserAccountEventName, userEvent);
+    this.eventEmitter.emit(CN_USER_ACCOUNT_EVENT_NAME, userEvent);
   }
 }

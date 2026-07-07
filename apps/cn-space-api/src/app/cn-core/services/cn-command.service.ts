@@ -57,8 +57,10 @@ export class CnCommandService {
           if (options.ignoreError) {
             return resolve(error.toString());
           } else {
-            this.logger.error(`Error during the execution of the command '${command}'. Error : '${error}'`);
-            return reject(error);
+            this.logger.error(
+              `Error during the execution of the command '${command}'. Error : '${String(error)}'`
+            );
+            return reject(error instanceof Error ? error : new Error(String(error)));
           }
         }
 

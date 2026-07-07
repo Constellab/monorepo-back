@@ -138,7 +138,7 @@ export class CnLabFolderAggregateService {
       try {
         await this.removeFolderFromLab(labFolder.lab, rootFolderId);
       } catch (e: any) {
-        throw new Error(`Error while removing folder from lab '${labFolder.lab.name}' : ${e}`);
+        throw new Error(`Error while removing folder from lab '${labFolder.lab.name}' : ${e}`, { cause: e });
       }
     }
   }

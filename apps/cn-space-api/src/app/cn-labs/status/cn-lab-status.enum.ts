@@ -11,7 +11,7 @@ export enum CnLabStatus {
 }
 
 // list of statuses that are considered as temporary
-export const cnLabTemporaryStatuses = [
+export const CN_LAB_TEMPORARY_STATUSES = [
   CnLabStatus.SERVER_STARTING,
   CnLabStatus.SERVER_STOPPING,
   CnLabStatus.SERVER_RUNNING,
@@ -19,7 +19,7 @@ export const cnLabTemporaryStatuses = [
 ];
 
 // list of statuses that are considered as running (everything except STOPPED, NO_SERVER and ERROR)
-export const cnLabRunningStatuses = [
+export const CN_LAB_RUNNING_STATUSES = [
   CnLabStatus.SERVER_STARTING,
   CnLabStatus.SERVER_STOPPING,
   CnLabStatus.SERVER_RUNNING,
@@ -28,7 +28,7 @@ export const cnLabRunningStatuses = [
 ];
 
 // list of statuses that are considered as stopped
-export const cnLabStoppedStatuses = [CnLabStatus.SERVER_STOPPED, CnLabStatus.NO_SERVER, CnLabStatus.ERROR];
+export const CN_LAB_STOPPED_STATUSES = [CnLabStatus.SERVER_STOPPED, CnLabStatus.NO_SERVER, CnLabStatus.ERROR];
 
 export enum CnLabServerTaskStatus {
   RUNNING = 'RUNNING',

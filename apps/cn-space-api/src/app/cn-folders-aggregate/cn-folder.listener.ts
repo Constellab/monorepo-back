@@ -14,7 +14,7 @@ import { CN_SPACE_EVENT_NAME, CnSpaceEvent } from '../cn-spaces/cn-space.event';
 import { CnUser } from '../cn-users/cn-user.entity';
 import { CnChatMessage, cnGetFakeUserEveryoneMention } from './cn-chat/cn-chat-message.entity';
 import { CnDocument } from './cn-documents/cn-document.entity';
-import { CnFolderEvent, cnFolderEventName, CnFolderEventType } from './cn-folder.event';
+import { CN_FOLDER_EVENT_NAME, CnFolderEvent, CnFolderEventType } from './cn-folder.event';
 import { CnFolderAggregateService } from './cn-folder-aggregate.service';
 import { CnFolderUser, CnRootFolderNotifOptions } from './cn-folder-user/cn-folder-user.entity';
 import { CnFolderUserService } from './cn-folder-user/cn-folder-user.service';
@@ -50,7 +50,7 @@ export class CnFolderListener {
     private hierarchyObjectTagService: CnHierarchyObjectTagAggregateService
   ) {}
 
-  @OnEvent(cnFolderEventName)
+  @OnEvent(CN_FOLDER_EVENT_NAME)
   async handleFolderEvent(event: CnFolderEvent): Promise<void> {
     try {
       const activityAndNotif: CnActivityAndNotif = this.getActivityDTO(event);
@@ -616,7 +616,7 @@ export class CnFolderListener {
    * @param event
    * @private
    */
-  @OnEvent(cnFolderEventName)
+  @OnEvent(CN_FOLDER_EVENT_NAME)
   async updateHierarchyObject(event: CnFolderEvent): Promise<void> {
     const events: CnFolderEventType[] = [
       'UPDATE_FOLDER',
@@ -638,7 +638,7 @@ export class CnFolderListener {
     await this.hierarchyObjectService.update(folderObjectDb);
   }
 
-  @OnEvent(cnFolderEventName)
+  @OnEvent(CN_FOLDER_EVENT_NAME)
   async handleHierarchyObjectEvent(event: CnFolderEvent): Promise<void> {
     if (event.payload.type === 'OBJECT_TAG_MODIFIED') {
       await this.refreshHierarchyObjectLastTags(event.payload.entity);

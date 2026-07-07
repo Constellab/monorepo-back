@@ -56,7 +56,7 @@ export class HnAgentVersionMigrator {
       if ((agentVersionDto.params as Record<string, any>)?.specs) {
         const params = [];
         for (const [key, value] of Object.entries((agentVersionDto.params as Record<string, any>).values)) {
-          params.push(`${key}=${value}`);
+          params.push(`${key}=${String(value)}`);
         }
         agentVersionDto.params = params;
         return agentVersionDto;
@@ -72,7 +72,7 @@ export class HnAgentVersionMigrator {
       if ((agentVersionDto.params as Record<string, any>)?.specs) {
         let params: string = '';
         for (const [key, value] of Object.entries((agentVersionDto.params as Record<string, any>).values)) {
-          params = params + `${key}=${value}\n`;
+          params = params + `${key}=${String(value)}\n`;
         }
         agentVersionDto.params = params;
         return agentVersionDto;
@@ -86,7 +86,7 @@ export class HnAgentVersionMigrator {
     }
 
     if (version === 3) {
-      let agentVersionDtoRes: HnAgentVersionDto = null;
+      let agentVersionDtoRes: HnAgentVersionDto;
       if ((agentVersionDto.params as Record<string, any>)?.specs) {
         const specs = (agentVersionDto.params as Record<string, any>).specs;
         for (const key of Object.keys(specs)) {

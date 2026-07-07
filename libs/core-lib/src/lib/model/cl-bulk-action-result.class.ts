@@ -35,7 +35,7 @@ export class ClBulkActionRunner {
       throw new Error('ClBulkActionRunner: action is not set. Call setAction() before execute().');
     }
     if (!this.nameResolver) {
-      this.nameResolver = async (id: string) => id;
+      this.nameResolver = (id: string) => Promise.resolve(id);
     }
 
     const result: ClBulkActionResult = {

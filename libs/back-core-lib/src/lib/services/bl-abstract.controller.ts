@@ -4,7 +4,7 @@ import { BlEntityWithId } from '../models/bl-entity-with-id.entity';
 import { BlParsePipe } from '../pipes/bl-parse.pipe';
 import { BlAbstractService } from './bl-abstract.service';
 
-export abstract class CnAbstractController<T extends BlEntityWithId> {
+export abstract class BlAbstractController<T extends BlEntityWithId> {
   private readonly parsePipe: BlParsePipe<T>;
 
   protected constructor(

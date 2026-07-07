@@ -7,7 +7,11 @@ export enum BlBucketType {
   GCP = 'GCP', // gcp bucket
 }
 
-export const blCloudBucketTypes: BlBucketType[] = [BlBucketType.NORMAL, BlBucketType.AZURE, BlBucketType.GCP];
+export const BL_CLOUD_BUCKET_TYPES: BlBucketType[] = [
+  BlBucketType.NORMAL,
+  BlBucketType.AZURE,
+  BlBucketType.GCP,
+];
 
 /**
  * Object that represent a S3 or Azure bucket config

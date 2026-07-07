@@ -28,6 +28,7 @@ export class HnZipHelper {
     };
   }
 
+  // eslint-disable-next-line @typescript-eslint/require-await
   public static async markdownStringToMarkdownFile(
     markdownString: string,
     fileName: string

@@ -92,7 +92,7 @@ export class CnJwtAuthGuard extends AuthGuard('jwt') {
 
     // if a space is in the context, check if the user is in the space
     if (space) {
-      let roleInSpace: CnSpaceUserRole = null;
+      let roleInSpace: CnSpaceUserRole;
       // consider a G admin as an admin of all spaces
       if (user.isAdmin()) {
         roleInSpace = CnSpaceUserRole.ADMIN;

@@ -5,6 +5,7 @@ const blNotUpdatableMetadata = 'NotUpdatable';
  * Property decorator to prevent update of property (useful for oneToMany property)
  * when using the {@link AbstractService}
  */
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export function BlNotUpdatable(): PropertyDecorator {
   return (target: any, key: string): void => {
     Reflect.defineMetadata(blNotUpdatableMetadata, true, target.constructor, key);

@@ -14,7 +14,7 @@ import {
   BlTransportModuleConfig,
   blTransportRedisForRoot,
 } from '@monorepo/back-core-lib';
-import { clDefaultLang } from '@monorepo/core-lib';
+import { CL_DEFAULT_LANG } from '@monorepo/core-lib';
 import { TeRichTextModifications } from '@monorepo/te-text-editor';
 import { BullModule } from '@nestjs/bullmq';
 import {
@@ -38,10 +38,10 @@ import { AcceptLanguageResolver, CookieResolver, I18nJsonLoader, I18nModule } fr
 import { I18nAbstractLoaderOptions } from 'nestjs-i18n/dist/loaders/i18n.abstract.loader';
 import { join } from 'path';
 
-import { AppService } from './app.service';
+import { CnAppService } from './app.service';
 import { CnActivityModule } from './app/cn-activity/cn-activity.module';
 import { CnAuthModule } from './app/cn-auth/cn-auth.module';
-import { cnJwtConfig } from './app/cn-auth/cn-jwt.config';
+import { CN_JWT_CONFIG } from './app/cn-auth/cn-jwt.config';
 import { CnBricksModule } from './app/cn-bricks/cn-bricks.module';
 import { CnCityModule } from './app/cn-city/cn-city.module';
 import { CnCloudProvidersModule } from './app/cn-cloud-providers/cn-cloud-providers.module';
@@ -123,9 +123,9 @@ function configureJwtModule(configService: CnCoreConfigService, userService: CnU
   return {
     jwtSecret: configService.getJwtSecret(),
     jwtFromRequest: (request: Request) =>
-      BlCookieHelper.getCookieFromHeader(request.headers.cookie, cnJwtConfig.authorizationCookie),
+      BlCookieHelper.getCookieFromHeader(request.headers.cookie, CN_JWT_CONFIG.authorizationCookie),
     usersService: userService,
-    tokenDurationInSeconds: cnJwtConfig.tokenDurationInSeconds,
+    tokenDurationInSeconds: CN_JWT_CONFIG.tokenDurationInSeconds,
   };
 }
 
@@ -158,7 +158,7 @@ TeRichTextModifications.setBackTimeDifference();
     }),
 
     I18nModule.forRoot({
-      fallbackLanguage: clDefaultLang,
+      fallbackLanguage: CL_DEFAULT_LANG,
       loader: I18nJsonLoader,
       loaderOptions: {
         path: join(__dirname, 'assets/i18n/'),
@@ -256,7 +256,7 @@ TeRichTextModifications.setBackTimeDifference();
   ],
   controllers: [CnHealthController],
   providers: [
-    AppService,
+    CnAppService,
     // set global interceptor
     {
       provide: APP_INTERCEPTOR,

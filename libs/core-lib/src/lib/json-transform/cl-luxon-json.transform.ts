@@ -20,7 +20,8 @@ import { ClTransformFnParams } from './cl-json.converter';
 //
 //   // create date from string
 //   const transformToClass = Transform(
-//     (params: ClTransformFnParams<string | null>) => params.value == null ? null : ClDateHelper.getDate(params.value),
+//     (params: ClTransformFnParams<string | null>) =>
+//       params.value == null ? null : ClDateHelper.getDate(params.value),
 //     {toClassOnly: true});
 //
 //   return (target: any, key: string): void => {
@@ -34,6 +35,7 @@ import { ClTransformFnParams } from './cl-json.converter';
  * Deserialization --> create date from string
  * Serialization --> return day iso yyyy-LL-dd
  */
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export function ClLuxonDateTransform(): PropertyDecorator {
   // convert date to time
   const transformToPlain = Transform(
@@ -58,6 +60,7 @@ export function ClLuxonDateTransform(): PropertyDecorator {
  * Deserialization --> create date time from string
  * Serialization --> return datetime iso YYYY-MM-DDThh:mm:ssZ
  */
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export function ClLuxonDateTimeTransform(): PropertyDecorator {
   // convert dateTime to ISI
   const transformToPlain = Transform(

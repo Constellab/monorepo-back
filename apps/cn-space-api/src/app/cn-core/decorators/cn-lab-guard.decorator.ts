@@ -16,6 +16,7 @@ const cnLabRobotAuthMetadata = 'labRobotAuth';
  *
  * The {@link CnLabAuthGuard} check this decorator
  */
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export function CnLabGuard(): MethodDecorator & ClassDecorator {
   // use to combined 2 decorators
   return (target: any, property?: string | symbol, descriptor?: TypedPropertyDescriptor<any>): void => {
@@ -39,6 +40,7 @@ export function cnIsDecoratedWithLabAuth(reflector: Reflector, context: Executio
  * Useful for route that are called automatically by the lab
  * @constructor
  */
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export function CnLabRobotAuthentication(): MethodDecorator & ClassDecorator {
   // use to combined 2 decorators
   return (target: any, property?: string | symbol, descriptor?: TypedPropertyDescriptor<any>): void => {
@@ -60,6 +62,7 @@ export function cnIsLabRobotAuth(reflector: Reflector, context: ExecutionContext
  * from the DEV environment (using the dev api key)
  * @constructor
  */
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export function CnLabAllowDev(): MethodDecorator & ClassDecorator {
   // use to combined 2 decorators
   return (target: any, property?: string | symbol, descriptor?: TypedPropertyDescriptor<any>): void => {

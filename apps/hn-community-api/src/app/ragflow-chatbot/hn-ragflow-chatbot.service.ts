@@ -318,7 +318,7 @@ export class HnRagflowChatbotService {
 
       stream.on('error', (error) => {
         onChunk({ type: 'error', error: error.message });
-        reject(error);
+        reject(error instanceof Error ? error : new Error(String(error)));
       });
     });
   }

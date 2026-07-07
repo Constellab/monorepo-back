@@ -11,11 +11,13 @@ export class TestRequest {
    * Facade for the expect method of SuperTest
    */
   expect(status: number, callback?: CallbackHandler): this;
+
   expect(status: number, body: any, callback?: CallbackHandler): this;
 
   // tslint:disable-next-line:unified-signatures
   expect(checker: (res: Response) => any, callback?: CallbackHandler): this;
   // tslint:disable-next-line:unified-signatures
+  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   expect(body: string | RegExp | any, callback?: CallbackHandler): this;
   expect(field: string, val: string | RegExp, callback?: CallbackHandler): this;
   public expect(value1: any, value2?: any, value3?: any): this {

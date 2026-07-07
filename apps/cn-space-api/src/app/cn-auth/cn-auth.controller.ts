@@ -5,7 +5,7 @@ import { Response } from 'express';
 import { CnCoreConfigService } from '../cn-core/modules/cn-core-config/cn-core-config.service';
 import { CnUser } from '../cn-users/cn-user.entity';
 import { CnAuthResponse, CnAuthService, CnExternalCheckCredentialResponse } from './cn-auth.service';
-import { cnJwtConfig } from './cn-jwt.config';
+import { CN_JWT_CONFIG } from './cn-jwt.config';
 
 @Controller('auth')
 export class CnAuthController {
@@ -27,7 +27,7 @@ export class CnAuthController {
 
     if (result.status === 'LOGGED_IN') {
       this.setTokenInCookie(result.token, response);
-      response.send({ status: 'LOGGED_IN', expiresIn: cnJwtConfig.tokenDurationInMilliseconds });
+      response.send({ status: 'LOGGED_IN', expiresIn: CN_JWT_CONFIG.tokenDurationInMilliseconds });
     } else {
       response.send({ status: '2FA_REQUIRED', twoFAUrlCode: result.twoFAUrlCode });
     }
@@ -43,7 +43,7 @@ export class CnAuthController {
     const token = await this.authService.loginWith2FA(credentials);
 
     this.setTokenInCookie(token, response);
-    response.send({ status: 'LOGGED_IN', expiresIn: cnJwtConfig.tokenDurationInMilliseconds });
+    response.send({ status: 'LOGGED_IN', expiresIn: CN_JWT_CONFIG.tokenDurationInMilliseconds });
   }
 
   @BlPublicSecure()
@@ -66,13 +66,14 @@ export class CnAuthController {
    */
   @BlPublicSecure()
   @Post('logout')
+  // eslint-disable-next-line @typescript-eslint/require-await
   async logout(@Body() credentials: BlCredentials, @Res() response: Response): Promise<void> {
     this.clearTokenCookie(response);
     response.send();
   }
 
   private setTokenInCookie(token: string, response: Response): void {
-    this.configureTokenCookie(token, cnJwtConfig.tokenDurationInMilliseconds, response);
+    this.configureTokenCookie(token, CN_JWT_CONFIG.tokenDurationInMilliseconds, response);
   }
 
   private clearTokenCookie(response: Response): void {
@@ -84,7 +85,7 @@ export class CnAuthController {
    * to prevent js from accessing it
    */
   private configureTokenCookie(token: string, expiresInMilliseconds: number, response: Response): void {
-    response.cookie(cnJwtConfig.authorizationCookie, token, {
+    response.cookie(CN_JWT_CONFIG.authorizationCookie, token, {
       path: '/',
       maxAge: expiresInMilliseconds,
       // use none in production because the api is not un the same domain as the front

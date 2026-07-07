@@ -7,7 +7,7 @@ import { CnUser } from '../../cn-users/cn-user.entity';
 import { CnLab } from '../cn-lab.entity';
 import { CnLabBackupHistory } from './cn-lab-backup-history.entity';
 
-export const cnLabBackupEventName = 'cn-lab-backup-event';
+export const CN_LAB_BACKUP_EVENT_NAME = 'cn-lab-backup-event';
 
 export type CnLabBackupEventType = 'BACKUP_STATUS_ERROR';
 
@@ -34,6 +34,6 @@ export class CnLabBackupEventService {
       user: CnCurrentUserHelper.getAndCheckCurrentUser(),
       space: CnCurrentUserHelper.getAndCheckCurrentSpace(),
     };
-    this.eventEmitter.emit(cnLabBackupEventName, event);
+    this.eventEmitter.emit(CN_LAB_BACKUP_EVENT_NAME, event);
   }
 }

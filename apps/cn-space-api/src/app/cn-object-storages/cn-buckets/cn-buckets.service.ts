@@ -1,8 +1,8 @@
 import {
+  BL_CLOUD_BUCKET_TYPES,
   BlAbstractService,
   BlBadRequestException,
   BlBucketType,
-  blCloudBucketTypes,
   BlObjectStorageService,
   BlSearchBuilder,
   BlSearchParams,
@@ -200,7 +200,7 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
       where: [
         {
           contentType: contentType,
-          bucketType: In(blCloudBucketTypes),
+          bucketType: In(BL_CLOUD_BUCKET_TYPES),
         },
         {
           contentType: contentType,
