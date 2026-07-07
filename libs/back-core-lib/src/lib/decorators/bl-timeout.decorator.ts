@@ -9,4 +9,4 @@ import { BL_TIMEOUT_KEY, BlTimeoutOptions } from '../interceptors/bl-timeout.int
  */
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const BlTimeout = (ms: number, message?: string): CustomDecorator =>
-  SetMetadata(BL_TIMEOUT_KEY, { ms, message } as BlTimeoutOptions);
+  SetMetadata(BL_TIMEOUT_KEY, { ms, message });

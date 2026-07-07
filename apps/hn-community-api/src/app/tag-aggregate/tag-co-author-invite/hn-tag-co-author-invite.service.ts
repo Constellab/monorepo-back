@@ -4,12 +4,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { HnInviteStatus } from '../../core/model/config/hn-invite-status.enum';
-import { HnFrontService } from '../../core/service/hn-front.service';
+import { HnMailTemplate } from '../../core/model/config/hn-mail-template.class';
 import { HnAbstractUserInviteService } from '../../core/service/hn-abstract-user-invite.service';
+import { HnFrontService } from '../../core/service/hn-front.service';
 import { HnUserService } from '../../users/hn-user.service';
 import { HnTagKey } from '../tag-key/hn-tag-key.entity';
 import { HnTagCoAuthorInvite } from './hn-tag-co-author-invite.entity';
-import { HnMailTemplate } from '../../core/model/config/hn-mail-template.class';
 
 @Injectable()
 export class HnTagCoAuthorInviteService extends HnAbstractUserInviteService<HnTagCoAuthorInvite, HnTagKey> {

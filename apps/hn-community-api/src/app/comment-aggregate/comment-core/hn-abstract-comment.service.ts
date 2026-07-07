@@ -91,7 +91,7 @@ export abstract class HnAbstractCommentService<T extends BlEntityWithId> {
     this.eventEmitter.emit(this.getEvent(commentType), {
       entityId: entityId,
       numberOfComments: numberOfComments,
-    } as HnCommentEventData);
+    });
   }
 
   private async getNumberOfComments(entityId: string): Promise<number> {

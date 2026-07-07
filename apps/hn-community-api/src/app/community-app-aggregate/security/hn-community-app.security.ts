@@ -14,8 +14,7 @@ export class HnCommunityAppSecurity {
 
   async assertCanEdit(app: HnCommunityApp, user: HnUser): Promise<void> {
     await this.communitySecurity.assertSpaceMembership(app, user.id);
-    const coAuthors =
-      await this.communityAppCoAuthorService.getCommunityAppCoAuthorsByCommunityAppId(app.id);
+    const coAuthors = await this.communityAppCoAuthorService.getCommunityAppCoAuthorsByCommunityAppId(app.id);
     this.communitySecurity.assertIsCreatorOrCoAuthor(app, coAuthors, user.id);
   }
 

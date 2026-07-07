@@ -1,5 +1,5 @@
 import { TeBlockType } from './te-block.class';
-import { TeHTMLEditorJSON,TeRichText } from './te-rich-text.class';
+import { TeHTMLEditorJSON, TeRichText } from './te-rich-text.class';
 import {
   TeNewFullRichTextDTO,
   TeOldRichTextContentWithModificationsI,
@@ -797,18 +797,14 @@ describe('TeRichTextAggregate', () => {
     it('should undo/redo header block creation and deletion', () => {
       const aggregate = new TeRichTextAggregate(
         new TeRichText({
-          version: V, editorVersion: EV,
-          blocks: [
-            { id: 'h1', type: TeBlockType.HEADER, data: { text: 'Title', level: 2 } },
-          ],
+          version: V,
+          editorVersion: EV,
+          blocks: [{ id: 'h1', type: TeBlockType.HEADER, data: { text: 'Title', level: 2 } }],
         })
       );
 
       // Delete the header
-      aggregate.updateContent(
-        new TeRichText({ version: V, editorVersion: EV, blocks: [] }),
-        mockUserId
-      );
+      aggregate.updateContent(new TeRichText({ version: V, editorVersion: EV, blocks: [] }), mockUserId);
 
       expect(aggregate.richText.getBlocks()).toHaveLength(0);
 
@@ -825,19 +821,17 @@ describe('TeRichTextAggregate', () => {
     it('should undo/redo header text update preserving level', () => {
       const aggregate = new TeRichTextAggregate(
         new TeRichText({
-          version: V, editorVersion: EV,
-          blocks: [
-            { id: 'h1', type: TeBlockType.HEADER, data: { text: 'Original Title', level: 3 } },
-          ],
+          version: V,
+          editorVersion: EV,
+          blocks: [{ id: 'h1', type: TeBlockType.HEADER, data: { text: 'Original Title', level: 3 } }],
         })
       );
 
       aggregate.updateContent(
         new TeRichText({
-          version: V, editorVersion: EV,
-          blocks: [
-            { id: 'h1', type: TeBlockType.HEADER, data: { text: 'Updated Title', level: 3 } },
-          ],
+          version: V,
+          editorVersion: EV,
+          blocks: [{ id: 'h1', type: TeBlockType.HEADER, data: { text: 'Updated Title', level: 3 } }],
         }),
         mockUserId
       );
@@ -853,14 +847,13 @@ describe('TeRichTextAggregate', () => {
         meta: {},
         items: [
           { content: 'Item 1', meta: {}, items: [] as any[] },
-          { content: 'Item 2', meta: {}, items: [
-            { content: 'Sub-item 2.1', meta: {}, items: [] as any[] },
-          ]},
+          { content: 'Item 2', meta: {}, items: [{ content: 'Sub-item 2.1', meta: {}, items: [] as any[] }] },
         ],
       };
       const aggregate = new TeRichTextAggregate(
         new TeRichText({
-          version: V, editorVersion: EV,
+          version: V,
+          editorVersion: EV,
           blocks: [{ id: 'list-1', type: TeBlockType.LIST, data: initialListData }],
         })
       );
@@ -869,15 +862,20 @@ describe('TeRichTextAggregate', () => {
         style: 'unordered',
         items: [
           { content: 'Item 1 modified', meta: {}, items: [] as any[] },
-          { content: 'Item 2', meta: {}, items: [
-            { content: 'Sub-item 2.1', meta: {}, items: [] as any[] },
-            { content: 'Sub-item 2.2', meta: {}, items: [] as any[] },
-          ]},
+          {
+            content: 'Item 2',
+            meta: {},
+            items: [
+              { content: 'Sub-item 2.1', meta: {}, items: [] as any[] },
+              { content: 'Sub-item 2.2', meta: {}, items: [] as any[] },
+            ],
+          },
         ],
       };
       aggregate.updateContent(
         new TeRichText({
-          version: V, editorVersion: EV,
+          version: V,
+          editorVersion: EV,
           blocks: [{ id: 'list-1', type: TeBlockType.LIST, data: updatedListData }],
         }),
         mockUserId
@@ -894,12 +892,15 @@ describe('TeRichTextAggregate', () => {
         caption: 'My figure',
         filename: 'img_001.png',
         title: 'Figure 1',
-        height: 200, width: 400,
-        naturalHeight: 1000, naturalWidth: 2000,
+        height: 200,
+        width: 400,
+        naturalHeight: 1000,
+        naturalWidth: 2000,
       };
       const aggregate = new TeRichTextAggregate(
         new TeRichText({
-          version: V, editorVersion: EV,
+          version: V,
+          editorVersion: EV,
           blocks: [
             { id: 'p1', type: TeBlockType.PARAGRAPH, data: { text: 'Before' } },
             { id: 'fig1', type: TeBlockType.FIGURE, data: figureData },
@@ -910,7 +911,8 @@ describe('TeRichTextAggregate', () => {
       // Delete figure
       aggregate.updateContent(
         new TeRichText({
-          version: V, editorVersion: EV,
+          version: V,
+          editorVersion: EV,
           blocks: [{ id: 'p1', type: TeBlockType.PARAGRAPH, data: { text: 'Before' } }],
         }),
         mockUserId
@@ -926,11 +928,16 @@ describe('TeRichTextAggregate', () => {
     it('should undo/redo mixed block types in a single action', () => {
       const aggregate = new TeRichTextAggregate(
         new TeRichText({
-          version: V, editorVersion: EV,
+          version: V,
+          editorVersion: EV,
           blocks: [
             { id: 'h1', type: TeBlockType.HEADER, data: { text: 'Title', level: 2 } },
             { id: 'p1', type: TeBlockType.PARAGRAPH, data: { text: 'Paragraph' } },
-            { id: 'list1', type: TeBlockType.LIST, data: { style: 'ordered', items: [{ content: 'A', meta: {}, items: [] }] } },
+            {
+              id: 'list1',
+              type: TeBlockType.LIST,
+              data: { style: 'ordered', items: [{ content: 'A', meta: {}, items: [] }] },
+            },
           ],
         })
       );
@@ -938,7 +945,8 @@ describe('TeRichTextAggregate', () => {
       // Replace all with a single paragraph
       aggregate.updateContent(
         new TeRichText({
-          version: V, editorVersion: EV,
+          version: V,
+          editorVersion: EV,
           blocks: [{ id: 'p-new', type: TeBlockType.PARAGRAPH, data: { text: 'Only this' } }],
         }),
         mockUserId
@@ -961,14 +969,16 @@ describe('TeRichTextAggregate', () => {
     it('should handle text with HTML entities and &nbsp; (known: &nbsp; normalized to space after undo)', () => {
       const aggregate = new TeRichTextAggregate(
         new TeRichText({
-          version: V, editorVersion: EV,
+          version: V,
+          editorVersion: EV,
           blocks: [{ id: 'p1', type: TeBlockType.PARAGRAPH, data: { text: 'Hello&nbsp;World' } }],
         })
       );
 
       aggregate.updateContent(
         new TeRichText({
-          version: V, editorVersion: EV,
+          version: V,
+          editorVersion: EV,
           blocks: [{ id: 'p1', type: TeBlockType.PARAGRAPH, data: { text: 'Hello&nbsp;Earth' } }],
         }),
         mockUserId
@@ -982,15 +992,23 @@ describe('TeRichTextAggregate', () => {
     it('should handle text with inline HTML formatting', () => {
       const aggregate = new TeRichTextAggregate(
         new TeRichText({
-          version: V, editorVersion: EV,
+          version: V,
+          editorVersion: EV,
           blocks: [{ id: 'p1', type: TeBlockType.PARAGRAPH, data: { text: 'Hello <b>bold</b> text' } }],
         })
       );
 
       aggregate.updateContent(
         new TeRichText({
-          version: V, editorVersion: EV,
-          blocks: [{ id: 'p1', type: TeBlockType.PARAGRAPH, data: { text: 'Hello <b>bold</b> and <i>italic</i> text' } }],
+          version: V,
+          editorVersion: EV,
+          blocks: [
+            {
+              id: 'p1',
+              type: TeBlockType.PARAGRAPH,
+              data: { text: 'Hello <b>bold</b> and <i>italic</i> text' },
+            },
+          ],
         }),
         mockUserId
       );
@@ -1002,14 +1020,16 @@ describe('TeRichTextAggregate', () => {
     it('should handle text with special characters and unicode', () => {
       const aggregate = new TeRichTextAggregate(
         new TeRichText({
-          version: V, editorVersion: EV,
+          version: V,
+          editorVersion: EV,
           blocks: [{ id: 'p1', type: TeBlockType.PARAGRAPH, data: { text: 'Prix: 10€ — résumé «test»' } }],
         })
       );
 
       aggregate.updateContent(
         new TeRichText({
-          version: V, editorVersion: EV,
+          version: V,
+          editorVersion: EV,
           blocks: [{ id: 'p1', type: TeBlockType.PARAGRAPH, data: { text: 'Prix: 20€ — résumé «modifié»' } }],
         }),
         mockUserId
@@ -1020,11 +1040,14 @@ describe('TeRichTextAggregate', () => {
     });
 
     it('should handle undo to empty state then redo', () => {
-      const aggregate = new TeRichTextAggregate(new TeRichText({ version: V, editorVersion: EV, blocks: [] }));
+      const aggregate = new TeRichTextAggregate(
+        new TeRichText({ version: V, editorVersion: EV, blocks: [] })
+      );
 
       aggregate.updateContent(
         new TeRichText({
-          version: V, editorVersion: EV,
+          version: V,
+          editorVersion: EV,
           blocks: [{ id: 'p1', type: TeBlockType.PARAGRAPH, data: { text: 'New' } }],
         }),
         mockUserId
@@ -1041,14 +1064,16 @@ describe('TeRichTextAggregate', () => {
     it('should clear redo stack when new modification is made after undo', () => {
       const aggregate = new TeRichTextAggregate(
         new TeRichText({
-          version: V, editorVersion: EV,
+          version: V,
+          editorVersion: EV,
           blocks: [{ id: 'p1', type: TeBlockType.PARAGRAPH, data: { text: 'V1' } }],
         })
       );
 
       aggregate.updateContent(
         new TeRichText({
-          version: V, editorVersion: EV,
+          version: V,
+          editorVersion: EV,
           blocks: [{ id: 'p1', type: TeBlockType.PARAGRAPH, data: { text: 'V2' } }],
         }),
         mockUserId
@@ -1060,7 +1085,8 @@ describe('TeRichTextAggregate', () => {
       // Make a new change instead of redo
       aggregate.updateContent(
         new TeRichText({
-          version: V, editorVersion: EV,
+          version: V,
+          editorVersion: EV,
           blocks: [{ id: 'p1', type: TeBlockType.PARAGRAPH, data: { text: 'V3' } }],
         }),
         mockUserId
@@ -1075,22 +1101,35 @@ describe('TeRichTextAggregate', () => {
     it('should handle multiple sequential undo then redo', () => {
       const aggregate = new TeRichTextAggregate(
         new TeRichText({
-          version: V, editorVersion: EV,
+          version: V,
+          editorVersion: EV,
           blocks: [{ id: 'p1', type: TeBlockType.PARAGRAPH, data: { text: 'V1' } }],
         })
       );
 
       // 3 sequential changes
       aggregate.updateContent(
-        new TeRichText({ version: V, editorVersion: EV, blocks: [{ id: 'p1', type: TeBlockType.PARAGRAPH, data: { text: 'V2' } }] }),
+        new TeRichText({
+          version: V,
+          editorVersion: EV,
+          blocks: [{ id: 'p1', type: TeBlockType.PARAGRAPH, data: { text: 'V2' } }],
+        }),
         mockUserId
       );
       aggregate.updateContent(
-        new TeRichText({ version: V, editorVersion: EV, blocks: [{ id: 'p1', type: TeBlockType.PARAGRAPH, data: { text: 'V3' } }] }),
+        new TeRichText({
+          version: V,
+          editorVersion: EV,
+          blocks: [{ id: 'p1', type: TeBlockType.PARAGRAPH, data: { text: 'V3' } }],
+        }),
         mockUserId
       );
       aggregate.updateContent(
-        new TeRichText({ version: V, editorVersion: EV, blocks: [{ id: 'p1', type: TeBlockType.PARAGRAPH, data: { text: 'V4' } }] }),
+        new TeRichText({
+          version: V,
+          editorVersion: EV,
+          blocks: [{ id: 'p1', type: TeBlockType.PARAGRAPH, data: { text: 'V4' } }],
+        }),
         mockUserId
       );
 
@@ -1124,14 +1163,16 @@ describe('TeRichTextAggregate', () => {
     it('should handle undo/redo with block containing empty data', () => {
       const aggregate = new TeRichTextAggregate(
         new TeRichText({
-          version: V, editorVersion: EV,
+          version: V,
+          editorVersion: EV,
           blocks: [{ id: 'p1', type: TeBlockType.PARAGRAPH, data: { text: '' } }],
         })
       );
 
       aggregate.updateContent(
         new TeRichText({
-          version: V, editorVersion: EV,
+          version: V,
+          editorVersion: EV,
           blocks: [{ id: 'p1', type: TeBlockType.PARAGRAPH, data: { text: 'Not empty anymore' } }],
         }),
         mockUserId
@@ -1144,7 +1185,8 @@ describe('TeRichTextAggregate', () => {
     it('should handle rapid successive updates on the same block', () => {
       const aggregate = new TeRichTextAggregate(
         new TeRichText({
-          version: V, editorVersion: EV,
+          version: V,
+          editorVersion: EV,
           blocks: [{ id: 'p1', type: TeBlockType.PARAGRAPH, data: { text: '' } }],
         })
       );
@@ -1153,7 +1195,11 @@ describe('TeRichTextAggregate', () => {
       const steps = ['H', 'He', 'Hel', 'Hell', 'Hello'];
       for (const text of steps) {
         aggregate.updateContent(
-          new TeRichText({ version: V, editorVersion: EV, blocks: [{ id: 'p1', type: TeBlockType.PARAGRAPH, data: { text } }] }),
+          new TeRichText({
+            version: V,
+            editorVersion: EV,
+            blocks: [{ id: 'p1', type: TeBlockType.PARAGRAPH, data: { text } }],
+          }),
           mockUserId
         );
       }
@@ -1170,15 +1216,21 @@ describe('TeRichTextAggregate', () => {
     it('should handle undo/redo with blocks containing JSON-special characters', () => {
       const aggregate = new TeRichTextAggregate(
         new TeRichText({
-          version: V, editorVersion: EV,
-          blocks: [{ id: 'p1', type: TeBlockType.PARAGRAPH, data: { text: 'Line with "quotes" and \\backslashes' } }],
+          version: V,
+          editorVersion: EV,
+          blocks: [
+            { id: 'p1', type: TeBlockType.PARAGRAPH, data: { text: 'Line with "quotes" and \\backslashes' } },
+          ],
         })
       );
 
       aggregate.updateContent(
         new TeRichText({
-          version: V, editorVersion: EV,
-          blocks: [{ id: 'p1', type: TeBlockType.PARAGRAPH, data: { text: 'Modified "quotes" and \\\\double' } }],
+          version: V,
+          editorVersion: EV,
+          blocks: [
+            { id: 'p1', type: TeBlockType.PARAGRAPH, data: { text: 'Modified "quotes" and \\\\double' } },
+          ],
         }),
         mockUserId
       );
@@ -1190,7 +1242,8 @@ describe('TeRichTextAggregate', () => {
     it('should handle undo when block order changes with content changes simultaneously', () => {
       const aggregate = new TeRichTextAggregate(
         new TeRichText({
-          version: V, editorVersion: EV,
+          version: V,
+          editorVersion: EV,
           blocks: [
             { id: 'p1', type: TeBlockType.PARAGRAPH, data: { text: 'First' } },
             { id: 'p2', type: TeBlockType.PARAGRAPH, data: { text: 'Second' } },
@@ -1202,7 +1255,8 @@ describe('TeRichTextAggregate', () => {
       // Reorder + update content + delete one block
       aggregate.updateContent(
         new TeRichText({
-          version: V, editorVersion: EV,
+          version: V,
+          editorVersion: EV,
           blocks: [
             { id: 'p3', type: TeBlockType.PARAGRAPH, data: { text: 'Third modified' } },
             { id: 'p1', type: TeBlockType.PARAGRAPH, data: { text: 'First' } },
@@ -1232,7 +1286,8 @@ describe('TeRichTextAggregate', () => {
       };
       const aggregate = new TeRichTextAggregate(
         new TeRichText({
-          version: V, editorVersion: EV,
+          version: V,
+          editorVersion: EV,
           blocks: [
             { id: 'rv1', type: TeBlockType.RESOURCE_VIEW, data: viewData },
             { id: 'p1', type: TeBlockType.PARAGRAPH, data: { text: 'After chart' } },
@@ -1243,7 +1298,8 @@ describe('TeRichTextAggregate', () => {
       // Delete the view block
       aggregate.updateContent(
         new TeRichText({
-          version: V, editorVersion: EV,
+          version: V,
+          editorVersion: EV,
           blocks: [{ id: 'p1', type: TeBlockType.PARAGRAPH, data: { text: 'After chart' } }],
         }),
         mockUserId
@@ -1259,7 +1315,8 @@ describe('TeRichTextAggregate', () => {
     it('should handle multiple groups undo/redo in correct order', () => {
       const aggregate = new TeRichTextAggregate(
         new TeRichText({
-          version: V, editorVersion: EV,
+          version: V,
+          editorVersion: EV,
           blocks: [
             { id: 'p1', type: TeBlockType.PARAGRAPH, data: { text: 'A' } },
             { id: 'p2', type: TeBlockType.PARAGRAPH, data: { text: 'B' } },
@@ -1270,7 +1327,8 @@ describe('TeRichTextAggregate', () => {
       // Action 1: group (update p1 + add p3)
       aggregate.updateContent(
         new TeRichText({
-          version: V, editorVersion: EV,
+          version: V,
+          editorVersion: EV,
           blocks: [
             { id: 'p1', type: TeBlockType.PARAGRAPH, data: { text: 'A modified' } },
             { id: 'p2', type: TeBlockType.PARAGRAPH, data: { text: 'B' } },
@@ -1284,7 +1342,8 @@ describe('TeRichTextAggregate', () => {
       // Action 2: single (update p2)
       aggregate.updateContent(
         new TeRichText({
-          version: V, editorVersion: EV,
+          version: V,
+          editorVersion: EV,
           blocks: [
             { id: 'p1', type: TeBlockType.PARAGRAPH, data: { text: 'A modified' } },
             { id: 'p2', type: TeBlockType.PARAGRAPH, data: { text: 'B modified' } },

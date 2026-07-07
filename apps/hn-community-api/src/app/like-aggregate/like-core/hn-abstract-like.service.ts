@@ -83,7 +83,7 @@ export abstract class HnAbstractLikeService<T extends BlEntityWithId> {
     this.eventEmitter.emit(this.getEvent(entityType), {
       entityId: entityId,
       numberOfLikes: numberOfLikes,
-    } as HnLikeEventData);
+    });
   }
 
   private getEvent(entityType: HnEntityType): HnEventType {

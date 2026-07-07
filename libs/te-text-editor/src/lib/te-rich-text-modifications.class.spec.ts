@@ -578,10 +578,20 @@ describe('TeRichTextModifications', () => {
 
     it('should return the last modification when it has no groupId', () => {
       const mod1 = new TeRichTextBlockModification(
-        'block-1', TeBlockType.PARAGRAPH, TeRichTextModificationType.CREATED, 0, mockUserId, 'mod-1'
+        'block-1',
+        TeBlockType.PARAGRAPH,
+        TeRichTextModificationType.CREATED,
+        0,
+        mockUserId,
+        'mod-1'
       );
       const mod2 = new TeRichTextBlockModification(
-        'block-2', TeBlockType.PARAGRAPH, TeRichTextModificationType.CREATED, 1, mockUserId, 'mod-2'
+        'block-2',
+        TeBlockType.PARAGRAPH,
+        TeRichTextModificationType.CREATED,
+        1,
+        mockUserId,
+        'mod-2'
       );
       const modifications = new TeRichTextModifications([mod1, mod2]);
 
@@ -593,15 +603,32 @@ describe('TeRichTextModifications', () => {
     it('should return the first modification of the last group', () => {
       const groupId = 'group-1';
       const mod1 = new TeRichTextBlockModification(
-        'block-1', TeBlockType.PARAGRAPH, TeRichTextModificationType.CREATED, 0, mockUserId, 'mod-1'
+        'block-1',
+        TeBlockType.PARAGRAPH,
+        TeRichTextModificationType.CREATED,
+        0,
+        mockUserId,
+        'mod-1'
       );
       const mod2 = new TeRichTextBlockModification(
-        'block-2', TeBlockType.PARAGRAPH, TeRichTextModificationType.DELETED, 1, mockUserId, 'mod-2',
-        undefined, groupId
+        'block-2',
+        TeBlockType.PARAGRAPH,
+        TeRichTextModificationType.DELETED,
+        1,
+        mockUserId,
+        'mod-2',
+        undefined,
+        groupId
       );
       const mod3 = new TeRichTextBlockModification(
-        'block-3', TeBlockType.PARAGRAPH, TeRichTextModificationType.CREATED, 0, mockUserId, 'mod-3',
-        undefined, groupId
+        'block-3',
+        TeBlockType.PARAGRAPH,
+        TeRichTextModificationType.CREATED,
+        0,
+        mockUserId,
+        'mod-3',
+        undefined,
+        groupId
       );
       const modifications = new TeRichTextModifications([mod1, mod2, mod3]);
 
@@ -612,12 +639,24 @@ describe('TeRichTextModifications', () => {
 
     it('should distinguish different groups', () => {
       const mod1 = new TeRichTextBlockModification(
-        'block-1', TeBlockType.PARAGRAPH, TeRichTextModificationType.CREATED, 0, mockUserId, 'mod-1',
-        undefined, 'group-A'
+        'block-1',
+        TeBlockType.PARAGRAPH,
+        TeRichTextModificationType.CREATED,
+        0,
+        mockUserId,
+        'mod-1',
+        undefined,
+        'group-A'
       );
       const mod2 = new TeRichTextBlockModification(
-        'block-2', TeBlockType.PARAGRAPH, TeRichTextModificationType.CREATED, 1, mockUserId, 'mod-2',
-        undefined, 'group-B'
+        'block-2',
+        TeBlockType.PARAGRAPH,
+        TeRichTextModificationType.CREATED,
+        1,
+        mockUserId,
+        'mod-2',
+        undefined,
+        'group-B'
       );
       const modifications = new TeRichTextModifications([mod1, mod2]);
 
@@ -636,10 +675,20 @@ describe('TeRichTextModifications', () => {
 
     it('should return single modification when last redo has no groupId', () => {
       const mod1 = new TeRichTextBlockModification(
-        'block-1', TeBlockType.PARAGRAPH, TeRichTextModificationType.CREATED, 0, mockUserId, 'mod-1'
+        'block-1',
+        TeBlockType.PARAGRAPH,
+        TeRichTextModificationType.CREATED,
+        0,
+        mockUserId,
+        'mod-1'
       );
       const mod2 = new TeRichTextBlockModification(
-        'block-2', TeBlockType.PARAGRAPH, TeRichTextModificationType.CREATED, 1, mockUserId, 'mod-2'
+        'block-2',
+        TeBlockType.PARAGRAPH,
+        TeRichTextModificationType.CREATED,
+        1,
+        mockUserId,
+        'mod-2'
       );
       const modifications = new TeRichTextModifications([mod1, mod2]);
       modifications.removeModificationsAfterUndo('mod-1');
@@ -653,15 +702,32 @@ describe('TeRichTextModifications', () => {
     it('should return all modifications with the same groupId at the end of redo stack', () => {
       const groupId = 'group-1';
       const mod1 = new TeRichTextBlockModification(
-        'block-1', TeBlockType.PARAGRAPH, TeRichTextModificationType.CREATED, 0, mockUserId, 'mod-1'
+        'block-1',
+        TeBlockType.PARAGRAPH,
+        TeRichTextModificationType.CREATED,
+        0,
+        mockUserId,
+        'mod-1'
       );
       const mod2 = new TeRichTextBlockModification(
-        'block-2', TeBlockType.PARAGRAPH, TeRichTextModificationType.DELETED, 1, mockUserId, 'mod-2',
-        undefined, groupId
+        'block-2',
+        TeBlockType.PARAGRAPH,
+        TeRichTextModificationType.DELETED,
+        1,
+        mockUserId,
+        'mod-2',
+        undefined,
+        groupId
       );
       const mod3 = new TeRichTextBlockModification(
-        'block-3', TeBlockType.PARAGRAPH, TeRichTextModificationType.CREATED, 0, mockUserId, 'mod-3',
-        undefined, groupId
+        'block-3',
+        TeBlockType.PARAGRAPH,
+        TeRichTextModificationType.CREATED,
+        0,
+        mockUserId,
+        'mod-3',
+        undefined,
+        groupId
       );
       const modifications = new TeRichTextModifications([mod1, mod2, mod3]);
       modifications.removeModificationsAfterUndo('mod-2');
@@ -675,12 +741,24 @@ describe('TeRichTextModifications', () => {
 
     it('should stop at different groupId boundary', () => {
       const mod1 = new TeRichTextBlockModification(
-        'block-1', TeBlockType.PARAGRAPH, TeRichTextModificationType.CREATED, 0, mockUserId, 'mod-1',
-        undefined, 'group-A'
+        'block-1',
+        TeBlockType.PARAGRAPH,
+        TeRichTextModificationType.CREATED,
+        0,
+        mockUserId,
+        'mod-1',
+        undefined,
+        'group-A'
       );
       const mod2 = new TeRichTextBlockModification(
-        'block-2', TeBlockType.PARAGRAPH, TeRichTextModificationType.CREATED, 1, mockUserId, 'mod-2',
-        undefined, 'group-B'
+        'block-2',
+        TeBlockType.PARAGRAPH,
+        TeRichTextModificationType.CREATED,
+        1,
+        mockUserId,
+        'mod-2',
+        undefined,
+        'group-B'
       );
       const modifications = new TeRichTextModifications([mod1, mod2]);
       modifications.removeModificationsAfterUndo('mod-1');
@@ -696,15 +774,32 @@ describe('TeRichTextModifications', () => {
     it('should remove all modifications of the last redo group', () => {
       const groupId = 'group-1';
       const mod1 = new TeRichTextBlockModification(
-        'block-1', TeBlockType.PARAGRAPH, TeRichTextModificationType.CREATED, 0, mockUserId, 'mod-1'
+        'block-1',
+        TeBlockType.PARAGRAPH,
+        TeRichTextModificationType.CREATED,
+        0,
+        mockUserId,
+        'mod-1'
       );
       const mod2 = new TeRichTextBlockModification(
-        'block-2', TeBlockType.PARAGRAPH, TeRichTextModificationType.DELETED, 1, mockUserId, 'mod-2',
-        undefined, groupId
+        'block-2',
+        TeBlockType.PARAGRAPH,
+        TeRichTextModificationType.DELETED,
+        1,
+        mockUserId,
+        'mod-2',
+        undefined,
+        groupId
       );
       const mod3 = new TeRichTextBlockModification(
-        'block-3', TeBlockType.PARAGRAPH, TeRichTextModificationType.CREATED, 0, mockUserId, 'mod-3',
-        undefined, groupId
+        'block-3',
+        TeBlockType.PARAGRAPH,
+        TeRichTextModificationType.CREATED,
+        0,
+        mockUserId,
+        'mod-3',
+        undefined,
+        groupId
       );
       const modifications = new TeRichTextModifications([mod1, mod2, mod3]);
       modifications.removeModificationsAfterUndo('mod-2');
@@ -716,13 +811,28 @@ describe('TeRichTextModifications', () => {
 
     it('should remove only one modification when no groupId', () => {
       const mod1 = new TeRichTextBlockModification(
-        'block-1', TeBlockType.PARAGRAPH, TeRichTextModificationType.CREATED, 0, mockUserId, 'mod-1'
+        'block-1',
+        TeBlockType.PARAGRAPH,
+        TeRichTextModificationType.CREATED,
+        0,
+        mockUserId,
+        'mod-1'
       );
       const mod2 = new TeRichTextBlockModification(
-        'block-2', TeBlockType.PARAGRAPH, TeRichTextModificationType.CREATED, 1, mockUserId, 'mod-2'
+        'block-2',
+        TeBlockType.PARAGRAPH,
+        TeRichTextModificationType.CREATED,
+        1,
+        mockUserId,
+        'mod-2'
       );
       const mod3 = new TeRichTextBlockModification(
-        'block-3', TeBlockType.PARAGRAPH, TeRichTextModificationType.CREATED, 2, mockUserId, 'mod-3'
+        'block-3',
+        TeBlockType.PARAGRAPH,
+        TeRichTextModificationType.CREATED,
+        2,
+        mockUserId,
+        'mod-3'
       );
       const modifications = new TeRichTextModifications([mod1, mod2, mod3]);
       modifications.removeModificationsAfterUndo('mod-2');

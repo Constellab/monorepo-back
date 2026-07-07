@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon';
 
-import { TeBlockData,TeBlockType } from './te-block.class';
+import { TeBlockData, TeBlockType } from './te-block.class';
 import {
   TeRichTextBlockModification,
   TeRichTextModificationDifference,

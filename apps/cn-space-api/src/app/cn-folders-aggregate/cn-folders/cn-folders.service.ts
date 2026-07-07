@@ -24,7 +24,7 @@ export class CnFoldersService extends BlAbstractService<CnFolderEntity> {
     return await this.repository.findOne({
       select: {
         id: true,
-        description: true as any,
+        description: true,
       },
       where: { id: id },
     });

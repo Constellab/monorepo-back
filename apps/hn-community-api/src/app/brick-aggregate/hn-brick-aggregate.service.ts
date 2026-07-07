@@ -1412,7 +1412,7 @@ export class HnBrickAggregateService {
       docsMarkDowns.push({
         name: ClStringHelper.getCleanUrlPath(doc.title),
         content: docContentMarkdown,
-      } as HnMarkdownFile);
+      });
     }
 
     return HnZipHelper.markdownsToZipFile(

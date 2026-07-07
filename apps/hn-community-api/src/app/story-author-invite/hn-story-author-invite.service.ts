@@ -4,12 +4,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { HnInviteStatus } from '../core/model/config/hn-invite-status.enum';
-import { HnFrontService } from '../core/service/hn-front.service';
+import { HnMailTemplate } from '../core/model/config/hn-mail-template.class';
 import { HnAbstractUserInviteService } from '../core/service/hn-abstract-user-invite.service';
+import { HnFrontService } from '../core/service/hn-front.service';
 import { HnStory } from '../story/hn-story.entity';
 import { HnUserService } from '../users/hn-user.service';
 import { HnStoryCoAuthorInvite } from './hn-story-author-invite.entity';
-import { HnMailTemplate } from '../core/model/config/hn-mail-template.class';
 
 @Injectable()
 export class HnStoryAuthorInviteService extends HnAbstractUserInviteService<HnStoryCoAuthorInvite, HnStory> {

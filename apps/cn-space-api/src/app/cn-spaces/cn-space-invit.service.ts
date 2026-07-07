@@ -95,7 +95,7 @@ export class CnSpaceInvitService extends BlAbstractService<CnSpaceInvit> {
   ): Promise<ClPage<CnSpaceInvit>> {
     return this.findPaginated(page, pageSize, {
       where: { spaceId: spaceId },
-      order: { createdAt: 'DESC' as any },
+      order: { createdAt: 'DESC' },
     });
   }
 

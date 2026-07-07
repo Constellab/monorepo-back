@@ -28,7 +28,7 @@ export class CnServerPriceService extends BlAbstractService<CnServerPrice> {
         },
       },
       order: {
-        startDate: direction as any,
+        startDate: direction,
       },
     });
 

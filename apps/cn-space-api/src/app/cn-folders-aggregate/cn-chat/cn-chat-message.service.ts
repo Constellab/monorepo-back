@@ -66,7 +66,7 @@ export class CnChatMessageService extends BlAbstractService<CnChatMessageEntity>
           folderHierarchyId: folderId,
         },
         order: {
-          createdAt: 'DESC' as any,
+          createdAt: 'DESC',
         },
       },
       this.repository.manager

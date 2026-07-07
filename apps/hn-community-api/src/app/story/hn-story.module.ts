@@ -2,8 +2,8 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { HnCoreModule } from '../core/hn-core.module';
-import { HnCommunitySecurityModule } from '../core/security/hn-community-security.module';
 import { HnCoreConfigModule } from '../core/modules/core-config/hn-core-config.module';
+import { HnCommunitySecurityModule } from '../core/security/hn-community-security.module';
 import { HnFileStoryModule } from '../file-aggregate/file-story/hn-file-story.module';
 import { HnFileStoryService } from '../file-aggregate/file-story/hn-file-story.service';
 import { HnStoryAuthorModule } from '../story-author/hn-story-author.module';

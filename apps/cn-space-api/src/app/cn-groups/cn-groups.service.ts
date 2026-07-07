@@ -266,7 +266,7 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
       },
       relations: { users: true },
     };
-    return options as any;
+    return options;
   }
 
   public async getTeamBySpace(spaceId: string, page: number, size: number): Promise<ClPageI<CnGroup>> {
@@ -276,7 +276,7 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
         spaceId: spaceId,
       },
     };
-    return this.findPaginated(page, size, options as any);
+    return this.findPaginated(page, size, options);
   }
 
   public async searchTeamInSpace(
@@ -289,7 +289,7 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
     searchBuilder.addSearchParams(searchParam);
     searchBuilder.mergeWhereOptions({ spaceId: spaceId, type: CnGroupType.TEAM });
 
-    return (await this.findPaginated(page, size, searchBuilder.build() as any)) as any;
+    return (await this.findPaginated(page, size, searchBuilder.build())) as any;
   }
 
   ////////////////////////////////// SINGLE USER /////////////////////////

@@ -211,7 +211,7 @@ export class CnHierarchyObjectEntity extends BlEntityWithId {
     }
     const hierarchyObject = new CnHierarchyObjectEntity();
     hierarchyObject.spaceId = parentFolder.spaceId;
-    hierarchyObject.parent = parentFolder as CnHierarchyObjectEntity;
+    hierarchyObject.parent = parentFolder;
     hierarchyObject.rootParentId = parentFolder.getRootFolderId();
     hierarchyObject.chatEnabled = false;
     hierarchyObject.hasDescription = false;

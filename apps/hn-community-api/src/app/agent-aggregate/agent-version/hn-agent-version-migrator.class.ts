@@ -96,7 +96,7 @@ export class HnAgentVersionMigrator {
         }
         agentVersionDto.params = {
           specs: specs,
-          values: (agentVersionDto.params as Record<string, any>).values
+          values: (agentVersionDto.params as Record<string, any>).values,
         };
         agentVersionDtoRes = agentVersionDto;
       } else if (agentVersionDto.params instanceof Array) {
@@ -185,7 +185,7 @@ export class HnAgentVersionMigrator {
   private getBasicParamSpecs(value: any): Record<string, any> {
     return {
       type: this.getValueTypeString(value),
-      optional: false
+      optional: false,
     };
   }
 

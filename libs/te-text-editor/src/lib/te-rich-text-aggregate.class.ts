@@ -32,9 +32,7 @@ export interface TeOldRichTextContentWithModificationsI {
  * otherwise it will be TeRichTextContent
  */
 export type TeRichTextAggregateJsonInput =
-  | TeHTMLEditorJSON
-  | TeOldRichTextContentWithModificationsI
-  | TeNewFullRichTextDTO;
+  TeHTMLEditorJSON | TeOldRichTextContentWithModificationsI | TeNewFullRichTextDTO;
 
 export class TeRichTextAggregate {
   private static readonly CURRENT_VERSION = 1;
@@ -227,7 +225,7 @@ export class TeRichTextAggregate {
           const movedBlock: TeBlock = {
             id: modification.blockId,
             data: modification.blockValue,
-            type: modification.blockType as any,
+            type: modification.blockType,
           };
           // remove the block from the old index and add it to the new index
           newBlocks.splice(modification.index, 1);
@@ -249,7 +247,7 @@ export class TeRichTextAggregate {
           const block: TeBlock = {
             id: modification.blockId,
             data: modification.blockValue,
-            type: modification.blockType as any,
+            type: modification.blockType,
           };
           // add the block to the index
           newBlocks.splice(modification.index, 0, block);
@@ -278,7 +276,7 @@ export class TeRichTextAggregate {
           const movedBlock: TeBlock = {
             id: modification.blockId,
             data: modification.blockValue,
-            type: modification.blockType as any,
+            type: modification.blockType,
           };
           blocks.splice(modification.oldIndex, 1);
           blocks.splice(modification.index, 0, movedBlock);
@@ -287,7 +285,7 @@ export class TeRichTextAggregate {
           const block: TeBlock = {
             id: modification.blockId,
             data: modification.blockValue,
-            type: modification.blockType as any,
+            type: modification.blockType,
           };
           blocks.splice(modification.index, 0, block);
           break;

@@ -275,7 +275,7 @@ export class HnAgentService {
 
     return this.agentRepository.find({
       where: where,
-      order: { createdAt: 'DESC' as any },
+      order: { createdAt: 'DESC' },
     });
   }
 

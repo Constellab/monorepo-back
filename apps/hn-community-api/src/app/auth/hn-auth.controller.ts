@@ -70,20 +70,20 @@ export class HnAuthController {
       token,
       this.configService.getDomain()
         ? {
-          path: '/',
-          maxAge: expiresInMilliseconds,
-          sameSite: 'lax',
-          domain: this.configService.getDomain(),
-          httpOnly: true,
-          secure: !this.configService.isLocal(),
-        }
+            path: '/',
+            maxAge: expiresInMilliseconds,
+            sameSite: 'lax',
+            domain: this.configService.getDomain(),
+            httpOnly: true,
+            secure: !this.configService.isLocal(),
+          }
         : {
-          path: '/',
-          maxAge: expiresInMilliseconds,
-          sameSite: 'lax',
-          httpOnly: true,
-          secure: !this.configService.isLocal(),
-        }
+            path: '/',
+            maxAge: expiresInMilliseconds,
+            sameSite: 'lax',
+            httpOnly: true,
+            secure: !this.configService.isLocal(),
+          }
     );
   }
 }

@@ -23,7 +23,7 @@ export class HnGeneratedDocDto extends HnSimpleGeneratedDocDto {
   style?: Record<string, any>;
   typingName?: string;
   parentHumanName?: string;
-  parentTypingName?: string
+  parentTypingName?: string;
   parentMajorVersion?: number;
   parentVersion?: string;
   deprecatedSince?: string;

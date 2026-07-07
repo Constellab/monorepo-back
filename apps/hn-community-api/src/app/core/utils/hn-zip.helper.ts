@@ -25,7 +25,7 @@ export class HnZipHelper {
       file: stream,
       contentType: 'application/zip',
       contentLength: zipContent.length,
-    } as BlFileResponse;
+    };
   }
 
   public static async markdownStringToMarkdownFile(
@@ -35,6 +35,6 @@ export class HnZipHelper {
     return {
       name: ClStringHelper.getCleanUrlPath(fileName),
       content: markdownString,
-    } as HnMarkdownFile;
+    };
   }
 }

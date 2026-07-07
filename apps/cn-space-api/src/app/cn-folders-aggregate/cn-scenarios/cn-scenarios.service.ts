@@ -134,7 +134,7 @@ export class CnScenariosService extends BlAbstractService<CnScenarioEntity> {
         },
       },
       order: {
-        lastModifiedAt: 'DESC' as any,
+        lastModifiedAt: 'DESC',
       },
     });
   }

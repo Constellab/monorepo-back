@@ -126,7 +126,7 @@ export abstract class CnAbstractWithStatusService<
         entity: { id: id },
       },
       order: {
-        createdAt: 'DESC' as any,
+        createdAt: 'DESC',
       },
     });
   }

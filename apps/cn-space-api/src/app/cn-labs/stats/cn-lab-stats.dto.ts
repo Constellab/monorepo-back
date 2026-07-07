@@ -5,13 +5,7 @@ import { DateTime } from 'luxon';
 import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
 
 export type CnLabKpiPeriod =
-  | 'CURRENT_MONTH'
-  | 'CURRENT_YEAR'
-  | 'LAST_7_DAYS'
-  | 'LAST_30_DAYS'
-  | 'LAST_365_DAYS'
-  | 'ALL'
-  | 'CUSTOM';
+  'CURRENT_MONTH' | 'CURRENT_YEAR' | 'LAST_7_DAYS' | 'LAST_30_DAYS' | 'LAST_365_DAYS' | 'ALL' | 'CUSTOM';
 
 /**
  * Object to request stats for a lab

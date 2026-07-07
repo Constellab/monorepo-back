@@ -179,7 +179,7 @@ export class CnLabFactoryService {
       type: greenOption.type,
       value: {
         inactivityDuration: greenOption.inactivityDuration,
-      } as CnLabGreenOptionStopAfterInactivityValue,
+      },
       isPersistent: true,
     };
     await this.greenOptions.createFromDTO(greenOptions, lab, entityManager);

@@ -27,7 +27,7 @@ export class CnLabStatusHistoryService extends BlAbstractPaginatedService<CnLabS
     searchParams: BlSearchParams
   ): Promise<ClPageI<CnLabStatusHistory>> {
     const searchBuilder = new BlSearchBuilder<CnLabStatusHistory>({
-      createdAt: 'DESC' as any,
+      createdAt: 'DESC',
     });
     searchBuilder.addSearchParams(searchParams);
     searchBuilder.mergeWhereOptions({ entity: { id } });
@@ -45,7 +45,7 @@ export class CnLabStatusHistoryService extends BlAbstractPaginatedService<CnLabS
         entity: { id: labId },
       },
       order: {
-        createdAt: 'ASC' as any,
+        createdAt: 'ASC',
       },
     });
   }

@@ -36,8 +36,8 @@ export class CnLabFolderService {
     }
 
     const labFolder = new CnLabFolderEntity();
-    labFolder.lab = lab as CnLabEntity;
-    labFolder.rootFolder = rootFolder as CnHierarchyObjectEntity;
+    labFolder.lab = lab;
+    labFolder.rootFolder = rootFolder;
 
     return entityManager.save(labFolder);
   }

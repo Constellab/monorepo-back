@@ -119,7 +119,7 @@ export class CnStoragePriceService extends BlAbstractService<CnStoragePrice> {
   public async findAll(order: 'ASC' | 'DESC'): Promise<CnStoragePrice[]> {
     return this.repository.find({
       order: {
-        startDate: order as any,
+        startDate: order,
       },
     });
   }

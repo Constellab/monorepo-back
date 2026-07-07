@@ -74,7 +74,7 @@ export class BlAzureBucketService implements BlObjectStorageInterface {
     return {
       name: objectName,
       // Azure SDK types the body as NodeJS.ReadableStream; at runtime it is a Node Readable.
-      file: downloadResponse.readableStreamBody as Readable,
+      file: downloadResponse.readableStreamBody,
       contentType: downloadResponse.contentType,
       contentLength: downloadResponse.contentLength,
     };

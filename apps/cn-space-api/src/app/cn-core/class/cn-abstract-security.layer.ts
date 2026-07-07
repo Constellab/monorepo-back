@@ -48,7 +48,7 @@ export abstract class CnAbstractSecurityLayer<T extends BlEntityWithId> {
 
     await this.checkAuthorizationToCreate(entity);
 
-    return this.abstractService.create(entity as any);
+    return this.abstractService.create(entity);
   }
 
   async updateSecure(entity: T): Promise<T> {
@@ -60,7 +60,7 @@ export abstract class CnAbstractSecurityLayer<T extends BlEntityWithId> {
 
     await this.checkAuthorizationToUpdate(dbEntity);
 
-    return this.abstractService.update(entity as any);
+    return this.abstractService.update(entity);
   }
 
   async deleteByIdSecure(id: string): Promise<DeleteResult> {

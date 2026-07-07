@@ -29,7 +29,7 @@ export class HnCommunityAppService {
   ): Promise<HnCommunityApp[]> {
     return this.communityAppRepository.find({
       where: whereConditions,
-      order: { lastModifiedAt: 'DESC' as any },
+      order: { lastModifiedAt: 'DESC' },
     });
   }
 
@@ -57,7 +57,9 @@ export class HnCommunityAppService {
   }
 
   async findOneByAppUrl(appUrl: string): Promise<HnCommunityApp> {
-    return this.communityAppRepository.findOneBy({ appUrl: Like(`${ClStringHelper.escapeSqlLike(appUrl)}%`) });
+    return this.communityAppRepository.findOneBy({
+      appUrl: Like(`${ClStringHelper.escapeSqlLike(appUrl)}%`),
+    });
   }
 
   async create(dto: HnCommunityAppEditDto, space: HnSpace = null): Promise<HnCommunityApp> {

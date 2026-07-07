@@ -146,11 +146,7 @@ type CnFolderEventPayloadResource = {
 // Hierarchy object events with parentFolder
 type CnFolderEventPayloadHierarchyObject = {
   type:
-    | 'UPLOAD_FOLDER'
-    | 'MOVE_OBJECT_TO_TRASH'
-    | 'RESTORE_OBJECT_FROM_TRASH'
-    | 'DELETE_OBJECT'
-    | 'EMPTY_TRASH';
+    'UPLOAD_FOLDER' | 'MOVE_OBJECT_TO_TRASH' | 'RESTORE_OBJECT_FROM_TRASH' | 'DELETE_OBJECT' | 'EMPTY_TRASH';
   entity: CnHierarchyObject;
   parentFolder: CnHierarchyObject | null;
 };

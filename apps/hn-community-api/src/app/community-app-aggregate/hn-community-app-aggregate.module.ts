@@ -12,8 +12,8 @@ import { HnCommunityAppUserModule } from './community-app-user/hn-community-app-
 import { HnCommunityAppController } from './hn-community-app.controller';
 import { HnCommunityAppListener } from './hn-community-app.listener';
 import { HnCommunityAppAggregateService } from './hn-community-app-aggregate.service';
-import { HnCommunityAppSecurity } from './security/hn-community-app.security';
 import { HnCommunityAppForLabController } from './hn-community-app-for-lab.controller';
+import { HnCommunityAppSecurity } from './security/hn-community-app.security';
 
 @Module({
   imports: [
