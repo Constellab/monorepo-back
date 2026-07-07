@@ -231,7 +231,7 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
   // ':<port>' suffix to append to lab URLs when a port override is configured
   // (on-premise labs behind a non-standard port), empty otherwise
   private get labPortSuffix(): string {
-    return this.labPortOverride ? `:${this.labPortOverride}` : '';
+    return this.labPortOverride != null ? `:${this.labPortOverride}` : '';
   }
 
   // url of the api server
