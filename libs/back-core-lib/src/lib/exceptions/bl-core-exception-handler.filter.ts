@@ -7,6 +7,7 @@ import { BlApiError } from '../models/bl-nest-api-error.class';
 import { BlTranslateService } from '../modules/bl-translate/bl-translate.service';
 import { BlTranslateOptions } from '../modules/bl-translate/bl-translate-options.class';
 import { BlHttpException } from './bl-http.exception';
+import { blIsTransientDbError } from './bl-transient-db-error.helper';
 
 export interface BlCoreExceptionHandlerFilterOptions {
   isProduction: boolean;
@@ -60,9 +61,30 @@ export abstract class BlCoreExceptionHandlerFilter implements ExceptionFilter {
       return this.handleNestHttpException(error);
     } else if (error instanceof QueryFailedError && (error as any).code === 'ER_DATA_TOO_LONG') {
       return this.handleDataTooLongException(error);
+    } else if (blIsTransientDbError(error)) {
+      return this.handleTransientDbException(error);
     } else {
       return this.handleUnknownException(error);
     }
+  }
+
+  /**
+   * Handle a transient database connection error (e.g. a pooled
+   * connection closed by the server/proxy while idle). The full error
+   * is logged for diagnosis, but the client only gets a generic 500
+   * with no connection detail leaked.
+   */
+  private handleTransientDbException(error: Error): BlApiError {
+    const instanceId: string = ClStringHelper.generateUUID();
+
+    // log the full error for diagnosis (message + stack)
+    this.logUnknownError(error, instanceId);
+
+    return {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      code: this.options.serverError,
+      instanceId: instanceId,
+    };
   }
 
   private handleKnownException(error: BlHttpException): Promise<BlApiError> {

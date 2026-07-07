@@ -97,6 +97,17 @@ function typeOrmConfig(configService: CnCoreConfigService): TypeOrmModuleOptions
     // typeorm 1.0 throws on undefined values in where conditions
     // by default; restore pre-1.0 behavior of skipping them
     invalidWhereValuesBehavior: { undefined: 'ignore' },
+    // keep pooled connections alive so MySQL/proxy don't close them
+    // while idle, which caused "Connection lost: The server closed the
+    // connection" on the first request after an idle period
+    extra: {
+      enableKeepAlive: true,
+      keepAliveInitialDelay: 10000,
+      // recycle connections before MySQL's wait_timeout can kill them
+      idleTimeout: 60000,
+      // fail fast instead of hanging if the pool is exhausted
+      connectTimeout: 10000,
+    },
   };
 }
 
