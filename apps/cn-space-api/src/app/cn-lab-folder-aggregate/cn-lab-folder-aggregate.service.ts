@@ -137,8 +137,10 @@ export class CnLabFolderAggregateService {
     for (const labFolder of labFolders) {
       try {
         await this.removeFolderFromLab(labFolder.lab, rootFolderId);
-      } catch (e) {
-        throw new Error(`Error while removing folder from lab '${labFolder.lab.name}' : ${e}`);
+      } catch (e: any) {
+        throw new BlBadRequestException(
+          `Error while removing folder from lab '${labFolder.lab.name}' : ${e}`
+        );
       }
     }
   }
@@ -203,8 +205,10 @@ export class CnLabFolderAggregateService {
   /**
    * Method that calls the lab to generate a user access token for a resource
    * @param resourceId
+   * @param openAppInNewTab true to point the access url to the app launcher gateway
+   * (open the app in a new tab) instead of the in-place resource-open page
    */
-  public async getResourceAccess(resourceId: string): Promise<CnResourceAccessDTO> {
+  public async getResourceAccess(resourceId: string, openAppInNewTab = false): Promise<CnResourceAccessDTO> {
     const resource = await this.resourceAggregateService.findResource(resourceId);
     const lab = resource.lab;
 
@@ -225,9 +229,10 @@ export class CnLabFolderAggregateService {
     );
 
     const userAccess = await this.externalLabShareService.generateUserAccessToken(
-      lab.getGlabSpaceApiInfo(),
+      lab,
       resource.token,
-      labUser
+      labUser,
+      openAppInNewTab
     );
     return new CnResourceAccessDTO(resource, userAccess.access_url, userAccess.share_link_valid_until);
   }
