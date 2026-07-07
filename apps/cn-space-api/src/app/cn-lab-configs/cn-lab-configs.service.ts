@@ -105,6 +105,32 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
     return labConfig.brickVersions.find((brickVersion) => brickVersion.brick.name === brick_name);
   }
 
+  /**
+   * Get the gws_core brick version installed on a data lab (from its lab config).
+   * Returns null if the lab has no config or gws_core is not in it.
+   */
+  public async getGwsCoreVersion(lab: CnLab): Promise<CnBrickVersion | null> {
+    if (!lab.labConfigId) {
+      return null;
+    }
+
+    return this.getLabBrickVersion(lab.labConfigId, CnBrickGWS.GWS_CORE);
+  }
+
+  /**
+   * Get the gws_core brick version installed on a data lab (from its lab config).
+   * Throws if the lab has no config or gws_core is not in it.
+   */
+  public async getGwsCoreVersionAndCheck(lab: CnLab): Promise<CnBrickVersion> {
+    const gwsCoreVersion = await this.getGwsCoreVersion(lab);
+    if (!gwsCoreVersion) {
+      throw new BlBadRequestException(
+        `The brick '${CnBrickGWS.GWS_CORE}' is not in the config of lab '${lab.name}'`
+      );
+    }
+    return gwsCoreVersion;
+  }
+
   //////////////////////////////////// CONFIG FILE ////////////////////////////////////////
 
   /**
