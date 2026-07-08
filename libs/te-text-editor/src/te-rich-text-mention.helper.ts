@@ -21,6 +21,9 @@ export class TeRichTextMentionHelper {
       const mentionElements = mentionElement.window.document.querySelectorAll(TeInlineToolType.MENTION);
       for (const element of mentionElements) {
         const attribute = element.getAttribute('data-jsondata');
+        if (attribute == null) {
+          continue;
+        }
         try {
           // replace all '"/' by '' to avoid parsing error
           const json = JSON.parse(attribute.replace(/\\"/g, ''));

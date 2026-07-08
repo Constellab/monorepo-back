@@ -15,22 +15,22 @@ export type TeRichTextGetUserFunction = (userId: string) => Promise<TeUser>;
  * Modification with user information
  */
 export class TeRichTextBlockModificationWithUser {
-  id: string;
+  id!: string;
 
   @ClLuxonDateTimeTransform()
-  time: DateTime;
+  time!: DateTime;
 
-  blockId: string;
+  blockId!: string;
 
-  blockType: string;
+  blockType!: string;
 
-  type: TeRichTextModificationType;
+  type!: TeRichTextModificationType;
 
-  index: number;
+  index!: number;
 
-  userId: string;
+  userId!: string;
 
-  user: TeUser;
+  user!: TeUser;
 
   differences?: TeRichTextModificationDifference[];
 

@@ -20,7 +20,7 @@ export class TeMarkdown {
   // This class is used to convert header block data to markdown with header metadata
   public static getHeaderBlockMarkdown(
     headerBlockData: TeBlockHeaderData,
-    textEditorUrlPage: string = null
+    textEditorUrlPage: string | null = null
   ): string {
     let res = `${'#'.repeat(headerBlockData.level)} ${headerBlockData.text}`;
     // Add metadata to the header block

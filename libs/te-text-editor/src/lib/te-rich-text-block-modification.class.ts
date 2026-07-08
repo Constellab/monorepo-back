@@ -23,7 +23,7 @@ export interface TeRichTextModificationDifference {
 export class TeRichTextBlockModification {
   id: string;
 
-  version: string;
+  version!: string;
 
   time: DateTime;
 
@@ -158,7 +158,7 @@ export class TeRichTextBlockModification {
     return TeRichTextBlockModification.stringifyBlockData(this.blockValue);
   }
 
-  public static stringifyBlockData(data: TeBlockData): string {
+  public static stringifyBlockData(data: TeBlockData | undefined): string {
     // replace &nbsp; with ' ' to avoid HTML parsing error
     // replace '\"'  with &quot; to avoid HTML parsing error
     // the removes of '"' helps the diff lib to work correctly
@@ -170,8 +170,12 @@ export class TeRichTextBlockModification {
   }
 
   public toJsonObject(): TeRichTextBlockModificationDTO {
+    const time = this.time.toISO();
+    if (time == null) {
+      throw new Error('Invalid modification time, cannot serialize to ISO string');
+    }
     return {
-      time: this.time.toISO(),
+      time,
       blockId: this.blockId,
       blockType: this.blockType,
       differences: this.differences,

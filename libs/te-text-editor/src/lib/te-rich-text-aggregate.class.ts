@@ -125,6 +125,10 @@ export class TeRichTextAggregate {
     // find deleted blocks, start by the last block
     let index = this.richText.getBlocks().length - 1;
     for (const oldBlock of this.richText.getBlocks().reverse()) {
+      if (oldBlock.id == null) {
+        index--;
+        continue;
+      }
       if (!newRichText.hasBlock(oldBlock.id)) {
         // block is deleted
         const modif = new TeRichTextBlockModification(
@@ -143,6 +147,10 @@ export class TeRichTextAggregate {
 
     index = 0;
     for (const block of newRichText.getBlocks()) {
+      if (block.id == null) {
+        index++;
+        continue;
+      }
       const oldBlock = this.richText.getBlock(block.id);
       const oldBlockIndex = this.richText.getBlockIndex(block.id);
       if (oldBlock == null) {
@@ -228,6 +236,9 @@ export class TeRichTextAggregate {
             type: modification.blockType,
           };
           // remove the block from the old index and add it to the new index
+          if (modification.oldIndex == null) {
+            throw new Error('Cannot undo a moved modification without an old index');
+          }
           newBlocks.splice(modification.index, 1);
           newBlocks.splice(modification.oldIndex, 0, movedBlock);
           break;
@@ -238,6 +249,9 @@ export class TeRichTextAggregate {
         case TeRichTextModificationType.UPDATED:
           // undo the differences in the block data and add anti-slashes to the double quotes
           const b = newBlocks.find((b) => b.id === modification.blockId);
+          if (!b) {
+            break;
+          }
           const diff = modification.undoDifferences(b.data);
           if (diff) {
             newBlocks[newBlocks.indexOf(b)].data = diff;
@@ -278,6 +292,9 @@ export class TeRichTextAggregate {
             data: modification.blockValue,
             type: modification.blockType,
           };
+          if (modification.oldIndex == null) {
+            throw new Error('Cannot redo a moved modification without an old index');
+          }
           blocks.splice(modification.oldIndex, 1);
           blocks.splice(modification.index, 0, movedBlock);
           break;

@@ -99,7 +99,7 @@ export class TeRichText {
     return Math.random().toString(36).substring(2, 12);
   }
 
-  constructor(richText: TeRichTextInput = null, targetVersion: number = TeRichText.CURRENT_VERSION) {
+  constructor(richText: TeRichTextInput | null = null, targetVersion: number = TeRichText.CURRENT_VERSION) {
     let newRichText: TeRichTextDTO;
     const content: any = richText;
     if (content == null) {
@@ -143,7 +143,7 @@ export class TeRichText {
     return this.getBlocksByType(TeBlockType.PARAGRAPH);
   }
 
-  public getFirstParagraphsText(): string {
+  public getFirstParagraphsText(): string | null {
     if (this.isEmpty()) return null;
     let result = '';
     const paragraphBlocks = this.blocks.filter((block) => block.type === TeBlockType.PARAGRAPH);
@@ -190,13 +190,13 @@ export class TeRichText {
     return this.getFiguresBlocks().some((op) => op.data.filename === filename);
   }
 
-  public getFirstFigureLink(): string {
+  public getFirstFigureLink(): string | null {
     const figure = this.getFiguresBlocks()[0];
     if (figure == null) return null;
     return figure.data.filename;
   }
 
-  public getFiguresBlock(filename: string): TeBlock | undefined {
+  public getFiguresBlock(filename: string): TeBlock | null {
     return this.getFiguresBlocks().find((op) => op.data.filename === filename) ?? null;
   }
 
@@ -212,7 +212,7 @@ export class TeRichText {
     return this.getBlock(id) != null;
   }
 
-  public getBlock(id: string): TeBlock {
+  public getBlock(id: string): TeBlock | undefined {
     return this.blocks.find((block) => block.id === id);
   }
 
@@ -237,7 +237,7 @@ export class TeRichText {
   }
 
   ///////////////////////////////////// MARKDOWN ///////////////////////////////////////////////
-  public toMarkdown(imageUrlPrefix: string = '', textEditorUrlPage: string = null): string {
+  public toMarkdown(imageUrlPrefix: string = '', textEditorUrlPage: string | null = null): string {
     let result = '';
     for (const block of this.blocks) {
       switch (block.type) {

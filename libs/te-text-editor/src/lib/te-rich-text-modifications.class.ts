@@ -16,7 +16,7 @@ export class TeRichTextModifications {
   private static readonly CURRENT_VERSION = 2;
   private static readonly FRONT_TIME_DIFFERENCE = Duration.fromObject({ seconds: 5 });
   private static readonly BACK_TIME_DIFFERENCE = Duration.fromObject({ minutes: 3 });
-  private static MAX_TIME_DIFFERENCE: Duration = null;
+  private static MAX_TIME_DIFFERENCE: Duration | null = null;
 
   private readonly version: number;
 
@@ -43,7 +43,7 @@ export class TeRichTextModifications {
   }
 
   public static fromJsonObject(
-    json: TeRichTextBlockModificationsDTO,
+    json: TeRichTextBlockModificationsDTO | null | undefined,
     targetVersion: number = TeRichTextModifications.CURRENT_VERSION
   ): TeRichTextModifications {
     if (!json) {
@@ -117,11 +117,11 @@ export class TeRichTextModifications {
       );
     }
     if (areAllMoved) {
-      let moveModification: TeRichTextBlockModification = null;
+      let moveModification: TeRichTextBlockModification | null = null;
       modifications.forEach((modification) => {
-        const movement = Math.abs(modification.index - modification.oldIndex);
+        const movement = Math.abs(modification.index - (modification.oldIndex ?? 0));
         const currentMovement = moveModification
-          ? Math.abs(moveModification.index - moveModification.oldIndex)
+          ? Math.abs(moveModification.index - (moveModification.oldIndex ?? 0))
           : 0;
         if (
           moveModification == null ||
@@ -263,16 +263,12 @@ export class TeRichTextModifications {
     // map to store loaded users
     const userMap = new Map<string, TeUser>();
     for (const modification of this.getModifications()) {
-      if (!userMap.has(modification.userId)) {
-        const userDto = await getUser(modification.userId);
-        userMap.set(modification.userId, userDto);
+      let user = userMap.get(modification.userId);
+      if (!user) {
+        user = await getUser(modification.userId);
+        userMap.set(modification.userId, user);
       }
-      res.push(
-        TeRichTextBlockModificationWithUser.fromBlockModification(
-          modification,
-          userMap.get(modification.userId)
-        )
-      );
+      res.push(TeRichTextBlockModificationWithUser.fromBlockModification(modification, user));
     }
     return res;
   }

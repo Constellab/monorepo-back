@@ -53,7 +53,9 @@ export class TeRichTextMigrator1To2 extends TeRichTextMigrator {
     return blockData;
   }
 
-  private migrateListItem(listItem: TeBlockListItem): TeBlockListItem {
+  private migrateListItem(listItem: TeBlockListItem): TeBlockListItem;
+  private migrateListItem(listItem: TeBlockListItem | null): TeBlockListItem | null;
+  private migrateListItem(listItem: TeBlockListItem | null): TeBlockListItem | null {
     if (listItem == null) return null;
     if (listItem.meta == null) {
       listItem.meta = {};
