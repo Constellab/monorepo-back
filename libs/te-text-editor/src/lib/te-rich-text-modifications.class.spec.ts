@@ -67,8 +67,8 @@ describe('TeRichTextModifications', () => {
     });
 
     it('should return empty instance for null/undefined string', () => {
-      const result1 = TeRichTextModifications.fromJsonObjectString(null);
-      const result2 = TeRichTextModifications.fromJsonObjectString(undefined);
+      const result1 = TeRichTextModifications.fromJsonObjectString(null as unknown as string);
+      const result2 = TeRichTextModifications.fromJsonObjectString(undefined as unknown as string);
 
       expect(result1).toBeInstanceOf(TeRichTextModifications);
       expect(result1.isEmpty()).toBe(true);
@@ -160,7 +160,7 @@ describe('TeRichTextModifications', () => {
     });
 
     it('should handle null modifications array', () => {
-      const modifications = new TeRichTextModifications(null);
+      const modifications = new TeRichTextModifications(null as unknown as TeRichTextBlockModification[]);
 
       expect(modifications.getModifications()).toEqual([]);
       expect(modifications.isEmpty()).toBe(true);
@@ -513,7 +513,7 @@ describe('TeRichTextModifications', () => {
 
       const lastRedo = modifications.getLastRedoModification();
       expect(lastRedo).toBeDefined();
-      expect(lastRedo.id).toBe('mod-3');
+      expect(lastRedo!.id).toBe('mod-3');
     });
   });
 
@@ -547,7 +547,7 @@ describe('TeRichTextModifications', () => {
         const result = modifications.getLastRedoModification();
 
         expect(result).toBeDefined();
-        expect(result.id).toBe('mod-2');
+        expect(result!.id).toBe('mod-2');
       });
 
       it('should return null when no redo modifications exist', () => {
@@ -564,7 +564,7 @@ describe('TeRichTextModifications', () => {
 
         modifications.removeLastRedoModification();
 
-        expect(modifications.getLastRedoModification().id).toBe('mod-1');
+        expect(modifications.getLastRedoModification()!.id).toBe('mod-1');
       });
     });
   });
@@ -597,7 +597,7 @@ describe('TeRichTextModifications', () => {
 
       const result = modifications.getFirstModificationOfLastGroup();
 
-      expect(result.id).toBe('mod-2');
+      expect(result!.id).toBe('mod-2');
     });
 
     it('should return the first modification of the last group', () => {
@@ -634,7 +634,7 @@ describe('TeRichTextModifications', () => {
 
       const result = modifications.getFirstModificationOfLastGroup();
 
-      expect(result.id).toBe('mod-2');
+      expect(result!.id).toBe('mod-2');
     });
 
     it('should distinguish different groups', () => {
@@ -662,7 +662,7 @@ describe('TeRichTextModifications', () => {
 
       const result = modifications.getFirstModificationOfLastGroup();
 
-      expect(result.id).toBe('mod-2');
+      expect(result!.id).toBe('mod-2');
     });
   });
 
@@ -841,7 +841,7 @@ describe('TeRichTextModifications', () => {
 
       const lastRedo = modifications.getLastRedoModification();
       expect(lastRedo).toBeDefined();
-      expect(lastRedo.id).toBe('mod-2');
+      expect(lastRedo!.id).toBe('mod-2');
     });
   });
 
