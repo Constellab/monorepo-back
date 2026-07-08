@@ -248,6 +248,9 @@ export class CnLabFolderAggregateService {
     // access_url used for both.
     const embeddedUrl = userAccess.embedded_url ?? userAccess.access_url;
     const standaloneUrl = userAccess.standalone_url ?? userAccess.access_url;
+    if (embeddedUrl == null || standaloneUrl == null) {
+      throw new BlBadRequestException(`The lab '${lab.name}' did not return a valid access url for the resource.`);
+    }
     return new CnResourceAccessDTO(resource, embeddedUrl, standaloneUrl, userAccess.share_link_valid_until);
   }
 
