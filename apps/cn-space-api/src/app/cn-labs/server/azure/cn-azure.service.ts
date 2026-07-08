@@ -151,6 +151,12 @@ export class CnAzureService {
     const instance = await this.getInstance(instanceName);
 
     const diskId = `${this.getResourceGroupFullId()}/providers/Microsoft.Compute/disks/${volumeName}`;
+    if (instance.storageProfile == null) {
+      instance.storageProfile = {};
+    }
+    if (instance.storageProfile.dataDisks == null) {
+      instance.storageProfile.dataDisks = [];
+    }
     instance.storageProfile.dataDisks.push({
       name: volumeName,
       lun: 1, // id of the disk for this VM

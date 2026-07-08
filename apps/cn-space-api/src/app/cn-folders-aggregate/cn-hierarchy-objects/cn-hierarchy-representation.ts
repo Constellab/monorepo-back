@@ -16,22 +16,22 @@ export abstract class CnHierarchyRepresentation extends BlEntityWithId {
    */
   @JoinColumn({ name: 'id' })
   @OneToOne(() => CnHierarchyObjectEntity, { cascade: ['insert'], nullable: false })
-  hierarchyRepresentation: CnHierarchyObject;
+  hierarchyRepresentation!: CnHierarchyObject;
 
   @BlLuxonDateTimeColumn({ nullable: false, update: false })
-  createdAt: DateTime;
+  createdAt!: DateTime;
 
   @Type(() => CnUserEntity)
   @ManyToOne(() => CnUserEntity, { eager: true, nullable: false })
   @BlNotUpdatable()
-  createdBy: Relation<CnUser>;
+  createdBy!: Relation<CnUser>;
 
   @BlLuxonDateTimeColumn()
-  lastModifiedAt: DateTime;
+  lastModifiedAt!: DateTime;
 
   @Type(() => CnUserEntity)
   @ManyToOne(() => CnUserEntity, { eager: true })
-  lastModifiedBy: Relation<CnUser>;
+  lastModifiedBy!: Relation<CnUser>;
 
   abstract getHierarchyObjectInfo(): CnHierarchyObjectInfo;
 }

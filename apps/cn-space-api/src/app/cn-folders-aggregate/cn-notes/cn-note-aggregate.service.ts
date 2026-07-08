@@ -38,6 +38,9 @@ export class CnNoteAggregateService {
 
   public async findNoteContent(id: string): Promise<TeRichText> {
     const noteFolder = await this.securityService.getAndCheckAuthorizationForFindOne(id);
+    if (noteFolder.parentId == null) {
+      throw new BlBadRequestException('The note has no parent folder');
+    }
     const parentFolder = await this.hierarchyObjectService.findByIdAndCheck(noteFolder.parentId);
     return await this.noteService.getNoteContent(parentFolder, id);
   }
@@ -119,12 +122,18 @@ export class CnNoteAggregateService {
 
   async getNoteFile(noteId: string, filename: string): Promise<BlFileResponse> {
     const noteFolder = await this.securityService.getAndCheckAuthorizationForFindOne(noteId);
+    if (noteFolder.parentId == null) {
+      throw new BlBadRequestException('The note has no parent folder');
+    }
     const parentFolder = await this.hierarchyObjectService.findByIdAndCheck(noteFolder.parentId);
     return this.noteService.getFile(filename, parentFolder, noteId);
   }
 
   async getNoteJsonFile(noteId: string, filename: string): Promise<BlFileResponse> {
     const noteFolder = await this.securityService.getAndCheckAuthorizationForFindOne(noteId);
+    if (noteFolder.parentId == null) {
+      throw new BlBadRequestException('The note has no parent folder');
+    }
     const parentFolder = await this.hierarchyObjectService.findByIdAndCheck(noteFolder.parentId);
     return this.noteService.getJsonFile(filename, parentFolder, noteId);
   }
@@ -140,6 +149,9 @@ export class CnNoteAggregateService {
     const note: CnNoteWithDocument = await this.noteService.findWithDocumentByIdAndCheck(
       noteHierarchyObject.id
     );
+    if (note.document == null) {
+      throw new BlBadRequestException('The note has no associated document');
+    }
     const document = await this.documentService.findWithHierarchyByIdAndCheck(note.document.id);
 
     // move the document
@@ -157,6 +169,9 @@ export class CnNoteAggregateService {
     const notes = await this.noteService.findByLab(CnCurrentUserHelper.getAndCheckCurrentLab().id);
 
     return notes.map((note) => {
+      if (note.hierarchyRepresentation.parentId == null) {
+        throw new BlBadRequestException('The note has no parent folder');
+      }
       return new CnExternalLabSyncedObjectDTO(
         note.id,
         note.hierarchyRepresentation.parentId,

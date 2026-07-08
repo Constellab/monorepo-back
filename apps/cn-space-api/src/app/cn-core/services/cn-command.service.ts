@@ -1,5 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { ChildProcess, exec, execFile, ExecOptions, spawn } from 'child_process';
+import {
+  ChildProcess,
+  exec,
+  execFile,
+  ExecOptions,
+  ExecOptionsWithStringEncoding,
+  spawn,
+} from 'child_process';
 import { Observable } from 'rxjs';
 
 export interface CnSpawnResult {
@@ -52,7 +59,7 @@ export class CnCommandService {
   public execCommand(command: string, options: CnExecOptions = cnExecCommandDefaultOptions): Promise<string> {
     return new Promise((resolve, reject) => {
       // stdout/stderr are strings here since no 'buffer' encoding is set in options.
-      exec(command, options, (error, stdout: string, stderr: string) => {
+      exec(command, options as ExecOptionsWithStringEncoding, (error, stdout: string, stderr: string) => {
         if (error) {
           if (options.ignoreError) {
             return resolve(error.toString());

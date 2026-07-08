@@ -356,7 +356,7 @@ export class CnLabSshService {
       });
       return true;
     } catch (e) {
-      this.logger.log(e.toString());
+      this.logger.log(String(e));
       return false;
     }
   }

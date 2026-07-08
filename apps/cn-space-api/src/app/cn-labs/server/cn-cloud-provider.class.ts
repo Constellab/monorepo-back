@@ -52,10 +52,10 @@ export interface CnCpInstanceWithVolume {
 }
 
 export interface CnCpCompleteInfo {
-  instance: CnCpInstance;
-  volume: CnCpVolume;
-  ipAddress: CnCpStaticIpAddress;
-  domainRecord: CnOvhDomainRecord;
+  instance: CnCpInstance | null;
+  volume: CnCpVolume | null;
+  ipAddress: CnCpStaticIpAddress | null;
+  domainRecord: CnOvhDomainRecord | null;
 }
 
 export const CN_SERVER_UBUNTU_USER = 'ubuntu';

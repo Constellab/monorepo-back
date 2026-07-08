@@ -49,7 +49,7 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
   public async update(bucket: CnBucket, entityManager?: EntityManager): Promise<CnBucket> {
     bucket = await this.checkBucketBeforeSave(bucket);
     await super.update(bucket, entityManager);
-    return this.findById(bucket.id, CnBucket.configRelation);
+    return this.findByIdAndCheck(bucket.id, CnBucket.configRelation);
   }
 
   /**
@@ -79,7 +79,7 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
       }
       // force the name of the lab bucket
       bucket.name = CnBucket.LAB_BUCKET_NAME;
-      bucket.region = null;
+      bucket.region = undefined;
 
       const existingBucket = await this.repository.findOne({
         where: {
@@ -103,7 +103,13 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
       if (!bucket.region.supportsS3()) {
         throw new BlBadRequestException(`Region ${bucket.region.technicalName} does not support S3`);
       }
-      bucket.lab = null;
+
+      if (bucket.region.cloudProvider == null) {
+        throw new BlBadRequestException(
+          `Cloud provider must be defined for region ${bucket.region.technicalName}`
+        );
+      }
+      bucket.lab = undefined;
 
       // there can be only one bucket of type by region
       const existingBucket = await this.findByContentTypeAndRegion(
@@ -137,10 +143,7 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
   }
 
   public async findCompleteById(id: string): Promise<CnBucket> {
-    return await this.repository.findOne({
-      where: { id: id },
-      relations: CnBucket.configRelation,
-    });
+    return await this.findByIdAndCheck(id, CnBucket.configRelation);
   }
 
   public async findByContentType(contentType: CnBucketContentType): Promise<CnBucket[]> {
@@ -155,7 +158,7 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
   public async findByContentTypeAndRegion(
     contentType: CnBucketContentType,
     regionId: string
-  ): Promise<CnBucket> {
+  ): Promise<CnBucket | null> {
     return await this.repository.findOne({
       where: {
         contentType: contentType,

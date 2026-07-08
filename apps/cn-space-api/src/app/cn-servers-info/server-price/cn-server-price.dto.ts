@@ -19,8 +19,8 @@ export class CnServerPrices {
 }
 
 export class CnCreateServerPriceDTO {
-  price: number;
+  price!: number;
 
   @ClLuxonDateTransform()
-  startDate: DateTime;
+  startDate!: DateTime;
 }

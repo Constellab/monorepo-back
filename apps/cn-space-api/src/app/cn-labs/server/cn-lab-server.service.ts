@@ -36,6 +36,17 @@ export class CnLabServerService {
     private externalLabApiService: CnExternalLabApiService
   ) {}
 
+  /**
+   * Return the technical name of the lab region.
+   * The region is required for all cloud provider operations, so it throws if missing.
+   */
+  private getLabRegionName(lab: CnLab): string {
+    if (lab.region == null) {
+      throw new BlBadRequestException(`Lab ${lab.id} has no region`);
+    }
+    return lab.region.technicalName;
+  }
+
   public async getCompleteInfo(lab: CnLab): Promise<CnCpCompleteInfo> {
     const cloudProviderService = await this.cloudProviderFactory.getCloudProviderServiceFromLab(lab.id);
 
@@ -50,7 +61,7 @@ export class CnLabServerService {
     if (lab.serverInstanceId) {
       promises.push(
         cloudProviderService
-          .getInstance(lab.serverInstanceId, lab.region.technicalName)
+          .getInstance(lab.serverInstanceId, this.getLabRegionName(lab))
           .then((instance) => (info.instance = instance))
           .catch((err) => this.logger.error(err))
       );
@@ -59,7 +70,7 @@ export class CnLabServerService {
     if (lab.serverVolumeId) {
       promises.push(
         cloudProviderService
-          .getVolume(lab.serverVolumeId, lab.region.technicalName)
+          .getVolume(lab.serverVolumeId, this.getLabRegionName(lab))
           .then((volume) => (info.volume = volume))
           .catch((err) => this.logger.error(err))
       );
@@ -68,7 +79,7 @@ export class CnLabServerService {
     if (lab.serverIpAddressId) {
       promises.push(
         cloudProviderService
-          .getIpAddressFromId(lab.serverIpAddressId, lab.region.technicalName)
+          .getIpAddressFromId(lab.serverIpAddressId, this.getLabRegionName(lab))
           .then((ipAddress) => (info.ipAddress = ipAddress))
           .catch((err) => this.logger.error(err))
       );
@@ -99,7 +110,7 @@ export class CnLabServerService {
     const cloudProviderService = this.cloudProviderFactory.getCloudProviderService(cloudProviderName);
 
     // Create or get the static IP address
-    let ipAddress: CnCpStaticIpAddress | null;
+    let ipAddress: CnCpStaticIpAddress | null = null;
     if (cloudProviderService.needStaticIpAddressBeforeInstance()) {
       if (!lab.serverIpAddressId) {
         // Creating the static IP address
@@ -108,7 +119,7 @@ export class CnLabServerService {
       } else {
         ipAddress = await cloudProviderService.getIpAddressFromId(
           lab.serverIpAddressId,
-          lab.region.technicalName
+          this.getLabRegionName(lab)
         );
         if (ipAddress == null) {
           throw new BlBadRequestException(
@@ -123,10 +134,10 @@ export class CnLabServerService {
 
     // Create or get the server instance
     if (!lab.serverInstanceId) {
-      lab = await this.createLab(cloudProviderService, lab, ipAddress, labVolume);
+      lab = await this.createLab(cloudProviderService, lab, ipAddress ?? undefined, labVolume);
     } else {
       // Verify the instance still exists in the cloud provider (throws CnInstanceNotFoundException if not)
-      await cloudProviderService.getInstance(lab.serverInstanceId, lab.region.technicalName);
+      await cloudProviderService.getInstance(lab.serverInstanceId, this.getLabRegionName(lab));
       this.logger.log(
         `Server instance ${lab.serverInstanceId} already exists for lab ${lab.id}. Skipping creation`
       );
@@ -139,7 +150,7 @@ export class CnLabServerService {
       }
       lab = await this.createVolume(cloudProviderService, lab, labVolume);
     } else if (cloudProviderService.volumeIsCreatedSeparately()) {
-      const serverVolume = await cloudProviderService.getVolume(lab.serverVolumeId, lab.region.technicalName);
+      const serverVolume = await cloudProviderService.getVolume(lab.serverVolumeId, this.getLabRegionName(lab));
       if (serverVolume == null) {
         throw new BlBadRequestException(
           `Volume ${lab.serverVolumeId} not found in cloud provider ${cloudProviderName}`
@@ -159,7 +170,7 @@ export class CnLabServerService {
         !(await cloudProviderService.volumeIsAttachedToInstance(
           serverWithInstance.instance.id,
           serverWithInstance.volume.id,
-          lab.region.technicalName
+          this.getLabRegionName(lab)
         ))
       ) {
         throw new BlBadRequestException(
@@ -173,9 +184,12 @@ export class CnLabServerService {
     }
 
     // create domain record
+    if (!lab.serverInstanceId) {
+      throw new BlBadRequestException(`Lab ${lab.id} has no server instance`);
+    }
     const ipv4 = await cloudProviderService.getIpAddressFromInstanceId(
       lab.serverInstanceId,
-      lab.region.technicalName
+      this.getLabRegionName(lab)
     );
     await this.createDomainRecordForLab(lab, ipv4);
 
@@ -191,9 +205,15 @@ export class CnLabServerService {
         `Static IP address not needed for cloud provider ${service.getName()} before instance ` +
           `creation for lab ${lab.id}`
       );
-      return null;
+      throw new BlBadRequestException(
+        `Static IP address not needed for cloud provider ${service.getName()} before instance creation`
+      );
     }
-    const regionName = lab.region.technicalName;
+    const regionName = this.getLabRegionName(lab);
+
+    if (!lab.cloudName) {
+      throw new BlBadRequestException(`Lab ${lab.id} has no cloud name`);
+    }
 
     await this.labService.updateServerTask(
       lab.id,
@@ -202,6 +222,11 @@ export class CnLabServerService {
     );
     this.logger.log(`Creating static IP address for lab ${lab.id} in cloud provider ${service.getName()}`);
     const staticIpAddress = await service.createStaticIpAddress(lab.cloudName, regionName);
+    if (staticIpAddress == null) {
+      throw new BlBadRequestException(
+        `Cloud provider ${service.getName()} did not return a static IP address for lab ${lab.id}`
+      );
+    }
     this.logger.log(
       `Static IP address ${staticIpAddress.id} created for lab ${lab.id} ` +
         `in cloud provider ${service.getName()}`
@@ -215,12 +240,20 @@ export class CnLabServerService {
     ipAddress?: CnCpStaticIpAddress,
     labVolume?: CnLabVolume
   ): Promise<CnLab> {
-    const regionName = lab.region.technicalName;
+    const regionName = this.getLabRegionName(lab);
 
     const labServer = await this.labService.getLabServerCloud(lab.id);
 
     if (!labServer) {
       throw new BlBadRequestException(`Server cloud not found for lab ${lab.id}`);
+    }
+
+    if (!lab.cloudName) {
+      throw new BlBadRequestException(`Lab ${lab.id} has no cloud name`);
+    }
+
+    if (lab.billingMode == null) {
+      throw new BlBadRequestException(`Lab ${lab.id} has no billing mode`);
     }
 
     await this.labService.updateServerTask(
@@ -250,6 +283,9 @@ export class CnLabServerService {
 
       return await this.labService.updatePartial(lab.id, { serverInstanceId: serverInstance.id });
     } else {
+      if (labVolume == null) {
+        throw new BlBadRequestException(`Lab ${lab.id} has no volume to create the instance with`);
+      }
       const volumeRequest: CnCpCreateVolumeRequest = this.getLabVolumeRequest(lab, labVolume);
       const serverWithVolume = await service.createInstanceWithVolume(instanceRequest, volumeRequest);
 
@@ -283,12 +319,15 @@ export class CnLabServerService {
   }
 
   private getLabVolumeRequest(lab: CnLab, labVolume: CnLabVolume): CnCpCreateVolumeRequest {
+    if (!lab.cloudName) {
+      throw new BlBadRequestException(`Lab ${lab.id} has no cloud name`);
+    }
     return {
       name: lab.cloudName,
       description: 'Volume for lab ' + lab.name,
       size: labVolume.size,
       type: labVolume.type,
-      region: lab.region.technicalName,
+      region: this.getLabRegionName(lab),
     };
   }
 
@@ -296,11 +335,19 @@ export class CnLabServerService {
     service: CnCloudProviderService,
     lab: CnLab
   ): Promise<CnCpInstanceWithVolume> {
+    if (!lab.serverInstanceId) {
+      throw new BlBadRequestException(`Lab ${lab.id} has no server instance`);
+    }
+    if (!lab.serverVolumeId) {
+      throw new BlBadRequestException(`Lab ${lab.id} has no server volume`);
+    }
+    const serverInstanceId = lab.serverInstanceId;
+    const serverVolumeId = lab.serverVolumeId;
     let serverInstance: CnCpInstance = await service.getInstance(
-      lab.serverInstanceId,
-      lab.region.technicalName
+      serverInstanceId,
+      this.getLabRegionName(lab)
     );
-    let serverVolume: CnCpVolume = await service.getVolume(lab.serverVolumeId, lab.region.technicalName);
+    let serverVolume: CnCpVolume = await service.getVolume(serverVolumeId, this.getLabRegionName(lab));
 
     // Waiting for the server and the volume to be ready
     let count = 0;
@@ -324,12 +371,12 @@ export class CnLabServerService {
 
       // refresh lab if needed
       if (serverInstance.status.status !== 'RUNNING') {
-        serverInstance = await service.getInstance(lab.serverInstanceId, lab.region.technicalName);
+        serverInstance = await service.getInstance(serverInstanceId, this.getLabRegionName(lab));
       }
 
       // refresh volume if needed
       if (serverVolume.status !== 'AVAILABLE') {
-        serverVolume = await service.getVolume(lab.serverVolumeId, lab.region.technicalName);
+        serverVolume = await service.getVolume(serverVolumeId, this.getLabRegionName(lab));
       }
 
       // break early if resources are being deleted
@@ -403,6 +450,12 @@ export class CnLabServerService {
   }
 
   private async attachVolumeToInstance(service: CnCloudProviderService, lab: CnLab): Promise<CnCpVolume> {
+    if (!lab.serverInstanceId) {
+      throw new BlBadRequestException(`Lab ${lab.id} has no server instance`);
+    }
+    if (!lab.serverVolumeId) {
+      throw new BlBadRequestException(`Lab ${lab.id} has no server volume`);
+    }
     await this.labService.updateServerTask(
       lab.id,
       'Attaching volume to server instance',
@@ -415,7 +468,7 @@ export class CnLabServerService {
     const volume = await service.attachVolumeToInstance(
       lab.serverInstanceId,
       lab.serverVolumeId,
-      lab.region.technicalName
+      this.getLabRegionName(lab)
     );
     this.logger.log(
       `Volume ${volume.id} attached to instance ${lab.serverInstanceId} for` +
@@ -429,7 +482,7 @@ export class CnLabServerService {
 
     if (lab.serverInstanceId) {
       this.logger.log(`Deleting server instance ${lab.serverInstanceId} for lab ${lab.id}`);
-      await cloudProviderService.deleteInstance(lab.serverInstanceId, lab.region.technicalName);
+      await cloudProviderService.deleteInstance(lab.serverInstanceId, this.getLabRegionName(lab));
       const serverInstanceId = lab.serverInstanceId;
       await this.labService.updatePartial(lab.id, { serverInstanceId: null });
       this.logger.log(`Server instance ${serverInstanceId} deleted for lab ${lab.id}`);
@@ -444,7 +497,7 @@ export class CnLabServerService {
         );
       }
       this.logger.log(`Deleting static IP address ${lab.serverIpAddressId} for lab ${lab.id}`);
-      await cloudProviderService.deleteIpAddress(lab.serverIpAddressId, lab.region.technicalName);
+      await cloudProviderService.deleteIpAddress(lab.serverIpAddressId, this.getLabRegionName(lab));
       const ipAddressId = lab.serverIpAddressId;
       await this.labService.updatePartial(lab.id, { serverIpAddressId: null });
       this.logger.log(`Static IP address ${ipAddressId} deleted for lab ${lab.id}`);
@@ -452,7 +505,7 @@ export class CnLabServerService {
 
     if (lab.serverVolumeId) {
       this.logger.log(`Deleting volume ${lab.serverVolumeId} for lab ${lab.id}`);
-      await cloudProviderService.deleteVolume(lab.serverVolumeId, lab.region.technicalName);
+      await cloudProviderService.deleteVolume(lab.serverVolumeId, this.getLabRegionName(lab));
       const volumeId = lab.serverVolumeId;
       await this.labService.updatePartial(lab.id, { serverVolumeId: null });
       this.logger.log(`Volume ${volumeId} deleted for lab ${lab.id}`);
@@ -490,7 +543,7 @@ export class CnLabServerService {
 
     const serverInstance = await cloudProviderService.getInstance(
       lab.serverInstanceId,
-      lab.region.technicalName
+      this.getLabRegionName(lab)
     );
 
     if (
@@ -505,7 +558,7 @@ export class CnLabServerService {
     const user = CnCurrentUserHelper.getAndCheckCurrentUser();
     this.logger.log(`Starting server instance ${lab.serverInstanceId} for lab ${lab.id} by ${user.email}`);
     try {
-      await cloudProviderService.startInstance(lab.serverInstanceId, lab.region.technicalName);
+      await cloudProviderService.startInstance(lab.serverInstanceId, this.getLabRegionName(lab));
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : String(err);
       this.logger.error(
@@ -523,11 +576,14 @@ export class CnLabServerService {
 
   public async stopLab(lab: CnLab): Promise<CnLab> {
     const cloudProviderService = await this.checkBeforeStopLab(lab);
+    if (!lab.serverInstanceId) {
+      throw new BlBadRequestException(`Lab has no server instance was it correctly initialized?`);
+    }
 
     // if the server is running
     const user = CnCurrentUserHelper.getAndCheckCurrentUser();
     this.logger.log(`Stopping server instance ${lab.serverInstanceId} for lab ${lab.id} by ${user.email}`);
-    await cloudProviderService.stopInstance(lab.serverInstanceId, lab.region.technicalName);
+    await cloudProviderService.stopInstance(lab.serverInstanceId, this.getLabRegionName(lab));
     return await this.labService.markInstanceAsServerStopping(lab.id);
   }
 
@@ -540,7 +596,7 @@ export class CnLabServerService {
 
     const serverInstance = await cloudProviderService.getInstance(
       lab.serverInstanceId,
-      lab.region.technicalName
+      this.getLabRegionName(lab)
     );
 
     // a soft reboot only makes sense on a running instance
@@ -551,7 +607,7 @@ export class CnLabServerService {
     const user = CnCurrentUserHelper.getAndCheckCurrentUser();
     this.logger.log(`Restarting server instance ${lab.serverInstanceId} for lab ${lab.id} by ${user.email}`);
     try {
-      await cloudProviderService.restartInstance(lab.serverInstanceId, lab.region.technicalName);
+      await cloudProviderService.restartInstance(lab.serverInstanceId, this.getLabRegionName(lab));
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : String(err);
       this.logger.error(
@@ -576,7 +632,7 @@ export class CnLabServerService {
 
     const serverInstance = await cloudProviderService.getInstance(
       lab.serverInstanceId,
-      lab.region.technicalName
+      this.getLabRegionName(lab)
     );
 
     if (serverInstance.status.status !== 'RUNNING') {
@@ -629,7 +685,7 @@ export class CnLabServerService {
     const cloudProviderService = await this.cloudProviderFactory.getCloudProviderServiceFromLab(lab.id);
     const serverInstance = await cloudProviderService.getInstance(
       lab.serverInstanceId,
-      lab.region.technicalName
+      this.getLabRegionName(lab)
     );
     return serverInstance.status;
   }

@@ -108,12 +108,15 @@ export class CnDocumentAggregateService {
 
     const doc = await this.documentService.renameDocument(folder.getRootFolderId(), document, newName);
 
+    const parentId = document.hierarchyRepresentation.parentId;
+    if (parentId === null) {
+      throw new BlBadRequestException('The document has no parent folder');
+    }
+
     this.eventService.emitFolderEvent({
       type: 'RENAME_DOCUMENT',
       entity: document,
-      parentFolder: await this.hierarchyObjectService.findByIdAndCheck(
-        document.hierarchyRepresentation.parentId
-      ),
+      parentFolder: await this.hierarchyObjectService.findByIdAndCheck(parentId),
     });
 
     return doc;
@@ -125,16 +128,22 @@ export class CnDocumentAggregateService {
   ): Promise<CnHierarchyObject> {
     const documentWithHierarchy = await this.documentService.findWithHierarchyByIdAndCheck(document.id);
 
+    const oldFolderId = documentWithHierarchy.hierarchyRepresentation.parentId;
+    if (oldFolderId === null) {
+      throw new BlBadRequestException('The document has no parent folder');
+    }
+
     // check if the user has the authorization to move the document on 2 folders
-    const oldFolder = await this.securityService.getAndCheckAuthorizationForFindOne(
-      documentWithHierarchy.hierarchyRepresentation.parentId
-    );
+    const oldFolder = await this.securityService.getAndCheckAuthorizationForFindOne(oldFolderId);
 
     return this.documentService.moveDocument(documentWithHierarchy, oldFolder, parentFolder);
   }
 
   public async findDocumentUrlByFilename(filename: string): Promise<string> {
     const document = await this.documentService.findDocumentByFilename(filename);
+    if (document == null) {
+      throw new BlBadRequestException('Document not found');
+    }
 
     if (document.type === CnDocumentType.NOTE) {
       const note = await this.noteService.findByDocumentId(document.id);

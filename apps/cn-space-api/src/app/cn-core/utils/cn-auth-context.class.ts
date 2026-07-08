@@ -6,7 +6,7 @@ import { CnUserSpaceInfo } from '../../cn-users/cn-user.dto';
 import { CnUser } from '../../cn-users/cn-user.entity';
 
 abstract class CnAuthContextBase {
-  type:
+  type!:
     | 'user'
     | 'labDev'
     | 'labProd'
@@ -153,7 +153,7 @@ export class CnAuthContextLabManager extends CnAuthContextBase {
   constructor(
     public userInfo: CnUserSpaceInfo,
     public lab: CnLab,
-    public labManagerVersion: string
+    public labManagerVersion: string | undefined
   ) {
     super();
   }
@@ -216,7 +216,7 @@ export class CnAuthContextHierarchyObjectToken extends CnAuthContextBase {
     super();
   }
 
-  getUser(): CnUser {
+  getUser(): null {
     return null;
   }
 
@@ -228,7 +228,7 @@ export class CnAuthContextHierarchyObjectToken extends CnAuthContextBase {
     return null;
   }
 
-  getLab(): CnLab {
+  getLab(): null {
     return null;
   }
 }

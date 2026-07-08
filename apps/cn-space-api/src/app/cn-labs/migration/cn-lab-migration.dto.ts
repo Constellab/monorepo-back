@@ -23,9 +23,9 @@ export class CnLabMigrationDescriptionDTO {
  */
 export class CnLabMigrationPlanDTO {
   /**
-   * The current source version
+   * The current source version (null when the current version cannot be determined)
    */
-  sourceVersion: string;
+  sourceVersion: string | null;
 
   /**
    * The target version to migrate to
@@ -37,7 +37,11 @@ export class CnLabMigrationPlanDTO {
    */
   migrations: CnLabMigrationDescriptionDTO[];
 
-  constructor(sourceVersion: string, targetVersion: string, migrations: CnLabMigrationDescriptionDTO[]) {
+  constructor(
+    sourceVersion: string | null,
+    targetVersion: string,
+    migrations: CnLabMigrationDescriptionDTO[]
+  ) {
     this.sourceVersion = sourceVersion;
     this.targetVersion = targetVersion;
     this.migrations = migrations;

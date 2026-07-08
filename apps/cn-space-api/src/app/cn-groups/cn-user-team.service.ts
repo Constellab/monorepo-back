@@ -27,7 +27,11 @@ export class CnUserTeamService extends BlAbstractPaginatedService<CnUserGroup> {
     userGroup.userId = userId;
     await this.repo.save(userGroup);
 
-    return this.getByUserAndGroup(userId, groupId);
+    const savedUserGroup = await this.getByUserAndGroup(userId, groupId);
+    if (savedUserGroup == null) {
+      throw new BlBadRequestException('The user could not be added to the team');
+    }
+    return savedUserGroup;
   }
 
   public async removeUserFromTeam(
@@ -91,7 +95,7 @@ export class CnUserTeamService extends BlAbstractPaginatedService<CnUserGroup> {
     });
   }
 
-  public async getByUserAndGroup(userId: string, groupId: string): Promise<CnUserGroup> {
+  public async getByUserAndGroup(userId: string, groupId: string): Promise<CnUserGroup | null> {
     return this.repo.findOne({
       where: {
         groupId: groupId,

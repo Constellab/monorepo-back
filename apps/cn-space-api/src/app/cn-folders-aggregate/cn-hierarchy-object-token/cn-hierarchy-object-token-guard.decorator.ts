@@ -16,8 +16,13 @@ const cnHierarchyObjectTokenMetadata = 'hierarchyObjectToken';
 export function CnHierarchyObjectTokenDecorator(): MethodDecorator & ClassDecorator {
   // use to combined 2 decorators
   return (target: any, property?: string | symbol, descriptor?: TypedPropertyDescriptor<any>): void => {
-    // set the labAuth metadata
-    SetMetadata(cnHierarchyObjectTokenMetadata, true)(target, property, descriptor);
+    if (property !== undefined && descriptor !== undefined) {
+      // set the labAuth metadata
+      SetMetadata(cnHierarchyObjectTokenMetadata, true)(target, property, descriptor);
+    } else {
+      // set the labAuth metadata
+      SetMetadata(cnHierarchyObjectTokenMetadata, true)(target);
+    }
     // activate the CnLabAuthGuard
     // UseGuards(CnHierarchyObjectTokenGuard)(target, property, descriptor);
   };

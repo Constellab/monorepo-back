@@ -1,3 +1,4 @@
+import { BlNotFoundException } from '@monorepo/back-core-lib';
 import { Controller, Get, Param } from '@nestjs/common';
 
 import { CnCommunityGuard } from '../cn-core/decorators/cn-community-guard.decorator';
@@ -18,7 +19,13 @@ export class CnExternalCommunityController {
    * Called by the Community API to verify user status.
    */
   @Get('check-user/:userId')
-  checkUserValid(@Param('userId') userId: string): Promise<CnUser> {
-    return this.usersService.findOneValid(userId);
+  async checkUserValid(@Param('userId') userId: string): Promise<CnUser> {
+    const user = await this.usersService.findOneValid(userId);
+
+    if (user == null) {
+      throw new BlNotFoundException(`User with id ${userId} not found`);
+    }
+
+    return user;
   }
 }

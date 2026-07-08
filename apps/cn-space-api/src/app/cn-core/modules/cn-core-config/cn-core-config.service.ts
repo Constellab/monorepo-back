@@ -23,7 +23,11 @@ export class CnCoreConfigService {
   ) {}
 
   public getEnvironmentProfile(): CnEnvironmentProfile {
-    return this.configService.get(CN_ENVIRONMENT_PROFILE_KEY);
+    const profile: CnEnvironmentProfile | undefined = this.configService.get(CN_ENVIRONMENT_PROFILE_KEY);
+    if (profile == null) {
+      throw Error(`Missing config value for '${CN_ENVIRONMENT_PROFILE_KEY}'`);
+    }
+    return profile;
   }
 
   public isProduction(): boolean {
@@ -44,74 +48,74 @@ export class CnCoreConfigService {
   }
 
   public getJwtSecret(): string {
-    return this.configService.get('JWT_SECRET');
+    return this.getConfigString('JWT_SECRET');
   }
 
   // return the OTHER JWT key used to encrypt other token (such as password forgotten or mail validation)
   public getOtherJwtSecret(): string {
-    return this.configService.get('OTHER_JWT_SECRET');
+    return this.getConfigString('OTHER_JWT_SECRET');
   }
 
   public getApiUrl(): string {
-    return this.configService.get('API_URL');
+    return this.getConfigString('API_URL');
   }
 
   public getRobotUserMail(): string {
-    return this.configService.get('ROBOT_USER_MAIL');
+    return this.getConfigString('ROBOT_USER_MAIL');
   }
 
   public getCustomerSuccessMail(): string {
-    return this.configService.get('CUSTOMER_SUCCESS_MAIL');
+    return this.getConfigString('CUSTOMER_SUCCESS_MAIL');
   }
 
   public getSupportMail(): string {
-    return this.configService.get('SUPPORT_MAIL');
+    return this.getConfigString('SUPPORT_MAIL');
   }
 
   public getOpenaiAPIKey(): string {
-    return this.configService.get('OPENAI_API_KEY');
+    return this.getConfigString('OPENAI_API_KEY');
   }
 
   public getDatabaseConfig(): CnDatabaseConfig {
     return {
-      host: this.configService.get('DATABASE_HOST'),
+      host: this.getConfigString('DATABASE_HOST'),
       port: this.getConfigNumber('DATABASE_PORT'),
-      username: this.configService.get('DATABASE_USER'),
-      password: this.configService.get('DATABASE_PASSWORD'),
-      database: this.configService.get('DATABASE'),
+      username: this.getConfigString('DATABASE_USER'),
+      password: this.getConfigString('DATABASE_PASSWORD'),
+      database: this.getConfigString('DATABASE'),
     };
   }
 
   public getMailConfig(): BlMailConfig {
     return {
-      host: this.configService.get('MAIL_HOST'),
+      host: this.getConfigString('MAIL_HOST'),
       port: this.getConfigNumber('MAIL_PORT'),
       secure: this.getConfigBoolean('MAIL_SECURE'),
-      user: this.configService.get('MAIL_USER'),
-      password: this.configService.get('MAIL_PASSWORD'),
-      sender: this.configService.get('MAIL_SENDER'),
+      user: this.getConfigString('MAIL_USER'),
+      password: this.getConfigString('MAIL_PASSWORD'),
+      sender: this.getConfigString('MAIL_SENDER'),
     };
   }
 
   public getDefaultObjectStorageEndPoint(): string {
-    return this.configService.get('OBJECT_STORAGE_DEFAULT_ENDPOINT');
+    return this.getConfigString('OBJECT_STORAGE_DEFAULT_ENDPOINT');
   }
 
   public getDefaultObjectStorageRegion(): string {
-    return this.configService.get('OBJECT_STORAGE_DEFAULT_REGION');
+    return this.getConfigString('OBJECT_STORAGE_DEFAULT_REGION');
   }
 
   public getDefaultObjectStorageCredentials(): BlObjectStorageCredentials {
     return {
-      accessKeyId: this.configService.get('OBJECT_STORAGE_DEFAULT_ACCESS_KEY_ID'),
-      secretAccessKey: this.configService.get('OBJECT_STORAGE_DEFAULT_SECRET_KEY'),
+      accessKeyId: this.getConfigString('OBJECT_STORAGE_DEFAULT_ACCESS_KEY_ID'),
+      secretAccessKey: this.getConfigString('OBJECT_STORAGE_DEFAULT_SECRET_KEY'),
     };
   }
 
   public getTransportModuleConfig(): BlTransportModuleConfig {
     return {
-      password: this.configService.get('QUEUE_SERVICE_PASSWORD'),
-      host: this.configService.get('QUEUE_SERVICE_HOST'),
+      password: this.getConfigString('QUEUE_SERVICE_PASSWORD'),
+      host: this.getConfigString('QUEUE_SERVICE_HOST'),
       port: this.getConfigNumber('QUEUE_SERVICE_PORT'),
     };
   }
@@ -121,24 +125,32 @@ export class CnCoreConfigService {
   }
 
   public getFrontDomain(): string {
-    return this.configService.get('FRONT_DOMAIN');
+    return this.getConfigString('FRONT_DOMAIN');
   }
 
   public getCommunityFrontUrl(): string {
-    return this.configService.get('COMMUNITY_FRONT_URL');
+    return this.getConfigString('COMMUNITY_FRONT_URL');
   }
 
   public getCommunityApiUrl(): string {
-    return this.configService.get('COMMUNITY_API_URL');
+    return this.getConfigString('COMMUNITY_API_URL');
   }
 
   public getCommunityApiKey(): string {
-    return this.configService.get('COMMUNITY_API_KEY');
+    return this.getConfigString('COMMUNITY_API_KEY');
+  }
+
+  protected getConfigString(configName: string): string {
+    const value: string | undefined = this.configService.get(configName);
+    if (value == null) {
+      throw Error(`Missing config value for '${configName}'`);
+    }
+    return value;
   }
 
   protected getConfigNumber(configName: string): number {
     try {
-      return parseInt(this.configService.get(configName), 10);
+      return parseInt(this.getConfigString(configName), 10);
     } catch (error) {
       this.logger.error('Error while parsing config ' + configName + ' to number');
       throw error;
@@ -146,7 +158,7 @@ export class CnCoreConfigService {
   }
 
   protected getConfigBoolean(configName: string): boolean {
-    const stringBool: string = this.configService.get(configName);
+    const stringBool: string = this.getConfigString(configName);
 
     if (stringBool === 'false') {
       return false;
@@ -162,7 +174,7 @@ export class CnCoreConfigService {
   }
 
   public getLogPath(): string {
-    return this.configService.get('LOG_PATH');
+    return this.getConfigString('LOG_PATH');
   }
 
   public getUserProfilePictureObjectStorageBucket(): string {
@@ -178,110 +190,110 @@ export class CnCoreConfigService {
   }
 
   public getDbBackupEndpoint(): string {
-    return this.configService.get('OBJECT_STORAGE_DB_BACKUP_ENDPOINT');
+    return this.getConfigString('OBJECT_STORAGE_DB_BACKUP_ENDPOINT');
   }
 
   public getDbBackupRegion(): string {
-    return this.configService.get('OBJECT_STORAGE_DB_BACKUP_REGION');
+    return this.getConfigString('OBJECT_STORAGE_DB_BACKUP_REGION');
   }
 
   /////////////////////////////// MAIN SSH  ///////////////////////////////
 
   public getMainSshPrivateKeyFilePath(): string {
-    return this.configService.get('MAIN_SSH_PRIVATE_KEY_FILE_PATH');
+    return this.getConfigString('MAIN_SSH_PRIVATE_KEY_FILE_PATH');
   }
 
   /////////////////////////////// OVH ///////////////////////////////
 
   public getOvhServiceName(): string {
-    return this.configService.get('OVH_SERVICE_NAME');
+    return this.getConfigString('OVH_SERVICE_NAME');
   }
 
   public getOvhAppKey(): string {
-    return this.configService.get('OVH_APP_KEY');
+    return this.getConfigString('OVH_APP_KEY');
   }
 
   public getOvhAppSecret(): string {
-    return this.configService.get('OVH_APP_SECRET');
+    return this.getConfigString('OVH_APP_SECRET');
   }
 
   public getOvhConsumerKey(): string {
-    return this.configService.get('OVH_CONSUMER_KEY');
+    return this.getConfigString('OVH_CONSUMER_KEY');
   }
 
   public getOvhSshKey(): string {
-    return this.configService.get('OVH_SSH_KEY_NAME');
+    return this.getConfigString('OVH_SSH_KEY_NAME');
   }
 
   /////////////////////////////// AZURE ///////////////////////////////
 
   public getAzureSubscriptionId(): string {
-    return this.configService.get('AZURE_SUBSCRIPTION_ID');
+    return this.getConfigString('AZURE_SUBSCRIPTION_ID');
   }
 
   public getAzureResourceGroup(): string {
-    return this.configService.get('AZURE_RESOURCE_GROUP');
+    return this.getConfigString('AZURE_RESOURCE_GROUP');
   }
 
   public getAzureSshKey(): string {
-    return this.configService.get('AZURE_SSH_KEY_NAME');
+    return this.getConfigString('AZURE_SSH_KEY_NAME');
   }
 
   public getAzureNetwork(): string {
-    return this.configService.get('AZURE_NETWORK');
+    return this.getConfigString('AZURE_NETWORK');
   }
 
   public getAzureNetworkSubnet(): string {
-    return this.configService.get('AZURE_NETWORK_SUBNET');
+    return this.getConfigString('AZURE_NETWORK_SUBNET');
   }
 
   ////////////////////////////// OUTSCALE //////////////////////////////
 
   public getOutscaleAccessKey(): string {
-    return this.configService.get('OUTSCALE_ACCESS_KEY_ID');
+    return this.getConfigString('OUTSCALE_ACCESS_KEY_ID');
   }
 
   public getOutscaleSecretKey(): string {
-    return this.configService.get('OUTSCALE_SECRET_KEY');
+    return this.getConfigString('OUTSCALE_SECRET_KEY');
   }
 
   public getOutscaleSshKeyName(): string {
-    return this.configService.get('OUTSCALE_SSH_KEY_NAME');
+    return this.getConfigString('OUTSCALE_SSH_KEY_NAME');
   }
 
   public getOutscaleSecurityGroup(): string {
-    return this.configService.get('OUTSCALE_SECURITY_GROUP');
+    return this.getConfigString('OUTSCALE_SECURITY_GROUP');
   }
 
   public getOutscaleSshPrivateKeyFilePath(): string {
-    return this.configService.get('OUTSCALE_SSH_PRIVATE_KEY_FILE_PATH');
+    return this.getConfigString('OUTSCALE_SSH_PRIVATE_KEY_FILE_PATH');
   }
 
   ////////////////////////////////// GCP //////////////////////////////////
   public getGcpProjectId(): string {
-    return this.configService.get('GCP_PROJECT_ID');
+    return this.getConfigString('GCP_PROJECT_ID');
   }
 
   public getGcpFirewallTag(): string {
-    return this.configService.get('GCP_FIREWALL_TAG');
+    return this.getConfigString('GCP_FIREWALL_TAG');
   }
 
   public getGcpSshPrivateKeyFilePath(): string {
-    return this.configService.get('GCP_SSH_PRIVATE_KEY_FILE_PATH');
+    return this.getConfigString('GCP_SSH_PRIVATE_KEY_FILE_PATH');
   }
 
   public getGcpCredentialsFilePath(): string {
-    return this.configService.get('GOOGLE_APPLICATION_CREDENTIALS');
+    return this.getConfigString('GOOGLE_APPLICATION_CREDENTIALS');
   }
 
   /////////////////////////////// LAB CONFIG ///////////////////////////////
 
   public getLabConfigurerRepoUrl(): string {
-    return this.configService.get('LAB_CONFIGURER_REPO_URL');
+    return this.getConfigString('LAB_CONFIGURER_REPO_URL');
   }
 
   public getLabConfigurerRepoBranch(): string {
-    return this.configService.get('LAB_CONFIGURER_REPO_BRANCH');
+    return this.getConfigString('LAB_CONFIGURER_REPO_BRANCH');
   }
 
   public getDistPath(...path: string[]): string {
@@ -294,24 +306,24 @@ export class CnCoreConfigService {
 
   // return the lab manager version related to the current version of space
   public getLabManagerRecommendedVersion(): string {
-    return this.configService.get('LAB_MANAGER_VERSION');
+    return this.getConfigString('LAB_MANAGER_VERSION');
   }
 
   public getLabManagerStandaloneFrontVersion(): string {
-    return this.configService.get('LAB_MANAGER_STANDALONE_FRONT_VERSION');
+    return this.getConfigString('LAB_MANAGER_STANDALONE_FRONT_VERSION');
   }
 
   public getCaptchaSiteKey(): string {
-    return this.configService.get('CAPTCHA_SITE_KEY');
+    return this.getConfigString('CAPTCHA_SITE_KEY');
   }
 
   /////////////////////////// YOUTUBE ///////////////////////////
   public getYoutubeApiKey(): string {
-    return this.configService.get('YOUTUBE_API_KEY');
+    return this.getConfigString('YOUTUBE_API_KEY');
   }
 
   public getYoutubeTutorialPlaylistId(): string {
-    return this.configService.get('YOUTUBE_TUTORIAL_PLAYLIST_ID');
+    return this.getConfigString('YOUTUBE_TUTORIAL_PLAYLIST_ID');
   }
 
   /////////////////////////// OTHER ///////////////////////////
@@ -319,15 +331,15 @@ export class CnCoreConfigService {
    * List of user email to notify when a new user is created
    */
   public newUserNotifReceiver(): string[] {
-    return this.configService.get('NEW_USER_NOTIF_RECEIVERS').split(',');
+    return this.getConfigString('NEW_USER_NOTIF_RECEIVERS').split(',');
   }
 
   public getFolderIdToCopyOnSignup(): string {
-    return this.configService.get('FOLDER_ID_TO_COPY_ON_SIGNUP');
+    return this.getConfigString('FOLDER_ID_TO_COPY_ON_SIGNUP');
   }
 
   public getReflexAccessToken(): string {
-    return this.configService.get('REFLEX_ACCESS_TOKEN');
+    return this.getConfigString('REFLEX_ACCESS_TOKEN');
   }
 
   // Max duration to keep a running server in temporary status (not fully started)

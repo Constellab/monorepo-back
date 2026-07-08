@@ -1,4 +1,4 @@
-import { BlSearchParams, BlUnauthorizedException } from '@monorepo/back-core-lib';
+import { BlBadRequestException, BlSearchParams, BlUnauthorizedException } from '@monorepo/back-core-lib';
 import { ClHelpService, ClPageI } from '@monorepo/core-lib';
 import { Injectable } from '@nestjs/common';
 import { DeleteResult, EntityManager } from 'typeorm';
@@ -25,7 +25,7 @@ export class CnGroupsAggregateService {
   ////////////////////////////////////// GROUPS  ////////////////////////////////
 
   public async searchCurrentGroupByLabel(
-    label: string,
+    label: string | null,
     page: number,
     size: number
   ): Promise<ClPageI<CnGroup>> {
@@ -194,6 +194,9 @@ export class CnGroupsAggregateService {
 
   public async getCurrentLabAllGroups(): Promise<CnGroup[]> {
     const lab = CnCurrentUserHelper.getAndCheckCurrentLab();
+    if (lab.spaceId == null) {
+      throw new BlBadRequestException('Lab has no space');
+    }
     const spaceUserIds = await this.spaceUserService.findAllSpaceUserIds(lab.spaceId);
     return await this.groupsService.getAllGroupsInSpace(lab.spaceId, spaceUserIds);
   }

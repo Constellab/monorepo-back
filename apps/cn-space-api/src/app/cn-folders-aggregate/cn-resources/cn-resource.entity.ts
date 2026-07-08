@@ -16,27 +16,27 @@ export class CnResourceEntity extends CnHierarchyRepresentation {
   ];
 
   @Column({ nullable: false, length: 36 })
-  resourceId: string;
+  resourceId!: string;
 
   @Column({ nullable: false, length: 255 })
-  name: string;
+  name!: string;
 
   @Column({ nullable: false, length: 255 })
-  typingName: string;
+  typingName!: string;
 
   @Column({ nullable: false, type: 'simple-json' })
-  style: CnTypeStyle;
+  style!: CnTypeStyle;
 
   @Column({ nullable: false, length: 255 })
-  token: string;
+  token!: string;
 
   @Column({ nullable: false, default: false })
-  isApplication: boolean;
+  isApplication!: boolean;
 
   @BlNotUpdatable()
   @Type(() => CnLabEntity)
   @ManyToOne(() => CnLabEntity, { nullable: false, eager: false })
-  lab: CnLab;
+  lab!: CnLab;
 
   getHierarchyObjectInfo(): CnHierarchyObjectInfo {
     return {

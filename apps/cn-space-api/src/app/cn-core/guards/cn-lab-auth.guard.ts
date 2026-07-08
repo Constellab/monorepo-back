@@ -31,13 +31,13 @@ import {
 import { CnCurrentUserHelper } from '../utils/cn-current-user.helper';
 
 class CnGetLab {
-  lab: CnLabWithSpace;
-  labEnvironment: 'labDev' | 'labProd' | 'labManager' | 'labToken';
+  lab!: CnLabWithSpace;
+  labEnvironment!: 'labDev' | 'labProd' | 'labManager' | 'labToken';
 }
 
 class CnUserWithRole {
-  user: CnUser;
-  role: CnSpaceUserRole;
+  user!: CnUser;
+  role!: CnSpaceUserRole;
 }
 
 export abstract class CnLabAuthGuardBase implements CanActivate {
@@ -51,7 +51,7 @@ export abstract class CnLabAuthGuardBase implements CanActivate {
     private labUserService: CnLabUserService
   ) {}
 
-  abstract getLabFromApiKey(apiKey: string, request: Request): Promise<CnGetLab>;
+  abstract getLabFromApiKey(apiKey: string, request: Request): Promise<CnGetLab | null>;
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     return this.labAuthentication(context);
@@ -65,7 +65,7 @@ export abstract class CnLabAuthGuardBase implements CanActivate {
     }
 
     const request: Request = context.switchToHttp().getRequest();
-    const labApiKey: string = this.getLabApiKeyFromRequest(request);
+    const labApiKey: string | null = this.getLabApiKeyFromRequest(request);
 
     if (labApiKey == null) {
       throw new BlUnauthorizedException(CnErrorText.MISSING_API_KEY);
@@ -124,7 +124,7 @@ export abstract class CnLabAuthGuardBase implements CanActivate {
     if (cnIsLabRobotAuth(this.reflector, context)) {
       return this.getRobotUserInContext();
     } else {
-      const userId: string = this.getLabUserIdFromRequest(request);
+      const userId: string | null = this.getLabUserIdFromRequest(request);
 
       if (userId == null) {
         throw new BlUnauthorizedException(CnErrorText.LAB_REQ_NO_USER_IN_CONTEXT);
@@ -141,7 +141,7 @@ export abstract class CnLabAuthGuardBase implements CanActivate {
    * @private
    */
   private async getAndCheckUser(labInfo: CnGetLab, userId: string): Promise<CnUserWithRole> {
-    const user: CnUser = await this.usersService.findById(userId);
+    const user: CnUser | null = await this.usersService.findById(userId);
 
     if (user == null) {
       this.logger.error(`Can't find the user with id ${userId}`);
@@ -161,7 +161,7 @@ export abstract class CnLabAuthGuardBase implements CanActivate {
         }
       }
 
-      const spaceUser = await this.spaceUserService.getSpaceUserIfAccess(labInfo.lab.spaceId, user.id);
+      const spaceUser = await this.spaceUserService.getSpaceUserIfAccess(labInfo.lab.space.id, user.id);
       // if the user is not part of the space of his account is not active for this space
       // don't allow the user to access the route
       if (spaceUser == null) {
@@ -176,7 +176,7 @@ export abstract class CnLabAuthGuardBase implements CanActivate {
   private async getRobotUserInContext(): Promise<CnUserWithRole> {
     // get the robot user
     const robotMail: string = this.configService.getRobotUserMail();
-    const user: CnUser = await this.usersService.findByEmail(robotMail);
+    const user: CnUser | null = await this.usersService.findByEmail(robotMail);
 
     if (user == null) {
       this.logger.error(`The robot user with mail ${robotMail} does not exist`);
@@ -229,7 +229,7 @@ export class CnLabAuthGuard extends CnLabAuthGuardBase {
   /**
    * Try to get the lab from prod api key and then from dev api key
    */
-  async getLabFromApiKey(apiKey: string, request: Request): Promise<CnGetLab> {
+  async getLabFromApiKey(apiKey: string, request: Request): Promise<CnGetLab | null> {
     // TODO improve for lab token
     // if the header exist it means that the lab is using a token to authenticate
     const labApiToken = request.header(CN_EXTERNAL_LAB_API_TOKEN_HEADER);
@@ -273,7 +273,7 @@ export class CnLabManagerAuthGuard extends CnLabAuthGuardBase {
     super(reflector, usersService, configService, spaceUserService, labUserService);
   }
 
-  async getLabFromApiKey(apiKey: string): Promise<CnGetLab> {
+  async getLabFromApiKey(apiKey: string): Promise<CnGetLab | null> {
     const lab = await this.labsService.findLabByManagerApiKey(apiKey);
 
     if (lab) {

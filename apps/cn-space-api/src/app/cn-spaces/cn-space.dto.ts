@@ -7,8 +7,8 @@ import { CnSpaceInvit } from './cn-space-invit.entity';
 import { CnSpaceUserRole } from './cn-space-user.entity';
 
 export class CnCreateSpaceDTO {
-  name: string;
-  defaultStorageLocations: CnSpaceUpdateStorageLocationDTO;
+  name!: string;
+  defaultStorageLocations!: CnSpaceUpdateStorageLocationDTO;
 }
 
 export interface CnSpaceInvitCreateDto {
@@ -25,9 +25,9 @@ export interface CnSpaceInvitReadDto {
 
 export class CnSpaceSettingsDto {
   @Type(() => CnSpaceEntity)
-  space: CnSpaceEntity;
+  space!: CnSpaceEntity;
 
-  defaultFolderStorageLocation: CnBucketLocationDTO;
+  defaultFolderStorageLocation!: CnBucketLocationDTO;
   defaultFolderBackupStorageLocation?: CnBucketLocationDTO;
 
   static fromSpace(space: CnSpaceEntity): CnSpaceSettingsDto {
@@ -35,7 +35,7 @@ export class CnSpaceSettingsDto {
     spaceSettings.space = space;
     spaceSettings.defaultFolderStorageLocation = space.defaultFolderBucket.getBucketLocation();
     spaceSettings.defaultFolderBackupStorageLocation =
-      space.defaultFolderBackupBucket?.getBucketLocation() ?? null;
+      space.defaultFolderBackupBucket?.getBucketLocation() ?? undefined;
 
     return spaceSettings;
   }
@@ -49,7 +49,7 @@ export interface CnRequestNewLicensesDto {
 
 /////////////////////////////////// STORAGE //////////////////////////////////////
 export class CnSpaceUpdateStorageLocationDTO {
-  defaultFolderStorageLocation: CnBucketLocationDTO;
+  defaultFolderStorageLocation!: CnBucketLocationDTO;
   defaultFolderBackupStorageLocation?: CnBucketLocationDTO;
 }
 

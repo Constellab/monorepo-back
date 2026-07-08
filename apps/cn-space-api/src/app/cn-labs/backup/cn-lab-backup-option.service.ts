@@ -73,7 +73,7 @@ export class CnLabBackupOptionService extends BlAbstractService<CnLabBackupOptio
     }
   }
 
-  public async findByLabId(labId: string): Promise<CnLabBackupOption> {
+  public async findByLabId(labId: string): Promise<CnLabBackupOption | null> {
     return this.repo.findOne({
       where: { lab: { id: labId } },
       relations: {

@@ -79,7 +79,7 @@ export class CnConstellabDocumentAggregateService {
     this.folderEventService.emitFolderEvent({
       type: 'UPDATE_CONSTELLAB_DOCUMENT',
       entity: newDoc.document,
-      parentFolder: await this.hierarchyObjectService.findByIdAndCheck(folder.parentId),
+      parentFolder: await this.getAndCheckParentFolder(folder),
     });
     return newDoc;
   }
@@ -120,7 +120,7 @@ export class CnConstellabDocumentAggregateService {
     const folder = await this.securityService.getAndCheckAuthorizationForUpdate(documentId);
 
     const document = await this.documentService.findByIdAndCheck(documentId);
-    const parentFolder = await this.hierarchyObjectService.findByIdAndCheck(folder.parentId);
+    const parentFolder = await this.getAndCheckParentFolder(folder);
 
     return this.documentService.uploadImageToConstellabDocument(parentFolder, document, file);
   }
@@ -132,7 +132,7 @@ export class CnConstellabDocumentAggregateService {
     const folder = await this.securityService.getAndCheckAuthorizationForUpdate(documentId);
 
     const document = await this.documentService.findByIdAndCheck(documentId);
-    const parentFolder = await this.hierarchyObjectService.findByIdAndCheck(folder.parentId);
+    const parentFolder = await this.getAndCheckParentFolder(folder);
 
     return this.documentService.uploadFileToConstellabDocument(parentFolder, document, file);
   }
@@ -195,5 +195,16 @@ export class CnConstellabDocumentAggregateService {
       document,
       modificationId
     );
+  }
+
+  /**
+   * Return the parent folder of a document hierarchy object.
+   * A document always lives inside a folder, so its parentId is always defined.
+   */
+  private getAndCheckParentFolder(folder: CnHierarchyObject): Promise<CnHierarchyObject> {
+    if (folder.parentId === null) {
+      throw new BlBadRequestException('The document has no parent folder');
+    }
+    return this.hierarchyObjectService.findByIdAndCheck(folder.parentId);
   }
 }

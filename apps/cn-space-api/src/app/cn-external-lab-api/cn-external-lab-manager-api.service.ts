@@ -53,7 +53,7 @@ export class CnExternalLabManagerApiService {
   public async healthCheck(apiInfo: CnExternalApiInfo): Promise<boolean> {
     const requestOptions = this.getRequestOptions(apiInfo, { logError: false, timeout: 2500 });
     return lastValueFrom(
-      this.apiService.get(this.buildUrl(apiInfo, `health-check`, requestOptions), null, requestOptions)
+      this.apiService.get(this.buildUrl(apiInfo, `health-check`, requestOptions), undefined, requestOptions)
     )
       .then(() => true)
       .catch(() => false);
@@ -62,7 +62,7 @@ export class CnExternalLabManagerApiService {
   ////////////////////////////////////////// LAB //////////////////////////////////////////
 
   public async getStatus(apiInfo: CnExternalApiInfo): Promise<CnLabManagerStatus> {
-    return lastValueFrom(this.get(apiInfo, `${this.baseLabRoute}/status`, null, { timeout: 10000 }));
+    return lastValueFrom(this.get(apiInfo, `${this.baseLabRoute}/status`, undefined, { timeout: 10000 }));
   }
 
   public async getStartingError(apiInfo: CnExternalApiInfo): Promise<CnLabManagerErrorLogs> {
@@ -222,7 +222,7 @@ export class CnExternalLabManagerApiService {
 
   public async exportLogs(apiInfo: CnExternalApiInfo, containerName: string): Promise<string> {
     return lastValueFrom(
-      this.get(apiInfo, `${this.baseContainersRoute}/${containerName}/logs/export`, null, {
+      this.get(apiInfo, `${this.baseContainersRoute}/${containerName}/logs/export`, undefined, {
         timeout: 20000,
       })
     );
@@ -373,8 +373,9 @@ export class CnExternalLabManagerApiService {
 
     // convert the known error from the lab manager to a BlHttpException
     // to show the message to the user
-    if (error?.knownError) {
-      return throwError(() => BlHttpException.fromApiError(error.knownError));
+    const knownError = error?.knownError;
+    if (knownError) {
+      return throwError(() => BlHttpException.fromApiError(knownError));
     }
 
     return throwError(() => error as any);

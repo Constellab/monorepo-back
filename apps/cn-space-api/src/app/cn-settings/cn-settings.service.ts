@@ -79,7 +79,7 @@ export class CnSettingsService extends BlAbstractService<CnSettings> {
   public async getConstellabSuite(): Promise<CnConstellabSuiteDTO> {
     const settings = await this.getSettingsAndCheck();
 
-    return settings.constellabSuite;
+    return settings.constellabSuite ?? { apps: [] };
   }
 
   public async updateConstellabSuite(file: BlFile): Promise<void> {

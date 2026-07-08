@@ -15,7 +15,7 @@ import {
 
 export class CnSaveFolderDTO {
   @BlTrim()
-  name: string;
+  name!: string;
 
   @BlTrim()
   code?: string;
@@ -34,17 +34,17 @@ export class CnSaveFolderDTO {
 
 export interface CnFolderStorageLocationDTO {
   rootFolderId: string;
-  mainStorage: CnBucketLocationDTO;
+  mainStorage: CnBucketLocationDTO | null;
 
-  backupStorage?: CnBucketLocationDTO;
+  backupStorage?: CnBucketLocationDTO | null;
 }
 
 export class CnFolderBucketsDTO {
   @Type(() => CnBucket)
-  mainStorage: CnBucket;
+  mainStorage?: CnBucket;
 
   @Type(() => CnBucket)
-  backupStorage: CnBucket;
+  backupStorage?: CnBucket;
 }
 
 export interface CnGetFolderDescriptionDTO {
@@ -56,7 +56,7 @@ export class CnFolderSimpleDTO {
   id: string;
   name: string;
   style: CnTypeStyle;
-  parentId: string;
+  parentId: string | null;
   objectType: CnHierarchyObjectType;
 
   constructor(folder: CnHierarchyObject) {

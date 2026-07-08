@@ -109,7 +109,7 @@ export class CnLabManagerService {
   }
 
   public getLabManagerInitConfig(lab: CnLab, spaceDomain: string): CnLabManagerInitConfig {
-    const codelabToken = lab.codelabToken;
+    const codelabToken = lab.codelabToken ?? null;
     const captchaSiteKey = lab.isConstellabDomain() ? this.configService.getCaptchaSiteKey() : null;
     const enableBackup = lab.isCloud();
     const openaiApiKey = lab.isDesktop() ? null : this.configService.getOpenaiAPIKey();

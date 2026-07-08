@@ -20,25 +20,25 @@ export enum CnCloudProviderRegionType {
 export class CnCloudProviderRegion extends CnBaseEntity {
   @Type(() => CnCloudProvider)
   @ManyToOne(() => CnCloudProvider, { nullable: true, eager: true })
-  cloudProvider: CnCloudProvider;
+  cloudProvider?: CnCloudProvider;
 
   @ManyToOne(() => CnCity, { nullable: false, eager: true })
-  city: CnCity;
+  city!: CnCity;
 
   @Column({ nullable: false, type: 'enum', enum: CnCloudProviderRegionType })
-  type: CnCloudProviderRegionType;
+  type!: CnCloudProviderRegionType;
 
   @BlTrim()
   @Column({ nullable: false, length: 20 })
-  technicalName: string;
+  technicalName!: string;
 
   @BlTrim()
   @Column({ nullable: false, length: 100 })
-  name: string;
+  name!: string;
 
   @BlTrim()
   @Column({ nullable: true, length: 255 })
-  s3Endpoint: string;
+  s3Endpoint: string | null = null;
 
   supportsServer(): boolean {
     return this.type === CnCloudProviderRegionType.ALL || this.type === CnCloudProviderRegionType.SERVER;

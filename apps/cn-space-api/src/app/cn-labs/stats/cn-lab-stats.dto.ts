@@ -11,7 +11,7 @@ export type CnLabKpiPeriod =
  * Object to request stats for a lab
  */
 export class CnLabStatsRequestDTO {
-  period: CnLabKpiPeriod;
+  period!: CnLabKpiPeriod;
 
   @ClLuxonDateTransform()
   customStartDate?: DateTime;
@@ -23,7 +23,9 @@ export class CnLabStatsRequestDTO {
   users?: CnUser[];
 
   constructor(period?: CnLabKpiPeriod) {
-    this.period = period;
+    if (period != null) {
+      this.period = period;
+    }
   }
 
   getStartDate(): DateTime {

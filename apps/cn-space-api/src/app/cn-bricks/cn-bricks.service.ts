@@ -19,7 +19,7 @@ export class CnBricksService extends BlAbstractService<CnBrick> {
 
   public async saveBrick(brickSaveDTO: CnBrickSaveDTO): Promise<void> {
     // create or update the brick
-    let brick: CnBrick =
+    let brick: CnBrick | null =
       (await this.brickRepo.findOneBy({ id: brickSaveDTO.id })) ??
       (await this.brickRepo.findOneBy({ name: brickSaveDTO.name }));
     if (brick == null) {
@@ -54,7 +54,7 @@ export class CnBricksService extends BlAbstractService<CnBrick> {
     }
   }
 
-  public findByName(name: string): Promise<CnBrick> {
+  public findByName(name: string): Promise<CnBrick | null> {
     return this.brickRepo.findOne({ where: { name: name } });
   }
 
@@ -121,12 +121,18 @@ export class CnBricksService extends BlAbstractService<CnBrick> {
   }
 
   public async getByBrickVersionId(brickVersionId: string): Promise<CnBrick> {
-    return (
-      await this.brickVersionRepo.findOne({
-        where: { id: brickVersionId },
-        relations: { brick: true },
-      })
-    ).brick;
+    const brickVersion = await this.brickVersionRepo.findOne({
+      where: { id: brickVersionId },
+      relations: { brick: true },
+    });
+
+    if (brickVersion == null) {
+      throw new BlBadRequestException(
+        `The brick version '${brickVersionId}' does not exist.`
+      );
+    }
+
+    return brickVersion.brick;
   }
 
   public async getBrickLatestVersion(brickName: string): Promise<CnBrickVersion | null> {

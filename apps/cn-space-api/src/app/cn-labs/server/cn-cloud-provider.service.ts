@@ -1,3 +1,5 @@
+import { BlBadRequestException } from '@monorepo/back-core-lib';
+
 import { CnCloudProviderName } from '../../cn-cloud-providers/cn-cloud-provider.entity';
 import { CnCoreConfigService } from '../../cn-core/modules/cn-core-config/cn-core-config.service';
 import { CnCommandService } from '../../cn-core/services/cn-command.service';
@@ -115,6 +117,10 @@ export abstract class CnCloudProviderService {
    * has propagated).
    */
   public instantiateLabSshService(lab: CnLab, sshHost?: string): CnLabSshService {
+    if (!lab.virtualHost) {
+      throw new BlBadRequestException(`Lab ${lab.id} has no virtual host, cannot open an ssh connection`);
+    }
+
     return new CnLabSshService(
       this.commandService,
       this.configService.isLocal(),

@@ -6,8 +6,8 @@ import { CnCountry } from '../cn-country/cn-country.entity';
 @Entity('city')
 export class CnCity extends BlEntityWithId {
   @Column()
-  name: string;
+  name!: string;
 
   @ManyToOne(() => CnCountry, { nullable: false, onDelete: 'CASCADE', eager: true })
-  country: CnCountry;
+  country!: CnCountry;
 }

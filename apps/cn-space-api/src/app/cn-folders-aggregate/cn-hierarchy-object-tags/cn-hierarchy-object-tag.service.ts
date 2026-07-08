@@ -40,7 +40,11 @@ export class CnHierarchyObjectTagService extends BlAbstractService<CnHierarchyOb
     }
   }
 
-  public findByTag(key: string, value: string, hierarchyObjectId: string): Promise<CnHierarchyObjectTag> {
+  public findByTag(
+    key: string,
+    value: string,
+    hierarchyObjectId: string
+  ): Promise<CnHierarchyObjectTag | null> {
     return this.repository.findOne({
       where: {
         key,

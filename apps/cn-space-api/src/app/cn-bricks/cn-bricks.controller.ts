@@ -34,6 +34,6 @@ export class CnBricksController {
     @Param('brickName') brickName: string,
     @Param('version') brickVersion: string
   ): Promise<CnBrickVersion> {
-    return this.service.getBrickVersion(brickName, BlVersion.fromString(brickVersion));
+    return this.service.getBrickVersionAndCheck(brickName, BlVersion.fromString(brickVersion));
   }
 }

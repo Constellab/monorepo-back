@@ -65,6 +65,10 @@ export class CnCloudProviderGcpService extends CnCloudProviderService {
   ): Promise<CnCpInstanceWithVolume> {
     const instanceName = this.getGCPInstanceName(instanceRequest.name);
 
+    if (instanceRequest.ipAddress == null) {
+      throw new Error('A static IP address is required to create a GCP instance');
+    }
+
     const instance = await this.gcpService.createInstanceAndVolume({
       name: instanceName,
       zone: instanceRequest.region,
@@ -150,7 +154,7 @@ export class CnCloudProviderGcpService extends CnCloudProviderService {
   mountVolume(): Promise<void> {
     // no need to mount the volume as the volume is already mounted
     // because the volume is created with the instance
-    return null;
+    return Promise.resolve();
   }
 
   ///////////////////////////////////// IP ADDRESS ///////////////////////////////////////
@@ -184,6 +188,9 @@ export class CnCloudProviderGcpService extends CnCloudProviderService {
   }
 
   private ipAddressToCnIpAddress(ipAddress: protos.google.cloud.compute.v1.IAddress): CnCpStaticIpAddress {
+    if (ipAddress.name == null || ipAddress.address == null || ipAddress.region == null) {
+      throw new Error('Incomplete GCP static IP address information');
+    }
     return {
       id: ipAddress.name,
       ipAddress: ipAddress.address,

@@ -17,7 +17,7 @@ export class CnLabFree extends CnBaseEntity {
   @ManyToOne(() => CnUserEntity, { eager: true, nullable: false })
   @BlNotUpdatable()
   @Exclude()
-  user: CnUser;
+  user!: CnUser;
 
   @Type(() => CnLabEntity)
   @ManyToOne(() => CnLabEntity, { eager: true, nullable: true, onDelete: 'SET NULL' })
@@ -30,10 +30,10 @@ export class CnLabFree extends CnBaseEntity {
 
   // the number of hours the user can use the lab per month
   @Column({ nullable: false })
-  usageLimitInHours: number;
+  usageLimitInHours!: number;
 
   @BlLuxonDateTimeColumn({ nullable: true })
-  expirationDate?: DateTime;
+  expirationDate?: DateTime | null;
 
   isExpired(): boolean {
     if (!this.expirationDate) return false;

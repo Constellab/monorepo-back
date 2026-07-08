@@ -158,6 +158,9 @@ export class CnCloudProviderAzureService extends CnCloudProviderService {
   }
 
   async mountVolume(lab: CnLab): Promise<void> {
+    if (lab.serverInstanceId == null) {
+      throw new Error(`No server instance for lab ${lab.id}`);
+    }
     const azureInstance = await this.getAzureInstance(lab.serverInstanceId);
 
     const volume = azureInstance.getVolume();
@@ -173,6 +176,12 @@ export class CnCloudProviderAzureService extends CnCloudProviderService {
   }
 
   private convertAzureVolume(disk: Disk): CnCpVolume {
+    if (disk.name == null) {
+      throw new Error('Azure disk has no name');
+    }
+    if (disk.diskSizeGB == null) {
+      throw new Error(`Azure disk ${disk.name} has no size`);
+    }
     return {
       region: disk.location,
       status: this.azureVolumeStatusToCpStatus(disk.diskState as any, disk.name),
@@ -203,20 +212,24 @@ export class CnCloudProviderAzureService extends CnCloudProviderService {
   }
 
   createStaticIpAddress(): Promise<CnCpStaticIpAddress | null> {
-    return null;
+    return Promise.resolve(null);
   }
 
   deleteIpAddress(): Promise<void> {
-    return null;
+    return Promise.resolve();
   }
 
   getIpAddressFromId(): Promise<CnCpStaticIpAddress | null> {
-    return null;
+    return Promise.resolve(null);
   }
 
   async getIpAddressFromInstanceId(id: string): Promise<string> {
     const instance = await this.getAzureInstance(id);
 
-    return (await this.azureService.getIpAddresses(instance.getNetworkId())).ipAddress;
+    const ipAddress = (await this.azureService.getIpAddresses(instance.getNetworkId())).ipAddress;
+    if (ipAddress == null) {
+      throw new Error(`No ip address found for instance ${id}`);
+    }
+    return ipAddress;
   }
 }

@@ -29,74 +29,74 @@ export enum CnUserLicense {
 @Entity('user')
 export class CnUserEntity extends BlEntityWithId implements BlUser {
   @Column({ nullable: false, length: 50 })
-  firstname: string;
+  firstname!: string;
 
   @Column({ nullable: false, length: 50 })
-  lastname: string;
+  lastname!: string;
 
   @BlLowerCase()
   @Column({ unique: true, nullable: false, update: false })
-  email: string;
+  email!: string;
 
   @Exclude({ toPlainOnly: true })
   @Column({ nullable: false })
-  password: string;
+  password!: string;
 
   @Column({ nullable: false, type: 'enum', enum: BlUserCategory, default: BlUserCategory.USER })
-  category: BlUserCategory;
+  category!: BlUserCategory;
 
   @Column({ nullable: true })
-  activity: string;
+  activity!: string | null;
 
   @Column({ nullable: true })
-  biography: string;
+  biography!: string | null;
 
   @Exclude()
   @Column({ nullable: false, default: 0 })
-  failedLoginCount: number;
+  failedLoginCount!: number;
 
   @Exclude()
   @BlLuxonDateTimeColumn({ nullable: true })
-  lastLoginAttempt: DateTime;
+  lastLoginAttempt!: DateTime | null;
 
   @BlLuxonDateTimeColumn({ nullable: true })
-  lastLoginSuccess: DateTime;
+  lastLoginSuccess!: DateTime;
 
   @Column({ nullable: false, type: 'enum', enum: ClSupportedLanguage, default: CL_DEFAULT_LANG })
-  lang: ClSupportedLanguage;
+  lang!: ClSupportedLanguage;
 
   @Column({ nullable: false, type: 'enum', enum: ClTheme, default: CL_DEFAULT_THEME })
-  theme: ClTheme;
+  theme!: ClTheme;
 
   // use the string name and import type to avoid circular dependency
   @ManyToMany('CnGroupTeam', (group: CnGroupTeam) => group.users)
-  groups: CnGroupTeam[];
+  groups!: CnGroupTeam[];
 
   @Exclude()
   @OneToOne('CnGroupSingleUser', (group: CnGroupSingleUser) => group.user)
-  ownGroup: CnGroupSingleUser;
+  ownGroup!: CnGroupSingleUser;
 
   @Column({ nullable: false, type: 'enum', enum: BlUserStatus, default: BlUserStatus.WAITING_FOR_EMAIL })
-  status: BlUserStatus;
+  status!: BlUserStatus;
 
   @BlLuxonDateTimeColumn({ nullable: false, update: false })
-  createdAt: DateTime;
+  createdAt!: DateTime;
 
   @Column({ nullable: true })
-  photo: string;
+  photo!: string | null;
 
   @Column({ nullable: true })
-  company: string;
+  company!: string | null;
 
   @Exclude()
   @Column({ default: false })
-  has2FA: boolean;
+  has2FA!: boolean;
 
   @Column({ nullable: true, length: 50 })
-  phone: string;
+  phone!: string | null;
 
   @Column({ nullable: false, type: 'enum', enum: CnUserLicense, default: CnUserLicense.FREE })
-  license: CnUserLicense;
+  license!: CnUserLicense;
 
   // last space the user was connected to
   @Exclude()
@@ -143,12 +143,12 @@ export class CnUserEntity extends BlEntityWithId implements BlUser {
 export type CnUser = Omit<CnUserEntity, 'groups' | 'ownGroup' | 'lastConnectedSpace'>;
 
 export class CnUserEditDTO {
-  firstname: string;
-  lastname: string;
-  activity: string;
-  company: string;
-  biography: string;
-  phone: string;
+  firstname!: string;
+  lastname!: string;
+  activity?: string | null;
+  company?: string | null;
+  biography?: string | null;
+  phone?: string | null;
 }
 
 export interface CnUserTransportDto {
@@ -160,8 +160,8 @@ export interface CnUserTransportDto {
   category: BlUserCategory;
 
   lang: ClSupportedLanguage;
-  activity: string;
-  company: string;
-  biography: string;
-  photo?: string;
+  activity: string | null;
+  company: string | null;
+  biography: string | null;
+  photo?: string | null;
 }

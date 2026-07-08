@@ -6,7 +6,7 @@ import { CnHierarchyObjectToken } from './cn-hierarchy-object-token.entity';
 
 export class CnHierarchyObjectTokenSaveDTO {
   @ClLuxonDateTransform()
-  expirationDate: DateTime;
+  expirationDate!: DateTime;
 }
 
 export class CnHierarchyObjectTokenDTO extends BlBaseEntityDto {

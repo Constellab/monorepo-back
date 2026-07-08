@@ -5,7 +5,7 @@ import { CnBaseEntity } from './cn-base.entity';
 
 export class CnMessage extends CnBaseEntity {
   @Column({ type: 'simple-json', nullable: true })
-  content: TeRichTextInput;
+  content!: TeRichTextInput | null;
 
   getRichTextContent(): TeRichText {
     return new TeRichText(this.content);
@@ -14,5 +14,5 @@ export class CnMessage extends CnBaseEntity {
 
 export class CnNewMessageDTO {
   @TeRichTextTransform()
-  content: TeRichText;
+  content!: TeRichText;
 }

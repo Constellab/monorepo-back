@@ -28,21 +28,21 @@ export class CnFolderEntity extends CnHierarchyRepresentation {
     icon_color: 'accentContrast',
   };
   @Column({ nullable: false, length: 100 })
-  name: string;
+  name!: string;
 
   @Column({ nullable: true, length: 20 })
-  code: string;
+  code?: string;
 
   // this column is not selected by default
   @Exclude()
   @Column({ type: 'simple-json', nullable: true, select: false })
-  description: TeRichTextInput;
+  description?: TeRichTextInput;
 
   @BlLuxonDateColumn({ nullable: true })
-  startingDate: DateTime;
+  startingDate?: DateTime;
 
   @BlLuxonDateColumn({ nullable: true })
-  endingDate: DateTime;
+  endingDate?: DateTime;
 
   // the storage is only provided in root folder
   @Exclude()
@@ -54,10 +54,10 @@ export class CnFolderEntity extends CnHierarchyRepresentation {
   backupStorage?: CnBucket;
 
   @Column({ nullable: false, default: false })
-  chatEnabled: boolean;
+  chatEnabled!: boolean;
 
   @Column({ nullable: false, type: 'simple-json' })
-  style: CnTypeStyle;
+  style!: CnTypeStyle;
 
   @BeforeInsert()
   setCreatedInfo(): void {

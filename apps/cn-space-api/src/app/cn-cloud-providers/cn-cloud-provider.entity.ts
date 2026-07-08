@@ -12,13 +12,13 @@ export type CnCloudProviderName = 'OVH' | 'AZURE' | 'OUTSCALE' | 'GCP';
 @Entity('cloud_provider')
 export class CnCloudProvider extends CnBaseEntity {
   @Column({ nullable: false, length: 50 })
-  name: CnCloudProviderName;
+  name!: CnCloudProviderName;
 
   @Column({ nullable: true })
-  description: string;
+  description?: string;
 
   @Column({ nullable: true })
-  logo: string;
+  logo?: string;
 
   /**
    * return true if the cloud provided support native S3

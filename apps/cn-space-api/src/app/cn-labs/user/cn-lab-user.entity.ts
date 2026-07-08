@@ -28,18 +28,18 @@ export enum CnLabUserRole {
 @Entity('lab_user')
 export class CnLabUserEntity {
   @PrimaryColumn({ length: 36 })
-  labId: string;
+  labId!: string;
 
   @JoinColumn()
   @ManyToOne(() => CnLabEntity, (lab) => lab.sharedGroups, { onDelete: 'CASCADE', nullable: false })
-  lab: CnLabEntity;
+  lab!: CnLabEntity;
 
   @PrimaryColumn({ length: 36 })
-  userId: string;
+  userId!: string;
 
   @JoinColumn()
   @ManyToOne(() => CnUserEntity, { nullable: false })
-  user: CnUser;
+  user!: CnUser;
 
   @Column({
     type: 'enum',
@@ -47,22 +47,22 @@ export class CnLabUserEntity {
     nullable: false,
     default: CnLabUserRole.USER,
   })
-  role: CnLabUserRole;
+  role!: CnLabUserRole;
 
   @BlLuxonDateTimeColumn({ nullable: false, update: false })
-  createdAt: DateTime;
+  createdAt!: DateTime;
 
   @Type(() => CnUserEntity)
   @ManyToOne(() => CnUserEntity, { eager: true, nullable: false })
   @BlNotUpdatable()
-  createdBy: Relation<CnUser>;
+  createdBy!: Relation<CnUser>;
 
   @BlLuxonDateTimeColumn()
-  lastModifiedAt: DateTime;
+  lastModifiedAt!: DateTime;
 
   @Type(() => CnUserEntity)
   @ManyToOne(() => CnUserEntity, { eager: true, nullable: false })
-  lastModifiedBy: Relation<CnUser>;
+  lastModifiedBy!: Relation<CnUser>;
 
   @BeforeInsert()
   setCreatedInfo(): void {

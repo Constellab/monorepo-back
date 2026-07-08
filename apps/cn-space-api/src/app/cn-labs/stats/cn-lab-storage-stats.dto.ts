@@ -11,9 +11,9 @@ export abstract class CnLabStorageStatsPeriod {
   @ClLuxonDateTimeTransform()
   fromDate: DateTime;
   @ClLuxonDateTimeTransform()
-  toDate: DateTime;
+  toDate: DateTime | null;
 
-  protected constructor(fromDate: DateTime, toDate: DateTime) {
+  protected constructor(fromDate: DateTime, toDate: DateTime | null) {
     this.fromDate = fromDate;
     this.toDate = toDate;
   }
@@ -24,7 +24,7 @@ export abstract class CnLabStorageStatsPeriod {
 
   @Expose()
   get durationInHour(): number {
-    return Math.ceil(this.toDate.diff(this.fromDate, 'seconds').seconds / 3600);
+    return Math.ceil(this.getToDateWithDefault().diff(this.fromDate, 'seconds').seconds / 3600);
   }
 
   /**
@@ -38,7 +38,7 @@ export abstract class CnLabStorageStatsPeriod {
 export class CnLabStorageStatsPeriodNumber extends CnLabStorageStatsPeriod {
   data: number;
 
-  constructor(fromDate: DateTime, toDate: DateTime, data: number) {
+  constructor(fromDate: DateTime, toDate: DateTime | null, data: number) {
     super(fromDate, toDate);
     this.data = data;
   }
@@ -63,7 +63,7 @@ export class CnLabStorageStatsPeriods<T extends CnLabStorageStatsPeriod = CnLabS
     // we need to round the hours to avoid counting twice the same hour due to the ceil
     // (round to the next hour)
     if (lastPeriod) {
-      period.fromDate = lastPeriod.toDate;
+      period.fromDate = lastPeriod.getToDateWithDefault();
     } else {
       // round fromDate to the start of the hour
       period.fromDate = period.fromDate.startOf('hour');
@@ -95,7 +95,7 @@ export class CnLabStorageStatsPeriodVolumeDTO extends CnLabStorageStatsPeriod {
 
   constructor(
     fromDate: DateTime,
-    toDate: DateTime,
+    toDate: DateTime | null,
     volumeSize: number,
     volumeType: CnLabVolumeType,
     volumePricePerGBPerHour: number
@@ -127,7 +127,7 @@ export class CnLabStorageStatsPeriodBackupDTO extends CnLabStorageStatsPeriod {
   // in GB/hour
   backupPricePerGBPerHour: number;
 
-  constructor(fromDate: DateTime, toDate: DateTime, backupSize: number, backupPricePerGBPerHour: number) {
+  constructor(fromDate: DateTime, toDate: DateTime | null, backupSize: number, backupPricePerGBPerHour: number) {
     super(fromDate, toDate);
     this.backupSize = backupSize;
     this.backupPricePerGBPerHour = backupPricePerGBPerHour;

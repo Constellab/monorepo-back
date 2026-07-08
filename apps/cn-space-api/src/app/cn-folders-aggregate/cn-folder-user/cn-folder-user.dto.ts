@@ -14,15 +14,15 @@ import {
  * Link between folder and user that stores the notification options
  */
 export class CnFolderUserConfigDTO {
-  folderNotif: CnRootFolderNotifOptions;
+  folderNotif!: CnRootFolderNotifOptions;
 
-  messageNotif: CnRootFolderNotifOptions;
+  messageNotif!: CnRootFolderNotifOptions;
 
-  scenarioNotif: CnRootFolderNotifOptions;
+  scenarioNotif!: CnRootFolderNotifOptions;
 
-  noteNotif: CnRootFolderNotifOptions;
+  noteNotif!: CnRootFolderNotifOptions;
 
-  documentNotif: CnRootFolderNotifOptions;
+  documentNotif!: CnRootFolderNotifOptions;
 
   constructor(folderUser?: CnFolderUser) {
     if (folderUser) {

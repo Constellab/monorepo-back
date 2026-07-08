@@ -31,10 +31,10 @@ export class CnLabDto extends BlBaseEntityDto {
   type: CnLabType;
   currentStatus: CnLabStatusHistory;
   frontUrl: string;
-  virtualHost: string;
-  region: CnCloudProviderRegion;
-  billingMode: CnLabBillingMode;
-  desktopPlatform?: CnLabDesktopPlatform;
+  virtualHost: string | null;
+  region: CnCloudProviderRegion | null;
+  billingMode: CnLabBillingMode | null;
+  desktopPlatform?: CnLabDesktopPlatform | null;
   isFreeLab: boolean;
 
   constructor(entity: CnLab) {
@@ -53,7 +53,7 @@ export class CnLabDto extends BlBaseEntityDto {
 
 export class CnLabWithSpaceDto extends CnLabDto {
   space: CnSpace;
-  serverCloud: CnServerCloud;
+  serverCloud: CnServerCloud | null;
 
   constructor(entity: CnLabFull) {
     super(entity);
@@ -66,18 +66,18 @@ export class CnLabWithSpaceDto extends CnLabDto {
  * DTO for the lab only for G admin
  */
 export class CnLabAdminDto extends CnLabWithSpaceDto {
-  cloudName: string;
+  cloudName?: string;
   glabProdApiKey: string;
   glabDevApiKey: string;
-  labManagerApiKey: string;
-  serverInstanceId: string;
-  serverVolumeId: string;
-  serverIpAddressId: string;
-  labIpOverride: string;
-  labPortOverride: number;
+  labManagerApiKey: string | null;
+  serverInstanceId?: string | null;
+  serverVolumeId?: string | null;
+  serverIpAddressId?: string | null;
+  labIpOverride?: string;
+  labPortOverride?: number;
   gwsCoreProdDbPassword: string;
   gwsCoreDevDbPassword: string;
-  codelabToken: string;
+  codelabToken?: string | null;
 
   constructor(entity: CnLabFull) {
     super(entity);
@@ -108,9 +108,9 @@ export class CnLabFindOneDto {
 }
 
 export class CnLabCodelabDTO {
-  username: string;
-  token: string;
-  url: string;
+  username!: string;
+  token!: string;
+  url!: string;
 }
 
 export interface CnLabConfigDTO {
@@ -122,102 +122,102 @@ export interface CnLabStartDTO {
 }
 
 export class CnLabUpdateAdminDTO {
-  id: string;
+  id!: string;
   @BlTrim()
-  name: string;
-  type: CnLabType;
+  name!: string;
+  type!: CnLabType;
   @BlTrim()
-  virtualHost: string;
+  virtualHost!: string;
   @BlTrim()
-  labIpOverride: string;
+  labIpOverride!: string;
   @Type(() => Number)
-  labPortOverride: number;
-  billingMode: CnLabBillingMode;
+  labPortOverride!: number;
+  billingMode!: CnLabBillingMode;
 
   @Type(() => CnServerCloud)
-  serverCloud: CnServerCloud;
+  serverCloud!: CnServerCloud;
 
   @BlTrim()
-  glabProdApiKey: string;
+  glabProdApiKey!: string;
   @BlTrim()
-  glabDevApiKey: string;
+  glabDevApiKey!: string;
   @BlTrim()
-  labManagerApiKey: string;
+  labManagerApiKey!: string;
   @BlTrim()
-  codelabToken: string;
+  codelabToken!: string;
 
   @Type(() => CnCloudProviderRegion)
-  region: CnCloudProviderRegion;
+  region!: CnCloudProviderRegion;
 
   @Type(() => CnSpaceEntity)
-  space: CnSpace;
+  space!: CnSpace;
 
   @BlTrim()
-  serverInstanceId: string;
+  serverInstanceId!: string;
   @BlTrim()
-  serverVolumeId: string;
+  serverVolumeId!: string;
   @BlTrim()
-  serverIpAddressId: string;
+  serverIpAddressId!: string;
   desktopPlatform?: CnLabDesktopPlatform;
 
   @BlTrim()
-  gwsCoreProdDbPassword: string;
+  gwsCoreProdDbPassword!: string;
 
   @BlTrim()
-  gwsCoreDevDbPassword: string;
+  gwsCoreDevDbPassword!: string;
 }
 
 export class CnLabCreateAdminDTO extends CnLabUpdateAdminDTO {
-  volumeSize: number;
-  volumeType: CnLabVolumeType;
+  volumeSize!: number;
+  volumeType!: CnLabVolumeType;
 
   @Type(() => CnCloudProviderRegion)
-  dailyBackupRegion: CnCloudProviderRegion;
+  dailyBackupRegion!: CnCloudProviderRegion;
 
   @Type(() => CnCloudProviderRegion)
-  weeklyBackupRegion: CnCloudProviderRegion;
+  weeklyBackupRegion!: CnCloudProviderRegion;
 
   copyConfigFromLab?: CnLab;
 }
 
 export class CnLabCloudCreateDTO {
-  name: string;
+  name!: string;
 
   @Type(() => CnServerCloud)
-  serverCloud: CnServerCloud;
+  serverCloud!: CnServerCloud;
 
   @Type(() => CnCloudProviderRegion)
-  region: CnCloudProviderRegion;
+  region!: CnCloudProviderRegion;
 
-  volumeSize: number;
-
-  @Type(() => CnCloudProviderRegion)
-  dailyBackupRegion: CnCloudProviderRegion;
+  volumeSize!: number;
 
   @Type(() => CnCloudProviderRegion)
-  weeklyBackupRegion: CnCloudProviderRegion;
+  dailyBackupRegion!: CnCloudProviderRegion;
 
-  labConfig: CnLabConfigDTO;
+  @Type(() => CnCloudProviderRegion)
+  weeklyBackupRegion!: CnCloudProviderRegion;
+
+  labConfig!: CnLabConfigDTO;
 }
 
 export class CnLabCreateDesktopDTO {
-  id: string;
-  name: string;
-  desktopPlatform: CnLabDesktopPlatform;
+  id!: string;
+  name!: string;
+  desktopPlatform!: CnLabDesktopPlatform;
 }
 
 export class CnLabStatusDTO {
-  labStatus: CnLabStatus;
-  labManagerIsRunning: boolean;
-  labIsRunning: boolean;
-  hasServerInstanceId: boolean;
-  hasServerVolumeId: boolean;
-  dnsConfigured: boolean;
-  serverTaskText: string;
-  serverTaskStatus: CnLabServerTaskStatus;
+  labStatus!: CnLabStatus;
+  labManagerIsRunning!: boolean;
+  labIsRunning!: boolean;
+  hasServerInstanceId!: boolean;
+  hasServerVolumeId!: boolean;
+  dnsConfigured!: boolean;
+  serverTaskText?: string;
+  serverTaskStatus!: CnLabServerTaskStatus;
 
   @ClLuxonDateTimeTransform()
-  serverTaskDatetime: DateTime;
+  serverTaskDatetime?: DateTime;
 }
 
 export class CnLabBusyStatusDTO {
@@ -267,26 +267,26 @@ export interface CnRequestLab {
 }
 
 export class CnLabServerInfoDTO {
-  name: string;
+  name!: string;
 
   @Type(() => CnCloudProvider)
-  cloudProvider: CnCloudProvider;
+  cloudProvider!: CnCloudProvider;
 
-  cpuType: string;
-  cpuCount: number;
+  cpuType!: string;
+  cpuCount!: number;
 
-  ram: number;
+  ram!: number;
 
-  gpuType: string;
-  gpuCount: number;
+  gpuType?: string;
+  gpuCount?: number;
 
-  volumeSize: number;
-  volumeType: CnLabVolumeType;
+  volumeSize!: number;
+  volumeType!: CnLabVolumeType;
 }
 
 export class CnLabGlabApiInfo {
   gwsCoreVersion?: BlVersion;
-  apiInfo: CnExternalApiInfo;
+  apiInfo!: CnExternalApiInfo;
 }
 
 export interface CnStopLabRequestDTO {

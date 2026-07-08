@@ -167,11 +167,16 @@ export class CnLabFolderAggregateService {
     const glabConfig = await this.getAndCheckGlabConfig(scenarioWithLab.lab);
     if (!glabConfig) return;
 
+    const scenarioParentId = scenarioWithLab.hierarchyRepresentation.parentId;
+    if (scenarioParentId == null) {
+      throw new BlBadRequestException('The scenario to sync must have a parent folder');
+    }
+
     await this.externalLabObjectService.syncScenarioWithLab(
       glabConfig,
       new CnExternalLabSyncedObjectDTO(
         scenarioWithLab.id,
-        scenarioWithLab.hierarchyRepresentation.parentId,
+        scenarioParentId,
         scenarioWithLab.lastSyncAt,
         scenarioWithLab.lastSyncBy.id
       )
@@ -187,11 +192,16 @@ export class CnLabFolderAggregateService {
     const glabConfig = await this.getAndCheckGlabConfig(noteWithLab.lab);
     if (!glabConfig) return;
 
+    const noteParentId = noteWithLab.hierarchyRepresentation.parentId;
+    if (noteParentId == null) {
+      throw new BlBadRequestException('The note to sync must have a parent folder');
+    }
+
     await this.externalLabObjectService.syncNoteWithLab(
       glabConfig,
       new CnExternalLabSyncedObjectDTO(
         noteWithLab.id,
-        noteWithLab.hierarchyRepresentation.parentId,
+        noteParentId,
         noteWithLab.lastSyncAt,
         noteWithLab.lastSyncBy.id
       )

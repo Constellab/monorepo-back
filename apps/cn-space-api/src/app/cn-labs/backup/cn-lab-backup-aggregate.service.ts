@@ -88,10 +88,29 @@ export class CnLabBackupAggregateService {
     const labOptions = await this.backupOptionService.findByLabId(lab.id);
     if (labOptions == null) return [];
 
-    const backupStatus1 = await this.getBackupStatus(lab, labOptions.frequency1, labOptions.bucket1.region);
-    const backupStatus2 = await this.getBackupStatus(lab, labOptions.frequency2, labOptions.bucket2.region);
+    const backupStatus1 = await this.getBackupStatus(
+      lab,
+      labOptions.frequency1,
+      this.getBucketRegion(labOptions.bucket1)
+    );
+    const backupStatus2 = await this.getBackupStatus(
+      lab,
+      labOptions.frequency2,
+      this.getBucketRegion(labOptions.bucket2)
+    );
 
     return [backupStatus1, backupStatus2];
+  }
+
+  /**
+   * Get the region of a backup bucket, ensuring it has been loaded.
+   * Backup buckets are always cloud buckets, so the region must be present.
+   */
+  private getBucketRegion(bucket: CnBucket): CnCloudProviderRegion {
+    if (bucket.region == null) {
+      throw new BlBadRequestException('The bucket region was not loaded');
+    }
+    return bucket.region;
   }
 
   private async getBackupStatus(
@@ -218,7 +237,7 @@ export class CnLabBackupAggregateService {
       bucket.getBucketConfig(),
       prefix
     );
-    const backup1Status = await this.getBackupStatus(lab, frequency, bucket.region);
+    const backup1Status = await this.getBackupStatus(lab, frequency, this.getBucketRegion(bucket));
 
     return CnLabCheckBackupSizeDTO.fromBackupStatusDTO(
       backup1Status,
@@ -261,7 +280,7 @@ export class CnLabBackupAggregateService {
       );
 
       throw new BlBadRequestException(
-        `Error while deleting the backup file for region ${bucket.region.name} and frequency ${frequency}.`
+        `Error while deleting the backup file for region ${bucket.region?.name} and frequency ${frequency}.`
       );
     }
 

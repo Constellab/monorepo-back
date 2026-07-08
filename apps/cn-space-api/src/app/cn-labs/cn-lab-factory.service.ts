@@ -153,7 +153,8 @@ export class CnLabFactoryService {
   }
 
   private async getLatestBrickVersion(brickName: string): Promise<CnBrickVersionDTO> {
-    const gwsCoreVersion: CnBrickVersion = await this.brickService.getBrickLatestVersion(brickName);
+    const gwsCoreVersion: CnBrickVersion | null =
+      await this.brickService.getBrickLatestVersion(brickName);
     if (!gwsCoreVersion) {
       throw new BlBadRequestException(`No version found for brick ${brickName}`);
     }
@@ -163,7 +164,7 @@ export class CnLabFactoryService {
     };
   }
 
-  private async addUserToLab(lab: CnLabEntity, user: CnUser, entityManager?: EntityManager): Promise<void> {
+  private async addUserToLab(lab: CnLabEntity, user: CnUser, entityManager: EntityManager): Promise<void> {
     await this.labUserService.createLabUser(lab, user, CnLabUserRole.OWNER, entityManager);
   }
 

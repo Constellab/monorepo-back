@@ -11,14 +11,14 @@ import { CnLabConfigDTO } from '../cn-labs/cn-lab.dto';
 @Entity('lab_config')
 export class CnLabConfig extends BlEntityWithId {
   @Column({ nullable: false, length: 50 })
-  label: string;
+  label!: string;
 
   @ManyToMany(() => CnBrickVersion)
   @JoinTable({ name: 'lab_config_brick_version' })
-  brickVersions: CnBrickVersion[];
+  brickVersions!: CnBrickVersion[];
 
   @Column({ nullable: false, unique: true })
-  brickVersionsHash: number;
+  brickVersionsHash!: number;
 
   toLabConfigDTO(): CnLabConfigDTO {
     if (this.brickVersions == null) {

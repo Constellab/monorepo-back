@@ -53,7 +53,7 @@ export class CnFolderListener {
   @OnEvent(CN_FOLDER_EVENT_NAME)
   async handleFolderEvent(event: CnFolderEvent): Promise<void> {
     try {
-      const activityAndNotif: CnActivityAndNotif = this.getActivityDTO(event);
+      const activityAndNotif: CnActivityAndNotif | null = this.getActivityDTO(event);
       if (activityAndNotif == null) return;
 
       const activity = await this.createActivity(activityAndNotif.activity, event);
@@ -92,9 +92,10 @@ export class CnFolderListener {
   private async createNotification(
     activity: CnActivity,
     notifInfo: CnNotifInfo,
-    parentFolder: CnHierarchyObject
+    parentFolder: CnHierarchyObject | null | undefined
   ): Promise<void> {
     if (!parentFolder) return;
+    if (activity.space == null) return;
 
     const folderUsers = await this.folderUserService.findByRootFolderId(parentFolder.getRootFolderId());
 
@@ -184,7 +185,7 @@ export class CnFolderListener {
     }
   }
 
-  private getActivityDTO(event: CnFolderEvent): CnActivityAndNotif {
+  private getActivityDTO(event: CnFolderEvent): CnActivityAndNotif | null {
     switch (event.payload.type) {
       case 'CREATE_SUB_FOLDER':
         return this.subFolderCreated(event.payload.entity, event.payload.parentFolder);
@@ -206,7 +207,7 @@ export class CnFolderListener {
       case 'DELETE_OBJECT':
         return this.hierarchyObjectDeleted(event.payload.entity, event.payload.parentFolder);
       case 'EMPTY_TRASH':
-        return this.emptyFolderTrash(event.payload.parentFolder);
+        return event.payload.parentFolder ? this.emptyFolderTrash(event.payload.parentFolder) : null;
       case 'CREATE_SCENARIO':
         return this.scenarioCreated(event.payload.entity, event.payload.parentFolder);
       case 'UPDATE_SCENARIO':
@@ -304,7 +305,7 @@ export class CnFolderListener {
 
   private hierarchyObjectMovedToTrash(
     hierarchyObject: CnHierarchyObject,
-    parentFolder?: CnHierarchyObject
+    parentFolder?: CnHierarchyObject | null
   ): CnActivityAndNotif {
     return {
       activity: {
@@ -326,7 +327,7 @@ export class CnFolderListener {
 
   private hierarchyObjectRestoredFromTrash(
     hierarchyObject: CnHierarchyObject,
-    parentFolder?: CnHierarchyObject
+    parentFolder?: CnHierarchyObject | null
   ): CnActivityAndNotif {
     return {
       activity: {
@@ -344,7 +345,7 @@ export class CnFolderListener {
 
   private hierarchyObjectDeleted(
     hierarchyObject: CnHierarchyObject,
-    parentFolder?: CnHierarchyObject
+    parentFolder?: CnHierarchyObject | null
   ): CnActivityAndNotif {
     return {
       activity: {
@@ -360,7 +361,7 @@ export class CnFolderListener {
 
   private getHierarchyObjectInfoStr(
     hierarchyObject: CnHierarchyObject,
-    parentFolder: CnHierarchyObject
+    parentFolder: CnHierarchyObject | null | undefined
   ): string {
     let text = `${hierarchyObject.getObjectTypeName()} ${hierarchyObject.name}`;
     if (parentFolder) {
@@ -496,6 +497,8 @@ export class CnFolderListener {
     message: CnChatMessage,
     parentFolder: CnHierarchyObject
   ): Promise<void> {
+    if (activity.space == null) return;
+
     const folderUsers = await this.folderUserService.findByRootFolderId(parentFolder.getRootFolderId());
 
     const link = CnFrontService.getChatMessageRoute(parentFolder.id);
@@ -560,6 +563,7 @@ export class CnFolderListener {
     const userMentions: CnFolderUser[] = [];
     for (const mention of mentions) {
       const folderUser = folderUsers.find((pu) => pu.user.id == mention.id);
+      if (!folderUser) continue;
       // avoid duplicate
       if (!userMentions.find((um) => um.user.id == folderUser.user.id)) {
         userMentions.push(folderUser);

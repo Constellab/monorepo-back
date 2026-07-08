@@ -70,7 +70,7 @@ export class CnCloudProviderFactory {
     }
 
     try {
-      if (!lab.serverInstanceId) {
+      if (!lab.serverInstanceId || !lab.region) {
         return undefined;
       }
       const cloudProviderService = await this.getCloudProviderServiceFromLab(lab.id);

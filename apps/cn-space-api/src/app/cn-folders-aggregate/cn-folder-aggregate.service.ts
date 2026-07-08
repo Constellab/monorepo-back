@@ -106,7 +106,7 @@ export class CnFolderAggregateService {
         // if the main storage is not set, we use the default storage of the space
         const space = await this.spaceAggregateService.getCurrentSpace();
         entity.mainStorage = space.defaultFolderBucket;
-        entity.backupStorage = space.defaultFolderBackupBucket;
+        entity.backupStorage = space.defaultFolderBackupBucket ?? undefined;
       }
       const dbFolder = await this.foldersService.create(entity, manager);
 
@@ -118,7 +118,7 @@ export class CnFolderAggregateService {
         manager
       );
 
-      if (folderDTO.tags?.length > 0) {
+      if (folderDTO.tags && folderDTO.tags.length > 0) {
         await this.tagService.createTagsTransaction(
           folderDTO.tags,
           dbFolder.hierarchyRepresentation,
@@ -180,7 +180,7 @@ export class CnFolderAggregateService {
     return this.datasource.transaction(async (manager) => {
       const dbFolder = await this.foldersService.create(entity, manager);
 
-      if (folderDTO.tags?.length > 0) {
+      if (folderDTO.tags && folderDTO.tags.length > 0) {
         await this.tagService.createTagsTransaction(
           folderDTO.tags,
           dbFolder.hierarchyRepresentation,

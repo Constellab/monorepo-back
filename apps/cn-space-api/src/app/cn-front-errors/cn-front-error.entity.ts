@@ -13,23 +13,23 @@ import { CnUser, CnUserEntity } from '../cn-users/cn-user.entity';
 @Entity('front_error')
 export class CnFrontError extends BlEntityWithId {
   @Column({ nullable: false, length: 100 })
-  name: string;
+  name!: string;
 
   @Column({ nullable: false, length: 1000 })
-  message: string;
+  message!: string;
 
   @Column({ type: 'text', nullable: true })
-  stackTrace: string;
+  stackTrace?: string;
 
   @Column({ nullable: true, length: 200 })
-  route: string;
+  route?: string;
 
   @Type(() => CnUserEntity)
   @ManyToOne(() => CnUserEntity, { eager: true, nullable: true })
-  createdBy: CnUser;
+  createdBy: CnUser | null = null;
 
   @BlLuxonDateTimeColumn({ nullable: false, update: false })
-  createdAt: DateTime;
+  createdAt!: DateTime;
 
   @BeforeInsert()
   setCreatedByUser(): void {

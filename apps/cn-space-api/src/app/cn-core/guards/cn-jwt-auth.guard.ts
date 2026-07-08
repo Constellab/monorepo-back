@@ -79,7 +79,11 @@ export class CnJwtAuthGuard extends AuthGuard('jwt') {
       throw new BlUnauthorizedException(CnErrorText.WRONG_TOKEN);
     }
 
-    const request = BlRequestContext.currentContext.req as CnRequest;
+    const requestContext = BlRequestContext.currentContext;
+    if (requestContext == null) {
+      throw new BlUnauthorizedException(CnErrorText.WRONG_TOKEN);
+    }
+    const request = requestContext.req as CnRequest;
 
     // the user is available in the request from super.canActivate
     const user = request.user;
@@ -130,12 +134,12 @@ export class CnJwtAuthGuard extends AuthGuard('jwt') {
   }
 
   private async getSpaceFromRequest(request: CnRequest): Promise<CnSpace | null> {
-    let spaceDomain: string;
+    let spaceDomain: string | null | undefined;
 
     if (this.configService.isLocal()) {
-      spaceDomain = BlCookieHelper.getCookieFromHeader(request.headers.cookie, CN_LOCAL_SPACE_COOKIE);
+      spaceDomain = BlCookieHelper.getCookieFromHeader(request.headers.cookie ?? '', CN_LOCAL_SPACE_COOKIE);
     } else {
-      const origin = request.header('origin') ?? request.header('referer');
+      const origin = request.header('origin') ?? request.header('referer') ?? null;
       spaceDomain = ClStringHelper.getLowestDomainFromUrl(origin);
     }
 

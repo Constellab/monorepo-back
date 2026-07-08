@@ -38,21 +38,21 @@ export enum CnDocumentType {
 export class CnDocumentEntity extends CnHierarchyRepresentation {
   // name of the document show in the interface
   @Column({ nullable: false })
-  name: string;
+  name!: string;
 
   // name of the file in the S3 server
   @Exclude()
   @Column({ nullable: false })
-  filename: string;
+  filename!: string;
 
   @Column({ nullable: false, type: 'bigint' })
-  size: number;
+  size!: number;
 
   @Column({ nullable: false })
-  mimeType: string;
+  mimeType!: string;
 
   @Column({ nullable: false, update: false, type: 'enum', enum: CnDocumentType })
-  type: CnDocumentType;
+  type!: CnDocumentType;
 
   // The id of the entity associated with this document
   // IF type is UPLOADED_DOCUMENT,CONSTELLAB_DOCUMENT, DESCRIPTION_CONTENT
@@ -60,7 +60,7 @@ export class CnDocumentEntity extends CnHierarchyRepresentation {
   // IF type is CONSTELLAB_DOCUMENT_CONTENT, entityId is the id of the constellab document
   // IF type is NOTE or NOTE_CONTENT, entityId is the id of the note
   @Column({ nullable: false, length: 36 })
-  entityId: string;
+  entityId!: string;
 
   // useful for RichText stored in documents.
   // In this case images of document has the document as parent
@@ -75,7 +75,7 @@ export class CnDocumentEntity extends CnHierarchyRepresentation {
     enum: BlBucketType,
     nullable: false,
   })
-  bucketType: BlBucketType;
+  bucketType!: BlBucketType;
 
   /**
    * Preview token can be generated for a document to make it available in public route
@@ -86,10 +86,10 @@ export class CnDocumentEntity extends CnHierarchyRepresentation {
 
   @Exclude()
   @BlLuxonDateTimeColumn({ nullable: true })
-  previewTokenExpiration: DateTime;
+  previewTokenExpiration: DateTime | null = null;
 
   @Column({ nullable: false, type: 'simple-json' })
-  style: CnTypeStyle;
+  style!: CnTypeStyle;
 
   getHierarchyObjectInfo(): CnHierarchyObjectInfo {
     let objectType: CnHierarchyObjectType;

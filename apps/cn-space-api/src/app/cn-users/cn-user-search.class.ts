@@ -9,7 +9,7 @@ import { CnUser } from './cn-user.entity';
  */
 export class CnUserSearch extends BlUserSearch<CnUser> {
   protected getRelation(): FindOptionsRelations<CnUser> {
-    return undefined;
+    return {};
   }
 
   protected wrapFindOption(option: FindOptionsWhere<CnUser>): FindOptionsWhere<CnUser> {

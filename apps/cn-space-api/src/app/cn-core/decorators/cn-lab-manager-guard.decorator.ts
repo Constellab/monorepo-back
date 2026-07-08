@@ -17,10 +17,17 @@ const cnLabManagerAuthMetadata = 'labManagerAuth';
 export function CnLabManagerGuard(): MethodDecorator & ClassDecorator {
   // use to combined 2 decorators
   return (target: any, property?: string | symbol, descriptor?: TypedPropertyDescriptor<any>): void => {
-    // set the labAuth metadata
-    SetMetadata(cnLabManagerAuthMetadata, true)(target, property, descriptor);
-    // activate the CnLabAuthGuard
-    UseGuards(CnLabManagerAuthGuard)(target, property, descriptor);
+    if (property !== undefined && descriptor !== undefined) {
+      // set the labAuth metadata
+      SetMetadata(cnLabManagerAuthMetadata, true)(target, property, descriptor);
+      // activate the CnLabAuthGuard
+      UseGuards(CnLabManagerAuthGuard)(target, property, descriptor);
+    } else {
+      // set the labAuth metadata
+      SetMetadata(cnLabManagerAuthMetadata, true)(target);
+      // activate the CnLabAuthGuard
+      UseGuards(CnLabManagerAuthGuard)(target);
+    }
   };
 }
 

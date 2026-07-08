@@ -9,8 +9,8 @@ import { CnLabGreenOptionType } from '../cn-labs/green-option/cn-lab-green-optio
 import { CnLabVolumeType } from '../cn-labs/volume/cn-lab-volume-entity';
 
 export class CnServerDecisionTreeOptionDTO {
-  title: string;
-  description: string;
+  title!: string;
+  description!: string;
   // if not leaf
   children?: CnServerDecisionTreeOptionDTO[];
   // if leaf
@@ -18,19 +18,19 @@ export class CnServerDecisionTreeOptionDTO {
 }
 
 export class CnServerDecisionTreeDTO {
-  tree: CnServerDecisionTreeOptionDTO[];
+  tree!: CnServerDecisionTreeOptionDTO[];
 }
 
 export class CnConstellabSuiteAppDTO {
-  name: string;
-  emoji: string;
-  background: string;
-  shortDescription: string;
+  name!: string;
+  emoji!: string;
+  background!: string;
+  shortDescription!: string;
   communityAppLink?: string;
 }
 
 export class CnConstellabSuiteDTO {
-  apps: CnConstellabSuiteAppDTO[];
+  apps!: CnConstellabSuiteAppDTO[];
 }
 
 export interface CnRequestAppDTO {
@@ -39,65 +39,65 @@ export interface CnRequestAppDTO {
 
 export class CnFreeLabConfigDTO {
   @IsIn(['OVH', 'AZURE', 'OUTSCALE', 'GCP'])
-  cloudProvider: CnCloudProviderName;
+  cloudProvider!: CnCloudProviderName;
 
   @IsString()
   @IsNotEmpty()
-  cloudProviderRegion: string;
+  cloudProviderRegion!: string;
 
   @IsString()
   @IsNotEmpty()
-  cloudProviderInstanceType: string;
+  cloudProviderInstanceType!: string;
 
   @IsNumber()
-  nbCpus: number;
+  nbCpus!: number;
 
   @IsNumber()
-  ramSize: number;
+  ramSize!: number;
 
   @IsNumber()
-  volumeSize: number;
+  volumeSize!: number;
 
   @IsEnum(CnLabVolumeType)
-  volumeType: CnLabVolumeType;
+  volumeType!: CnLabVolumeType;
 
   @IsEnum(CnLabBillingMode)
-  billingMode: CnLabBillingMode;
+  billingMode!: CnLabBillingMode;
 
   @IsEnum(CnLabDomain)
-  domain: CnLabDomain;
+  domain!: CnLabDomain;
 
   @IsEnum(CnLabGreenOptionType)
-  greenOption: CnLabGreenOptionType;
+  greenOption!: CnLabGreenOptionType;
 
   @IsNumber()
-  greenOptionInactivityDuration: number;
+  greenOptionInactivityDuration!: number;
 
   @IsArray()
   @ArrayNotEmpty()
   @IsEnum(CnBrickGWS, { each: true })
-  bricks: CnBrickGWS[];
+  bricks!: CnBrickGWS[];
 
   @IsNumber()
-  hourLimit: number;
+  hourLimit!: number;
 
   @IsNumber()
-  deletionAfterDays: number;
+  deletionAfterDays!: number;
 }
 
 @Entity('settings')
 export class CnSettings extends CnBaseEntity {
   // store a json object use to build the decision tree to select a server when create a lab
   @Column({ type: 'simple-json', nullable: false })
-  serverDecisionTree: CnServerDecisionTreeDTO;
+  serverDecisionTree!: CnServerDecisionTreeDTO;
 
   // store a list of Constellab Suite applications
   @Column({ type: 'simple-json', nullable: true })
-  constellabSuite: CnConstellabSuiteDTO;
+  constellabSuite!: CnConstellabSuiteDTO | null;
 
   // store the free lab configuration
   @Column({ type: 'simple-json', nullable: true })
-  freeLabConfig: CnFreeLabConfigDTO;
+  freeLabConfig!: CnFreeLabConfigDTO | null;
 
   public static createDefault(): CnSettings {
     const settings = new CnSettings();

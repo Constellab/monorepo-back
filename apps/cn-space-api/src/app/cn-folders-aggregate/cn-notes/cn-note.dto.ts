@@ -8,13 +8,13 @@ import { CnUser, CnUserEntity } from '../../cn-users/cn-user.entity';
 import { CnNote } from './cn-note.entity';
 
 export class CnSaveNoteDto {
-  id: string;
-  title: string;
-  content: TeRichTextInput;
+  id!: string;
+  title!: string;
+  content!: TeRichTextInput;
 
   modifications?: TeRichTextBlockModificationsDTO;
 
-  is_validated: boolean;
+  is_validated!: boolean;
 
   @Type(() => CnUserEntity)
   validated_by?: CnUser;
@@ -29,23 +29,23 @@ export class CnSaveNoteDto {
   last_sync_at?: DateTime;
 
   @ClLuxonDateTimeTransform()
-  created_at: DateTime;
+  created_at!: DateTime;
 
   @Type(() => CnUserEntity)
-  created_by: CnUser;
+  created_by!: CnUser;
 
   @ClLuxonDateTimeTransform()
-  last_modified_at: DateTime;
+  last_modified_at!: DateTime;
 
   @Type(() => CnUserEntity)
-  last_modified_by: CnUser;
+  last_modified_by!: CnUser;
 }
 
 export class CnCreateNoteWithConfigDto {
   @Type(() => CnSaveNoteDto)
-  note: CnSaveNoteDto;
-  lab_config: CnLabConfigDto;
-  scenario_ids: string[];
+  note!: CnSaveNoteDto;
+  lab_config!: CnLabConfigDto;
+  scenario_ids!: string[];
 }
 
 export interface CnSaveNoteResultDTO {

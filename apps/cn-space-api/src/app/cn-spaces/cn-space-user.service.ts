@@ -6,6 +6,7 @@ import {
   BlSearchParams,
   BlTransportSpaceUserCreateOrUpdatePayload,
   BlTransportSpaceUserPattern,
+  BlTransportSpaceUserPayloadUser,
   BlTransportSpaceUserRemovePayload,
 } from '@monorepo/back-core-lib';
 import { ClHelpService, ClPage } from '@monorepo/core-lib';
@@ -113,6 +114,10 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUserEn
   public async activateUser(spaceId: string, userId: string): Promise<CnSpaceUser> {
     const spaceUser = await this.findOneBySpaceIdAndUserId(spaceId, userId);
 
+    if (spaceUser == null) {
+      throw new BlBadRequestException(CnErrorText.USER_NOT_IN_SPACE);
+    }
+
     if (spaceUser.active) {
       throw new BlBadRequestException('The user is already active');
     }
@@ -126,6 +131,10 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUserEn
 
   public async deactivateUser(spaceId: string, userId: string): Promise<CnSpaceUser> {
     const spaceUser = await this.findOneBySpaceIdAndUserId(spaceId, userId);
+
+    if (spaceUser == null) {
+      throw new BlBadRequestException(CnErrorText.USER_NOT_IN_SPACE);
+    }
 
     if (!spaceUser.active) {
       throw new BlBadRequestException('The user is already inactive');
@@ -145,6 +154,10 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUserEn
     entityManager?: EntityManager
   ): Promise<CnSpaceUser> {
     const spaceUser = await this.findOneBySpaceIdAndUserId(spaceId, userId);
+
+    if (spaceUser == null) {
+      throw new BlBadRequestException(CnErrorText.USER_NOT_IN_SPACE);
+    }
 
     if (spaceUser.role === role) {
       throw new BlBadRequestException('The user already has the role ' + role);
@@ -353,10 +366,28 @@ export class CnSpaceUserService extends BlAbstractPaginatedService<CnSpaceUserEn
       spaceId: spaceUser.spaceId,
       role: spaceUser.role,
       active: spaceUser.active,
-      user: spaceUser.user,
-      space: spaceUser.space,
-      addedBy: spaceUser.addedBy,
+      user: this.toPayloadUser(spaceUser.user),
+      space: {
+        id: spaceUser.space.id,
+        name: spaceUser.space.name,
+        photo: spaceUser.space.photo ?? '',
+        createdBy: this.toPayloadUser(spaceUser.space.createdBy),
+      },
+      addedBy: this.toPayloadUser(spaceUser.addedBy),
       createdAt: spaceUser.createdAt,
+    };
+  }
+
+  private toPayloadUser(user: CnUser): BlTransportSpaceUserPayloadUser {
+    return {
+      id: user.id,
+      email: user.email,
+      firstname: user.firstname,
+      lastname: user.lastname,
+      lang: user.lang,
+      photo: user.photo ?? '',
+      category: user.category,
+      theme: user.theme,
     };
   }
 }

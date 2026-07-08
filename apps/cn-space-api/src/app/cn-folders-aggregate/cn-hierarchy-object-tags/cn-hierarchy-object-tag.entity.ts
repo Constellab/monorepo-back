@@ -12,15 +12,15 @@ import {
 @Entity('hierarchy_object_tag')
 export class CnHierarchyObjectTagEntity extends CnBaseEntity {
   @Column({ nullable: false, length: 50, update: false, name: 'tag_key' })
-  key: string;
+  key!: string;
 
   @Column({ nullable: false, length: 50, update: false, name: 'tag_value' })
-  value: string;
+  value!: string;
 
   @Exclude()
   @BlNotUpdatable()
   @ManyToOne(() => CnHierarchyObjectEntity, { nullable: false, onDelete: 'CASCADE' })
-  hierarchyObject: CnHierarchyObject;
+  hierarchyObject!: CnHierarchyObject;
 }
 
 export type CnHierarchyObjectTag = Omit<CnHierarchyObjectTagEntity, 'hierarchyObject'>;

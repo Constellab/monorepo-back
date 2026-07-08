@@ -5,7 +5,12 @@ import { CnCommunityAuthGuard } from '../guards/cn-community-auth.guard';
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export function CnCommunityGuard(): MethodDecorator & ClassDecorator {
   return (target: any, property?: string | symbol, descriptor?: TypedPropertyDescriptor<any>): void => {
-    SetMetadata('isPublic', true)(target, property, descriptor);
-    UseGuards(CnCommunityAuthGuard)(target, property, descriptor);
+    if (property !== undefined && descriptor !== undefined) {
+      SetMetadata('isPublic', true)(target, property, descriptor);
+      UseGuards(CnCommunityAuthGuard)(target, property, descriptor);
+    } else {
+      SetMetadata('isPublic', true)(target);
+      UseGuards(CnCommunityAuthGuard)(target);
+    }
   };
 }

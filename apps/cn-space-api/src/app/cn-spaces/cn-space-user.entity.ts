@@ -16,16 +16,16 @@ export enum CnSpaceUserRole {
 @Entity('space_user')
 export class CnSpaceUserEntity {
   @PrimaryColumn({ type: 'varchar', length: 36 })
-  userId: string;
+  userId!: string;
 
   @ManyToOne(() => CnUserEntity, { onUpdate: 'CASCADE', onDelete: 'CASCADE', nullable: false })
-  user: CnUser;
+  user!: CnUser;
 
   @PrimaryColumn({ type: 'varchar', length: 36 })
-  spaceId: string;
+  spaceId!: string;
 
   @ManyToOne(() => CnSpaceEntity, { onUpdate: 'CASCADE', onDelete: 'CASCADE', nullable: false })
-  space: CnSpace;
+  space!: CnSpace;
 
   @Column({
     type: 'enum',
@@ -33,18 +33,18 @@ export class CnSpaceUserEntity {
     nullable: false,
     default: CnSpaceUserRole.USER,
   })
-  role: CnSpaceUserRole;
+  role!: CnSpaceUserRole;
 
   @Column({ default: true })
-  active: boolean;
+  active!: boolean;
 
   @BlLuxonDateTimeColumn({ nullable: false, update: false })
-  createdAt: DateTime;
+  createdAt!: DateTime;
 
   @Type(() => CnUserEntity)
   @ManyToOne(() => CnUserEntity, { eager: true, nullable: false })
   @BlNotUpdatable()
-  addedBy: Relation<CnUser>;
+  addedBy!: Relation<CnUser>;
 
   isSpaceAdmin(): boolean {
     return this.role === CnSpaceUserRole.ADMIN;

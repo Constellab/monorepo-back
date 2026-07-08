@@ -8,10 +8,10 @@ export class CnBucketCredentialsFull extends BlBaseEntityDto {
   name: string;
   accessKeyId: string;
   secretAccessKey: string;
-  cloudProvider: CnCloudProvider;
-  space: CnSpace;
-  s3Username: string;
-  shortDescription: string;
+  cloudProvider?: CnCloudProvider;
+  space?: CnSpace;
+  s3Username?: string;
+  shortDescription?: string;
 
   constructor(entity: CnBucketCredentials) {
     super(entity);

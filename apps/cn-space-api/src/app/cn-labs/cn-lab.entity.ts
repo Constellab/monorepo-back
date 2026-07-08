@@ -73,23 +73,23 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
 
   @BlTrim()
   @Column({ nullable: false, length: 50 })
-  name: string;
+  name!: string;
 
   // name of the lab used in the cloud provider if the lab is hosted on a cloud
   @BlTrim()
   @Column({ nullable: true, length: 36 })
-  cloudName: string;
+  cloudName?: string;
 
   @Column({
     type: 'enum',
     enum: CnLabType,
     nullable: false,
   })
-  type: CnLabType;
+  type!: CnLabType;
 
   @Type(() => CnLabConfig)
   @ManyToOne(() => CnLabConfig, { nullable: true })
-  labConfig: CnLabConfig;
+  labConfig?: CnLabConfig;
 
   @Column({ nullable: true, length: 36 })
   labConfigId?: string;
@@ -102,26 +102,26 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
     onDelete: 'RESTRICT',
   })
   @JoinColumn()
-  currentStatus: CnLabStatusHistory;
+  currentStatus!: CnLabStatusHistory;
 
   // api key shared with the prod glab API
   @Exclude()
   @Column({ nullable: false, length: 255, unique: true })
-  glabProdApiKey: string;
+  glabProdApiKey!: string;
 
   // api key shared with the dev glab API
   @Exclude()
   @Column({ nullable: false, length: 255, unique: true })
-  glabDevApiKey: string;
+  glabDevApiKey!: string;
 
   // api key shared with the lab manager APImi
   @Exclude()
   @Column({ nullable: true, length: 255, unique: true })
-  labManagerApiKey: string;
+  labManagerApiKey!: string | null;
 
   @BlTrim()
   @Column({ nullable: true, length: 255, unique: true })
-  virtualHost: string;
+  virtualHost!: string | null;
 
   // for on-premise labs only reachable on the client network: private IP the
   // lab hostnames (glab/lab-manager, all subdomains of virtualHost) must resolve
@@ -129,7 +129,7 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
   // override DNS resolution to this IP instead of relying on an /etc/hosts entry.
   @BlTrim()
   @Column({ nullable: true, length: 255 })
-  labIpOverride: string;
+  labIpOverride?: string;
 
   // for on-premise labs reachable through a non-standard port (client NAT/reverse
   // proxy): optional port injected into the lab URLs (glab/lab-manager) instead of
@@ -137,49 +137,49 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
   // connection port changes. Combine with labIpOverride to reach e.g.
   // https://lab-manager.<host>:10443 while resolving the name to a private IP.
   @Column({ type: 'int', nullable: true })
-  labPortOverride: number;
+  labPortOverride?: number;
 
   // api key shared with the lab manager API
   @BlTrim()
   @Exclude()
   @Column({ nullable: true, length: 255 })
-  codelabToken: string;
+  codelabToken?: string | null;
 
   @BlTrim()
   @Exclude()
   @Column({ nullable: false, length: 255 })
-  gwsCoreProdDbPassword: string;
+  gwsCoreProdDbPassword!: string;
 
   @BlTrim()
   @Exclude()
   @Column({ nullable: false, length: 255 })
-  gwsCoreDevDbPassword: string;
+  gwsCoreDevDbPassword!: string;
 
   @ManyToOne(() => CnSpaceEntity, { nullable: false })
-  space: CnSpace;
+  space!: CnSpace;
 
   @Column({ nullable: false, length: 36 })
   spaceId?: string;
 
   @OneToMany(() => CnLabUserEntity, (instanceGroup) => instanceGroup.lab, { cascade: ['insert'] })
-  sharedGroups: CnLabUser[];
+  sharedGroups!: CnLabUser[];
 
   @Type(() => CnServerCloud)
   @ManyToOne(() => CnServerCloud, { nullable: true })
-  serverCloud: CnServerCloud;
+  serverCloud!: CnServerCloud | null;
 
   @ManyToOne(() => CnCloudProviderRegion, { onDelete: 'RESTRICT', eager: true, nullable: true })
-  region: CnCloudProviderRegion;
+  region!: CnCloudProviderRegion | null;
 
   // id of the ovh, aws, instance
   @Exclude()
   @Column({ nullable: true, length: 255 })
-  serverInstanceId: string;
+  serverInstanceId?: string | null;
 
   // id of the ovh, aws, volume
   @Exclude()
   @Column({ nullable: true, length: 255 })
-  serverVolumeId: string;
+  serverVolumeId?: string | null;
 
   /**
    * Only provided for cloud provider that handle ip address
@@ -187,16 +187,16 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
    */
   @Exclude()
   @Column({ nullable: true, length: 255 })
-  serverIpAddressId: string;
+  serverIpAddressId?: string | null;
 
   @Exclude()
   @Column({ nullable: false, default: false })
-  dnsConfigured: boolean;
+  dnsConfigured!: boolean;
 
   // text about the current or last server task status
   @Exclude()
   @Column({ type: 'text', nullable: true })
-  serverTaskText: string;
+  serverTaskText?: string;
 
   @Exclude()
   @Column({
@@ -205,28 +205,28 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
     nullable: false,
     default: CnLabServerTaskStatus.NONE,
   })
-  serverTaskStatus: CnLabServerTaskStatus;
+  serverTaskStatus!: CnLabServerTaskStatus;
 
   @Exclude()
   @BlLuxonDateTimeColumn({ nullable: true })
-  serverTaskDatetime: DateTime;
+  serverTaskDatetime?: DateTime;
 
   @Column({
     type: 'enum',
     enum: CnLabBillingMode,
     nullable: true,
   })
-  billingMode: CnLabBillingMode;
+  billingMode!: CnLabBillingMode | null;
 
   @Column({
     type: 'enum',
     enum: CnLabDesktopPlatform,
     nullable: true,
   })
-  desktopPlatform: CnLabDesktopPlatform;
+  desktopPlatform!: CnLabDesktopPlatform | null;
 
   @Column({ nullable: false, default: false })
-  isFreeLab: boolean;
+  isFreeLab!: boolean;
 
   // ':<port>' suffix to append to lab URLs when a port override is configured
   // (on-premise labs behind a non-standard port), empty otherwise
@@ -315,7 +315,7 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
     }
 
     return {
-      apiKey: this.labManagerApiKey,
+      apiKey: this.labManagerApiKey ?? '',
       apiUrl: this.labManagerUrl,
       ipOverride: this.labIpOverride ?? undefined,
     };
@@ -331,7 +331,7 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
   // get the subdomain name
   // ex: if the virtual host is 'rio.gencovery.io', the subdomain is 'rio'
   public getSubDomainName(): string {
-    return this.virtualHost.split('.')[0];
+    return (this.virtualHost ?? '').split('.')[0];
   }
 
   // get the main domain name
@@ -342,11 +342,11 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
   }
 
   private getVirtualHostWithoutPort(): string {
-    return this.virtualHost.split(':')[0];
+    return (this.virtualHost ?? '').split(':')[0];
   }
 
   public domainIncludesPort(): boolean {
-    return this.virtualHost.includes(':');
+    return (this.virtualHost ?? '').includes(':');
   }
 
   public isDesktop(): boolean {

@@ -17,5 +17,5 @@ export interface BlTokenUser {
 }
 
 export abstract class BlUserService {
-  public abstract findOne(id: string): Promise<BlUser>;
+  public abstract findOne(id: string): Promise<BlUser | null>;
 }

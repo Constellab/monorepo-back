@@ -21,7 +21,7 @@ export class CnExternalLabApiService {
   constructor(private apiService: BlExternalApiService) {}
 
   public async healthCheck(labInfo: CnExternalApiInfo): Promise<boolean> {
-    return lastValueFrom(this.get(labInfo, `health-check`, null, { logError: false, timeout: 2500 }))
+    return lastValueFrom(this.get(labInfo, `health-check`, undefined, { logError: false, timeout: 2500 }))
       .then(() => true)
       .catch(() => false);
   }

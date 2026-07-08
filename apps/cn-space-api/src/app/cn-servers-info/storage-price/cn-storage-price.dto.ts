@@ -2,12 +2,12 @@ import { ClLuxonDateTransform } from '@monorepo/core-lib';
 import { DateTime } from 'luxon';
 
 export class CnCreateStoragePriceDTO {
-  volumeStoragePrice: number;
+  volumeStoragePrice!: number;
 
-  backupStoragePrice: number;
+  backupStoragePrice!: number;
 
-  backupTransfertPrice: number;
+  backupTransfertPrice!: number;
 
   @ClLuxonDateTransform()
-  startDate: DateTime;
+  startDate!: DateTime;
 }

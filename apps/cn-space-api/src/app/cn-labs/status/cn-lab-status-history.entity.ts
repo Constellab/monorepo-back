@@ -14,11 +14,11 @@ export class CnLabStatusHistory extends CnStatusHistory<CnLabStatus> {
     nullable: false,
     default: CnLabStatus.NO_SERVER,
   })
-  status: CnLabStatus;
+  status!: CnLabStatus;
 
   @Exclude()
   @BlNotUpdatable()
   @Type(() => CnLabEntity)
   @ManyToOne(() => CnLabEntity, { onDelete: 'CASCADE', onUpdate: 'CASCADE', nullable: false })
-  entity: CnLabEntity;
+  entity!: CnLabEntity;
 }

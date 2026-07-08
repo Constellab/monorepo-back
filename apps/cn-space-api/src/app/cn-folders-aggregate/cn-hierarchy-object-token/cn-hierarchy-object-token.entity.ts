@@ -14,16 +14,16 @@ export class CnHierarchyObjectTokenEntity extends CnBaseEntity {
   @BlNotUpdatable()
   @Type(() => CnHierarchyObjectEntity)
   @ManyToOne(() => CnHierarchyObjectEntity, { nullable: false, eager: true, onDelete: 'CASCADE' })
-  hierarchyObject: CnHierarchyObject;
+  hierarchyObject!: CnHierarchyObject;
 
   @Column({ nullable: false, update: false, length: 36 })
-  hierarchyObjectId: string;
+  hierarchyObjectId!: string;
 
   @Column({ nullable: false, update: false })
-  token: string;
+  token!: string;
 
   @BlLuxonDateTimeColumn({ nullable: true })
-  expirationDate: DateTime;
+  expirationDate!: DateTime;
 
   isValid(): boolean {
     return this.expirationDate == null || this.expirationDate > DateTime.now();

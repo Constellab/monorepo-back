@@ -92,7 +92,7 @@ export interface CnLabManagerInitConfig {
     frontUrl: string;
     apiUrl: string;
     // TODO : to remove once all lab manager are on version 2.11.0 or higher
-    apiKey: string;
+    apiKey: string | null;
   };
   lab: {
     id: string;
@@ -110,7 +110,7 @@ export interface CnLabManagerInitConfig {
   openaiApiKey: string | null;
 
   // @deprecated - to remove once all lab managers are on version 2.12.0 or higher
-  codelabToken: string;
+  codelabToken: string | null;
   // @deprecated - to remove once all lab managers are on version 2.12.0 or higher
   gwsCoreProdPassword: string;
   // @deprecated - to remove once all lab managers are on version 2.12.0 or higher
@@ -120,7 +120,7 @@ export interface CnLabManagerInitConfig {
     enableBackup: boolean;
   };
   // @deprecated - to remove once all lab managers are on version 2.12.0 or higher
-  captchaSiteKey: string;
+  captchaSiteKey: string | null;
 }
 
 export interface CnLabManagerTaskStatusInfo {
@@ -137,17 +137,17 @@ export class CnLabManagerStatus {
 
   currentTask?: CnLabManagerTaskStatusInfo;
 
-  adminerIsRunning: boolean;
+  adminerIsRunning!: boolean;
 
-  version: string;
+  version!: string;
 
-  isConfigured: boolean;
-  isInitialized: boolean;
+  isConfigured!: boolean;
+  isInitialized!: boolean;
   // version of the lab manager that has been used to init the lab
-  lastInitVersion: string;
-  labFrontUrl: string;
-  labStatus: 'STOPPED' | 'RUNNING' | 'STARTING' | 'ERROR';
-  glabStatus: {
+  lastInitVersion!: string;
+  labFrontUrl!: string;
+  labStatus!: 'STOPPED' | 'RUNNING' | 'STARTING' | 'ERROR';
+  glabStatus!: {
     status: 'running' | 'stopped' | 'error' | 'none';
     startProgress?: {
       percent: number;

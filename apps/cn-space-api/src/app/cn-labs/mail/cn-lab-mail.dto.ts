@@ -4,16 +4,16 @@ import { BlTrim } from '@monorepo/back-core-lib';
 export type CnLabMailTemplate = 'scenario-finished' | 'generic';
 
 export class CnLabSendMailDto {
-  receiver_ids: string[];
-  mail_template: CnLabMailTemplate;
+  receiver_ids!: string[];
+  mail_template!: CnLabMailTemplate;
   data?: Record<string, any>;
   @BlTrim()
   subject?: string;
 }
 
 export class CnLabSendMailToMailsDto {
-  receiver_mails: string[];
-  mail_template: CnLabMailTemplate;
+  receiver_mails!: string[];
+  mail_template!: CnLabMailTemplate;
   data?: Record<string, any>;
   @BlTrim()
   subject?: string;
@@ -21,10 +21,10 @@ export class CnLabSendMailToMailsDto {
 
 export class CnSendMailToSupportDto {
   @BlTrim()
-  content: string;
+  content!: string;
 
   @BlTrim()
-  subject: string;
+  subject!: string;
 
   data?: Record<string, any>;
 }

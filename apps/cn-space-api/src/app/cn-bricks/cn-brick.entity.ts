@@ -15,17 +15,17 @@ export enum CnBrickVisibility {
 @Entity('brick')
 export class CnBrick extends BlEntityWithId {
   @Column({ nullable: false, unique: true })
-  name: string;
+  name!: string;
 
   @Column({ nullable: true })
-  pipRepo: string;
+  pipRepo?: string;
 
   @Column({ nullable: true })
-  gitRepo: string;
+  gitRepo?: string;
 
   @OneToMany(() => CnBrickVersion, (brickVersion: CnBrickVersion) => brickVersion.brick)
-  versions: CnBrickVersion[];
+  versions!: CnBrickVersion[];
 
   @Column({ type: 'enum', enum: CnBrickVisibility, default: CnBrickVisibility.PUBLIC })
-  visibility: CnBrickVisibility;
+  visibility!: CnBrickVisibility;
 }

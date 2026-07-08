@@ -56,7 +56,7 @@ export class CnLabFreeService extends BlAbstractService<CnLabFree> {
     return this.buildUsageDto(labFree);
   }
 
-  private async buildUsageDto(labFree?: CnLabFree): Promise<CnLabFreeGetDto> {
+  private async buildUsageDto(labFree?: CnLabFree | null): Promise<CnLabFreeGetDto> {
     const config = await this.settingsService.getFreeLabConfig();
     const freeGetDto: CnLabFreeGetDto = new CnLabFreeGetDto();
     freeGetDto.standardInfo = {
@@ -65,7 +65,7 @@ export class CnLabFreeService extends BlAbstractService<CnLabFree> {
       ramSize: config.ramSize,
       diskSize: config.volumeSize,
     };
-    freeGetDto.freeLab = labFree;
+    freeGetDto.freeLab = labFree ?? undefined;
 
     if (labFree == null) {
       freeGetDto.status = 'NOT_USED';
@@ -101,7 +101,7 @@ export class CnLabFreeService extends BlAbstractService<CnLabFree> {
     return freeGetDto;
   }
 
-  public async findFreeLabForUser(userId: string): Promise<CnLabFree> {
+  public async findFreeLabForUser(userId: string): Promise<CnLabFree | null> {
     return await this.repo.findOne({
       where: {
         user: { id: userId },

@@ -82,7 +82,7 @@ export class CnSpaceService extends BlAbstractService<CnSpaceEntity> {
   }
 
   async deleteById(id: string, entityManager?: EntityManager): Promise<DeleteResult> {
-    const space = await this.findByIdAndCheck(id, null, entityManager);
+    const space = await this.findByIdAndCheck(id, undefined, entityManager);
     await this.deletePhotoInObjectStorage(space);
     await this.queue.add(BlTransportSpaceUserPattern.DELETE, { id: space.id });
     return super.deleteById(id, entityManager);

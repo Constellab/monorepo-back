@@ -76,9 +76,17 @@ export class CnCloudProviderOutscaleService extends CnCloudProviderService {
       this.configService.getOutscaleSecurityGroup()
     );
 
+    if (vm.vmId == null) {
+      throw new Error('Outscale instance has no id');
+    }
+
     await this.outscaleService.updateObjectName(vm.vmId, request.name);
 
     const ip = await this.outscaleService.createPublicIp();
+
+    if (ip.publicIpId == null || ip.publicIp == null) {
+      throw new Error('Outscale public IP is incomplete');
+    }
 
     await this.outscaleService.updateObjectTag(ip.publicIpId, 'Name', request.name);
 
@@ -96,7 +104,7 @@ export class CnCloudProviderOutscaleService extends CnCloudProviderService {
 
   async deleteInstance(id: string): Promise<void> {
     const ip = await this.outscaleService.getPublicIpByInstance(id);
-    if (ip) {
+    if (ip && ip.publicIpId != null) {
       this.logger.log(`Deleting public ip ${ip.publicIpId} for instance ${id}`);
       await this.outscaleService.deletePublicIp(ip.publicIpId);
     } else {
@@ -126,6 +134,9 @@ export class CnCloudProviderOutscaleService extends CnCloudProviderService {
   }
 
   private convertInstance(vm: Vm): CnCpInstance {
+    if (vm.vmId == null || vm.state == null) {
+      throw new Error('Outscale instance is incomplete');
+    }
     return {
       id: vm.vmId,
       status: {
@@ -174,6 +185,10 @@ export class CnCloudProviderOutscaleService extends CnCloudProviderService {
 
     const newVolume = await this.outscaleService.createVolume(volume.size, subRegion);
 
+    if (newVolume.volumeId == null) {
+      throw new Error('Outscale volume has no id');
+    }
+
     await this.outscaleService.updateObjectName(newVolume.volumeId, volume.name);
 
     return this.convertVolume(newVolume);
@@ -200,10 +215,13 @@ export class CnCloudProviderOutscaleService extends CnCloudProviderService {
   async volumeIsAttachedToInstance(instanceId: string, volumeId: string): Promise<boolean> {
     const volume = await this.outscaleService.getVolume(volumeId);
 
-    return volume.linkedVolumes.find((linkedVolume) => linkedVolume.vmId === instanceId) != null;
+    return volume.linkedVolumes?.find((linkedVolume) => linkedVolume.vmId === instanceId) != null;
   }
 
   private convertVolume(volume: Volume): CnCpVolume {
+    if (volume.volumeId == null || volume.size == null || volume.state == null) {
+      throw new Error('Outscale volume is incomplete');
+    }
     return {
       id: volume.volumeId,
       size: volume.size,
@@ -242,6 +260,9 @@ export class CnCloudProviderOutscaleService extends CnCloudProviderService {
   //////////////////////////////// IP ADDRESS ///////////////////////////////
   async getIpAddressFromInstanceId(id: string): Promise<string> {
     const vm = await this.outscaleService.getVm(id);
+    if (vm == null || vm.publicIp == null) {
+      throw new CnInstanceNotFoundException(id, 'Outscale');
+    }
     return vm.publicIp;
   }
 

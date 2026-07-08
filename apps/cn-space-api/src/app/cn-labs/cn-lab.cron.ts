@@ -363,26 +363,26 @@ export class CnLabCron {
     const runningFreeLab = await this.labFreeService.getRunningFreeTrias();
 
     for (const labFree of runningFreeLab) {
+      const lab = labFree.lab;
+      if (lab == null) {
+        continue;
+      }
+
       // if the lab is starting or stopping, we do nothing, it will be checked later
-      if (
-        [CnLabStatus.SERVER_STARTING, CnLabStatus.SERVER_STOPPING].includes(labFree.lab.currentStatus.status)
-      ) {
+      if ([CnLabStatus.SERVER_STARTING, CnLabStatus.SERVER_STOPPING].includes(lab.currentStatus.status)) {
         continue;
       }
 
       // for each lab, check if the free lab is still valid
-      const value = await this.labFreeService.freeLabStillValid(labFree.lab.id);
+      const value = await this.labFreeService.freeLabStillValid(lab.id);
 
       // is not, stop the lab
       if (!value) {
-        this.logger.log(`[Cron] Stopping free lab :${labFree.lab.id}`);
+        this.logger.log(`[Cron] Stopping free lab :${lab.id}`);
         await this.labServerService
-          .stopLab(labFree.lab)
+          .stopLab(lab)
           .catch((error) =>
-            this.logger.error(
-              `Error while stopping free lab ${labFree.lab.id}: ${error.message}`,
-              error.stack
-            )
+            this.logger.error(`Error while stopping free lab ${lab.id}: ${error.message}`, error.stack)
           );
       }
     }
@@ -392,6 +392,8 @@ export class CnLabCron {
     const labsToDelete = await this.getFreeLabsToDelete();
 
     for (const lab of labsToDelete) {
+      // the lab may have already been deleted (relation set to null on delete)
+      if (lab.lab == null) continue;
       this.logger.log(`[Cron] Deleting free lab :${lab.lab.id}`);
       await this.labAggregateService.deleteServerInstanceNotSecure(lab.lab);
     }

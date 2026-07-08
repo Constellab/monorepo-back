@@ -30,31 +30,31 @@ export enum CnVersionType {
 export class CnBrickVersion extends BlEntityWithId {
   @BlNotUpdatable()
   @ManyToOne(() => CnBrick, { onDelete: 'CASCADE', nullable: false })
-  brick: CnBrick;
+  brick!: CnBrick;
 
   @Exclude()
   @Column({ default: 1 })
-  major: number;
+  major!: number;
 
   @Exclude()
   @Column({ default: 0 })
-  minor: number;
+  minor!: number;
 
   @Exclude()
   @Column({ default: 0 })
-  patch: number;
+  patch!: number;
 
   @Column({ default: null, nullable: true })
-  subPatch: number;
+  subPatch!: number | null;
 
   @Column({ type: 'enum', enum: CnVersionType, nullable: false })
-  versionType: CnVersionType;
+  versionType!: CnVersionType;
 
   @Column({ type: 'enum', enum: CnVersionState, nullable: false, default: CnVersionState.STABLE })
-  versionState: CnVersionState;
+  versionState!: CnVersionState;
 
   @Column({ type: 'enum', enum: CnRepoType, nullable: false })
-  repoType: CnRepoType;
+  repoType!: CnRepoType;
 
   @Column({ type: 'simple-json', nullable: true })
   technicalInfo?: Record<string, string>;
@@ -66,7 +66,7 @@ export class CnBrickVersion extends BlEntityWithId {
       this.major,
       this.minor,
       this.patch,
-      this.versionType === CnVersionType.BETA ? this.subPatch : null
+      this.versionType === CnVersionType.BETA ? this.subPatch ?? undefined : undefined
     );
   }
 

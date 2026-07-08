@@ -22,26 +22,26 @@ import { CnScenarioStatus } from './cn-scenario-status.enum';
 @Entity('scenario')
 export class CnScenarioEntity extends CnHierarchyRepresentation {
   @Column({ nullable: false, length: 50 })
-  title: string;
+  title!: string;
 
   @Column({ type: 'simple-json', array: false, nullable: true })
-  description: TeRichTextInput;
+  description!: TeRichTextInput | null;
 
   @Column({ type: 'enum', enum: CnScenarioStatus, nullable: false })
-  status: CnScenarioStatus;
+  status!: CnScenarioStatus;
 
   @BlNotUpdatable()
   @Type(() => CnLabEntity)
   @ManyToOne(() => CnLabEntity, { nullable: false, eager: true })
-  lab: CnLab;
+  lab!: CnLab;
 
   @BlNotUpdatable()
   @Type(() => CnLabConfig)
   @ManyToOne(() => CnLabConfig, { nullable: false })
-  labConfig: CnLabConfig;
+  labConfig!: CnLabConfig;
 
   @ManyToMany(() => CnNoteEntity, (note) => note.scenarios)
-  notes: CnNote[];
+  notes!: CnNote[];
 
   @Exclude()
   @Column({
@@ -52,24 +52,24 @@ export class CnScenarioEntity extends CnHierarchyRepresentation {
       from: (value: string) => JSON.parse(value),
     },
   })
-  protocol: CnScenarioProtocol;
+  protocol!: CnScenarioProtocol;
 
   @Column({ nullable: false, default: false })
-  isValidated: boolean;
+  isValidated!: boolean;
 
   @Type(() => CnUserEntity)
   @ManyToOne(() => CnUserEntity, { eager: true, nullable: true })
-  validatedBy: CnUser;
+  validatedBy?: CnUser;
 
   @BlLuxonDateTimeColumn({ nullable: true })
-  validatedAt: DateTime;
+  validatedAt?: DateTime;
 
   @Type(() => CnUserEntity)
   @ManyToOne(() => CnUserEntity, { eager: true, nullable: false })
-  lastSyncBy: CnUser;
+  lastSyncBy!: CnUser;
 
   @BlLuxonDateTimeColumn({ nullable: false })
-  lastSyncAt: DateTime;
+  lastSyncAt!: DateTime;
 
   getHierarchyObjectInfo(): CnHierarchyObjectInfo {
     return {

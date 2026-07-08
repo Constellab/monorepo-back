@@ -6,5 +6,5 @@ export interface BlUser {
   firstname: string;
   lastname: string;
   lang: ClSupportedLanguage;
-  photo: string;
+  photo: string | null;
 }

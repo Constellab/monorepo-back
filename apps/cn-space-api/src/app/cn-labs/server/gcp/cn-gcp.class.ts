@@ -44,24 +44,30 @@ export class CnGcpInstance {
   constructor(public instance: protos.google.cloud.compute.v1.IInstance) {}
 
   get name(): string {
+    if (this.instance.name == null) {
+      throw new Error('No name found for the GCP instance');
+    }
     return this.instance.name;
   }
 
   get id(): string {
-    return this.instance.name;
+    return this.name;
   }
 
   get location(): string {
+    if (this.instance.zone == null) {
+      throw new Error('No zone found for the GCP instance');
+    }
     return this.instance.zone;
   }
 
   get networkInterfaces(): protos.google.cloud.compute.v1.INetworkInterface[] {
-    return this.instance.networkInterfaces;
+    return this.instance.networkInterfaces ?? [];
   }
 
   get mainVolumeName(): string {
     // the main disk name has the same name as the instance
-    return this.instance.name;
+    return this.name;
   }
 
   public toStandardInstance(): CnCpInstance {
@@ -112,7 +118,7 @@ export class CnGcpInstance {
   }
 
   isAttachedToVolume(diskLink: string): boolean {
-    const disks = this.instance.disks;
+    const disks = this.instance.disks ?? [];
     return disks.some((disk) => disk.source === diskLink);
   }
 }
@@ -123,14 +129,27 @@ export class CnGcpVolume {
   constructor(public volume: google.cloud.compute.v1.IDisk) {}
 
   get name(): string {
+    if (this.volume.name == null) {
+      throw new Error('No name found for the GCP disk');
+    }
     return this.volume.name;
   }
 
   get zoneName(): string {
-    return this.volume.zone.split('/').pop();
+    if (this.volume.zone == null) {
+      throw new Error('No zone found for the GCP disk');
+    }
+    const zoneName = this.volume.zone.split('/').pop();
+    if (zoneName == null) {
+      throw new Error('No zone name found for the GCP disk');
+    }
+    return zoneName;
   }
 
   get selfLink(): string {
+    if (this.volume.selfLink == null) {
+      throw new Error('No self link found for the GCP disk');
+    }
     return this.volume.selfLink;
   }
 
@@ -139,14 +158,14 @@ export class CnGcpVolume {
       region: this.zoneName,
       status: this.gcpVolumeStatusToCpStatus(),
       type: CnLabVolumeType.HIGH_SPEED,
-      size: parseInt(this.volume.sizeGb.toString(), 10),
+      size: parseInt((this.volume.sizeGb ?? '0').toString(), 10),
       id: this.name,
       originalObject: this.volume,
     };
   }
 
   private gcpVolumeStatusToCpStatus(): CnCpVolumeStatus {
-    if (this.volume.status === 'READY' && this.volume.users?.length > 0) {
+    if (this.volume.status === 'READY' && (this.volume.users?.length ?? 0) > 0) {
       return 'IN_USE';
     }
     switch (this.volume.status) {

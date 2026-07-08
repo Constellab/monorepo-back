@@ -39,8 +39,9 @@ export class CnObjectStoragesSecurity {
    * @param userInfo
    */
   public checkAuthorizationForCredentials(credentials: CnBucketCredentials, userInfo: CnUserSpaceInfo): void {
-    if (credentials.spaceId != null || credentials.space != null) {
-      this.checkAuthorizationForSpaceCredentials(credentials.spaceId ?? credentials.space.id, userInfo);
+    const spaceId = credentials.spaceId ?? credentials.space?.id;
+    if (spaceId != null) {
+      this.checkAuthorizationForSpaceCredentials(spaceId, userInfo);
     } else {
       this.checkAuthorizationForGenericCredentials(userInfo.user);
     }

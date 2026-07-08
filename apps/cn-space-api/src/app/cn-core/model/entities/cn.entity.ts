@@ -18,33 +18,33 @@ import { CnUser, CnUserEntity } from '../../../cn-users/cn-user.entity';
  */
 export abstract class CnEntity extends BlEntityWithId {
   @BlLuxonDateTimeColumn({ nullable: false, update: false })
-  createdAt: DateTime;
+  createdAt!: DateTime;
 
   @Type(() => CnUserEntity)
   @ManyToOne(() => CnUserEntity, { eager: true, nullable: false })
   @BlNotUpdatable()
-  createdBy: Relation<CnUser>;
+  createdBy!: Relation<CnUser>;
 
   @BlLuxonDateTimeColumn({ nullable: false })
-  lastModifiedAt: DateTime;
+  lastModifiedAt!: DateTime;
 
   @Type(() => CnUserEntity)
   @ManyToOne(() => CnUserEntity, { eager: true, nullable: false })
-  lastModifiedBy: Relation<CnUser>;
+  lastModifiedBy!: Relation<CnUser>;
 }
 
 export class CnEntityDTO extends BlEntityWithIdDTO {
   @ClLuxonDateTimeTransform()
-  createdAt: DateTime;
+  createdAt!: DateTime;
 
   @Type(() => CnUserEntity)
-  createdBy: CnUser;
+  createdBy!: CnUser;
 
   @ClLuxonDateTimeTransform()
-  lastModifiedAt: DateTime;
+  lastModifiedAt!: DateTime;
 
   @Type(() => CnUserEntity)
-  lastModifiedBy: CnUser;
+  lastModifiedBy!: CnUser;
 
   copyEntity(entity: CnEntity): this {
     super.copyEntity(entity);

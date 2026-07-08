@@ -25,42 +25,42 @@ export enum CnActivityEntityType {
 @Entity('activity')
 export class CnActivity extends BlEntityWithId {
   @Column({ type: 'enum', enum: CnActivityEntityType, update: false })
-  entityType: CnActivityEntityType;
+  entityType!: CnActivityEntityType;
 
   @Column({ update: false, length: 36 })
-  entityId: string;
+  entityId!: string;
 
   @Column({ update: false })
-  entityName: string;
+  entityName!: string;
 
   @Column({ type: 'enum', enum: CnActivityType, update: false })
-  actionType: CnActivityType;
+  actionType!: CnActivityType;
 
   @Exclude()
   @Column({ update: false })
-  title: string;
+  title!: string;
 
   @Column({ update: false, length: 36 })
-  userId: string;
+  userId!: string;
 
   @Type(() => CnUserEntity)
   @ManyToOne(() => CnUserEntity, { eager: true, nullable: false })
   @BlNotUpdatable()
-  user: Relation<CnUser>;
+  user!: Relation<CnUser>;
 
   @BlLuxonDateTimeColumn({ nullable: false, update: false })
-  createdAt: DateTime;
+  createdAt!: DateTime;
 
   @Column({ update: false, nullable: true, length: 36 })
-  spaceId: string | null;
+  spaceId!: string | null;
 
   @Type(() => CnSpaceEntity)
   @ManyToOne(() => CnSpaceEntity, { nullable: true, onDelete: 'CASCADE' })
   @BlNotUpdatable()
-  space: Relation<CnSpace> | null;
+  space!: Relation<CnSpace> | null;
 
   @Column({ update: false, nullable: true, length: 36 })
-  parentEntityId: string | null;
+  parentEntityId!: string | null;
 
   @Expose({ name: 'title' })
   get cleanTitle(): string {

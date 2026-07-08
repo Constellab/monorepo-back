@@ -25,7 +25,7 @@ export class CnAuthController {
   async login(@Body() credentials: BlCredentials, @Res() response: Response): Promise<void> {
     const result: CnAuthResponse = await this.authService.login(credentials);
 
-    if (result.status === 'LOGGED_IN') {
+    if (result.status === 'LOGGED_IN' && result.token != null) {
       this.setTokenInCookie(result.token, response);
       response.send({ status: 'LOGGED_IN', expiresIn: CN_JWT_CONFIG.tokenDurationInMilliseconds });
     } else {

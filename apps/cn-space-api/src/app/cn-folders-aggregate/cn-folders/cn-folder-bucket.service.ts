@@ -40,13 +40,15 @@ export class CnFolderBucketService {
     };
   }
 
-  public async getAndCheckFolderBucket(rootFolderId: string): Promise<CnFolderBucketsDTO> {
+  public async getAndCheckFolderBucket(
+    rootFolderId: string
+  ): Promise<CnFolderBucketsDTO & { mainStorage: CnBucket }> {
     const buckets = await this.getRootFolderBucket(rootFolderId);
     if (buckets.mainStorage == null) {
       // For now the backup bucket is not mandatory
       throw new BlBadRequestException(CnErrorText.FOLDER_BUCKET_NOT_FOUND);
     }
-    return buckets;
+    return buckets as CnFolderBucketsDTO & { mainStorage: CnBucket };
   }
 
   public async getAndCheckFolderBucketConfig(rootFolderId: string): Promise<BlMultipleBucketConfig> {
@@ -64,7 +66,7 @@ export class CnFolderBucketService {
   }
 
   public async findFolderWithStorageById(rootFolderId: string): Promise<CnFolderWithStorage> {
-    return await this.foldersService.findById(rootFolderId, {
+    return await this.foldersService.findByIdAndCheck(rootFolderId, {
       mainStorage: CnBucket.configRelation,
       backupStorage: CnBucket.configRelation,
     });

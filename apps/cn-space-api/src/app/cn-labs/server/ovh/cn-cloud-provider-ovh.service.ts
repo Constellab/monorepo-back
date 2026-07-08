@@ -116,7 +116,7 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
       id: instance.id,
       status: {
         status: this.ovhStatusToCpStatus(instance.status, instance.id),
-        message: null,
+        message: undefined,
       },
       originalObject: instance,
       region: instance.region,
@@ -196,7 +196,7 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
       size: volume.size,
       type: volume.type === CnLabVolumeType.CLASSIC ? 'classic' : 'high-speed-gen2',
       name: volume.name,
-      description: volume.description,
+      description: volume.description ?? '',
     };
 
     const ovhVolume = await this.ovhService.createVolume(request);
@@ -292,7 +292,10 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
 
     const ipAddress = instance.ipAddresses.find((ip) => ip.type === 'public' && ip.version === 4);
 
-    return ipAddress ? ipAddress.ip : null;
+    if (ipAddress == null) {
+      throw new Error(`No public IP address found for instance ${id}`);
+    }
+    return ipAddress.ip;
   }
 
   /////////////////////////////// LAB DNS ///////////////////////////////

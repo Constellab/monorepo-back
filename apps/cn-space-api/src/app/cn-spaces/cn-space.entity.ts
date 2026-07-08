@@ -25,39 +25,39 @@ export class CnSpaceEntity extends CnBaseEntity {
   };
 
   @Column({ nullable: false })
-  name: string;
+  name!: string;
 
   @Column({ nullable: true })
-  photo: string;
+  photo!: string | null;
 
   // front domain for this space
   @Column({ length: 50, unique: true })
-  domain: string;
+  domain!: string;
 
   @Exclude({ toPlainOnly: true })
   @Column({ type: 'bigint' })
-  cloudStorageLimit: number;
+  cloudStorageLimit!: number;
 
   @Exclude({ toPlainOnly: true })
   @Column({ type: 'bigint' })
-  cloudStorageUsage: number;
+  cloudStorageUsage!: number;
 
   @Column({ type: 'enum', enum: CnSpaceType, nullable: false, update: false })
-  type: CnSpaceType;
+  type!: CnSpaceType;
 
   // default bucket region for this space
   @Exclude({ toPlainOnly: true })
   // use by default for folder bucket
   @Type(() => CnBucket)
   @ManyToOne(() => CnBucket, { nullable: false })
-  defaultFolderBucket: CnBucket;
+  defaultFolderBucket!: CnBucket;
 
   // default bucket region for this space
   @Exclude({ toPlainOnly: true })
   // use by default for folder bucket
   @Type(() => CnBucket)
   @ManyToOne(() => CnBucket, { nullable: true })
-  defaultFolderBackupBucket?: CnBucket;
+  defaultFolderBackupBucket?: CnBucket | null;
 
   // don't set the createdBy and lastModifiedBy automatically
   // because this group it can be created on user signup (so no current user)

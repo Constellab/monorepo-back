@@ -12,10 +12,10 @@ import { CnSpaceUserRole } from './cn-space-user.entity';
 @Entity('space_invit')
 export class CnSpaceInvit extends CnBaseEntity {
   @Column({ type: 'varchar', length: 36 })
-  spaceId: string;
+  spaceId!: string;
 
   @ManyToOne(() => CnSpaceEntity, { onUpdate: 'CASCADE', onDelete: 'CASCADE', nullable: false })
-  space: CnSpace;
+  space!: CnSpace;
 
   @Column({
     type: 'enum',
@@ -23,18 +23,18 @@ export class CnSpaceInvit extends CnBaseEntity {
     nullable: false,
     default: CnSpaceUserRole.USER,
   })
-  role: CnSpaceUserRole;
+  role!: CnSpaceUserRole;
 
   @BlLowerCase()
   @Column({ nullable: false })
-  userMail: string;
+  userMail!: string;
 
   @BlLuxonDateTimeColumn({ nullable: false })
-  validUntil: DateTime;
+  validUntil!: DateTime;
 
   @Exclude()
   @Column({ type: 'varchar', length: 60, nullable: false, update: false })
-  code: string;
+  code!: string;
 
   isValid(): boolean {
     return this.validUntil > ClDateHelper.getDate();

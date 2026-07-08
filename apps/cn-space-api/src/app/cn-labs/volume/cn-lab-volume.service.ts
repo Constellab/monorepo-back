@@ -104,7 +104,11 @@ export class CnLabVolumeService extends BlAbstractService<CnLabVolumeEntity> {
   }
 
   public async getCurrentVolume(labId: string): Promise<CnLabVolume> {
-    return this.repo.findOneBy({ lab: { id: labId }, endDate: IsNull() });
+    const volume = await this.repo.findOneBy({ lab: { id: labId }, endDate: IsNull() });
+    if (volume == null) {
+      throw new BlBadRequestException(`No current volume found for lab '${labId}'`);
+    }
+    return volume;
   }
 
   public async getVolumeHistory(labId: string, page: number, size: number): Promise<ClPage<CnLabVolume>> {

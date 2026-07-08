@@ -10,17 +10,17 @@ export type CnLabFreeStatus = 'NOT_USED' | 'IN_PROGRESS' | 'EXPIRED' | 'EXPIRED_
 
 export class CnLabFreeGetDto {
   @Type(() => CnLabFree)
-  freeLab: CnLabFree;
+  freeLab?: CnLabFree;
 
-  currentUsageInSeconds: number;
+  currentUsageInSeconds!: number;
 
-  status: CnLabFreeStatus;
+  status!: CnLabFreeStatus;
 
   @ClLuxonDateTimeTransform()
-  deletionDate?: DateTime;
+  deletionDate?: DateTime | null;
 
   // contains constants info
-  standardInfo: {
+  standardInfo!: {
     usageLimitInHours: number;
     nbCpus: number;
     ramSize: number;
@@ -30,13 +30,13 @@ export class CnLabFreeGetDto {
 
 export class CnLabFreeCreateDto {
   @Type(() => CnUserEntity)
-  user: CnUser;
+  user!: CnUser;
   @Type(() => CnSpaceEntity)
-  space: CnSpace;
+  space!: CnSpace;
 }
 
 export class CnLabFreeUpdateDto {
-  usageLimitInHours: number;
+  usageLimitInHours!: number;
 
   @ClLuxonDateTimeTransform()
   expirationDate?: DateTime;

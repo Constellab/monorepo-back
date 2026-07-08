@@ -47,7 +47,7 @@ export class CnSpacesMailService {
 
   public async sendInvitationMail(
     invit: CnSpaceInvit,
-    user: CnUser,
+    user: CnUser | null,
     validityInDays: number
   ): Promise<boolean> {
     let template: string;

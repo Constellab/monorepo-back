@@ -1,4 +1,4 @@
-import { BlAbstractService } from '@monorepo/back-core-lib';
+import { BlAbstractService, BlNotFoundException } from '@monorepo/back-core-lib';
 import { TeRichText } from '@monorepo/te-text-editor';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -21,18 +21,22 @@ export class CnFoldersService extends BlAbstractService<CnFolderEntity> {
   }
 
   private async findByIdAndCheckWithDescription(id: string): Promise<CnFolderEntity> {
-    return await this.repository.findOne({
+    const folder = await this.repository.findOne({
       select: {
         id: true,
         description: true,
       },
       where: { id: id },
     });
+    if (folder == null) {
+      throw new BlNotFoundException(`Object '${CnFolderEntity.name}' with id ${id} not found`);
+    }
+    return folder;
   }
 
   public async getDescription(id: string): Promise<TeRichText> {
     const folder = await this.findByIdAndCheckWithDescription(id);
-    return new TeRichText(folder.description);
+    return new TeRichText(folder.description ?? null);
   }
 
   public async updateDescription(id: string, description: TeRichText): Promise<void> {

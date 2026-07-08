@@ -16,19 +16,19 @@ export class CnUser2FA extends BlEntityWithId {
   private static readonly VALIDITY_DURATION = ClDateHelper.ONE_MINUTE * 5;
 
   @BlLuxonDateTimeColumn({ nullable: false, update: false })
-  createdAt: DateTime;
+  createdAt!: DateTime;
 
   @Type(() => CnUserEntity)
   @ManyToOne(() => CnUserEntity, { nullable: false })
-  user: CnUser;
+  user!: CnUser;
 
   // code received by email
   @Column({ length: 10, nullable: false })
-  twoFACode: string;
+  twoFACode!: string;
 
   // code accessible from the navigator, generated on login
   @Column({ length: 36, nullable: false })
-  urlCode: string;
+  urlCode!: string;
 
   public isValid(): boolean {
     return (

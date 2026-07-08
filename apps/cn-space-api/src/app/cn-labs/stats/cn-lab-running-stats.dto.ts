@@ -21,14 +21,14 @@ export class CnLabStatsRunningBillingDTO {
 
 export class CnLabStatsRunningStatusDTO {
   @ClLuxonDateTimeTransform()
-  fromDate: DateTime;
+  fromDate!: DateTime;
   @ClLuxonDateTimeTransform()
-  toDate: DateTime;
+  toDate!: DateTime;
 
-  duration: number;
+  duration!: number;
 
   @Type(() => CnUserEntity)
-  user: CnUser;
+  user!: CnUser;
 
   @Type(() => CnLabStatsRunningBillingDTO)
   billInfo?: CnLabStatsRunningBillingDTO;
@@ -48,12 +48,12 @@ export class CnLabStatsRunningResponseDTO {
   @ClLuxonDateTransform()
   toDate: DateTime;
 
-  runningDuration: number;
+  runningDuration!: number;
 
   billInfo?: CnLabStatsRunningBillingDTO;
 
   @Type(() => CnLabStatsRunningStatusDTO)
-  statuses: CnLabStatsRunningStatusDTO[];
+  statuses!: CnLabStatsRunningStatusDTO[];
 
   constructor(fromDate: DateTime, toDate: DateTime, statuses: CnLabStatsRunningStatusDTO[]) {
     this.fromDate = fromDate;

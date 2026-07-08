@@ -18,27 +18,27 @@ import { CnUser, CnUserEntity } from '../cn-users/cn-user.entity';
 @Entity('lab_folder')
 export class CnLabFolderEntity {
   @PrimaryColumn({ type: 'varchar', length: 36 })
-  labId: string;
+  labId!: string;
 
   @JoinColumn()
   @ManyToOne(() => CnLabEntity, (lab) => lab.sharedGroups, { onDelete: 'CASCADE', nullable: false })
-  lab: CnLab;
+  lab!: CnLab;
 
   @PrimaryColumn({ type: 'varchar', length: 36 })
-  rootFolderId: string;
+  rootFolderId!: string;
 
   @Type(() => CnHierarchyObjectEntity)
   @JoinColumn()
   @ManyToOne(() => CnHierarchyObjectEntity, { nullable: false })
-  rootFolder: CnHierarchyObject;
+  rootFolder!: CnHierarchyObject;
 
   @BlLuxonDateTimeColumn({ nullable: false, update: false })
-  createdAt: DateTime;
+  createdAt!: DateTime;
 
   @Type(() => CnUserEntity)
   @ManyToOne(() => CnUserEntity, { eager: true, nullable: false })
   @BlNotUpdatable()
-  createdBy: Relation<CnUser>;
+  createdBy!: Relation<CnUser>;
 
   @BeforeInsert()
   setCreatedInfo(): void {

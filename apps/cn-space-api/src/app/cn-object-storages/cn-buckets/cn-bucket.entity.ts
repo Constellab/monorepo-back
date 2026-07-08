@@ -58,14 +58,14 @@ export class CnBucket extends CnBaseEntity {
 
   @Type(() => CnBucketCredentials)
   @ManyToOne(() => CnBucketCredentials, { nullable: false })
-  credentials: CnBucketCredentials;
+  credentials!: CnBucketCredentials;
 
   @BlTrim()
   @Column({ nullable: false, length: 100, update: false })
-  name: string;
+  name!: string;
 
   @Column({ type: 'enum', nullable: false, enum: CnBucketContentType })
-  contentType: CnBucketContentType;
+  contentType!: CnBucketContentType;
 
   @Column({
     type: 'enum',
@@ -73,7 +73,7 @@ export class CnBucket extends CnBaseEntity {
     nullable: false,
     default: BlBucketType.NORMAL,
   })
-  bucketType: BlBucketType;
+  bucketType!: BlBucketType;
 
   public getBucketConfig(): BlBucketConfig {
     switch (this.bucketType) {
@@ -100,6 +100,9 @@ export class CnBucket extends CnBaseEntity {
     if (this.isCloudBucket()) {
       if (this.region == null) {
         throw new Error('The region was not loaded');
+      }
+      if (this.region.s3Endpoint == null) {
+        throw new Error('The region has no s3 endpoint');
       }
       return {
         endpoint: this.region.s3Endpoint,
@@ -144,8 +147,14 @@ export class CnBucket extends CnBaseEntity {
 
   getLocationName(): string {
     if (this.isCloudBucket()) {
+      if (this.region == null) {
+        throw new Error('The region was not loaded');
+      }
       return this.region.name;
     } else {
+      if (this.lab == null) {
+        throw new Error('The lab was not loaded');
+      }
       return this.lab.name;
     }
   }
@@ -155,7 +164,7 @@ export class CnBucket extends CnBaseEntity {
       bucketId: this.id,
       locationName: this.getLocationName(),
       bucketType: this.bucketType,
-      cloudRegion: this.isCloudBucket() ? this.region : null,
+      cloudRegion: this.isCloudBucket() ? this.region : undefined,
     };
   }
 

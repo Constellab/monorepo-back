@@ -64,7 +64,10 @@ export class CnResourcesService extends BlAbstractService<CnResourceEntity> {
     }
   }
 
-  private findByParentFolderIdAndResourceId(parentFolderId: string, resourceId: string): Promise<CnResource> {
+  private findByParentFolderIdAndResourceId(
+    parentFolderId: string,
+    resourceId: string
+  ): Promise<CnResource | null> {
     return this.repository.findOne({
       where: {
         resourceId: resourceId,

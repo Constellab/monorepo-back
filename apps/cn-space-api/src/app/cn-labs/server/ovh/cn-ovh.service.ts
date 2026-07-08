@@ -27,8 +27,8 @@ export class CnOvhService {
   // set all request type with '/*'
   // then update dev env
 
-  private ovh: CnOvh;
-  private serviceName: string;
+  private ovh!: CnOvh;
+  private serviceName!: string;
 
   private readonly logger = new Logger(CnOvhService.name);
 
@@ -55,7 +55,9 @@ export class CnOvhService {
       }
     );
 
-    return flavors.find((flavor) => flavor.name === name && flavor.available && flavor.osType === 'linux');
+    return (
+      flavors.find((flavor) => flavor.name === name && flavor.available && flavor.osType === 'linux') ?? null
+    );
   }
 
   public async getImageByRegionAndName(region: string, name: string): Promise<CnOvhImage | null> {
@@ -67,12 +69,14 @@ export class CnOvhService {
       }
     );
 
-    return images.find(
-      (image) =>
-        image.name === name &&
-        image.status === 'active' &&
-        image.type === 'linux' &&
-        image.user === CN_SERVER_UBUNTU_USER
+    return (
+      images.find(
+        (image) =>
+          image.name === name &&
+          image.status === 'active' &&
+          image.type === 'linux' &&
+          image.user === CN_SERVER_UBUNTU_USER
+      ) ?? null
     );
   }
 
@@ -123,7 +127,7 @@ export class CnOvhService {
       // when attaching failed, retry in 30s because OVH tells volume is ready, but it's not
       this.logger.error(
         `Error while attaching volume ${volumeId} to instance ${instanceId}, ` +
-          `retrying in 45s. Error: ${e.toString()}`
+          `retrying in 45s. Error: ${String(e)}`
       );
       await new Promise((r) => setTimeout(r, 45000));
       return await this.requestPromised('POST', route, request);

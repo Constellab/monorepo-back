@@ -38,19 +38,21 @@ export class CnLabBackupHistoryService extends BlAbstractService<CnLabBackupHist
   }
 
   public async saveHistory(historyDto: CnLabBackupBucket, lab: CnLab): Promise<CnLabBackupHistory> {
-    let history: CnLabBackupHistoryEntity = await this.repo.findOne({
+    const existingHistory: CnLabBackupHistoryEntity | null = await this.repo.findOne({
       where: { backupId: historyDto.id },
       relations: { lab: true },
     });
 
-    const isHistoryNew = history == null;
-    const oldStatus = history?.status;
+    const isHistoryNew = existingHistory == null;
+    const oldStatus = existingHistory?.status;
 
-    if (history == null) {
+    let history: CnLabBackupHistoryEntity;
+    if (existingHistory == null) {
       history = new CnLabBackupHistoryEntity();
       history.backupId = historyDto.id;
       history.lab = lab as CnLabEntity;
     } else {
+      history = existingHistory;
       if (history.lab.id !== lab.id) {
         throw new Error(`The backup history ${historyDto.id} does not belong to the lab ${lab.id}`);
       }
@@ -71,7 +73,7 @@ export class CnLabBackupHistoryService extends BlAbstractService<CnLabBackupHist
     await this.datasource.transaction(async (entityManager) => {
       history = await entityManager.save(history);
 
-      let dataDetails: CnLabBackupHistoryDetail = history.dataDetails;
+      let dataDetails: CnLabBackupHistoryDetail | null = history.dataDetails;
       if (dataDetails == null) {
         dataDetails = new CnLabBackupHistoryDetail();
         dataDetails.type = CnLabBackupType.DATA;
@@ -80,7 +82,7 @@ export class CnLabBackupHistoryService extends BlAbstractService<CnLabBackupHist
       dataDetails.updateInfo(historyDto.data);
       await entityManager.save(dataDetails);
 
-      let dbDetails: CnLabBackupHistoryDetail = history.dbDetails;
+      let dbDetails: CnLabBackupHistoryDetail | null = history.dbDetails;
       if (dbDetails == null) {
         dbDetails = new CnLabBackupHistoryDetail();
         dbDetails.type = CnLabBackupType.DB;

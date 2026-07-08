@@ -19,17 +19,17 @@ export enum CnHierarchyObjectTagHistoryType {
 @Entity('hierarchy_object_tag_history')
 export class CnHierarchyObjectTagHistoryEntity extends CnBaseEntity {
   @Column({ nullable: false, length: 50, update: false, name: 'tag_key' })
-  key: string;
+  key!: string;
 
   @Column({ nullable: false, length: 50, update: false, name: 'tag_value' })
-  value: string;
+  value!: string;
 
   @BlNotUpdatable()
   @ManyToOne(() => CnHierarchyObjectEntity, { nullable: false, onDelete: 'CASCADE' })
-  hierarchyObject: CnHierarchyObject;
+  hierarchyObject!: CnHierarchyObject;
 
   @Column({ nullable: false, type: 'enum', enum: CnHierarchyObjectTagHistoryType })
-  type: CnHierarchyObjectTagHistoryType;
+  type!: CnHierarchyObjectTagHistoryType;
 }
 
 export type CnHierarchyObjectTagHistory = Omit<CnHierarchyObjectTagHistoryEntity, 'hierarchyObject'>;

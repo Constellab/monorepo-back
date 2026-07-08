@@ -37,7 +37,7 @@ export class CnLabDesktopService {
     customConfig: CnLabDesktopGenerateConfig
   ): CnLabManagerInitConfig {
     const config = this.labManagerService.getLabManagerInitConfig(lab, lab.space.domain);
-    config.openaiApiKey = customConfig.openaiApiKey;
+    config.openaiApiKey = customConfig.openaiApiKey ?? null;
     return config;
   }
 

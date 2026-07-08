@@ -14,23 +14,23 @@ export class CnStoragePrice extends CnBaseEntity {
    * Price of the volume per month per GB
    */
   @Column({ nullable: false, type: 'float' })
-  volumeStoragePrice: number;
+  volumeStoragePrice!: number;
 
   /**
    * Price of 1 backup per month per GB
    */
   @Column({ nullable: false, type: 'float' })
-  backupStoragePrice: number;
+  backupStoragePrice!: number;
 
   /**
    * Price of the transfert per GB for the backup
    */
   @Column({ nullable: false, type: 'float' })
-  backupTransfertPrice: number;
+  backupTransfertPrice!: number;
 
   // interval dates for the price
   @BlLuxonDateTimeColumn({ nullable: false })
-  startDate: DateTime;
+  startDate!: DateTime;
 
   @BlLuxonDateTimeColumn({ nullable: true })
   endDate?: DateTime;

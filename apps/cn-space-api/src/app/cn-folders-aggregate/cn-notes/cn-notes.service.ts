@@ -87,6 +87,9 @@ export class CnNotesService extends BlAbstractService<CnNoteEntity> {
 
   public async getNoteRichText(parentFolder: CnHierarchyObject, id: string): Promise<TeRichTextAggregate> {
     const note = await this.findByIdAndCheck(id, { document: true });
+    if (note.document == null) {
+      throw new BlBadRequestException('The note has no associated document');
+    }
     const documentJson = await this.documentService.getJSONDocumentContent(
       parentFolder.getRootFolderId(),
       note.document
@@ -122,7 +125,7 @@ export class CnNotesService extends BlAbstractService<CnNoteEntity> {
     parentFolder: CnHierarchyObject,
     files: BlFile[]
   ): Promise<CnSaveNoteResultDTO> {
-    let noteDb: CnNoteEntity = await this.findById(createNoteDto.note.id, {
+    let noteDb: CnNoteEntity | null = await this.findById(createNoteDto.note.id, {
       document: true,
       hierarchyRepresentation: true,
     });
@@ -152,6 +155,9 @@ export class CnNotesService extends BlAbstractService<CnNoteEntity> {
     note.validatedBy = noteDto.validated_by;
 
     // handle last_sync
+    if (noteDto.last_sync_at == null || noteDto.last_sync_by == null) {
+      throw new BlBadRequestException('The note is missing last sync information');
+    }
     note.lastSyncAt = noteDto.last_sync_at;
     note.lastSyncBy = noteDto.last_sync_by;
 

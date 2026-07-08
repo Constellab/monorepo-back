@@ -5,11 +5,11 @@ import { CnTypeStyle } from '../../cn-core/model/config/cn-type-style.class';
 import { CnResource } from './cn-resource.entity';
 
 export class CnShareResourceRequestDTO {
-  resource_id: string;
-  name: string;
-  typing_name: string;
-  style: CnTypeStyle;
-  token: string;
+  resource_id!: string;
+  name!: string;
+  typing_name!: string;
+  style!: CnTypeStyle;
+  token!: string;
   is_application?: boolean;
 }
 

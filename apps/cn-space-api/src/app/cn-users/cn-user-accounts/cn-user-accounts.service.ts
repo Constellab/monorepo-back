@@ -72,7 +72,7 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
         user.lastname = createUser.lastname;
         user.password = createUser.password;
         user.email = createUser.email.toLowerCase();
-        user.phone = createUser.phone;
+        user.phone = createUser.phone ?? null;
         user.license = CnUserLicense.FREE;
 
         const newUser: CnUser = await this.createAccount(user, BlUserStatus.WAITING_FOR_EMAIL, entityManager);
@@ -106,7 +106,7 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
   ): Promise<CnUser> {
     user.category = BlUserCategory.USER;
 
-    const sameEmailUser: CnUser = await this.usersService.findByEmail(user.email);
+    const sameEmailUser: CnUser | null = await this.usersService.findByEmail(user.email);
     if (sameEmailUser != null) {
       // if a user not validated with the same email exist, no error, return the user
       if (sameEmailUser.status === BlUserStatus.WAITING_FOR_EMAIL) {
@@ -184,7 +184,7 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
   }
 
   async passwordForgotten(email: string): Promise<void> {
-    const user: CnUser = await this.usersService.findByEmail(email);
+    const user: CnUser | null = await this.usersService.findByEmail(email);
 
     if (user != null) {
       // send mail asynchronously
@@ -269,7 +269,7 @@ export class CnUserAccountsService extends BlAbstractPaginatedService<CnUser> {
       throw new BlBadRequestException(CnErrorText.INVALID_LINK);
     }
 
-    const user: CnUser = await this.usersService.findOne(payload.id);
+    const user: CnUser | null = await this.usersService.findOne(payload.id);
 
     if (user == null) {
       throw new BlBadRequestException(CnErrorText.INVALID_LINK);

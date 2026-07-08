@@ -120,7 +120,7 @@ export class CnCurrentUserHelper extends BlRequestContextHelper {
    * if there is no space in the context
    */
   static getAndCheckCurrentSpace(): CnSpace {
-    const space: CnSpace = this.getCurrentSpace();
+    const space: CnSpace | null = this.getCurrentSpace();
 
     if (space == null) {
       throw new BlUnauthorizedException('No space in the context');
@@ -145,7 +145,7 @@ export class CnCurrentUserHelper extends BlRequestContextHelper {
    * return the role of the current user for the current space
    */
   static getAndCheckCurrentRoleInSpace(): CnSpaceUserRole {
-    const role: CnSpaceUserRole = this.getCurrentRoleInSpace();
+    const role: CnSpaceUserRole | null = this.getCurrentRoleInSpace();
 
     if (role == null) {
       throw new BlUnauthorizedException('No role in the context');

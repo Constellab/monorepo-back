@@ -52,7 +52,7 @@ export class CnHierarchyObjectTagAggregateService {
 
   public async deleteTag(tag: CnTag, hierarchyObject: CnHierarchyObject): Promise<void> {
     const entityTag = await this.tagService.findByTag(tag.key, tag.value, hierarchyObject.id);
-    if (!tag) {
+    if (!entityTag) {
       return;
     }
 

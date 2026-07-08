@@ -29,7 +29,7 @@ export interface CnLabGreenOptionStopAfterInactivityValue {
 @Entity('lab_green_option')
 export class CnLabGreenOption extends CnBaseEntity {
   @Column({ type: 'enum', nullable: false, enum: CnLabGreenOptionType, update: false })
-  type: CnLabGreenOptionType;
+  type!: CnLabGreenOptionType;
 
   @Column({ type: 'simple-json', nullable: true })
   value: any;
@@ -37,14 +37,14 @@ export class CnLabGreenOption extends CnBaseEntity {
   @BlNotUpdatable()
   @Type(() => CnLabEntity)
   @ManyToOne(() => CnLabEntity, { nullable: false, onDelete: 'CASCADE' })
-  lab: CnLabEntity;
+  lab!: CnLabEntity;
 
   @Column({ nullable: false, length: 36 })
-  labId: string;
+  labId!: string;
 
   /**
    * If false, the rule will be deleted after it is executed
    */
   @Column({ nullable: false })
-  isPersistent: boolean;
+  isPersistent!: boolean;
 }

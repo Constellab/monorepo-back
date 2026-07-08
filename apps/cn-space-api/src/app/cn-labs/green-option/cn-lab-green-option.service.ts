@@ -76,7 +76,7 @@ export class CnLabGreenOptionService extends BlAbstractService<CnLabGreenOption>
     });
   }
 
-  public findByLabIdAndType(labId: string, type: CnLabGreenOptionType): Promise<CnLabGreenOption> {
+  public findByLabIdAndType(labId: string, type: CnLabGreenOptionType): Promise<CnLabGreenOption | null> {
     return this.repository.findOne({
       where: { labId, type },
     });

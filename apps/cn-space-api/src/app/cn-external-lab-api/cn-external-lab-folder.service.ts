@@ -30,7 +30,7 @@ export class CnExternalLabFolderService {
     return lastValueFrom(
       this.externalLabApiService.post(
         glabApiInfo.apiInfo,
-        this.getRoute(glabApiInfo.gwsCoreVersion),
+        this.getRoute(this.getGwsCoreVersion(glabApiInfo)),
         labInfoDto
       )
     );
@@ -40,7 +40,7 @@ export class CnExternalLabFolderService {
     return lastValueFrom(
       this.externalLabApiService.delete(
         glabApiInfo.apiInfo,
-        `${this.getRoute(glabApiInfo.gwsCoreVersion)}/${folderId}`
+        `${this.getRoute(this.getGwsCoreVersion(glabApiInfo))}/${folderId}`
       )
     );
   }
@@ -51,7 +51,7 @@ export class CnExternalLabFolderService {
   ): Promise<void> {
     const requiredVersion = BlVersion.fromString(this.syncFolderRouteVersion);
 
-    if (glabApiInfo.gwsCoreVersion.isLowerThan(requiredVersion)) {
+    if (this.getGwsCoreVersion(glabApiInfo).isLowerThan(requiredVersion)) {
       throw new BlBadRequestException(
         `The lab version is too old to sync all folders. ` +
           `Please update the lab to version ${requiredVersion.toString()} or more`
@@ -64,6 +64,13 @@ export class CnExternalLabFolderService {
     return lastValueFrom(
       this.externalLabApiService.post(glabApiInfo.apiInfo, `${this.route}/sync`, { folders: labInfoDto })
     );
+  }
+
+  private getGwsCoreVersion(glabApiInfo: CnLabGlabApiInfo): BlVersion {
+    if (!glabApiInfo.gwsCoreVersion) {
+      throw new BlBadRequestException(`The gws_core version of the lab is unknown`);
+    }
+    return glabApiInfo.gwsCoreVersion;
   }
 
   /**

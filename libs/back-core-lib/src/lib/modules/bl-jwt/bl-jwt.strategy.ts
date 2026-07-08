@@ -23,7 +23,7 @@ export class BlJwtStrategy extends PassportStrategy(Strategy) {
    * So we will be able to retrieve the user with req.user
    */
   async validate(payload: BlTokenUser): Promise<BlUser> {
-    const currentUser: BlUser = await this.jwtConfig.usersService.findOne(payload.sub);
+    const currentUser: BlUser | null = await this.jwtConfig.usersService.findOne(payload.sub);
     if (currentUser == null) {
       throw new BlUnauthorizedException();
     }

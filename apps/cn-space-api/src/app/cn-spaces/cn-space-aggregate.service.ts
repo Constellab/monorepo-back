@@ -55,9 +55,12 @@ export class CnSpaceAggregateService {
       space = await this.getUserDefaultSpaceAndCheck(user);
     }
 
-    let role: CnSpaceUserRole = CnCurrentUserHelper.getCurrentRoleInSpace();
+    let role: CnSpaceUserRole | null = CnCurrentUserHelper.getCurrentRoleInSpace();
     if (!role) {
       const spaceUser = await this.spaceUserService.findOneBySpaceIdAndUserId(space.id, user.id);
+      if (spaceUser == null) {
+        throw new BlBadRequestException(CnErrorText.USER_NOT_IN_SPACE);
+      }
       role = spaceUser.role;
     }
 
@@ -204,7 +207,7 @@ export class CnSpaceAggregateService {
       space.cloudStorageLimit,
       space.cloudStorageUsage,
       space.defaultFolderBucket.getBucketLocation(),
-      space.defaultFolderBackupBucket?.getBucketLocation() ?? null
+      space.defaultFolderBackupBucket?.getBucketLocation() ?? undefined
     );
   }
 
@@ -234,14 +237,14 @@ export class CnSpaceAggregateService {
     );
 
     // if this is created mode
-    if (buckets.defaultFolderBucket.isLabBucket() && buckets.defaultFolderBucket.lab.spaceId !== space.id) {
+    if (buckets.defaultFolderBucket.isLabBucket() && buckets.defaultFolderBucket.lab?.spaceId !== space.id) {
       throw new BlBadRequestException('The default folder backup storage lab must be in the same space');
     }
 
     if (
       buckets.defaultFolderBackupBucket &&
       buckets.defaultFolderBackupBucket.isLabBucket() &&
-      buckets.defaultFolderBackupBucket.lab.spaceId !== space.id
+      buckets.defaultFolderBackupBucket.lab?.spaceId !== space.id
     ) {
       throw new BlBadRequestException('The default folder backup storage lab must be in the same space');
     }
@@ -416,7 +419,7 @@ export class CnSpaceAggregateService {
     const user = await this.userService.findByEmail(invit.userMail);
     return {
       invitation: invit,
-      existingUser: user,
+      existingUser: user ?? undefined,
     };
   }
 
@@ -633,18 +636,15 @@ export class CnSpaceAggregateService {
       );
     }
 
-    let defaultBucket: CnBucket;
     let defaultBackupBucket: CnBucket | null;
 
     if (!defaultFolderStorageLocation) {
       throw new BlBadRequestException('The default folder storage is required for space');
     }
 
-    if (defaultFolderStorageLocation) {
-      defaultBucket = await this.objectStorageAggregateService.getBucketByIdNotSecure(
-        defaultFolderStorageLocation.bucketId
-      );
-    }
+    const defaultBucket: CnBucket = await this.objectStorageAggregateService.getBucketByIdNotSecure(
+      defaultFolderStorageLocation.bucketId
+    );
 
     if (defaultFolderBackupStorageLocation) {
       defaultBackupBucket = await this.objectStorageAggregateService.getBucketByIdNotSecure(

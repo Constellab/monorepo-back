@@ -21,23 +21,23 @@ export class CnLabVolumeEntity extends CnBaseEntity {
   @BlNotUpdatable()
   @Type(() => CnLabEntity)
   @ManyToOne(() => CnLabEntity, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
-  lab: CnLabEntity;
+  lab!: CnLabEntity;
 
   @BlLuxonDateTimeColumn({ nullable: false })
-  startDate: DateTime;
+  startDate!: DateTime;
 
   @BlLuxonDateTimeColumn({ nullable: true })
-  endDate: DateTime;
+  endDate?: DateTime;
 
   @Column({ nullable: false, type: 'int' })
-  size: number;
+  size!: number;
 
   @Column({
     type: 'enum',
     enum: CnLabVolumeType,
     nullable: false,
   })
-  type: CnLabVolumeType;
+  type!: CnLabVolumeType;
 
   getEndDateWithDefault(): DateTime {
     return this.endDate ?? ClDateHelper.getDate('9999-12-31');

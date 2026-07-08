@@ -27,22 +27,22 @@ import { CnGroupType } from './cn-group-type.enum';
 @Entity('group')
 export class CnGroup extends CnBaseEntity {
   @Column({ nullable: false })
-  label: string;
+  label!: string;
 
   @Column({ type: 'enum', enum: CnGroupType, nullable: false, default: CnGroupType.SINGLE_USER })
-  type: CnGroupType;
+  type!: CnGroupType;
 }
 
 @ChildEntity(CnGroupType.SINGLE_USER)
 export class CnGroupSingleUser extends CnGroup {
   @OneToOne(() => CnUserEntity, (user: CnUserEntity) => user.ownGroup, { eager: true, nullable: true })
   @JoinColumn()
-  user: CnUser;
+  user!: CnUser;
 
   @Column({ update: false, length: 36, nullable: true })
-  userId: string;
+  userId!: string;
 
-  type: CnGroupType.SINGLE_USER;
+  type!: CnGroupType.SINGLE_USER;
 
   // don't set the createdBy and lastModifiedBy automatically
   // because this group is created on user signup (so no current user)
@@ -61,9 +61,9 @@ export class CnGroupSingleUser extends CnGroup {
 @ChildEntity(CnGroupType.TEAM)
 export class CnGroupTeam extends CnGroup {
   @OneToMany(() => CnUserGroup, (userGroup) => userGroup.group)
-  users: CnUserGroup[];
+  users!: CnUserGroup[];
 
-  type: CnGroupType.TEAM;
+  type!: CnGroupType.TEAM;
 
   @Exclude()
   @BlNotUpdatable()
@@ -71,34 +71,34 @@ export class CnGroupTeam extends CnGroup {
   space?: CnSpace;
 
   @Column({ nullable: true, update: false, length: 36 })
-  spaceId: string;
+  spaceId?: string;
 }
 
 @Entity('user_group')
 export class CnUserGroup {
   @PrimaryColumn({ type: 'varchar', length: 36 })
-  userId: string;
+  userId!: string;
 
   @ManyToOne(() => CnUserEntity, { onUpdate: 'CASCADE', onDelete: 'CASCADE', nullable: false })
-  user: CnUser;
+  user!: CnUser;
 
   @PrimaryColumn({ type: 'varchar', length: 36 })
-  groupId: string;
+  groupId!: string;
 
   @ManyToOne(() => CnGroupTeam, (group) => group.users, {
     onUpdate: 'CASCADE',
     onDelete: 'CASCADE',
     nullable: false,
   })
-  group: CnGroupTeam;
+  group!: CnGroupTeam;
 
   @BlLuxonDateTimeColumn({ nullable: false, update: false })
-  createdAt: DateTime;
+  createdAt!: DateTime;
 
   @Type(() => CnUserEntity)
   @ManyToOne(() => CnUserEntity, { eager: true, nullable: false })
   @BlNotUpdatable()
-  createdBy: Relation<CnUser>;
+  createdBy!: Relation<CnUser>;
 
   @BeforeInsert()
   setCreatedInfo(): void {

@@ -41,7 +41,9 @@ export class CnLabFolderListener {
           break;
         case 'UPLOAD_FOLDER':
           // on a folder upload, we sync the root folder
-          await this.syncFolderWithLabs(event.payload.parentFolder.getRootFolderId());
+          if (event.payload.parentFolder != null) {
+            await this.syncFolderWithLabs(event.payload.parentFolder.getRootFolderId());
+          }
           break;
         case 'MOVE_OBJECT_TO_TRASH':
           await this.handleMoveToTrash(event.payload.entity);
@@ -78,18 +80,14 @@ export class CnLabFolderListener {
    */
   private async handleCreateRootFolder(rootFolder: CnFolder): Promise<void> {
     const folderBuckets = await this.folderBucketService.getRootFolderBucket(rootFolder.id);
-    if (folderBuckets.mainStorage?.isLabBucket()) {
-      await this.labFolderAggregateService.addRootFolderToLabInsecure(
-        folderBuckets.mainStorage.lab,
-        rootFolder.id
-      );
+    const mainStorageLab = folderBuckets.mainStorage?.lab;
+    if (folderBuckets.mainStorage?.isLabBucket() && mainStorageLab != null) {
+      await this.labFolderAggregateService.addRootFolderToLabInsecure(mainStorageLab, rootFolder.id);
     }
 
-    if (folderBuckets.backupStorage?.isLabBucket()) {
-      await this.labFolderAggregateService.addRootFolderToLabInsecure(
-        folderBuckets.backupStorage.lab,
-        rootFolder.id
-      );
+    const backupStorageLab = folderBuckets.backupStorage?.lab;
+    if (folderBuckets.backupStorage?.isLabBucket() && backupStorageLab != null) {
+      await this.labFolderAggregateService.addRootFolderToLabInsecure(backupStorageLab, rootFolder.id);
     }
   }
 

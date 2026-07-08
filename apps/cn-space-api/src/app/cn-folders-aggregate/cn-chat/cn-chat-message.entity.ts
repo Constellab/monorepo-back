@@ -25,10 +25,10 @@ export class CnChatMessageEntity extends CnMessage {
   @Type(() => CnHierarchyObjectEntity)
   @ManyToOne(() => CnHierarchyObjectEntity, { nullable: false })
   @BlNotUpdatable()
-  folderHierarchy: CnHierarchyObjectEntity;
+  folderHierarchy!: CnHierarchyObjectEntity;
 
   @Column({ nullable: false, update: false, length: 36 })
-  folderHierarchyId: string;
+  folderHierarchyId!: string;
 
   static create(newMessageDTO: CnNewMessageDTO, folderHierarchy: CnHierarchyObject): CnChatMessageEntity {
     const chatMessage: CnChatMessageEntity = new CnChatMessageEntity();

@@ -89,6 +89,9 @@ export class CnScenariosService extends BlAbstractService<CnScenarioEntity> {
     scenario.validatedBy = labScenarioDto.validated_by;
 
     // handle last_sync
+    if (labScenarioDto.last_sync_at == null || labScenarioDto.last_sync_by == null) {
+      throw new BlBadRequestException('The scenario is missing last sync information');
+    }
     scenario.lastSyncAt = labScenarioDto.last_sync_at;
     scenario.lastSyncBy = labScenarioDto.last_sync_by;
 
@@ -140,12 +143,14 @@ export class CnScenariosService extends BlAbstractService<CnScenarioEntity> {
   }
 
   public async getScenarioLabConfig(scenarioId: string): Promise<CnLabConfig> {
-    return (
-      await this.repository.findOne({
-        where: { id: scenarioId },
-        relations: { labConfig: { brickVersions: { brick: true } } },
-      })
-    ).labConfig;
+    const scenario = await this.repository.findOne({
+      where: { id: scenarioId },
+      relations: { labConfig: { brickVersions: { brick: true } } },
+    });
+    if (scenario == null) {
+      throw new BlBadRequestException(`Scenario with id ${scenarioId} not found`);
+    }
+    return scenario.labConfig;
   }
 
   public async findScenarioWithHierarchyById(id: string): Promise<CnScenarioWithHierarchy | null> {
@@ -154,6 +159,10 @@ export class CnScenariosService extends BlAbstractService<CnScenarioEntity> {
 
   public async findWithLabById(id: string): Promise<CnScenarioWithLab | null> {
     return this.findById(id, { lab: true, hierarchyRepresentation: true });
+  }
+
+  public async findWithLabByIdAndCheck(id: string): Promise<CnScenarioWithLab> {
+    return this.findByIdAndCheck(id, { lab: true, hierarchyRepresentation: true });
   }
 
   public migrateProtocol(protocol: CnScenarioProtocol): CnScenarioProtocol {

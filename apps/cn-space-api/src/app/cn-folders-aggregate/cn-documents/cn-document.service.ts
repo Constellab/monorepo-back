@@ -221,6 +221,9 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
   ): Promise<TeBlockFigureUploadedResponse> {
     const imSize = BlImageHelper.getImageSize(file);
     if (!documentName) {
+      if (!imSize.type) {
+        throw new BlBadRequestException('Cannot determine the image type');
+      }
       documentName = this.objectStorageService.generateRandomFileNameFromExtension(imSize.type);
     }
     const imageDoc = await this.uploadDocument(file, parentFolder, documentType, entityId, {
@@ -505,7 +508,7 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
       parentFolder,
       CnDocumentType.CONSTELLAB_DOCUMENT_CONTENT,
       document.id,
-      null,
+      undefined,
       document
     );
   }
@@ -605,7 +608,7 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
       }
     }
     // don't generate the token if the last token is still valid with 10 minutes margin
-    if (document.previewTokenExpiration < ClDateHelper.getDate().plus({ minutes: 10 })) {
+    if (!document.previewTokenExpiration || document.previewTokenExpiration < ClDateHelper.getDate().plus({ minutes: 10 })) {
       document.previewToken = ClStringHelper.generateUUID();
       // set expiration in 1 hour
       document.previewTokenExpiration = ClDateHelper.getDate().plus({ hours: 1 });
@@ -627,7 +630,7 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
       throw new BlBadRequestException('Document not found');
     }
 
-    if (document.previewTokenExpiration < ClDateHelper.getDate()) {
+    if (!document.previewTokenExpiration || document.previewTokenExpiration < ClDateHelper.getDate()) {
       throw new BlBadRequestException('Preview token has expired');
     }
 
@@ -874,14 +877,19 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
         const bucketConfig = await this.folderBucketService.getAndCheckFolderBucketConfig(
           document.hierarchyRepresentation.getRootFolderId()
         );
-        const tags = this.getTags(document.name, document.hierarchyRepresentation.parentId);
+        const tags = this.getTags(
+          document.name,
+          document.hierarchyRepresentation.parentId ?? document.hierarchyRepresentation.getRootFolderId()
+        );
         await this.objectStorageService.setObjectTags(
           bucketConfig.bucketConfigs,
           document.filename,
           tags as any
         );
       } catch (error) {
-        this.logger.error(`Failed to set tags for document ${document.id}: ${error.toString()}`);
+        this.logger.error(
+          `Failed to set tags for document ${document.id}: ${error instanceof Error ? error.message : String(error)}`
+        );
       }
     }
     this.logger.log(`[REFRESH DOCUMENTS TAGS] Finished refreshing tags for all documents`);

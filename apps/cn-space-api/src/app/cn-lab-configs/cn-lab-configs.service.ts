@@ -102,7 +102,7 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
     if (!labConfig) {
       throw new BlBadRequestException(`The brick '${brick_name}' is not in the lab config`);
     }
-    return labConfig.brickVersions.find((brickVersion) => brickVersion.brick.name === brick_name);
+    return labConfig.brickVersions.find((brickVersion) => brickVersion.brick.name === brick_name) ?? null;
   }
 
   /**
@@ -142,8 +142,16 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
     // get gws_core version
     const gwsCoreBrickVersion = await this.getGwsCoreBrickVersion(config);
 
+    const gwsCoreTechnicalInfo = gwsCoreBrickVersion.technicalInfo;
+    if (gwsCoreTechnicalInfo == null) {
+      throw new BlBadRequestException(
+        `The technical info does not exists for '${CnBrickGWS.GWS_CORE}'` +
+          ` version '${gwsCoreBrickVersion.version.toString()},'`
+      );
+    }
+
     // get the front version from the technical info
-    const frontVersion = gwsCoreBrickVersion.technicalInfo[CnBrickVersionTechnicalKey.GWS_CORE_FRONT_VERSION];
+    const frontVersion = gwsCoreTechnicalInfo[CnBrickVersionTechnicalKey.GWS_CORE_FRONT_VERSION];
     if (frontVersion == null) {
       throw new BlBadRequestException(
         `The front version does not exists for '${CnBrickGWS.GWS_CORE}'` +
@@ -152,10 +160,10 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
     }
 
     // use the version in the gws_core brick version
-    if (!gwsCoreBrickVersion.technicalInfo[CnBrickVersionTechnicalKey.GWS_CORE_GLAB_VERSION]) {
+    if (!gwsCoreTechnicalInfo[CnBrickVersionTechnicalKey.GWS_CORE_GLAB_VERSION]) {
       throw new BlBadRequestException('Glab version is not set in the gws_core brick version');
     }
-    const glabVersion = gwsCoreBrickVersion.technicalInfo[CnBrickVersionTechnicalKey.GWS_CORE_GLAB_VERSION];
+    const glabVersion = gwsCoreTechnicalInfo[CnBrickVersionTechnicalKey.GWS_CORE_GLAB_VERSION];
 
     const biotaMariaDbUrl = await this.getMariaDbUrl(config);
 
@@ -164,7 +172,7 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
       name: lab.name,
       front_version: frontVersion,
       glab_tag: glabVersion,
-      biota_maria_db_url: biotaMariaDbUrl,
+      biota_maria_db_url: biotaMariaDbUrl ?? undefined,
       variables: {},
       environment: await this.brickConfigToConfigEnv(config.brickVersions),
     };
@@ -201,7 +209,7 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
       BlVersion.fromString(gwsBiota.version)
     );
 
-    if (!gwsBiotaBrickVersion.technicalInfo) {
+    if (gwsBiotaBrickVersion == null || !gwsBiotaBrickVersion.technicalInfo) {
       return null;
     }
 

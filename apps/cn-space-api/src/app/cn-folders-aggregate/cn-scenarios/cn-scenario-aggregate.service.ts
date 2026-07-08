@@ -104,6 +104,9 @@ export class CnScenarioAggregateService {
   public async getScenariosOfCurrentLab(): Promise<CnExternalLabSyncedObjectDTO[]> {
     const scenarios = await this.scenarioService.findByLab(CnCurrentUserHelper.getAndCheckCurrentLab().id);
     return scenarios.map((scenario) => {
+      if (scenario.hierarchyRepresentation.parentId == null) {
+        throw new BlBadRequestException('The scenario has no parent folder');
+      }
       return new CnExternalLabSyncedObjectDTO(
         scenario.id,
         scenario.hierarchyRepresentation.parentId,
@@ -114,6 +117,6 @@ export class CnScenarioAggregateService {
   }
 
   public async getScenarioSyncLabDTO(scenarioId: string): Promise<CnScenarioWithLab> {
-    return this.scenarioService.findWithLabById(scenarioId);
+    return this.scenarioService.findWithLabByIdAndCheck(scenarioId);
   }
 }

@@ -45,7 +45,7 @@ export class CnLabStatsRunningService {
     const endDate = this.request.getEndDate();
 
     let runningStatuses: CnLabStatsRunningStatusDTO[] = [];
-    let currentRunningStatus: CnLabStatsRunningStatusDTO = null;
+    let currentRunningStatus: CnLabStatsRunningStatusDTO | null = null;
 
     for (const status of this.statusHistories) {
       // if the status ends before startDate, no need to check it, it is before the period
@@ -90,7 +90,7 @@ export class CnLabStatsRunningService {
     // filter the statuses by users
     if (this.request.hasUsersFilter()) {
       runningStatuses = runningStatuses.filter((status) =>
-        this.request.users.find((requestUser) => requestUser.id === status.user.id)
+        this.request.users?.find((requestUser) => requestUser.id === status.user.id)
       );
     }
 

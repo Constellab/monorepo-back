@@ -96,22 +96,33 @@ export class CnLabMailService {
     }
   }
 
-  private getAndCheckSubject(subject: string | undefined, template: CnMailTemplate): BlTranslatableText {
+  private getAndCheckSubject(
+    subject: string | undefined,
+    template: CnMailTemplate
+  ): BlTranslatableText | undefined {
     if (template === CnMailTemplate.generic && !subject) {
       throw new Error('Subject is required for generic template');
     }
 
     if (!subject) {
-      return null;
+      return undefined;
     }
 
     return { text: subject, translate: false };
   }
 
+  private getAndCheckSpaceId(lab: CnLab): string {
+    if (!lab.spaceId) {
+      throw new Error(`Lab '${lab.id}' has no space id`);
+    }
+    return lab.spaceId;
+  }
+
   public async sendLabStartedMail(lab: CnLab): Promise<void> {
+    const spaceId = this.getAndCheckSpaceId(lab);
     const owners = await this.labUserService.findLabOwner(lab.id);
 
-    const labUrl = await this.frontService.getLabUrl(lab.spaceId, lab.id);
+    const labUrl = await this.frontService.getLabUrl(spaceId, lab.id);
 
     for (const owner of owners) {
       await this.mailService.sendMailToUser(CnMailTemplate.lab_started, owner.user, {
@@ -128,8 +139,9 @@ export class CnLabMailService {
   }
 
   public async sendLabStartErrorMail(lab: CnLab): Promise<void> {
-    const space = await this.spaceService.findByIdAndCheck(lab.spaceId);
-    const labUrl = await this.frontService.getLabUrl(lab.spaceId, lab.id);
+    const spaceId = this.getAndCheckSpaceId(lab);
+    const space = await this.spaceService.findByIdAndCheck(spaceId);
+    const labUrl = await this.frontService.getLabUrl(spaceId, lab.id);
     await this.supportService.sendMailToSupport(CnMailTemplate.support_lab_start_error, {
       lab: {
         name: lab.name,
@@ -142,8 +154,9 @@ export class CnLabMailService {
   }
 
   public async sendLabBackupErrorMail(lab: CnLab): Promise<void> {
-    const space = await this.spaceService.findByIdAndCheck(lab.spaceId);
-    const labUrl = await this.frontService.getLabUrl(lab.spaceId, lab.id);
+    const spaceId = this.getAndCheckSpaceId(lab);
+    const space = await this.spaceService.findByIdAndCheck(spaceId);
+    const labUrl = await this.frontService.getLabUrl(spaceId, lab.id);
     await this.supportService.sendMailToSupport(CnMailTemplate.support_lab_backup_error, {
       lab: {
         name: lab.name,
@@ -156,8 +169,9 @@ export class CnLabMailService {
   }
 
   public async sendLabTempStatusLimitReachedMail(lab: CnLab, message?: string): Promise<void> {
-    const space = await this.spaceService.findByIdAndCheck(lab.spaceId);
-    const labUrl = await this.frontService.getLabUrl(lab.spaceId, lab.id);
+    const spaceId = this.getAndCheckSpaceId(lab);
+    const space = await this.spaceService.findByIdAndCheck(spaceId);
+    const labUrl = await this.frontService.getLabUrl(spaceId, lab.id);
     await this.supportService.sendMailToSupport(CnMailTemplate.support_lab_temp_status_limit_reached, {
       lab: {
         name: lab.name,

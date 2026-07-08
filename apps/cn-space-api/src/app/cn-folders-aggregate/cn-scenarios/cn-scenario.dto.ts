@@ -14,15 +14,15 @@ import { CnScenarioStatus } from './cn-scenario-status.enum';
  * Scenario object from the Lab
  */
 export class CnSaveScenarioDto {
-  id: string;
-  title: string;
+  id!: string;
+  title!: string;
 
   @TeRichTextTransform()
-  description: TeRichText;
+  description!: TeRichText;
 
-  status: CnScenarioStatus;
+  status!: CnScenarioStatus;
 
-  is_validated: boolean;
+  is_validated!: boolean;
 
   @Type(() => CnUserEntity)
   validated_by?: CnUser;
@@ -37,32 +37,32 @@ export class CnSaveScenarioDto {
   last_sync_at?: DateTime;
 
   @ClLuxonDateTimeTransform()
-  created_at: DateTime;
+  created_at!: DateTime;
 
   @Type(() => CnUserEntity)
-  created_by: CnUser;
+  created_by!: CnUser;
 
   @ClLuxonDateTimeTransform()
-  last_modified_at: DateTime;
+  last_modified_at!: DateTime;
 
   @Type(() => CnUserEntity)
-  last_modified_by: CnUser;
+  last_modified_by!: CnUser;
 }
 
 export class CnCreateLabScenarioDto {
   @Type(() => CnSaveScenarioDto)
-  scenario: CnSaveScenarioDto;
-  protocol: CnScenarioProtocol;
-  lab_config: CnLabConfigDto;
+  scenario!: CnSaveScenarioDto;
+  protocol!: CnScenarioProtocol;
+  lab_config!: CnLabConfigDto;
 }
 
 // scenario object smaller
 export class CnScenarioDto extends CnEntityDTO {
-  title: string;
+  title!: string;
 
-  status: CnScenarioStatus;
+  status!: CnScenarioStatus;
 
-  isValidated: boolean;
+  isValidated!: boolean;
 
   lastSyncBy?: CnUser;
 

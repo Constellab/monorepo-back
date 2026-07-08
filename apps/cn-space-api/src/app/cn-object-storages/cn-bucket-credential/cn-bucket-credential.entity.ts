@@ -16,7 +16,7 @@ export class CnBucketCredentials extends CnBaseEntity {
 
   @BlTrim()
   @Column({ nullable: false, length: 50 })
-  name: string;
+  name!: string;
 
   @ManyToOne(() => CnCloudProvider, { nullable: true })
   cloudProvider?: CnCloudProvider;
@@ -24,23 +24,23 @@ export class CnBucketCredentials extends CnBaseEntity {
   @BlTrim()
   @Exclude({ toPlainOnly: true })
   @Column({ nullable: false, length: 100 })
-  accessKeyId: string;
+  accessKeyId!: string;
 
   @BlTrim()
   @Exclude({ toPlainOnly: true })
   @Column({ nullable: false, length: 100 })
-  secretAccessKey: string;
+  secretAccessKey!: string;
 
   // might be associated to a space
   @ManyToOne(() => CnSpaceEntity, { nullable: true })
-  space: CnSpace;
+  space?: CnSpace;
 
   @Column({ nullable: true, length: 36 })
-  spaceId: string;
+  spaceId?: string;
 
   @Column({ nullable: true, length: 50 })
-  s3Username: string;
+  s3Username?: string;
 
   @Column({ nullable: true, length: 255 })
-  shortDescription: string;
+  shortDescription?: string;
 }

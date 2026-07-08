@@ -13,21 +13,21 @@ export class CnLabBackupOption extends CnBaseEntity {
   @Type(() => CnLabEntity)
   @ManyToOne(() => CnLabEntity, { nullable: false })
   @BlNotUpdatable()
-  lab: CnLabEntity;
+  lab!: CnLabEntity;
 
   @Column({ nullable: false, type: 'enum', enum: CnLabBackupFrequency })
-  frequency1: CnLabBackupFrequency;
+  frequency1!: CnLabBackupFrequency;
 
   @Type(() => CnBucket)
   @ManyToOne(() => CnBucket, { nullable: false })
   @BlNotUpdatable()
-  bucket1: CnBucket;
+  bucket1!: CnBucket;
 
   @Column({ nullable: false, type: 'enum', enum: CnLabBackupFrequency })
-  frequency2: CnLabBackupFrequency;
+  frequency2!: CnLabBackupFrequency;
 
   @Type(() => CnBucket)
   @ManyToOne(() => CnBucket, { nullable: false })
   @BlNotUpdatable()
-  bucket2: CnBucket;
+  bucket2!: CnBucket;
 }

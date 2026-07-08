@@ -25,11 +25,14 @@ export class CnAzureInstance {
   constructor(public instance: VirtualMachine) {}
 
   get name(): string {
+    if (this.instance.name == null) {
+      throw new Error('No name found for the azure instance');
+    }
     return this.instance.name;
   }
 
   get id(): string {
-    return this.instance.name;
+    return this.name;
   }
 
   get location(): string {
@@ -47,8 +50,8 @@ export class CnAzureInstance {
   }
 
   getLastStatus(): InstanceViewStatus {
-    const statuses = this.instance.instanceView.statuses;
-    if (ClHelpService.isNullOrEmpty(statuses)) {
+    const statuses = this.instance.instanceView?.statuses;
+    if (statuses == null || ClHelpService.isNullOrEmpty(statuses)) {
       throw new Error('No status found for the azure instance');
     }
     return statuses[statuses.length - 1];
@@ -97,16 +100,20 @@ export class CnAzureInstance {
   }
 
   getNetworkId(): string {
-    const fullId = this.instance.networkProfile.networkInterfaces[0].id;
+    const fullId = this.instance.networkProfile?.networkInterfaces?.[0]?.id;
+    if (fullId == null) {
+      throw new Error('No network interface found for the azure instance');
+    }
     const parts = fullId.split('/');
     return parts[parts.length - 1];
   }
 
   getVolume(): DataDisk | null {
-    if (this.instance.storageProfile.dataDisks.length === 0) {
+    const dataDisks = this.instance.storageProfile?.dataDisks;
+    if (dataDisks == null || dataDisks.length === 0) {
       return null;
     }
-    return this.instance.storageProfile.dataDisks[0];
+    return dataDisks[0];
   }
 
   getVolumeName(): string | null {
@@ -118,7 +125,11 @@ export class CnAzureInstance {
    * The name is different from the instance name
    */
   getOsDiskName(): string {
-    return this.instance.storageProfile.osDisk.name;
+    const name = this.instance.storageProfile?.osDisk?.name;
+    if (name == null) {
+      throw new Error('No os disk found for the azure instance');
+    }
+    return name;
   }
 }
 

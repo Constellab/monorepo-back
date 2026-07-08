@@ -67,7 +67,7 @@ export class CnLabsService extends CnAbstractWithStatusService<CnLabEntity, CnLa
   async updateLab(entity: CnLabFull, entityManager?: EntityManager): Promise<CnLabFull> {
     await this.checkLabBeforeSave(entity);
     await super.update(entity as CnLabEntity, entityManager);
-    return this.findById(entity.id, CnLabEntity.relationFull);
+    return super.findByIdAndCheck(entity.id, CnLabEntity.relationFull);
   }
 
   private async checkLabBeforeSave(entity: CnLabFull): Promise<void> {
@@ -77,14 +77,17 @@ export class CnLabsService extends CnAbstractWithStatusService<CnLabEntity, CnLa
       entity.virtualHost = await this.checkLabVirtualHost(entity, true);
 
       if (
-        ClHelpService.isNullOrEmpty(entity.serverCloud) ||
-        ClHelpService.isNullOrEmpty(entity.region) ||
+        entity.serverCloud == null ||
+        entity.region == null ||
         ClHelpService.isNullOrEmpty(entity.billingMode)
       ) {
         throw new BlBadRequestException('Missing parameters for cloud instance');
       }
 
-      if (entity.region.cloudProvider.id !== entity.serverCloud.cloudProvider.id) {
+      if (
+        entity.region.cloudProvider == null ||
+        entity.region.cloudProvider.id !== entity.serverCloud.cloudProvider.id
+      ) {
         throw new BlBadRequestException('The server and region have different cloud provider');
       }
 
@@ -122,7 +125,7 @@ export class CnLabsService extends CnAbstractWithStatusService<CnLabEntity, CnLa
   private async checkLabVirtualHost(entity: CnLab, checkSupportedDomains: boolean): Promise<string> {
     const virtualHost = entity.virtualHost;
     // check domain name
-    if (ClHelpService.isNullOrEmpty(virtualHost)) {
+    if (virtualHost == null || ClHelpService.isNullOrEmpty(virtualHost)) {
       throw new BlBadRequestException('Virtual host is required');
     }
 
@@ -308,7 +311,7 @@ export class CnLabsService extends CnAbstractWithStatusService<CnLabEntity, CnLa
     return newLab;
   }
 
-  public findLabByGlabProdApiKey(apiKey: string): Promise<CnLabWithSpace> {
+  public findLabByGlabProdApiKey(apiKey: string): Promise<CnLabWithSpace | null> {
     return this.repository.findOne({
       where: {
         glabProdApiKey: apiKey,
@@ -317,7 +320,7 @@ export class CnLabsService extends CnAbstractWithStatusService<CnLabEntity, CnLa
     });
   }
 
-  public findLabByGlabDevApiKey(apiKey: string): Promise<CnLabWithSpace> {
+  public findLabByGlabDevApiKey(apiKey: string): Promise<CnLabWithSpace | null> {
     return this.repository.findOne({
       where: {
         glabDevApiKey: apiKey,
@@ -326,7 +329,7 @@ export class CnLabsService extends CnAbstractWithStatusService<CnLabEntity, CnLa
     });
   }
 
-  public findLabByManagerApiKey(managerApiKey: string): Promise<CnLabWithSpace> {
+  public findLabByManagerApiKey(managerApiKey: string): Promise<CnLabWithSpace | null> {
     return this.repository.findOne({
       where: {
         labManagerApiKey: managerApiKey,
@@ -446,12 +449,18 @@ export class CnLabsService extends CnAbstractWithStatusService<CnLabEntity, CnLa
 
   public async getLabServerCloud(labId: string): Promise<CnServerCloud> {
     const lab = await this.findByIdAndCheck(labId, { serverCloud: true });
+    if (lab.serverCloud == null) {
+      throw new BlBadRequestException('Lab has no server cloud configured');
+    }
     return lab.serverCloud;
   }
 
   public async getLabServerStandard(labId: string): Promise<CnServerStandard> {
     const lab = await this.findByIdAndCheck(labId, { serverCloud: true });
-    return lab.serverCloud?.serverStandard;
+    if (lab.serverCloud == null) {
+      throw new BlBadRequestException('Lab has no server cloud configured');
+    }
+    return lab.serverCloud.serverStandard;
   }
 
   private emitLabEvent(labEvent: CnLabEvent): void {

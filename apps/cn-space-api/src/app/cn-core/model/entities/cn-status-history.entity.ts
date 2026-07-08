@@ -8,13 +8,13 @@ import { CnBaseEntity } from './cn-base.entity';
  */
 export abstract class CnStatusHistory<S> extends CnBaseEntity {
   @BlLuxonDateTimeColumn({ nullable: true })
-  endDate: DateTime;
+  endDate!: DateTime | null;
 
   // status of this history
-  status: S;
+  status!: S;
 
   // entity link that has the status
-  entity: BlEntityWithId;
+  entity!: BlEntityWithId;
 
   public getDurationInSeconds(): number {
     if (this.endDate) {

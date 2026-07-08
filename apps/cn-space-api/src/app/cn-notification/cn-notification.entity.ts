@@ -21,46 +21,46 @@ export enum CnNotificationType {
 @Entity('notification')
 export class CnNotification extends BlEntityWithId implements BlNotification {
   @BlLuxonDateTimeColumn({ nullable: false, update: false })
-  createdAt: DateTime;
+  createdAt!: DateTime;
 
   @Type(() => CnUserEntity)
   @ManyToOne(() => CnUserEntity, { eager: true, nullable: false })
-  createdBy: CnUser;
+  createdBy!: CnUser;
 
   @Column()
   isRead: boolean = false;
 
   @Column()
-  link: string;
+  link!: string;
 
   @Column()
-  objectId: string;
+  objectId!: string;
 
   @Column({ type: 'enum', enum: CnNotificationType, update: false })
-  objectType: CnNotificationType;
+  objectType!: CnNotificationType;
 
   @Column()
-  text: string;
+  text!: string;
 
   @Column()
-  text2: string;
+  text2!: string;
 
   @Type(() => CnSpaceEntity)
   @ManyToOne(() => CnSpaceEntity, { eager: true, nullable: true })
-  space: CnSpace;
+  space!: CnSpace;
 
   @Column({ nullable: true, update: false, length: 36 })
-  spaceId: string;
+  spaceId!: string | null;
 
   @Exclude()
   @Type(() => CnUserEntity)
   @ManyToOne(() => CnUserEntity, { eager: true, nullable: false })
-  user: CnUser;
+  user!: CnUser;
 
   // list of object ids that are associated with the object id
   // use to associate this notification with multiple objects
   @Column({ nullable: true, update: false, type: 'simple-json' })
-  associatedObjectIds: string[];
+  associatedObjectIds!: string[];
 
   @BeforeInsert()
   setCreatedInfo(): void {
@@ -69,7 +69,7 @@ export class CnNotification extends BlEntityWithId implements BlNotification {
 
   setupNotif(notificationData: CnNotificationCreateDTO): void {
     this.user = notificationData.user;
-    this.spaceId = notificationData.spaceId;
+    this.spaceId = notificationData.spaceId ?? null;
     this.objectId = notificationData.objectId;
     this.objectType = notificationData.objectType;
     this.link = notificationData.link;

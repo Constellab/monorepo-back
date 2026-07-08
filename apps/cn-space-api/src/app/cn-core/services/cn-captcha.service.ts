@@ -7,7 +7,7 @@ import { CnCoreConfigService } from '../modules/cn-core-config/cn-core-config.se
 @Injectable()
 export class CnCaptchaService {
   private readonly logger = new Logger(CnCaptchaService.name);
-  private recaptchaClient: RecaptchaEnterpriseServiceClient;
+  private recaptchaClient: RecaptchaEnterpriseServiceClient | undefined;
 
   constructor(private configService: CnCoreConfigService) {}
 

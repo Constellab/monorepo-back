@@ -44,64 +44,64 @@ export interface CnLabBackupInfo {
 }
 
 export class CnLabBackupBucket {
-  id: string;
-  region: string;
-  bucket: string;
+  id!: string;
+  region!: string;
+  bucket!: string;
   endpoint?: string;
 
   @ClLuxonDateTimeTransform()
-  startUploadAt: DateTime;
+  startUploadAt!: DateTime;
   @ClLuxonDateTimeTransform()
   endUploadAt?: DateTime;
-  status: CnLabBackupStatus;
+  status!: CnLabBackupStatus;
 
-  data: CnLabBackupInfo;
-  db: CnLabBackupInfo;
+  data!: CnLabBackupInfo;
+  db!: CnLabBackupInfo;
 
-  frequency: CnLabBackupFrequency;
-  triggerMode: CnLabBackupTriggerMode;
-  s3Prefix: string;
+  frequency!: CnLabBackupFrequency;
+  triggerMode!: CnLabBackupTriggerMode;
+  s3Prefix!: string;
 }
 
 export class CnLabBackupsHistory {
-  version: number;
+  version!: number;
 
   @Type(() => CnLabBackupBucket)
-  backups: CnLabBackupBucket[];
+  backups!: CnLabBackupBucket[];
 }
 
 export class CnLabBackupStatusDTO {
-  frequency: CnLabBackupFrequency;
+  frequency!: CnLabBackupFrequency;
 
   /**
    * Only return the region for the user and not the bucket
    * the user does not need the bucket name (as it is the same for all the labs)
    */
   @Type(() => CnCloudProviderRegion)
-  region: CnCloudProviderRegion;
+  region!: CnCloudProviderRegion;
 
   /**
    * The status of the backup
    * SUCCESS: the backup was successful
    * NONE: no backup was done
    */
-  status: 'SUCCESS' | 'DELETED' | 'NONE';
+  status!: 'SUCCESS' | 'DELETED' | 'NONE';
 
   @ClLuxonDateTimeTransform()
   lastSuccessBackupAt?: DateTime;
 
   lastSuccessBackupSize?: number;
 
-  lastSuccessBackupId: string;
+  lastSuccessBackupId!: string;
 }
 
 /**
  * DTO to verify the size of the backup
  */
 export class CnLabCheckBackupSizeDTO extends CnLabBackupStatusDTO {
-  sizeInBucket: number;
+  sizeInBucket!: number;
 
-  nbDocumentsInBucket: number;
+  nbDocumentsInBucket!: number;
 
   public static fromBackupStatusDTO(
     backupStatusDTO: CnLabBackupStatusDTO,

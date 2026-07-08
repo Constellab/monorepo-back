@@ -44,90 +44,90 @@ export enum CnHierarchyObjectVisibility {
 @Tree('materialized-path')
 export class CnHierarchyObjectEntity extends BlEntityWithId {
   @Column({ nullable: false, length: 255 })
-  name: string;
+  name!: string;
 
   @Type(() => CnUserEntity)
   @ManyToOne(() => CnUserEntity, { eager: true, nullable: false })
-  user: Relation<CnUser>;
+  user!: Relation<CnUser>;
 
   @BlLuxonDateTimeColumn()
-  lastModifiedAt: DateTime;
+  lastModifiedAt!: DateTime;
 
   @Column({
     nullable: false,
     type: 'enum',
     enum: CnHierarchyObjectType,
   })
-  objectType: CnHierarchyObjectType;
+  objectType!: CnHierarchyObjectType;
 
   @Column({ nullable: false, update: false })
-  objectTypeOrder: number;
+  objectTypeOrder!: number;
 
   // parent folder of this folder, can be null if this folder is a folder
   @TreeParent({ onDelete: 'RESTRICT' })
-  parent: CnHierarchyObject;
+  parent!: CnHierarchyObject;
 
   @Column({ nullable: true, length: 36 })
-  parentId: string | null;
+  parentId!: string | null;
 
   // @Exclude()
   @ManyToOne(() => CnHierarchyObjectEntity, { nullable: true, onDelete: 'RESTRICT', onUpdate: 'RESTRICT' })
-  rootParent: CnHierarchyObject;
+  rootParent!: CnHierarchyObject;
 
   @Column({ nullable: true, length: 36 })
-  rootParentId: string | null;
+  rootParentId!: string | null;
 
   @TreeChildren()
-  children: CnHierarchyObjectEntity[];
+  children!: CnHierarchyObjectEntity[];
 
   @Exclude()
   @BlNotUpdatable()
   @ManyToOne(() => CnSpaceEntity, { nullable: false })
-  space: CnSpace;
+  space!: CnSpace;
 
   @Column({ nullable: false, update: false, length: 36 })
-  spaceId: string;
+  spaceId!: string;
 
   @Exclude()
   @OneToMany(() => CnFolderUserEntity, (folderUser) => folderUser.rootFolder)
-  users: CnFolderUserEntity[];
+  users!: CnFolderUserEntity[];
 
   @Column({ nullable: false, type: 'enum', enum: CnHierarchyObjectVisibility })
-  visibility: CnHierarchyObjectVisibility;
+  visibility!: CnHierarchyObjectVisibility;
 
   /**
    * For folder only, if chat is enabled
    */
   @Column({ nullable: false, default: false })
-  chatEnabled: boolean;
+  chatEnabled!: boolean;
 
   /**
    * For folder only, if description is written
    */
   @Column({ nullable: false, default: false })
-  hasDescription: boolean;
+  hasDescription!: boolean;
 
   /**
    * For note or scenario only, if the object is validated
    */
   @Column({ nullable: false, default: false })
-  isValidated: boolean;
+  isValidated!: boolean;
 
   @Column({ nullable: true, type: 'bigint' })
-  documentSize: number;
+  documentSize!: number | null;
 
   @Column({ nullable: false, type: 'simple-json' })
-  style: CnTypeStyle;
+  style!: CnTypeStyle;
 
   // column to store the last tags of the object
   // to avoid to make a request to load the tags
   // when we need to display the object list
   @Exclude()
   @Column({ nullable: true })
-  lastTagsStr: string;
+  lastTagsStr!: string | null;
 
   @OneToMany(() => CnHierarchyObjectTagEntity, (tag: CnHierarchyObjectTagEntity) => tag.hierarchyObject)
-  tags: CnHierarchyObjectTagEntity;
+  tags!: CnHierarchyObjectTagEntity;
 
   @BeforeInsert()
   setObjectTypeOrder(): void {
@@ -137,6 +137,9 @@ export class CnHierarchyObjectEntity extends BlEntityWithId {
   public getRootFolderId(): string {
     if (this.parentId === null) {
       return this.id;
+    }
+    if (this.rootParentId === null) {
+      throw new Error('A non-root hierarchy object must have a root parent id');
     }
     return this.rootParentId;
   }
@@ -176,8 +179,8 @@ export class CnHierarchyObjectEntity extends BlEntityWithId {
     this.name = objectInfo.name;
     this.lastModifiedAt = objectInfo.lastModifiedAt;
     this.user = objectInfo.user;
-    this.isValidated = objectInfo.isValidated;
-    this.documentSize = objectInfo.documentSize;
+    this.isValidated = objectInfo.isValidated ?? false;
+    this.documentSize = objectInfo.documentSize ?? null;
     this.style = objectInfo.style;
   }
 
@@ -320,6 +323,9 @@ export class CnHierarchyObjectEntity extends BlEntityWithId {
         return CnFrontService.getScenarioRoute(this.id);
       case CnHierarchyObjectType.HIDDEN_DOCUMENT:
       case CnHierarchyObjectType.DOCUMENT:
+        if (this.parentId === null) {
+          throw new Error('A document hierarchy object must have a parent folder');
+        }
         return CnFrontService.getFolderRoute(this.parentId);
       case CnHierarchyObjectType.RESOURCE:
       case CnHierarchyObjectType.APPLICATION:

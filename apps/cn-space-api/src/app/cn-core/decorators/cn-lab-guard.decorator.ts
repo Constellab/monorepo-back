@@ -20,10 +20,17 @@ const cnLabRobotAuthMetadata = 'labRobotAuth';
 export function CnLabGuard(): MethodDecorator & ClassDecorator {
   // use to combined 2 decorators
   return (target: any, property?: string | symbol, descriptor?: TypedPropertyDescriptor<any>): void => {
-    // set the labAuth metadata
-    SetMetadata(cnLabAuthMetadata, true)(target, property, descriptor);
-    // activate the CnLabAuthGuard
-    UseGuards(CnLabAuthGuard)(target, property, descriptor);
+    if (property !== undefined && descriptor !== undefined) {
+      // set the labAuth metadata
+      SetMetadata(cnLabAuthMetadata, true)(target, property, descriptor);
+      // activate the CnLabAuthGuard
+      UseGuards(CnLabAuthGuard)(target, property, descriptor);
+    } else {
+      // set the labAuth metadata
+      SetMetadata(cnLabAuthMetadata, true)(target);
+      // activate the CnLabAuthGuard
+      UseGuards(CnLabAuthGuard)(target);
+    }
   };
 }
 
@@ -45,7 +52,11 @@ export function CnLabRobotAuthentication(): MethodDecorator & ClassDecorator {
   // use to combined 2 decorators
   return (target: any, property?: string | symbol, descriptor?: TypedPropertyDescriptor<any>): void => {
     // set the labAuth metadata
-    SetMetadata(cnLabRobotAuthMetadata, true)(target, property, descriptor);
+    if (property !== undefined && descriptor !== undefined) {
+      SetMetadata(cnLabRobotAuthMetadata, true)(target, property, descriptor);
+    } else {
+      SetMetadata(cnLabRobotAuthMetadata, true)(target);
+    }
   };
 }
 
@@ -67,7 +78,11 @@ export function CnLabAllowDev(): MethodDecorator & ClassDecorator {
   // use to combined 2 decorators
   return (target: any, property?: string | symbol, descriptor?: TypedPropertyDescriptor<any>): void => {
     // set the labAuth metadata
-    SetMetadata(cnLabAllowDevAuthMetadata, true)(target, property, descriptor);
+    if (property !== undefined && descriptor !== undefined) {
+      SetMetadata(cnLabAllowDevAuthMetadata, true)(target, property, descriptor);
+    } else {
+      SetMetadata(cnLabAllowDevAuthMetadata, true)(target);
+    }
   };
 }
 

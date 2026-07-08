@@ -113,9 +113,12 @@ export class CnLabStatsStorage {
     // calculate the total transferred data
     for (const backup of this.labBackups) {
       if (!this.stats.dateIsBetween(backup.startedAt)) continue;
+      // skip backups that are not finished yet (no end date)
+      const backupEndedAt = backup.endedAt;
+      if (backupEndedAt == null) continue;
 
       //calculate the storage transfer price for the backup
-      const storagePrice = this.storagePrices.find((price) => price.dateIsBetween(backup.endedAt));
+      const storagePrice = this.storagePrices.find((price) => price.dateIsBetween(backupEndedAt));
       if (!storagePrice) {
         throw new BlBadRequestException(
           'No storage price found for the backup dates, please contact the support'
@@ -149,7 +152,10 @@ export class CnLabStatsStorage {
       if (period.fromDate > this.stats.toDate) break;
 
       const startDate = period.fromDate < this.stats.fromDate ? this.stats.fromDate : period.fromDate;
-      const endDate = period.getToDateWithDefault() > this.stats.toDate ? this.stats.toDate : period.toDate;
+      const endDate =
+        period.getToDateWithDefault() > this.stats.toDate
+          ? this.stats.toDate
+          : period.getToDateWithDefault();
 
       const filteredPrices = this.getStoragePricePeriodsAt(storagePrices, startDate, endDate);
       for (const price of filteredPrices) {
@@ -164,7 +170,7 @@ export class CnLabStatsStorage {
   private getBackupsAsPeriods(): CnLabStorageStatsPeriodNumber[] {
     const periodPrices = new CnLabStorageStatsPeriods<CnLabStorageStatsPeriodNumber>();
 
-    let previousBackup: CnLabBackupHistory = null;
+    let previousBackup: CnLabBackupHistory | null = null;
 
     for (const backup of this.labBackups) {
       if (!previousBackup) {
@@ -248,7 +254,7 @@ export class CnLabStatsStorage {
       periodPrices.addPeriod(
         new CnLabStorageStatsPeriodNumber(
           storagePrice.startDate,
-          storagePrice.endDate,
+          storagePrice.endDate ?? null,
           extractData(storagePrice)
         )
       );

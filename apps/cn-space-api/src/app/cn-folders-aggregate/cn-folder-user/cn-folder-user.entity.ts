@@ -45,30 +45,30 @@ export class CnRootFolderUserRoleObj {
 @Entity('folder_user')
 export class CnFolderUserEntity {
   @PrimaryColumn({ type: 'varchar', length: 36 })
-  userId: string;
+  userId!: string;
 
   @Exclude()
   @ManyToOne(() => CnUserEntity, { onUpdate: 'CASCADE', onDelete: 'CASCADE', eager: true, nullable: false })
-  user: CnUser;
+  user!: CnUser;
 
   @PrimaryColumn({ type: 'varchar', length: 36 })
-  rootFolderId: string;
+  rootFolderId!: string;
 
   @Exclude()
   @JoinColumn()
   @ManyToOne(() => CnHierarchyObjectEntity, { onUpdate: 'CASCADE', onDelete: 'CASCADE', nullable: false })
-  rootFolder: CnHierarchyObjectEntity;
+  rootFolder!: CnHierarchyObjectEntity;
 
   @Column({ nullable: false, type: 'enum', enum: CnRootFolderUserRole })
-  role: CnRootFolderUserRole;
+  role!: CnRootFolderUserRole;
 
   @BlLuxonDateTimeColumn({ nullable: false, update: false })
-  sharedAt: DateTime;
+  sharedAt!: DateTime;
 
   @Type(() => CnUserEntity)
   @ManyToOne(() => CnUserEntity, { nullable: false })
   @BlNotUpdatable()
-  sharedBy: Relation<CnUser>;
+  sharedBy!: Relation<CnUser>;
 
   @Column({
     nullable: false,
@@ -76,7 +76,7 @@ export class CnFolderUserEntity {
     enum: CnRootFolderNotifOptions,
     default: CnRootFolderNotifOptions.NONE,
   })
-  folderNotif: CnRootFolderNotifOptions;
+  folderNotif!: CnRootFolderNotifOptions;
 
   @Column({
     nullable: false,
@@ -84,7 +84,7 @@ export class CnFolderUserEntity {
     enum: CnRootFolderNotifOptions,
     default: CnRootFolderNotifOptions.NOTIF_ONLY,
   })
-  messageNotif: CnRootFolderNotifOptions;
+  messageNotif!: CnRootFolderNotifOptions;
 
   @Column({
     nullable: false,
@@ -92,7 +92,7 @@ export class CnFolderUserEntity {
     enum: CnRootFolderNotifOptions,
     default: CnRootFolderNotifOptions.NONE,
   })
-  scenarioNotif: CnRootFolderNotifOptions;
+  scenarioNotif!: CnRootFolderNotifOptions;
 
   @Column({
     nullable: false,
@@ -100,7 +100,7 @@ export class CnFolderUserEntity {
     enum: CnRootFolderNotifOptions,
     default: CnRootFolderNotifOptions.NONE,
   })
-  noteNotif: CnRootFolderNotifOptions;
+  noteNotif!: CnRootFolderNotifOptions;
 
   @Column({
     nullable: false,
@@ -108,7 +108,7 @@ export class CnFolderUserEntity {
     enum: CnRootFolderNotifOptions,
     default: CnRootFolderNotifOptions.NONE,
   })
-  documentNotif: CnRootFolderNotifOptions;
+  documentNotif!: CnRootFolderNotifOptions;
 
   get roleObj(): CnRootFolderUserRoleObj {
     return new CnRootFolderUserRoleObj(this.role);

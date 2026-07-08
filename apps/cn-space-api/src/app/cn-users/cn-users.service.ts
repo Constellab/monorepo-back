@@ -63,7 +63,7 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
       return {
         id: user.id,
         alias: user.alias,
-        photo: user.photo,
+        photo: user.photo ?? '',
         firstname: user.firstname,
         lastname: user.lastname,
       };
@@ -74,15 +74,15 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
     return this.repository.find();
   }
 
-  findOne(id: string): Promise<CnUser> {
+  findOne(id: string): Promise<CnUser | null> {
     return this.repository.findOneBy({ id: id });
   }
 
-  findOneValid(id: string): Promise<CnUser> {
+  findOneValid(id: string): Promise<CnUser | null> {
     return this.repository.findOneBy({ id: id, status: BlUserStatus.READY });
   }
 
-  findByEmail(email: string): Promise<CnUser> {
+  findByEmail(email: string): Promise<CnUser | null> {
     return this.repository.findOne({
       where: {
         email: email.toLowerCase(),
@@ -230,7 +230,7 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
     return userSearch.smartSearchByName(name, page, size);
   }
 
-  public getRobotUser(): Promise<CnUser> {
+  public getRobotUser(): Promise<CnUser | null> {
     return this.repository.findOneBy({ email: this.configService.getRobotUserMail() });
   }
 

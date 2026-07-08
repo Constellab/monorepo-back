@@ -49,7 +49,7 @@ export class CnActivityService extends BlAbstractPaginatedService<CnActivity> {
     activity.title = activityDTO.title;
     activity.user = activityDTO.user ?? CnCurrentUserHelper.getAndCheckCurrentUser();
     activity.space = activityDTO.space ?? CnCurrentUserHelper.getCurrentSpace();
-    activity.parentEntityId = activityDTO.parentEntityId;
+    activity.parentEntityId = activityDTO.parentEntityId ?? null;
     activity.createdAt = ClDateHelper.getDate();
 
     const dbActivity = await this.repository.save(activity);

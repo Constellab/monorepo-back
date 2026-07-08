@@ -57,11 +57,12 @@ export class CnOutscaleService {
         throw new BlBadRequestException("Can't create the VM");
       });
 
-    if (response.vms.length === 0) {
+    const vm = response.vms?.[0];
+    if (vm == null) {
       throw new BlBadRequestException("Can't create the VM");
     }
 
-    return response.vms[0];
+    return vm;
   }
 
   async getVm(id: string): Promise<Vm | null> {
@@ -71,10 +72,7 @@ export class CnOutscaleService {
       throw new BlBadRequestException("Can't find the VM");
     });
 
-    if (response.vms.length === 0) {
-      return null;
-    }
-    return response.vms[0];
+    return response.vms?.[0] ?? null;
   }
 
   public async deleteInstance(id: string): Promise<VmState> {
@@ -85,11 +83,12 @@ export class CnOutscaleService {
       throw new BlBadRequestException("Can't delete the VM");
     });
 
-    if (response.vms.length === 0) {
+    const vm = response.vms?.[0];
+    if (vm == null) {
       throw new BlBadRequestException("Can't delete the VM");
     }
 
-    return response.vms[0];
+    return vm;
   }
 
   public async startInstance(id: string): Promise<VmState> {
@@ -100,11 +99,12 @@ export class CnOutscaleService {
       throw new BlBadRequestException("Can't start the VM");
     });
 
-    if (response.vms.length === 0) {
+    const vm = response.vms?.[0];
+    if (vm == null) {
       throw new BlBadRequestException("Can't start the VM");
     }
 
-    return response.vms[0];
+    return vm;
   }
 
   public async stopInstance(id: string): Promise<VmState> {
@@ -115,11 +115,12 @@ export class CnOutscaleService {
       throw new BlBadRequestException("Can't stop the VM");
     });
 
-    if (response.vms.length === 0) {
+    const vm = response.vms?.[0];
+    if (vm == null) {
       throw new BlBadRequestException("Can't stop the VM");
     }
 
-    return response.vms[0];
+    return vm;
   }
 
   public async rebootInstance(id: string): Promise<void> {
@@ -153,6 +154,10 @@ export class CnOutscaleService {
         throw new BlBadRequestException("Can't create the volume");
       });
 
+    if (response.volume == null) {
+      throw new BlBadRequestException("Can't create the volume");
+    }
+
     return response.volume;
   }
 
@@ -166,11 +171,12 @@ export class CnOutscaleService {
         throw new BlBadRequestException("Can't find the volume");
       });
 
-    if (response.volumes.length === 0) {
+    const volume = response.volumes?.[0];
+    if (volume == null) {
       throw new BlBadRequestException("Can't find the volume");
     }
 
-    return response.volumes[0];
+    return volume;
   }
 
   public async deleteVolume(id: string): Promise<void> {
@@ -212,6 +218,10 @@ export class CnOutscaleService {
       throw new BlBadRequestException("Can't create the public IP");
     });
 
+    if (response.publicIp == null) {
+      throw new BlBadRequestException("Can't create the public IP");
+    }
+
     return response.publicIp;
   }
 
@@ -225,11 +235,7 @@ export class CnOutscaleService {
         throw new BlBadRequestException("Can't find the public IP");
       });
 
-    if (response.publicIps.length === 0) {
-      return null;
-    }
-
-    return response.publicIps[0];
+    return response.publicIps?.[0] ?? null;
   }
 
   public async deletePublicIp(id: string): Promise<void> {

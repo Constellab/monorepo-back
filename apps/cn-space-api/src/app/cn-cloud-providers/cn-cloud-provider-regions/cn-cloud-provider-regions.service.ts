@@ -68,7 +68,7 @@ export class CnCloudProviderRegionService extends BlAbstractService<CnCloudProvi
     cloudProviderId: string,
     technicalName: string,
     type: CnCloudProviderRegionType
-  ): Promise<CnCloudProviderRegion> {
+  ): Promise<CnCloudProviderRegion | null> {
     return this.repository.findOneBy({
       cloudProvider: { id: cloudProviderId },
       technicalName: technicalName,

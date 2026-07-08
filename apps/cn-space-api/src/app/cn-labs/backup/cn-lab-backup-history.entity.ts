@@ -26,31 +26,31 @@ export class CnLabBackupHistoryEntity extends CnBaseEntity {
   @Type(() => CnLabEntity)
   @ManyToOne(() => CnLabEntity, { onDelete: 'CASCADE', nullable: false })
   @BlNotUpdatable()
-  lab: CnLabEntity;
+  lab!: CnLabEntity;
 
   @Column({ nullable: false, type: 'enum', enum: CnLabBackupFrequency })
-  frequency: CnLabBackupFrequency;
+  frequency!: CnLabBackupFrequency;
 
   @Exclude()
   @Type(() => CnBucket)
   @ManyToOne(() => CnBucket, { onDelete: 'CASCADE', nullable: false })
   @BlNotUpdatable()
-  bucket: CnBucket;
+  bucket!: CnBucket;
 
   @Column({ nullable: false, type: 'enum', enum: CnLabBackupTriggerMode })
-  triggerMode: CnLabBackupTriggerMode;
+  triggerMode!: CnLabBackupTriggerMode;
 
   @BlLuxonDateTimeColumn({ nullable: false })
-  startedAt: DateTime;
+  startedAt!: DateTime;
 
   @BlLuxonDateTimeColumn({ nullable: true })
-  endedAt: DateTime;
+  endedAt?: DateTime;
 
   @Column({ nullable: true, length: 60, unique: true })
   backupId?: string;
 
   @Column({ nullable: false, type: 'enum', enum: CnLabBackupStatus })
-  status: CnLabBackupStatus;
+  status!: CnLabBackupStatus;
 
   @Exclude()
   @OneToMany(() => CnLabBackupHistoryDetail, (detail) => detail.history, { eager: true })
@@ -63,19 +63,22 @@ export class CnLabBackupHistoryEntity extends CnBaseEntity {
   @Type(() => CnCloudProviderRegion)
   @Expose()
   get region(): CnCloudProviderRegion {
+    if (this.bucket.region == null) {
+      throw new Error('The bucket region was not loaded');
+    }
     return this.bucket.region;
   }
 
   @Expose()
   get dataDetails(): CnLabBackupHistoryDetail | null {
     if (!this.details) return null;
-    return this.details.find((detail) => detail.type === CnLabBackupType.DATA);
+    return this.details.find((detail) => detail.type === CnLabBackupType.DATA) ?? null;
   }
 
   @Expose()
   get dbDetails(): CnLabBackupHistoryDetail | null {
     if (!this.details) return null;
-    return this.details.find((detail) => detail.type === CnLabBackupType.DB);
+    return this.details.find((detail) => detail.type === CnLabBackupType.DB) ?? null;
   }
 
   /**

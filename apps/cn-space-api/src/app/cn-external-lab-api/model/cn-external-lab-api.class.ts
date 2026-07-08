@@ -19,7 +19,7 @@ export interface CnExternalLabUser {
   last_name: string;
   theme: ClTheme;
   lang: ClSupportedLanguage;
-  photo: string;
+  photo: string | null;
 }
 
 /**
@@ -36,7 +36,7 @@ export interface CnLabGlobalActivity {
 
 export class CnExternalLabShareGenerateTokenResponse {
   @ClLuxonDateTransform()
-  share_link_valid_until: DateTime;
+  share_link_valid_until!: DateTime;
   // Legacy labs return a single access_url used both to embed the resource in
   // place and to open it standalone. Recent labs instead return embedded_url and
   // standalone_url. Exactly one of the two shapes is provided.

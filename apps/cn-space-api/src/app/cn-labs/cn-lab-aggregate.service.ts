@@ -178,7 +178,7 @@ export class CnLabAggregateService {
     lab.region = cloudCreateDTO.region;
     lab.billingMode = CnLabBillingMode.HOURLY;
     lab.isFreeLab = false;
-    lab.space = CnCurrentUserHelper.getCurrentSpace();
+    lab.space = CnCurrentUserHelper.getAndCheckCurrentSpace();
     lab.virtualHost = ClStringHelper.generateUUID() + '.' + CnLabDomain.CONSTELLAB_APP;
 
     // handle lab config
@@ -218,8 +218,8 @@ export class CnLabAggregateService {
     lab: CnLabEntity,
     volumeSize: number,
     volumeType: CnLabVolumeType,
-    dailyBackupRegion: CnCloudProviderRegion,
-    weeklyBackupRegion: CnCloudProviderRegion,
+    dailyBackupRegion: CnCloudProviderRegion | null,
+    weeklyBackupRegion: CnCloudProviderRegion | null,
     entityManager: EntityManager
   ): Promise<CnLabEntity> {
     const labDb: CnLabEntity = await this.labsService.createLab(lab, entityManager);
@@ -280,7 +280,7 @@ export class CnLabAggregateService {
     lab.serverInstanceId = updateLab.serverInstanceId;
     lab.serverVolumeId = updateLab.serverVolumeId;
     lab.serverIpAddressId = updateLab.serverIpAddressId;
-    lab.desktopPlatform = updateLab.desktopPlatform;
+    lab.desktopPlatform = updateLab.desktopPlatform ?? null;
     lab.gwsCoreProdDbPassword = updateLab.gwsCoreProdDbPassword;
     lab.gwsCoreDevDbPassword = updateLab.gwsCoreDevDbPassword;
     return lab;
@@ -332,6 +332,9 @@ export class CnLabAggregateService {
   async findCodelabInfo(id: string): Promise<CnLabCodelabDTO> {
     const lab = await this.labsService.findByIdAndCheck(id);
     await this.security.checkAuthorizationToFindById(lab, CnCurrentUserHelper.getAndCheckUserSpaceInfo());
+    if (lab.codelabToken == null) {
+      throw new BlBadRequestException('Lab has no codelab token');
+    }
     return {
       username: lab.getCodelabUsername(),
       token: lab.codelabToken,
@@ -394,10 +397,16 @@ export class CnLabAggregateService {
   }
 
   public async getGlabConfig(lab: CnLab): Promise<CnLabGlabApiInfo> {
+    if (lab.labConfigId == null) {
+      throw new BlBadRequestException(CnErrorText.LAB_CONFIG_NOT_FOUND);
+    }
     const gwsCoreVerson = await this.labConfigService.getLabBrickVersion(
       lab.labConfigId,
       CnBrickGWS.GWS_CORE
     );
+    if (gwsCoreVerson == null) {
+      throw new BlBadRequestException(CnErrorText.LAB_CONFIG_NOT_FOUND);
+    }
     return {
       gwsCoreVersion: gwsCoreVerson.version,
       apiInfo: lab.getGlabSpaceApiInfo(),
@@ -483,6 +492,9 @@ export class CnLabAggregateService {
     }
 
     const fullLab = await this.labsService.findByIdAndCheck(labId, { serverCloud: true });
+    if (fullLab.serverCloud == null) {
+      throw new BlBadRequestException('The lab has no server cloud configured');
+    }
 
     const serverInfo = new CnLabServerInfoDTO();
     serverInfo.name = fullLab.serverCloud.serverStandard.name;
@@ -683,7 +695,9 @@ export class CnLabAggregateService {
         // Specific case to handle error, mark as stopped and set the error in the server task
         if (serverStatus.status === 'ERROR') {
           const text =
-            serverStatus.message?.length > 0 ? serverStatus.message : 'No information about the error';
+            serverStatus.message != null && serverStatus.message.length > 0
+              ? serverStatus.message
+              : 'No information about the error';
           return await this.labsService.markInstanceAsError(labId, text);
         }
       } catch (error) {
@@ -845,6 +859,9 @@ export class CnLabAggregateService {
 
   public async addUserToLab(labId: string, userId: string, role: CnLabUserRole): Promise<CnLabUserWithUser> {
     const lab = await this.getAndCheckAuthorizationToManageLab(labId, false);
+    if (lab.spaceId == null) {
+      throw new BlBadRequestException('Lab has no space');
+    }
     await this.security.checkSpaceViewerCannotBeAddedToLab(lab.spaceId, userId);
     const user = await this.usersService.findByIdAndCheck(userId);
 

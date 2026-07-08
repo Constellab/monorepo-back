@@ -37,26 +37,26 @@ export class CnHierarchyObjectFindOneDTO {
  * Representation of a folder in the lab
  */
 export class CnLabFolderDTO {
-  id: string;
-  code: string;
-  title: string; // TODO remove once all lab are on v 0.13.0 or higher
-  name: string;
-  children: CnLabFolderDTO[];
-  levelStatus: 'LEAF' | 'PARENT';
+  id!: string;
+  code!: string;
+  title!: string; // TODO remove once all lab are on v 0.13.0 or higher
+  name!: string;
+  children!: CnLabFolderDTO[];
+  levelStatus!: 'LEAF' | 'PARENT';
 }
 
 export class CnBulkActionContext {
-  selectedIds: string[];
+  selectedIds!: string[];
 }
 
 export class CnBulkMoveToFolderDto {
-  context: CnBulkActionContext;
-  targetFolderId: string;
+  context!: CnBulkActionContext;
+  targetFolderId!: string;
 }
 
 export class CnBulkCreateTagsDto {
-  context: CnBulkActionContext;
-  tags: CnTag[];
+  context!: CnBulkActionContext;
+  tags!: CnTag[];
 }
 
 export class CnFolderDtoHelper {

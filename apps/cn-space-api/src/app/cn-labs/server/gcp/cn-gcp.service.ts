@@ -187,7 +187,11 @@ export class CnGcpService {
       throw new Error(`No external IP address found for instance ${instanceName}`);
     }
 
-    return accessConfigs[0].natIP;
+    const natIP = accessConfigs[0].natIP;
+    if (natIP == null) {
+      throw new Error(`No external IP address found for instance ${instanceName}`);
+    }
+    return natIP;
   }
 
   async createStaticIpAddress(
@@ -278,12 +282,19 @@ export class CnGcpService {
       throw new Error('Failed to retrieve project information, please retry later.');
     }
 
-    return sshKeysItem.value;
+    return sshKeysItem.value ?? null;
   }
 
   //////////////////////////// HELPER METHODS ////////////////////////////
 
-  private async waitForZoneOperation(projectId: string, zone: string, operationName: string): Promise<void> {
+  private async waitForZoneOperation(
+    projectId: string,
+    zone: string,
+    operationName: string | null | undefined
+  ): Promise<void> {
+    if (operationName == null) {
+      throw new Error('GCP operation name is missing');
+    }
     const zoneOperationsClient = new ZoneOperationsClient();
     await this.waitForAnyOperation(
       () =>
@@ -299,8 +310,11 @@ export class CnGcpService {
   private async waitForRegionOperation(
     projectId: string,
     region: string,
-    operationName: string
+    operationName: string | null | undefined
   ): Promise<void> {
+    if (operationName == null) {
+      throw new Error('GCP operation name is missing');
+    }
     const regionOperationsClient = new RegionOperationsClient();
     await this.waitForAnyOperation(
       () =>
@@ -355,7 +369,7 @@ export class CnGcpService {
   }
 
   private async withTimeout<T>(promise: Promise<T>, timeoutMs: number, message: string): Promise<T> {
-    let timeoutHandle: NodeJS.Timeout;
+    let timeoutHandle: NodeJS.Timeout | undefined;
     const timeout = new Promise<never>((_, reject) => {
       timeoutHandle = setTimeout(() => reject(new Error(message)), timeoutMs);
     });

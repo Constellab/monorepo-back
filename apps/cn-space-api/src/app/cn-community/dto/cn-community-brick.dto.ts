@@ -6,34 +6,34 @@ import { CnCommunitySpaceDto } from './cn-community-space.dto';
 import { CnCommunityUserDto } from './cn-community-user.dto';
 
 export class CnCommunityBrickDto extends BlEntityWithIdDTO {
-  name: string;
-  description: string;
-  isCertified: boolean;
-  visibility: CnBrickVisibility;
+  name!: string;
+  description!: string;
+  isCertified!: boolean;
+  visibility!: CnBrickVisibility;
   pipRepo?: string;
   gitRepo?: string;
   imageLink?: string;
   credentialUsername?: string;
   credentialPassword?: string;
-  createdAt: string;
+  createdAt!: string;
 
   @Type(() => CnCommunityUserDto)
-  createdBy: CnCommunityUserDto;
-  lastModifiedAt: string;
+  createdBy!: CnCommunityUserDto;
+  lastModifiedAt!: string;
 
   @Type(() => CnCommunityUserDto)
-  lastModifiedBy: CnCommunityUserDto;
+  lastModifiedBy!: CnCommunityUserDto;
 
   @Type(() => CnCommunitySpaceDto)
   space?: CnCommunitySpaceDto;
-  likes: number;
-  comments: number;
+  likes!: number;
+  comments!: number;
 }
 
 export class CnCommunityBrickVersionDTO {
-  brickName: string;
-  brickVersion: string;
-  repoType: 'PIP' | 'GIT';
-  repositoryUrl: string;
+  brickName!: string;
+  brickVersion!: string;
+  repoType!: 'PIP' | 'GIT';
+  repositoryUrl!: string;
   technicalInfo?: Record<string, any>;
 }

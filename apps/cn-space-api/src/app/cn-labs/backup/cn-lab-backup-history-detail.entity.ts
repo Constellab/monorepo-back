@@ -16,47 +16,47 @@ export class CnLabBackupHistoryDetail extends BlEntityWithId {
   @Type(() => CnLabBackupHistoryEntity)
   @ManyToOne(() => CnLabBackupHistoryEntity, { onDelete: 'CASCADE', nullable: false })
   @BlNotUpdatable()
-  history: CnLabBackupHistoryEntity;
+  history!: CnLabBackupHistoryEntity;
 
   @Column({ nullable: false, type: 'enum', enum: CnLabBackupType })
-  type: CnLabBackupType;
+  type!: CnLabBackupType;
 
   // Data info
   @Column({ nullable: false, type: 'enum', enum: CnLabBackupStatus })
-  status: CnLabBackupStatus;
+  status!: CnLabBackupStatus;
 
   @Column({ nullable: false, type: 'text' })
-  message: string;
+  message!: string;
 
   @Column({ nullable: false, default: 0, type: 'bigint' })
-  totalSize: number;
+  totalSize!: number;
 
   /**
    * Transfer size in bytes
    */
   @Column({ nullable: false, default: 0, type: 'bigint' })
-  transferSize: number;
+  transferSize!: number;
 
   @Column({ nullable: false, default: 0 })
-  transferDuration: number;
+  transferDuration!: number;
 
   @Column({ nullable: false, default: 0, type: 'bigint' })
-  transferSpeed: number;
+  transferSpeed!: number;
 
   @Column({ nullable: false, default: 0 })
-  transferNbErrors: number;
+  transferNbErrors!: number;
 
   @Column({ nullable: false, default: 0 })
-  transferNbChecks: number;
+  transferNbChecks!: number;
 
   @Column({ nullable: false, default: 0 })
-  transferNbFile: number;
+  transferNbFile!: number;
 
   @Column({ nullable: false, default: 0 })
-  transferNbDeleted: number;
+  transferNbDeleted!: number;
 
   @Column({ nullable: false, default: 0 })
-  transferNbRenamed: number;
+  transferNbRenamed!: number;
 
   public updateInfo(backupInfo: CnLabBackupInfo): void {
     this.totalSize = backupInfo.totalSize;

@@ -53,7 +53,10 @@ export class CnLabFolderService {
     await entityManager.remove(labFolder);
   }
 
-  public async findByLabIdAndRootFolderId(labId: string, rootFolderId: string): Promise<CnLabFolder> {
+  public async findByLabIdAndRootFolderId(
+    labId: string,
+    rootFolderId: string
+  ): Promise<CnLabFolder | null> {
     return this.repository.findOneBy({ labId, rootFolderId: rootFolderId });
   }
 

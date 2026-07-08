@@ -15,37 +15,37 @@ import { CnScenario, CnScenarioEntity } from '../cn-scenarios/cn-scenario.entity
 @Entity('note')
 export class CnNoteEntity extends CnHierarchyRepresentation {
   @Column()
-  title: string;
+  title!: string;
 
   @ManyToMany(() => CnScenarioEntity, (scenario) => scenario.notes)
   @JoinTable({ name: 'note_scenario' })
-  scenarios: CnScenario[];
+  scenarios!: CnScenario[];
 
   @BlNotUpdatable()
   @Type(() => CnLabEntity)
   @ManyToOne(() => CnLabEntity, { nullable: false })
-  lab: CnLab;
+  lab!: CnLab;
 
   @Type(() => CnLabConfig)
   @ManyToOne(() => CnLabConfig, { nullable: false })
-  labConfig: CnLabConfig;
+  labConfig!: CnLabConfig;
 
   @Column({ nullable: false, default: false })
-  isValidated: boolean;
+  isValidated!: boolean;
 
   @Type(() => CnUserEntity)
   @ManyToOne(() => CnUserEntity, { eager: true, nullable: true })
-  validatedBy: CnUser;
+  validatedBy?: CnUser;
 
   @BlLuxonDateTimeColumn({ nullable: true })
-  validatedAt: DateTime;
+  validatedAt?: DateTime;
 
   @Type(() => CnUserEntity)
   @ManyToOne(() => CnUserEntity, { eager: true, nullable: false })
-  lastSyncBy: CnUser;
+  lastSyncBy!: CnUser;
 
   @BlLuxonDateTimeColumn({ nullable: false })
-  lastSyncAt: DateTime;
+  lastSyncAt!: DateTime;
 
   @Type(() => CnDocumentEntity)
   @ManyToOne(() => CnDocumentEntity, { nullable: true })

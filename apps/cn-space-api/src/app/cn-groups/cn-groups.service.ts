@@ -121,7 +121,7 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
   public async searchGroupsByLabelInSpace(
     spaceId: string,
     userIds: string[],
-    label: string,
+    label: string | null,
     page: number,
     size: number
   ): Promise<ClPageI<CnGroup>> {
@@ -130,7 +130,7 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
     };
 
     let userWheres: FindOptionsWhere<CnGroupSingleUser>[];
-    if (!ClHelpService.isNullOrEmpty(label)) {
+    if (label != null && !ClHelpService.isNullOrEmpty(label)) {
       teamWhere.label = Like(`%${label}%`);
 
       // search user by name in the list of provided user
@@ -231,7 +231,7 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
    * @param id
    */
   public async getAndCheckTeamById(id: string): Promise<CnGroupTeam> {
-    const group = await this.findById(id);
+    const group = await this.findByIdAndCheck(id);
 
     if (group.type !== CnGroupType.TEAM) {
       throw new BlBadRequestException('Can only work on teams');

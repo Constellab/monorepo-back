@@ -1,3 +1,4 @@
+import { BlBadRequestException } from '@monorepo/back-core-lib';
 import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 
@@ -60,6 +61,10 @@ export class CnResourceAggregateService {
   public async renameResource(resourceId: string, name: string): Promise<CnResource> {
     const hierarchyObject = await this.securityService.getAndCheckAuthorizationForUpdate(resourceId);
     const resource = await this.resourceService.renameResource(resourceId, name);
+
+    if (hierarchyObject.parentId === null) {
+      throw new BlBadRequestException('The resource has no parent folder');
+    }
 
     this.eventService.emitFolderEvent({
       type: 'RENAME_RESOURCE',
