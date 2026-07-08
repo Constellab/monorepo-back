@@ -23,7 +23,7 @@ export enum CnBrickGWS {
  */
 export enum CnGwsCoreVersion {
   // from this version, the generate-user-access-token share route expects a
-  // { user, open_app_in_new_tab } dict instead of a bare user object
+  // { user } dict instead of a bare user object
   _0_23_1 = '0.23.1',
 }
 

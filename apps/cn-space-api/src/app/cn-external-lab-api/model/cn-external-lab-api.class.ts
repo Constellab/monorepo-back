@@ -37,7 +37,15 @@ export interface CnLabGlobalActivity {
 export class CnExternalLabShareGenerateTokenResponse {
   @ClLuxonDateTransform()
   share_link_valid_until: DateTime;
-  access_url: string;
+  // Legacy labs return a single access_url used both to embed the resource in
+  // place and to open it standalone. Recent labs instead return embedded_url and
+  // standalone_url. Exactly one of the two shapes is provided.
+  access_url?: string;
+  // Url to open the resource/app embedded in place (resource-open page / iframe).
+  embedded_url?: string;
+  // Url to open the resource/app standalone (e.g. in a new tab through the
+  // launcher gateway).
+  standalone_url?: string;
 }
 
 export class CnExternalLabSyncedObjectDTO {

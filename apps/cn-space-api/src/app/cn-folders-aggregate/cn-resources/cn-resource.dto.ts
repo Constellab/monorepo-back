@@ -15,7 +15,11 @@ export class CnShareResourceRequestDTO {
 
 export class CnResourceAccessDTO {
   id: string;
-  accessUrl: string;
+  // Url to open the resource/app embedded in place (resource-open page / iframe).
+  embeddedUrl: string;
+  // Url to open the resource/app standalone (e.g. in a new tab through the
+  // launcher gateway).
+  standaloneUrl: string;
   resourceId: string;
   name: string;
   typingName: string;
@@ -25,9 +29,10 @@ export class CnResourceAccessDTO {
   @ClLuxonDateTransform()
   validUntil: DateTime;
 
-  constructor(resource: CnResource, accessUrl: string, validUntil: DateTime) {
+  constructor(resource: CnResource, embeddedUrl: string, standaloneUrl: string, validUntil: DateTime) {
     this.id = resource.id;
-    this.accessUrl = accessUrl;
+    this.embeddedUrl = embeddedUrl;
+    this.standaloneUrl = standaloneUrl;
     this.resourceId = resource.resourceId;
     this.name = resource.name;
     this.typingName = resource.typingName;

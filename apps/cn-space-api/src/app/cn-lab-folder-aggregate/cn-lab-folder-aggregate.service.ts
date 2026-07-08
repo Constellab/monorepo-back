@@ -201,12 +201,14 @@ export class CnLabFolderAggregateService {
   /////////////////////////////////////// RESOURCE //////////////////////////////////
 
   /**
-   * Method that calls the lab to generate a user access token for a resource
+   * Method that calls the lab to generate a user access token for a resource.
+   *
+   * Returns an embedded url (open in place) and a standalone url (open in a new
+   * tab through the launcher gateway). Legacy labs return a single access_url
+   * that is used for both.
    * @param resourceId
-   * @param openAppInNewTab true to point the access url to the app launcher gateway
-   * (open the app in a new tab) instead of the in-place resource-open page
    */
-  public async getResourceAccess(resourceId: string, openAppInNewTab = false): Promise<CnResourceAccessDTO> {
+  public async getResourceAccess(resourceId: string): Promise<CnResourceAccessDTO> {
     const resource = await this.resourceAggregateService.findResource(resourceId);
     const lab = resource.lab;
 
@@ -229,10 +231,14 @@ export class CnLabFolderAggregateService {
     const userAccess = await this.externalLabShareService.generateUserAccessToken(
       lab,
       resource.token,
-      labUser,
-      openAppInNewTab
+      labUser
     );
-    return new CnResourceAccessDTO(resource, userAccess.access_url, userAccess.share_link_valid_until);
+
+    // Recent labs return embedded_url/standalone_url. Legacy labs return a single
+    // access_url used for both.
+    const embeddedUrl = userAccess.embedded_url ?? userAccess.access_url;
+    const standaloneUrl = userAccess.standalone_url ?? userAccess.access_url;
+    return new CnResourceAccessDTO(resource, embeddedUrl, standaloneUrl, userAccess.share_link_valid_until);
   }
 
   /////////////////////////////////////// OTHER //////////////////////////////////
