@@ -40,7 +40,9 @@ export class ClStringHelper {
    * Convert Test hello --> test-hello
    * @param str
    */
-  public static toKebabCase(str: string): string {
+  public static toKebabCase(str: string): string;
+  public static toKebabCase(str: string | null): string | null;
+  public static toKebabCase(str: string | null): string | null {
     if (str == null) return null;
     return str.trim().replace(/\s+/g, '-').toLowerCase();
   }
@@ -106,7 +108,7 @@ export class ClStringHelper {
    * Example : https://test.constellab.com --> test
    * @param url
    */
-  public static getLowestDomainFromUrl(url: string): string {
+  public static getLowestDomainFromUrl(url: string | null): string | null {
     if (url == null) return null;
     url = url.replace('https://', '').replace('http://', '');
     const domains = url.split('.');
@@ -117,7 +119,9 @@ export class ClStringHelper {
   /**
    * Return the string with line breaks replaced by a point with a space
    */
-  public static replaceLineBreaksBySpace(str: string): string {
+  public static replaceLineBreaksBySpace(str: string): string;
+  public static replaceLineBreaksBySpace(str: string | null): string | null;
+  public static replaceLineBreaksBySpace(str: string | null): string | null {
     if (str == null) return null;
 
     str = str.replace(/(?:\r\n|\r|\n)/g, ' ');
@@ -150,22 +154,22 @@ export class ClStringHelper {
    * Return the first letter of each word in uppercase
    * @param str
    */
-  public static toIdForUrl(str: string): string {
+  public static toIdForUrl(str: string): string;
+  public static toIdForUrl(str: string | null): string | null;
+  public static toIdForUrl(str: string | null): string | null {
     if (str == null) return null;
-    if (typeof str !== 'string') {
-      str = (str as any).toString();
-    }
-    str = str.replace(new RegExp(/[&?~/|\\'"[()\]%!§:;.,#*^¨}{@°`]/g), '');
-    str.replace('--', '-');
-    while (str[0] == '-') {
-      str = str.slice();
+    let value: string = typeof str !== 'string' ? (str as any).toString() : str;
+    value = value.replace(new RegExp(/[&?~/|\\'"[()\]%!§:;.,#*^¨}{@°`]/g), '');
+    value.replace('--', '-');
+    while (value[0] == '-') {
+      value = value.slice();
     }
 
-    while (str[str.length - 1] == '-') {
-      str = str.slice(0, -1);
+    while (value[value.length - 1] == '-') {
+      value = value.slice(0, -1);
     }
 
-    return str;
+    return value;
   }
 
   /**
@@ -173,12 +177,13 @@ export class ClStringHelper {
    * It removes all accents, special characters, and replace spaces with dashes
    * @param str
    */
-  public static getCleanUrlPath(str: string): string {
+  public static getCleanUrlPath(str: string): string;
+  public static getCleanUrlPath(str: string | null): string | null;
+  public static getCleanUrlPath(str: string | null): string | null {
     if (str == null) return null;
-    if (typeof str !== 'string') {
-      str = (str as any).toString();
-    }
-    return this.toKebabCase(this.toIdForUrl(this.removeAccentFromString(str)));
+    const value: string = typeof str !== 'string' ? (str as any).toString() : str;
+    const idForUrl = this.toIdForUrl(this.removeAccentFromString(value));
+    return this.toKebabCase(idForUrl);
   }
 
   /**
@@ -197,7 +202,9 @@ export class ClStringHelper {
    * Regular spaces and line breaks are preserved
    * @param str string to clean
    */
-  public static removeNonVisibleCharacters(str: string): string {
+  public static removeNonVisibleCharacters(str: string): string;
+  public static removeNonVisibleCharacters(str: string | null): string | null;
+  public static removeNonVisibleCharacters(str: string | null): string | null {
     if (str == null) return null;
 
     // Remove control characters (except tab, line feed, carriage return)

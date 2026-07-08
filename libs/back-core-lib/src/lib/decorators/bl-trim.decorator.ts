@@ -24,7 +24,7 @@ export function BlTrim(options: BlTrimOptions = 'both'): PropertyDecorator {
     { toClassOnly: true }
   );
 
-  return (target: any, key: string): void => {
+  return (target: any, key: string | symbol): void => {
     transformToClass(target, key);
   };
 }

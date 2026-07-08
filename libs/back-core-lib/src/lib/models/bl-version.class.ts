@@ -26,7 +26,7 @@ export class BlVersion {
     let mainVersionsStr = version;
 
     // if there is a sub-patch, extract it
-    let subPatch: number = null;
+    let subPatch: number | undefined;
     if (version.includes('-beta.')) {
       let subPatchStr: string;
       [mainVersionsStr, subPatchStr] = version.split('-beta.');
@@ -128,7 +128,7 @@ export function BlVersionTransform(): PropertyDecorator {
     { toClassOnly: true }
   );
 
-  return (target: any, key: string): void => {
+  return (target: any, key: string | symbol): void => {
     transformToPlain(target, key);
     transformToClass(target, key);
   };

@@ -9,7 +9,7 @@ import { BlFile } from '../models/bl-file.class';
  */
 @Injectable()
 export class BlUploadedFileUtf8Pipe implements PipeTransform {
-  transform(file: BlFile | BlFile[]): BlFile | BlFile[] {
+  transform(file: BlFile | BlFile[] | null): BlFile | BlFile[] | null {
     if (file == null) return null;
 
     if (Array.isArray(file)) {

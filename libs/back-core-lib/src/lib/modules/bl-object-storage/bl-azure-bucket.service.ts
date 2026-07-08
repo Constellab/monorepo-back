@@ -74,8 +74,8 @@ export class BlAzureBucketService implements BlObjectStorageInterface {
       name: objectName,
       // Azure SDK types the body as NodeJS.ReadableStream; at runtime it is a Node Readable.
       file: downloadResponse.readableStreamBody,
-      contentType: downloadResponse.contentType,
-      contentLength: downloadResponse.contentLength,
+      contentType: downloadResponse.contentType ?? '',
+      contentLength: downloadResponse.contentLength ?? 0,
     };
   }
 
@@ -93,7 +93,7 @@ export class BlAzureBucketService implements BlObjectStorageInterface {
     const properties = await blobClient.getProperties();
     return {
       name: objectName,
-      size: properties.contentLength,
+      size: properties.contentLength ?? 0,
     };
   }
 
@@ -107,7 +107,7 @@ export class BlAzureBucketService implements BlObjectStorageInterface {
       for (const blob of response.segment.blobItems) {
         objects.push({
           name: blob.name,
-          size: blob.properties.contentLength,
+          size: blob.properties.contentLength ?? 0,
         });
       }
     }
@@ -161,7 +161,7 @@ export class BlAzureBucketService implements BlObjectStorageInterface {
     const containerClient = this.getContainerClient();
     const iterable = await containerClient.listBlobsFlat().next();
 
-    return iterable.done;
+    return iterable.done === true;
   }
 
   public async getObjectTags(objectName: string): Promise<Record<string, string>> {
@@ -169,7 +169,7 @@ export class BlAzureBucketService implements BlObjectStorageInterface {
 
     const properties = await blobClient.getProperties();
 
-    return properties.metadata;
+    return properties.metadata ?? {};
   }
 
   public async setObjectTags(objectName: string, tags: Record<string, string>): Promise<void> {

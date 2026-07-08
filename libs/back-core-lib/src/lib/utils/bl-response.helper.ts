@@ -21,8 +21,14 @@ export class BlResponseHelper {
    * Set an incoming message (like and image) in an HTTP response
    */
   public static setMessage(response: Response, incomingMessage: IncomingMessage): void {
-    response.setHeader('Content-Type', incomingMessage.headers['content-type']);
-    response.setHeader('Content-Length', incomingMessage.headers['content-length']);
+    const contentType = incomingMessage.headers['content-type'];
+    if (contentType != null) {
+      response.setHeader('Content-Type', contentType);
+    }
+    const contentLength = incomingMessage.headers['content-length'];
+    if (contentLength != null) {
+      response.setHeader('Content-Length', contentLength);
+    }
     incomingMessage.pipe(response);
   }
 

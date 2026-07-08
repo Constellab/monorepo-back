@@ -21,7 +21,7 @@ export class BlEventResponses {
     return this.responses.every((r) => r.status === 'success');
   }
 
-  public getFirstError(): string {
+  public getFirstError(): string | null {
     for (const r of this.responses) {
       if (r.status === 'error') {
         return r.error;

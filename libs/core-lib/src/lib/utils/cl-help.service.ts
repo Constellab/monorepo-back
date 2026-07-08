@@ -8,7 +8,9 @@ export class ClHelpService {
    * Deep clone an object (doesn't work with cyclic object)
    * @param object object to clone
    */
-  public static deepClone<A>(object: A): A {
+  public static deepClone<A>(object: A): A;
+  public static deepClone<A>(object: A | null): A | null;
+  public static deepClone<A>(object: A | null): A | null {
     if (object == null) return null;
     return JSON.parse(JSON.stringify(object));
   }
@@ -75,8 +77,18 @@ export class ClHelpService {
   public static sortAlphabeticalOrder<T>(
     array: T[],
     getSortableAttribute?: (item: T) => string,
+    nullMode?: 'nullLast' | 'nullFirst'
+  ): T[];
+  public static sortAlphabeticalOrder<T>(
+    array: T[] | null,
+    getSortableAttribute?: (item: T) => string,
+    nullMode?: 'nullLast' | 'nullFirst'
+  ): T[] | null;
+  public static sortAlphabeticalOrder<T>(
+    array: T[] | null,
+    getSortableAttribute?: (item: T) => string,
     nullMode: 'nullLast' | 'nullFirst' = 'nullLast'
-  ): T[] {
+  ): T[] | null {
     if (array == null) {
       return null;
     }

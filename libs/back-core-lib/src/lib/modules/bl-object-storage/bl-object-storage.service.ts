@@ -284,7 +284,9 @@ export class BlObjectStorageService {
     }
   }
 
-  private cleanTags(tags: Record<string, string>): Record<string, string> {
+  private cleanTags(tags: Record<string, string>): Record<string, string>;
+  private cleanTags(tags: Record<string, string> | undefined): Record<string, string> | undefined;
+  private cleanTags(tags: Record<string, string> | undefined): Record<string, string> | undefined {
     if (!tags) return undefined;
     const newTags: Record<string, string> = {};
     for (const key in tags) {

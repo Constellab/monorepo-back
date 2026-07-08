@@ -9,10 +9,14 @@ import { BlRequestContext } from './bl-request-context';
  */
 export class BlRequestContextHelper {
   static getCurrentRequest(): Request {
-    return this.getCurrentContext()?.req ?? null;
+    // The public contract exposes `Request` since callers use it inside request scope
+    // where the context always exists. The `?? null` fallback preserves the historical
+    // runtime behavior (null outside request scope); the cast keeps the external contract
+    // stable to avoid rippling null-handling into the consuming apps.
+    return (this.getCurrentContext()?.req ?? null) as Request;
   }
 
-  protected static getCurrentContext(): BlRequestContext {
+  protected static getCurrentContext(): BlRequestContext | null {
     const requestContext = BlRequestContext.currentContext;
     return requestContext || null;
   }
@@ -46,7 +50,7 @@ export class BlRequestContextHelper {
     return this.getCurrentContext()?.authContext ?? null;
   }
 
-  private static getCookieFromContext(cookieName: string): string {
+  private static getCookieFromContext(cookieName: string): string | undefined {
     return BlCookieHelper.getCookieFromHeader(this.getCurrentRequest().cookies, cookieName);
   }
 

@@ -21,8 +21,8 @@ export interface BlSendMailDTO {
  * this class must be extended to inject the correct queue
  */
 export class BlMailService {
-  @Inject(BlMailSenderService) private mailService: BlMailSenderService;
-  @Inject(BlMailEntityService) private mailEntityService: BlMailEntityService;
+  @Inject(BlMailSenderService) private mailService!: BlMailSenderService;
+  @Inject(BlMailEntityService) private mailEntityService!: BlMailEntityService;
 
   private readonly logger = new Logger(BlMailService.name);
 
@@ -74,10 +74,10 @@ export class BlMailService {
     mailEntity.status = BlMailStatus.PENDING;
 
     try {
-      mailEntity.mail = this.mailService.generateMailHTML(mail.templateName, mail.lang, mail.data);
+      mailEntity.mail = this.mailService.generateMailHTML(mail.templateName, mail.lang, mail.data ?? {});
     } catch (e) {
       mailEntity.status = BlMailStatus.ERROR;
-      mailEntity.error = e.toString();
+      mailEntity.error = String(e);
       await this.mailEntityService.save(mailEntity);
       throw e;
     }
@@ -94,7 +94,7 @@ export class BlMailService {
       }
     } catch (e) {
       mailEntity.status = BlMailStatus.ERROR;
-      mailEntity.error = e.toString();
+      mailEntity.error = String(e);
       await this.mailEntityService.save(mailEntity);
       throw e;
     }

@@ -1,20 +1,20 @@
 export class ClBulkActionError {
-  id: string;
-  name: string;
-  message: string;
+  id!: string;
+  name!: string;
+  message!: string;
 }
 
 export class ClBulkActionResult {
-  total: number;
-  successCount: number;
-  errorCount: number;
-  errors: ClBulkActionError[];
+  total!: number;
+  successCount!: number;
+  errorCount!: number;
+  errors!: ClBulkActionError[];
 }
 
 export class ClBulkActionRunner {
   private ids: string[];
-  private action: (id: string) => Promise<void>;
-  private nameResolver: (id: string) => Promise<string>;
+  private action!: (id: string) => Promise<void>;
+  private nameResolver!: (id: string) => Promise<string>;
 
   constructor(ids: string[]) {
     this.ids = ids;

@@ -23,12 +23,12 @@ export function BlLuxonDateColumn(config?: BlLuxonDateColumnConfig): PropertyDec
   // construct TypeOrm transformer
   const transformer: ValueTransformer = {
     // from object to DB
-    to: (value: DateTime): string => {
+    to: (value: DateTime): string | null => {
       if (!(value instanceof DateTime)) return value;
       return ClDateHelper.serializeDate(value);
     },
     // from DB to object
-    from: (value: Date): DateTime => (value == null ? null : ClDateHelper.getDate(value)),
+    from: (value: Date): DateTime | null => (value == null ? null : ClDateHelper.getDate(value)),
   };
 
   // TypeOrm column config for Date using Luxon
@@ -39,7 +39,7 @@ export function BlLuxonDateColumn(config?: BlLuxonDateColumnConfig): PropertyDec
   // get dateTime transform decorator
   const dateTransform: PropertyDecorator = ClLuxonDateTransform();
 
-  return (target: any, property?: string | symbol): void => {
+  return (target: any, property: string | symbol): void => {
     column(target, property);
     dateTransform(target, property);
   };
@@ -54,12 +54,12 @@ export function BlLuxonDateTimeColumn(config?: BlLuxonDateColumnConfig): Propert
   // construct TypeOrm transformer
   const transformer: ValueTransformer = {
     // from object to DB
-    to: (value: DateTime): string => {
+    to: (value: DateTime): string | null => {
       if (!(value instanceof DateTime)) return value;
       return ClDateHelper.serializeDateTime(value);
     },
     // from DB to object
-    from: (value: Date): DateTime => (value == null ? null : ClDateHelper.getDate(value)),
+    from: (value: Date): DateTime | null => (value == null ? null : ClDateHelper.getDate(value)),
   };
 
   // TypeOrm column config for DateTime using Luxon
@@ -70,7 +70,7 @@ export function BlLuxonDateTimeColumn(config?: BlLuxonDateColumnConfig): Propert
   // get dateTime transform decorator
   const dateTimeTransform: PropertyDecorator = ClLuxonDateTimeTransform();
 
-  return (target: any, property?: string | symbol): void => {
+  return (target: any, property: string | symbol): void => {
     column(target, property);
     dateTimeTransform(target, property);
   };

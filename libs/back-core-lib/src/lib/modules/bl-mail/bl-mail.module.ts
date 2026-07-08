@@ -29,7 +29,7 @@ export class BlMailModule {
     return {
       module: BlMailModule,
       imports: [
-        ...asyncOptions.imports,
+        ...(asyncOptions.imports ?? []),
         BlTranslateModule,
         BullModule.registerQueue({
           name: queueName,
@@ -40,7 +40,7 @@ export class BlMailModule {
       providers: [
         {
           provide: BL_MAIL_CONFIG_PROVIDER,
-          useFactory: asyncOptions.useFactory,
+          useFactory: asyncOptions.useFactory ?? ((): void => undefined),
           inject: asyncOptions.inject,
         },
         {

@@ -8,7 +8,7 @@ import { Request, Response } from 'express';
 export class BlRequestContext {
   static cls = new AsyncLocalStorage<BlRequestContext>();
 
-  static get currentContext(): BlRequestContext {
+  static get currentContext(): BlRequestContext | undefined {
     return this.cls.getStore();
   }
 

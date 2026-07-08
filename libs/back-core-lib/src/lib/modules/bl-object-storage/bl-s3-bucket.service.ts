@@ -66,8 +66,8 @@ export class BlS3BucketService implements BlObjectStorageInterface {
       return {
         name: objectName,
         file: result.Body as Stream,
-        contentType: result.ContentType,
-        contentLength: result.ContentLength,
+        contentType: result.ContentType ?? '',
+        contentLength: result.ContentLength ?? 0,
       };
     } catch (e: any) {
       if (e instanceof NoSuchKey) {
@@ -100,7 +100,7 @@ export class BlS3BucketService implements BlObjectStorageInterface {
 
     return {
       name: objectName,
-      size: result.ContentLength,
+      size: result.ContentLength ?? 0,
     };
   }
 
@@ -127,8 +127,8 @@ export class BlS3BucketService implements BlObjectStorageInterface {
 
       objects.push(
         ...(result.Contents.map((object) => ({
-          name: object.Key,
-          size: object.Size,
+          name: object.Key ?? '',
+          size: object.Size ?? 0,
         })) ?? [])
       );
 
@@ -147,7 +147,7 @@ export class BlS3BucketService implements BlObjectStorageInterface {
   public async getObjectsByPrefixPaginated(
     prefix: string = '',
     pageSize: number = 1000,
-    startFromKey: string = undefined
+    startFromKey: string | undefined = undefined
   ): Promise<_Object[]> {
     const s3Client = this.getClient();
 
@@ -209,7 +209,9 @@ export class BlS3BucketService implements BlObjectStorageInterface {
       const objects = await this.getObjectsByPrefixPaginated('', BlS3BucketService.MAX_DELETE_BATCH_SIZE);
       if (objects.length === 0) break;
 
-      await this.deleteMultipleObjects(objects.map((obj) => obj.Key));
+      await this.deleteMultipleObjects(
+        objects.map((obj) => obj.Key).filter((key): key is string => key != null)
+      );
       count++;
     }
 
@@ -284,7 +286,9 @@ export class BlS3BucketService implements BlObjectStorageInterface {
     );
   }
 
-  private tagsToQueryParams(tags: Record<string, string>): string {
+  private tagsToQueryParams(tags: Record<string, string>): string;
+  private tagsToQueryParams(tags: Record<string, string> | undefined): string | undefined;
+  private tagsToQueryParams(tags: Record<string, string> | undefined): string | undefined {
     if (!tags) return undefined;
     return Object.entries(tags)
       .map(([key, value]) => `${key}=${value}`)

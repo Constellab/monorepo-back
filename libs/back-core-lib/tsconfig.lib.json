@@ -6,7 +6,9 @@
     "declaration": true,
     "types": ["node"],
     "target": "es6",
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true
   },
   "exclude": ["**/*.spec.ts", "jest.config.ts"],
   "include": ["**/*.ts"]

@@ -157,7 +157,9 @@ export class BlLabS3BucketService implements BlObjectStorageInterface {
     const healthCheckEndpoint = this.config.endpoint.split('/').slice(0, -1).join('/');
     const route = healthCheckEndpoint + '/health-check';
 
-    const result = await lastValueFrom(this.apiService.get(route, null, { logError: false, timeout: 2500 }))
+    const result = await lastValueFrom(
+      this.apiService.get(route, undefined, { logError: false, timeout: 2500 })
+    )
       .then(() => true)
       .catch(() => false);
 

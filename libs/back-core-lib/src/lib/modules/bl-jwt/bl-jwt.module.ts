@@ -9,7 +9,7 @@ import { BlJwtService } from './bl-jwt.service';
 import { BlJwtStrategy } from './bl-jwt.strategy';
 
 export interface BlJwtModuleAsyncOptions extends Pick<ModuleMetadata, 'imports'> {
-  useFactory?: (...args: any[]) => BlJwtConfig;
+  useFactory: (...args: any[]) => BlJwtConfig;
   inject?: any[];
 }
 
@@ -31,7 +31,7 @@ export class BlJwtModule {
     return {
       module: BlJwtModule,
       imports: [
-        ...asyncOptions.imports,
+        ...(asyncOptions.imports ?? []),
 
         // Retrieve the BlJwtConfig by calling the factory method and configure the JwtModule
         JwtModule.registerAsync({

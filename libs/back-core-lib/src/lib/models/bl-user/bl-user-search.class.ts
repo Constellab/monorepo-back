@@ -1,5 +1,5 @@
 import { ClPage } from '@monorepo/core-lib';
-import { FindOptionsOrder, FindOptionsWhere, Like } from 'typeorm';
+import { FindOptionsOrder, FindOptionsWhere, Like, ObjectLiteral } from 'typeorm';
 import { FindOptionsRelations } from 'typeorm/find-options/FindOptionsRelations';
 
 import { BlAbstractPaginatedService } from '../../services/bl-abstract-paginated.service';
@@ -8,7 +8,7 @@ import { BlUser } from './bl-user.class';
 /**
  * Abstract class to simplify smart search for user by name
  */
-export abstract class BlUserSearch<T> {
+export abstract class BlUserSearch<T extends ObjectLiteral> {
   constructor(private service: BlAbstractPaginatedService<T>) {}
 
   protected abstract wrapFindOption(option: FindOptionsWhere<BlUser>): FindOptionsWhere<T>;

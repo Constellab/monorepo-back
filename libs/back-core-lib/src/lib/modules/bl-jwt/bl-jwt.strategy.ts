@@ -10,7 +10,9 @@ import { BL_JWT_CONFIG_PROVIDER, BlJwtConfig, BlTokenUser } from './bl-jwt.class
 export class BlJwtStrategy extends PassportStrategy(Strategy) {
   constructor(@Inject(BL_JWT_CONFIG_PROVIDER) private jwtConfig: BlJwtConfig) {
     super({
-      jwtFromRequest: jwtConfig.jwtFromRequest,
+      // passport-jwt expects the extractor to return string | null, but the
+      // BlJwtConfig extractor returns string | undefined, so normalize undefined to null
+      jwtFromRequest: (request) => jwtConfig.jwtFromRequest(request) ?? null,
       ignoreExpiration: false,
       secretOrKey: jwtConfig.jwtSecret,
     });

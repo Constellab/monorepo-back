@@ -39,7 +39,12 @@ export function blTransportRedisForRoot(
   transportOptions: BlTransportModuleAsyncOptions
 ): SharedBullAsyncConfiguration {
   return {
-    useFactory: (...args: any[]) => blTransportRedisFactory(transportOptions.useFactory(...args)),
+    useFactory: (...args: any[]) => {
+      if (transportOptions.useFactory == null) {
+        throw new Error('blTransportRedisForRoot requires a useFactory in the provided transportOptions');
+      }
+      return blTransportRedisFactory(transportOptions.useFactory(...args));
+    },
     inject: transportOptions.inject,
     imports: transportOptions.imports,
   };

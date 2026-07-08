@@ -26,7 +26,7 @@ export interface BlExternalApiHttpOption extends AxiosRequestConfig {
 }
 
 export interface BlExternalApiError {
-  status: number;
+  status: number | null;
   message: string;
   error: AxiosError;
   knownError?: BlApiError;

@@ -126,7 +126,7 @@ export class BlExternalApiService {
    */
   public deserialize(
     response: AxiosResponse,
-    classReference: ClDeserializationRef,
+    classReference?: ClDeserializationRef,
     observe: BlExternalApiHttpOptionObserve = 'data',
     isPaginated: boolean = false
   ): any {

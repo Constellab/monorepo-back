@@ -7,7 +7,7 @@ const blNotUpdatableMetadata = 'NotUpdatable';
  */
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export function BlNotUpdatable(): PropertyDecorator {
-  return (target: any, key: string): void => {
+  return (target: any, key: string | symbol): void => {
     Reflect.defineMetadata(blNotUpdatableMetadata, true, target.constructor, key);
   };
 }

@@ -14,22 +14,22 @@ export enum BlMailStatus {
 @Entity('mail')
 export class BlMailEntity extends BlEntityWithId {
   @Column()
-  recipients: string;
+  recipients!: string;
 
   @Column()
-  subject: string;
+  subject!: string;
 
   @Column({ type: 'text' })
-  mail: string;
+  mail!: string;
 
   @Column({ type: 'enum', enum: BlMailStatus, default: BlMailStatus.PENDING })
-  status: BlMailStatus;
+  status!: BlMailStatus;
 
   @BlLuxonDateTimeColumn()
-  lastModifiedAt: DateTime;
+  lastModifiedAt!: DateTime;
 
   @Column({ type: 'text', nullable: true })
-  error?: string;
+  error?: string | null;
 
   @BeforeInsert()
   @BeforeUpdate()

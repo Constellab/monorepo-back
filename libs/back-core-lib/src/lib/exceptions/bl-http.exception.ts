@@ -33,6 +33,8 @@ export class BlHttpException extends HttpException {
    * Build a BlHttpException from a BlApiError
    */
   static fromApiError(apiError: BlApiError): BlHttpException {
-    return new BlHttpException(apiError.status, apiError.detail, { instanceId: apiError.instanceId });
+    return new BlHttpException(apiError.status, apiError.detail ?? apiError.code, {
+      instanceId: apiError.instanceId,
+    });
   }
 }

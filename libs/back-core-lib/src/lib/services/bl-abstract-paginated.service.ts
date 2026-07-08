@@ -1,9 +1,9 @@
 import { ClPage } from '@monorepo/core-lib';
-import { EntityManager, Repository } from 'typeorm';
+import { EntityManager, ObjectLiteral, Repository } from 'typeorm';
 import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
 import { FindOneOptions } from 'typeorm/find-options/FindOneOptions';
 
-export abstract class BlAbstractPaginatedService<T> {
+export abstract class BlAbstractPaginatedService<T extends ObjectLiteral> {
   private readonly maxPageSize: number = 50;
 
   protected constructor(
@@ -11,7 +11,7 @@ export abstract class BlAbstractPaginatedService<T> {
     protected entityClass: new () => T
   ) {}
 
-  static async findPaginatedStatic<T>(
+  static async findPaginatedStatic<T extends ObjectLiteral>(
     safePage: number = 0,
     safeSize: number = 10,
     options: FindOneOptions<T> = {},

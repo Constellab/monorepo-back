@@ -20,7 +20,7 @@ export function BlLowerCase(): PropertyDecorator {
     { toClassOnly: true }
   );
 
-  return (target: any, key: string): void => {
+  return (target: any, key: string | symbol): void => {
     transformToClass(target, key);
   };
 }

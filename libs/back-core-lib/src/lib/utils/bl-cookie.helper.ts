@@ -10,7 +10,7 @@ export class BlCookieHelper {
    */
   public static getCookieFromHeader(header: string, cookieName: string): string | undefined {
     if (!header) {
-      return null;
+      return undefined;
     }
     // separate cookies
     const cookies = header.split('; ');
@@ -26,7 +26,7 @@ export class BlCookieHelper {
       }
     }
 
-    return null;
+    return undefined;
   }
 
   /**
@@ -43,6 +43,6 @@ export class BlCookieHelper {
       };
     }
 
-    return null;
+    return undefined;
   }
 }

@@ -5,11 +5,11 @@ import { PrimaryGeneratedColumn } from 'typeorm';
  */
 export abstract class BlEntityWithId {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 }
 
 export class BlEntityWithIdDTO {
-  id: string;
+  id!: string;
 
   copyEntity(entity: BlEntityWithId): this {
     this.id = entity.id;

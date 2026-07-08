@@ -25,7 +25,7 @@ export abstract class BlAbstractService<T extends BlEntityWithId> extends BlAbst
   async create(entity: T, entityManager?: EntityManager): Promise<T> {
     // remove the null id to prevent inserting error
     if (entity.id === null) {
-      delete entity.id;
+      delete (entity as Partial<T>).id;
     }
 
     return await this.getEntityManager(entityManager).save(entity);
@@ -89,7 +89,7 @@ export abstract class BlAbstractService<T extends BlEntityWithId> extends BlAbst
     relations?: FindOptionsRelations<T>,
     entityManager?: EntityManager
   ): Promise<T> {
-    const entity: T = await this.findById(id, relations, entityManager);
+    const entity: T | null = await this.findById(id, relations, entityManager);
     if (entity == null) {
       throw new BlNotFoundException(`Object '${this.entityClass.name}' with id ${id} not found`);
     }
