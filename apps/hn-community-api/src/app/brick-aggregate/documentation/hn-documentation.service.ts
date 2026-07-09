@@ -32,11 +32,11 @@ export class HnDocumentationService {
     folder: HnFolder,
     entityManager?: EntityManager
   ): Promise<HnDocumentation> {
-    const path = ClStringHelper.generateUrlPathFromString(createDocumentation.title);
+    const path = ClStringHelper.generateUrlPathFromString(createDocumentation.title ?? '');
 
     const documentation = new HnDocumentation();
 
-    documentation.title = createDocumentation.title;
+    documentation.title = createDocumentation.title ?? '';
     documentation.setPath(path, folder.completePath);
     documentation.folder = folder;
     documentation.order = folder.nextOrder();
@@ -54,7 +54,9 @@ export class HnDocumentationService {
     });
   }
 
-  async findById(id: string, strict: boolean = true): Promise<HnDocumentation> {
+  async findById(id: string, strict?: true): Promise<HnDocumentation>;
+  async findById(id: string, strict: boolean): Promise<HnDocumentation | null>;
+  async findById(id: string, strict: boolean = true): Promise<HnDocumentation | null> {
     const doc = await this.documentationsRepository.findOne({
       where: { id },
       relations: {
@@ -68,16 +70,20 @@ export class HnDocumentationService {
   }
 
   async update(updatedDocumentation: HnNodeDTO): Promise<HnDocumentation> {
-    const doc: HnDocumentation = await this.documentationsRepository.findOne({
+    const doc = await this.documentationsRepository.findOne({
       where: { id: updatedDocumentation.id },
       relations: { folder: true },
     });
 
+    if (doc == null) {
+      throw new BlBadRequestException('Doc not found');
+    }
+
     doc.setPath(
-      ClStringHelper.generateUrlPathFromString(updatedDocumentation.title),
+      ClStringHelper.generateUrlPathFromString(updatedDocumentation.title ?? ''),
       doc.folder.completePath
     );
-    doc.title = updatedDocumentation.title;
+    doc.title = updatedDocumentation.title ?? '';
     return this.documentationsRepository.save(doc);
   }
 
@@ -89,7 +95,10 @@ export class HnDocumentationService {
     await this.documentationsRepository.delete(id);
   }
 
-  async findCurrentDoc(brickMajorVersion: HnBrickMajorVersion, path: string): Promise<HnDocumentation> {
+  async findCurrentDoc(
+    brickMajorVersion: HnBrickMajorVersion,
+    path: string
+  ): Promise<HnDocumentation | null> {
     return await this.documentationsRepository.findOneBy({
       completePath: path,
       folder: { brickMajorVersion: { id: brickMajorVersion.id } },
@@ -97,14 +106,15 @@ export class HnDocumentationService {
   }
 
   async updateContent(id: string, updateContentDoc: TeRichText): Promise<HnDocumentation> {
-    const doc: HnDocumentation = await this.documentationsRepository.findOneBy({
+    const doc = await this.documentationsRepository.findOneBy({
       id: id,
     });
-    if (doc) {
-      const richTextAggregate = doc.getRichTextAggregate();
-      richTextAggregate.updateContent(updateContentDoc, HnCurrentUserHelper.getAndCheckCurrentUser().id);
-      doc.setRichTextAggregate(richTextAggregate);
+    if (doc == null) {
+      throw new BlBadRequestException('Doc not found');
     }
+    const richTextAggregate = doc.getRichTextAggregate();
+    richTextAggregate.updateContent(updateContentDoc, HnCurrentUserHelper.getAndCheckCurrentUser().id);
+    doc.setRichTextAggregate(richTextAggregate);
     return this.documentationsRepository.save(doc);
   }
 
@@ -121,8 +131,8 @@ export class HnDocumentationService {
     brickMajorVersion: HnBrickMajorVersion,
     completePath: string,
     anchor?: string
-  ): Promise<HnDocumentationSearchDTO> {
-    const documentation: HnDocumentation = await this.documentationsRepository.findOne({
+  ): Promise<HnDocumentationSearchDTO | null> {
+    const documentation = await this.documentationsRepository.findOne({
       where: {
         completePath: completePath,
         folder: {
@@ -139,7 +149,7 @@ export class HnDocumentationService {
         id: documentation.id,
         name: documentation.title,
         completePath: documentation.completePath,
-        anchor: anchor ? anchor : null,
+        anchor: anchor ? anchor : undefined,
         major: brickMajorVersion.major.toString(),
         brickName: brickMajorVersion.brick.name,
       };

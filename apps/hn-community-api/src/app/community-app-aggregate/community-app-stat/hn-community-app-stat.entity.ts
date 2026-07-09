@@ -8,13 +8,13 @@ import { HnUser } from '../../users/hn-user.entity';
 @Entity('app_stat')
 export class HnCommunityAppStat extends BlEntityWithId {
   @Column()
-  appUrl: string;
+  appUrl!: string;
 
   @BlLuxonDateTimeColumn({ nullable: true, update: false })
-  executionDate: DateTime;
+  executionDate!: DateTime;
 
   @ManyToOne(() => HnUser, { eager: true, onUpdate: 'CASCADE', onDelete: 'CASCADE', nullable: false })
-  creator: HnUser;
+  creator!: HnUser;
 
   @BeforeInsert()
   setCreatedByUser(): void {

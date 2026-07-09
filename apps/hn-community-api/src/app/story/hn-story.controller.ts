@@ -290,7 +290,7 @@ export class HnStoryController extends HnAbstractFileController<HnStory> {
    * Is invite valid
    */
   @Get('invite/:token/is-valid')
-  isInviteValid(@Param('token') token: string): Promise<HnStoryCoAuthorInvite> {
+  isInviteValid(@Param('token') token: string): Promise<HnStoryCoAuthorInvite | null> {
     return this.storyService.isInviteValid(token);
   }
 

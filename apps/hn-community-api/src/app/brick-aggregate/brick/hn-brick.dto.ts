@@ -8,20 +8,20 @@ import { HnReferenceDTO, HnRepoType, HnVersionType } from '../brick-version/hn-b
 import { HnBrick, HnBrickVisibility } from './hn-brick.entity';
 
 export class HnBrickDto extends BlEntityWithIdDTO {
-  name: string;
-  description: string;
-  isCertified: boolean;
-  visibility: HnBrickVisibility;
-  pipRepo?: string;
-  gitRepo?: string;
-  imageLink?: string;
-  createdAt: string;
-  createdBy: HnUserDto;
-  lastModifiedAt: string;
-  lastModifiedBy: HnUserDto;
-  space?: HnSpaceDto;
-  likes: number;
-  comments: number;
+  name!: string;
+  description!: string;
+  isCertified!: boolean;
+  visibility!: HnBrickVisibility;
+  pipRepo?: string | null;
+  gitRepo?: string | null;
+  imageLink?: string | null;
+  createdAt!: string | null;
+  createdBy?: HnUserDto;
+  lastModifiedAt!: string | null;
+  lastModifiedBy?: HnUserDto;
+  space?: HnSpaceDto | null;
+  likes!: number;
+  comments!: number;
 
   constructor(brick: HnBrick) {
     super();
@@ -37,10 +37,10 @@ export class HnBrickDto extends BlEntityWithIdDTO {
     this.gitRepo = brick.gitRepo;
     this.imageLink = brick.imageLink;
     this.createdAt = brick.createdAt.toISO();
-    this.createdBy = new HnUserDto(brick.createdBy);
+    this.createdBy = brick.createdBy ? new HnUserDto(brick.createdBy) : undefined;
     this.lastModifiedAt = brick.lastModifiedAt.toISO();
-    this.lastModifiedBy = new HnUserDto(brick.lastModifiedBy);
-    this.space = brick.space ? new HnSpaceDto(brick.space) : null;
+    this.lastModifiedBy = brick.lastModifiedBy ? new HnUserDto(brick.lastModifiedBy) : undefined;
+    this.space = brick.space ? new HnSpaceDto(brick.space) : undefined;
     this.likes = brick.likes;
     this.comments = brick.comments;
   }
@@ -49,8 +49,8 @@ export class HnBrickDto extends BlEntityWithIdDTO {
 export interface HnBrickTransportDto {
   id: string;
   name: string;
-  pipRepo: string;
-  gitRepo: string;
+  pipRepo: string | null;
+  gitRepo: string | null;
   visibility: HnBrickVisibility;
   versions: HnBrickVersionTransportDto[];
 }
@@ -61,20 +61,20 @@ export interface HnBrickVersionTransportDto {
   minor: number;
   patch: number;
   versionType: HnVersionType;
-  subPatch: number;
+  subPatch: number | null;
   versionState: HnVersionState;
   repoType: HnRepoType;
   technicalInfo: Record<string, any>;
 }
 
 export class HnCreateTechnicalDocContent {
-  brickName: string;
-  importFile: HnImportTechnicalDocDTO;
+  brickName!: string;
+  importFile!: HnImportTechnicalDocDTO;
 }
 
 export class HnIsActualBrickAndNewVersionDTO {
-  brickName: string;
-  inputBrickVersion: string;
+  brickName!: string;
+  inputBrickVersion!: string;
 }
 
 export interface HnIsActualBrickAndNewVersionResponseDTO {
@@ -143,31 +143,31 @@ export interface HnImportProtocolDTO extends HnImportEntity {
 }
 
 export class HnEditBrickDTO {
-  id: string;
-  description: string;
-  pipRepo: string;
-  gitRepo: string;
-  visibility: HnBrickVisibility;
+  id!: string;
+  description!: string;
+  pipRepo!: string;
+  gitRepo!: string;
+  visibility!: HnBrickVisibility;
   credentialUsername?: string;
   credentialPassword?: string;
   space?: HnSpace;
 }
 
 export class HnTechnicalDocInputDTO {
-  brickName: string;
-  brickVersion: string;
-  techDocType: string;
-  techDocUniqueName: string;
+  brickName!: string;
+  brickVersion!: string;
+  techDocType!: string;
+  techDocUniqueName!: string;
 }
 
 /**
  * DTO containing brick version info without sensitive data
  */
 export class HnBrickVersionInfoDTO {
-  brickName: string;
-  brickVersion: string;
-  repoType: HnRepoType;
-  repositoryUrl: string;
+  brickName!: string;
+  brickVersion!: string;
+  repoType!: HnRepoType;
+  repositoryUrl!: string;
   technicalInfo?: Record<string, any>;
 }
 
@@ -176,21 +176,21 @@ export class HnBrickVersionInfoDTO {
  * including the authenticated access URL when credentials are required.
  */
 export class HnBrickVersionCloneInfoDTO extends HnBrickVersionInfoDTO {
-  repositoryAccessUrl: string;
+  repositoryAccessUrl!: string;
 }
 
 export class HnCreateBrickDTO {
-  name: string;
-  description: string;
-  repoType: HnRepoType;
-  repoGit: string;
-  repoPip: string;
+  name!: string;
+  description!: string;
+  repoType!: HnRepoType;
+  repoGit!: string;
+  repoPip!: string;
   isBeta?: boolean;
   subPatch?: number;
-  version: BlVersion;
+  version!: BlVersion;
   references?: HnReferenceDTO[];
   technicalInfo?: Record<string, any>;
-  visibility: HnBrickVisibility;
+  visibility!: HnBrickVisibility;
   credentialUsername?: string;
   credentialPassword?: string;
   space?: HnSpace;

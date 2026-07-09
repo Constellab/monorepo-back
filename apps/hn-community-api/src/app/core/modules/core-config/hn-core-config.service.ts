@@ -30,7 +30,11 @@ export class HnCoreConfigService {
   constructor(protected configService: ConfigService) {}
 
   public getEnvironmentProfile(): HnEnvironmentProfile {
-    return this.configService.get(HN_ENVIRONMENT_PROFILE_KEY);
+    const profile: HnEnvironmentProfile | undefined = this.configService.get(HN_ENVIRONMENT_PROFILE_KEY);
+    if (profile == null) {
+      throw Error(`Missing config value for '${HN_ENVIRONMENT_PROFILE_KEY}'`);
+    }
+    return profile;
   }
 
   public isProduction(): boolean {
@@ -38,11 +42,11 @@ export class HnCoreConfigService {
   }
 
   public getApiUrl(): string {
-    return this.configService.get('API_URL');
+    return this.getConfigString('API_URL');
   }
 
   public getJwtSecret(): string {
-    return this.configService.get('JWT_SECRET');
+    return this.getConfigString('JWT_SECRET');
   }
 
   public isLocal(): boolean {
@@ -55,105 +59,105 @@ export class HnCoreConfigService {
   }
 
   public getSpaceApiUrl(): string {
-    return this.isLocal() ? 'http://localhost:3001' : this.configService.get('SPACE_API_URL');
+    return this.isLocal() ? 'http://localhost:3001' : this.getConfigString('SPACE_API_URL');
   }
 
   // api key to communicate with space api
   public getSpaceApiKey(): string {
-    return this.configService.get('SPACE_API_KEY');
+    return this.getConfigString('SPACE_API_KEY');
   }
 
   public getDatabaseConfig(): HnDatabaseConfig {
     return {
-      host: this.configService.get('DATABASE_HOST'),
-      port: this.configService.get('DATABASE_PORT'),
-      username: this.configService.get('DATABASE_USER'),
-      password: this.configService.get('DATABASE_PASSWORD'),
-      database: this.configService.get('DATABASE'),
+      host: this.getConfigString('DATABASE_HOST'),
+      port: this.getConfigNumber('DATABASE_PORT'),
+      username: this.getConfigString('DATABASE_USER'),
+      password: this.getConfigString('DATABASE_PASSWORD'),
+      database: this.getConfigString('DATABASE'),
     };
   }
 
   public getTransportModuleConfig(): BlTransportModuleConfig {
     return {
-      password: this.configService.get('QUEUE_SERVICE_PASSWORD'),
-      host: this.configService.get('QUEUE_SERVICE_HOST'),
-      port: this.configService.get('QUEUE_SERVICE_PORT'),
+      password: this.getConfigString('QUEUE_SERVICE_PASSWORD'),
+      host: this.getConfigString('QUEUE_SERVICE_HOST'),
+      port: this.getConfigNumber('QUEUE_SERVICE_PORT'),
     };
   }
 
   public getDefaultObjectStorageEndPoint(): string {
-    return this.configService.get('OBJECT_STORAGE_DEFAULT_ENDPOINT');
+    return this.getConfigString('OBJECT_STORAGE_DEFAULT_ENDPOINT');
   }
 
   public getBackupObjectStorageEndPoint(): string {
-    return this.configService.get('OBJECT_STORAGE_BACKUP_ENDPOINT');
+    return this.getConfigString('OBJECT_STORAGE_BACKUP_ENDPOINT');
   }
 
   public getDefaultObjectStorageRegion(): string {
-    return this.configService.get('OBJECT_STORAGE_DEFAULT_REGION');
+    return this.getConfigString('OBJECT_STORAGE_DEFAULT_REGION');
   }
 
   public getBackupObjectStorageRegion(): string {
-    return this.configService.get('OBJECT_STORAGE_BACKUP_REGION');
+    return this.getConfigString('OBJECT_STORAGE_BACKUP_REGION');
   }
 
   public getDefaultObjectStorageCredentials(): BlObjectStorageCredentials {
     return {
-      accessKeyId: this.configService.get('OBJECT_STORAGE_DEFAULT_ACCESS_KEY_ID'),
-      secretAccessKey: this.configService.get('OBJECT_STORAGE_DEFAULT_SECRET_KEY'),
+      accessKeyId: this.getConfigString('OBJECT_STORAGE_DEFAULT_ACCESS_KEY_ID'),
+      secretAccessKey: this.getConfigString('OBJECT_STORAGE_DEFAULT_SECRET_KEY'),
     };
   }
 
   public getIconObjectStorageBucket(): string {
-    return this.configService.get(HN_BUCKET_ICON_KEY);
+    return this.getConfigString(HN_BUCKET_ICON_KEY);
   }
 
   public getIconObjectStorageBackupBucket(): string {
-    return this.configService.get(HN_BUCKET_ICON_BACKUP_KEY);
+    return this.getConfigString(HN_BUCKET_ICON_BACKUP_KEY);
   }
 
   public getDocImageObjectStorageBucket(): string {
-    return this.configService.get(HN_BUCKET_DOCUMENTATION_KEY);
+    return this.getConfigString(HN_BUCKET_DOCUMENTATION_KEY);
   }
 
   public getDocImageObjectStorageBackupBucket(): string {
-    return this.configService.get(HN_BUCKET_DOCUMENTATION_BACKUP_KEY);
+    return this.getConfigString(HN_BUCKET_DOCUMENTATION_BACKUP_KEY);
   }
 
   public getStoryFilesObjectStorageBucket(): string {
-    return this.configService.get(HN_BUCKET_STORIES_KEY);
+    return this.getConfigString(HN_BUCKET_STORIES_KEY);
   }
 
   public getStoryFilesObjectStorageBackupBucket(): string {
-    return this.configService.get(HN_BUCKET_STORIES_BACKUP_KEY);
+    return this.getConfigString(HN_BUCKET_STORIES_BACKUP_KEY);
   }
 
   public getAgentFilesObjectStorageBucket(): string {
-    return this.configService.get(HN_BUCKET_AGENTS_KEY);
+    return this.getConfigString(HN_BUCKET_AGENTS_KEY);
   }
 
   public getAgentFilesObjectStorageBackupBucket(): string {
-    return this.configService.get(HN_BUCKET_AGENTS_BACKUP_KEY);
+    return this.getConfigString(HN_BUCKET_AGENTS_BACKUP_KEY);
   }
 
   public getAppFilesObjectStorageBucket(): string {
-    return this.configService.get(HN_BUCKET_APPS_KEY);
+    return this.getConfigString(HN_BUCKET_APPS_KEY);
   }
 
   public getAppFilesObjectStorageBackupBucket(): string {
-    return this.configService.get(HN_BUCKET_APPS_BACKUP_KEY);
+    return this.getConfigString(HN_BUCKET_APPS_BACKUP_KEY);
   }
 
   public getPartnerFilesObjectStorageBucket(): string {
-    return this.configService.get(HN_BUCKET_PARTNERS_KEY);
+    return this.getConfigString(HN_BUCKET_PARTNERS_KEY);
   }
 
   public getPartnerFilesObjectStorageBackupBucket(): string {
-    return this.configService.get(HN_BUCKET_PARTNERS_BACKUP_KEY);
+    return this.getConfigString(HN_BUCKET_PARTNERS_BACKUP_KEY);
   }
 
   public getGencoverySpaceId(): string {
-    return this.configService.get('GENCOVERY_SPACE_ID');
+    return this.getConfigString('GENCOVERY_SPACE_ID');
   }
 
   public getFrontBaseUrl(): string {
@@ -167,6 +171,9 @@ export class HnCoreConfigService {
         break;
       case 'dev':
         res = 'http://localhost:4200';
+        break;
+      default:
+        throw Error(`No front base url configured for environment '${this.getEnvironmentProfile()}'`);
     }
     return res;
   }
@@ -182,6 +189,9 @@ export class HnCoreConfigService {
         break;
       case 'dev':
         res = 'http://localhost:4200/';
+        break;
+      default:
+        throw Error(`No constellab front base url configured for environment '${this.getEnvironmentProfile()}'`);
     }
     return res;
   }
@@ -191,23 +201,31 @@ export class HnCoreConfigService {
   }
 
   public getLogPath(): string {
-    return this.configService.get('LOG_PATH');
+    return this.getConfigString('LOG_PATH');
   }
 
   public getMailConfig(): BlMailConfig {
     return {
-      host: this.configService.get('MAIL_HOST'),
+      host: this.getConfigString('MAIL_HOST'),
       port: this.getConfigNumber('MAIL_PORT'),
       secure: this.getConfigBoolean('MAIL_SECURE'),
-      user: this.configService.get('MAIL_USER'),
-      password: this.configService.get('MAIL_PASSWORD'),
-      sender: this.configService.get('MAIL_SENDER'),
+      user: this.getConfigString('MAIL_USER'),
+      password: this.getConfigString('MAIL_PASSWORD'),
+      sender: this.getConfigString('MAIL_SENDER'),
     };
+  }
+
+  protected getConfigString(configName: string): string {
+    const value: string | undefined = this.configService.get(configName);
+    if (value == null) {
+      throw Error(`Missing config value for '${configName}'`);
+    }
+    return value;
   }
 
   protected getConfigNumber(configName: string): number {
     try {
-      return parseInt(this.configService.get(configName), 10);
+      return parseInt(this.getConfigString(configName), 10);
     } catch (error) {
       this.logger.error('Error while parsing config ' + configName + ' to number');
       throw error;
@@ -215,7 +233,7 @@ export class HnCoreConfigService {
   }
 
   protected getConfigBoolean(configName: string): boolean {
-    const stringBool: string = this.configService.get(configName);
+    const stringBool: string = this.getConfigString(configName);
 
     if (stringBool === 'false') {
       return false;
@@ -227,11 +245,11 @@ export class HnCoreConfigService {
   }
 
   public getRobotUserMail(): string {
-    return this.configService.get('ROBOT_USER_MAIL');
+    return this.getConfigString('ROBOT_USER_MAIL');
   }
 
   public getCustomerSuccessMail(): string {
-    return this.configService.get('CUSTOMER_SUCCESS_MAIL');
+    return this.getConfigString('CUSTOMER_SUCCESS_MAIL');
   }
 
   // protected getConfigNumber(configName: string): number {
@@ -248,23 +266,23 @@ export class HnCoreConfigService {
   }
 
   public getDbBackupEndpoint(): string {
-    return this.configService.get('OBJECT_STORAGE_DB_BACKUP_ENDPOINT');
+    return this.getConfigString('OBJECT_STORAGE_DB_BACKUP_ENDPOINT');
   }
 
   public getDbBackupRegion(): string {
-    return this.configService.get('OBJECT_STORAGE_DB_BACKUP_REGION');
+    return this.getConfigString('OBJECT_STORAGE_DB_BACKUP_REGION');
   }
 
   public getDomain(): string {
-    return this.configService.get('DOMAIN');
+    return this.getConfigString('DOMAIN');
   }
 
   public getRagflowApiKey(): string {
-    return this.configService.get(HN_RAGFLOW_API_KEY);
+    return this.getConfigString(HN_RAGFLOW_API_KEY);
   }
 
   public getRagflowBaseUrl(): string {
-    return this.configService.get(HN_RAGFLOW_BASE_URL);
+    return this.getConfigString(HN_RAGFLOW_BASE_URL);
   }
 
   public getRagflowChatId(): string | undefined {

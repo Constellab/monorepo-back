@@ -17,14 +17,17 @@ export class HnRunStatAggregateService {
     objectId: string,
     objectType: HnRunStatAggregateObjectType,
     entityManager?: EntityManager
-  ): Promise<HnRunStatAggregate> {
+  ): Promise<HnRunStatAggregate | null> {
     const repo = entityManager
       ? entityManager.getRepository(HnRunStatAggregate)
       : this.runStatAggregateRepository;
     return repo.findOneBy({ objectId: objectId, objectType: objectType });
   }
 
-  async findByObjectId(objectId: string, entityManager?: EntityManager): Promise<HnRunStatAggregate> {
+  async findByObjectId(
+    objectId: string,
+    entityManager?: EntityManager
+  ): Promise<HnRunStatAggregate | null> {
     const repo = entityManager
       ? entityManager.getRepository(HnRunStatAggregate)
       : this.runStatAggregateRepository;
@@ -47,6 +50,9 @@ export class HnRunStatAggregateService {
     entityManager: EntityManager,
     runStat: HnRunStat
   ): Promise<HnRunStatAggregate> {
+    if (!runStat.agentVersion) {
+      throw new BlBadRequestException('Run stat has no agent version');
+    }
     const runStatAggregate = new HnRunStatAggregate();
     runStatAggregate.init(runStat);
     runStatAggregate.objectId = runStat.agentVersion.id;
@@ -168,7 +174,10 @@ export class HnRunStatAggregateService {
     entityManager: EntityManager,
     runStat: HnRunStat
   ): Promise<HnRunStatAggregate> {
-    const runStatAggregate: HnRunStatAggregate = await this.findObjectRunStatGroup(
+    if (!runStat.agentVersion) {
+      throw new BlBadRequestException('Run stat has no agent version');
+    }
+    const runStatAggregate: HnRunStatAggregate | null = await this.findObjectRunStatGroup(
       runStat.agentVersion.id,
       HnRunStatAggregateObjectType.AGENT_VERSION,
       entityManager

@@ -1,4 +1,11 @@
-import { BlFile, BlParsePipe, BlPublic, BlSearchSortCriteria, BlUploadedFile } from '@monorepo/back-core-lib';
+import {
+  BlFile,
+  BlNotFoundException,
+  BlParsePipe,
+  BlPublic,
+  BlSearchSortCriteria,
+  BlUploadedFile,
+} from '@monorepo/back-core-lib';
 import { ClPage } from '@monorepo/core-lib';
 import {
   TeBlockFigureUploadedResponse,
@@ -441,16 +448,20 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
    * Is invite valid
    */
   @Get('co-authors/invite/:token/is-valid')
-  isInviteValid(@Param('token') token: string): Promise<HnAgentCoAuthorInvite> {
-    return this.agentAggregateService.isInviteValid(token);
+  async isInviteValid(@Param('token') token: string): Promise<HnAgentCoAuthorInvite> {
+    const invite = await this.agentAggregateService.isInviteValid(token);
+    if (invite == null) throw new BlNotFoundException('Invalid invite');
+    return invite;
   }
 
   /***
    * Accept invite
    */
   @Put('co-authors/invite/:token/accept')
-  acceptInvite(@Param('token') token: string): Promise<HnAgent> {
-    return this.agentAggregateService.acceptInvite(token);
+  async acceptInvite(@Param('token') token: string): Promise<HnAgent> {
+    const agent = await this.agentAggregateService.acceptInvite(token);
+    if (agent == null) throw new BlNotFoundException('Invalid invite');
+    return agent;
   }
 
   @Delete('co-authors/invite/:inviteId')

@@ -6,5 +6,5 @@ import { HnStory } from '../story/hn-story.entity';
 @Entity('story_co_author_invite')
 export class HnStoryCoAuthorInvite extends HnUserInvite {
   @ManyToOne(() => HnStory, { eager: true, nullable: false })
-  story: HnStory;
+  story!: HnStory;
 }

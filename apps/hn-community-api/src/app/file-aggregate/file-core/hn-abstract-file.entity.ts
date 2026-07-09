@@ -17,27 +17,27 @@ export enum HnFileType {
 @Unique(['fileName'])
 export abstract class HnAbstractFileEntity<T extends BlEntityWithId> extends BlEntityWithId {
   @Column({ type: 'enum', enum: HnFileType, default: HnFileType.FILE })
-  type: HnFileType;
+  type!: HnFileType;
 
   @Column({ nullable: false })
-  fileName: string;
+  fileName!: string;
 
   @Column({ nullable: false })
-  name: string;
+  name!: string;
 
   @BlLuxonDateTimeColumn({ nullable: true, update: false })
-  createdAt: DateTime;
+  createdAt!: DateTime;
 
   @Type(() => HnUser)
   @ManyToOne(() => HnUser, { eager: true, nullable: true })
-  createdBy?: HnUser;
+  createdBy: HnUser | null = null;
 
   @Column({ nullable: true })
   size?: number;
 
   abstract entity: T;
 
-  init(entity: T, fileName: string, type: HnFileType, name: string = null, size: number = null): void {
+  init(entity: T, fileName: string, type: HnFileType, name: string, size?: number): void {
     this.entity = entity;
     this.fileName = fileName;
     this.name = name;

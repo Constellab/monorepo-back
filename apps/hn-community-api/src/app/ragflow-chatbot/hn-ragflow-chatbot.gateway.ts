@@ -28,7 +28,7 @@ import { HnRagflowChatbotService } from './hn-ragflow-chatbot.service';
 interface HnRagflowClientSession {
   sessionId?: string;
   conversationId?: string;
-  userId?: string;
+  userId?: string | null;
 }
 
 @WebSocketGateway({
@@ -41,7 +41,7 @@ interface HnRagflowClientSession {
 })
 export class HnRagflowChatbotGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
-  server: Server;
+  server!: Server;
 
   private readonly logger = new Logger(HnRagflowChatbotGateway.name);
   private clientSessions: Map<string, HnRagflowClientSession> = new Map();
@@ -73,7 +73,7 @@ export class HnRagflowChatbotGateway implements OnGatewayInit, OnGatewayConnecti
     @ConnectedSocket() client: Socket
   ): Promise<void> {
     const clientSession = this.clientSessions.get(client.id);
-    const clientUserId = clientSession?.userId;
+    const clientUserId: string | null = clientSession?.userId ?? null;
     const chatId = this.coreConfigService.getRagflowChatId();
 
     if (!chatId) {

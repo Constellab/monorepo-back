@@ -20,7 +20,7 @@ export class HnCommunityAppService {
     private readonly communityAppRepository: Repository<HnCommunityAppEntity>
   ) {}
 
-  async findOneById(id: string): Promise<HnCommunityApp> {
+  async findOneById(id: string): Promise<HnCommunityApp | null> {
     return this.communityAppRepository.findOneBy({ id: id });
   }
 
@@ -56,13 +56,13 @@ export class HnCommunityAppService {
     );
   }
 
-  async findOneByAppUrl(appUrl: string): Promise<HnCommunityApp> {
+  async findOneByAppUrl(appUrl: string): Promise<HnCommunityApp | null> {
     return this.communityAppRepository.findOneBy({
       appUrl: Like(`${ClStringHelper.escapeSqlLike(appUrl)}%`),
     });
   }
 
-  async create(dto: HnCommunityAppEditDto, space: HnSpace = null): Promise<HnCommunityApp> {
+  async create(dto: HnCommunityAppEditDto, space: HnSpace | null = null): Promise<HnCommunityApp> {
     const app = new HnCommunityAppEntity();
     const updatedApp = this.updateFromDto(app, dto, space);
     return this.communityAppRepository.save(updatedApp);
@@ -70,10 +70,10 @@ export class HnCommunityAppService {
 
   async delete(id: string): Promise<boolean> {
     const result = await this.communityAppRepository.delete({ id: id });
-    return result.affected > 0;
+    return (result.affected ?? 0) > 0;
   }
 
-  async update(id: string, dto: HnCommunityAppEditDto, space: HnSpace = null): Promise<HnCommunityApp> {
+  async update(id: string, dto: HnCommunityAppEditDto, space: HnSpace | null = null): Promise<HnCommunityApp> {
     const app = await this.findOneById(id);
     if (app == null) {
       throw new BlNotFoundException('App not found');
@@ -82,12 +82,12 @@ export class HnCommunityAppService {
     return this.communityAppRepository.save(updatedApp);
   }
 
-  updateFromDto(app: HnCommunityApp, dto: HnCommunityAppEditDto, space: HnSpace = null): HnCommunityApp {
+  updateFromDto(app: HnCommunityApp, dto: HnCommunityAppEditDto, space: HnSpace | null = null): HnCommunityApp {
     app.title = dto.title;
     app.appUrl = dto.appUrl;
     app.contactMail = dto.contactMail;
     app.picture = dto.picture;
-    app.space = space;
+    app.space = space ?? undefined;
     return app;
   }
 
@@ -114,12 +114,18 @@ export class HnCommunityAppService {
 
   async updateComments(appId: string, numberOfComments: number): Promise<void> {
     const app = await this.findOneById(appId);
+    if (app == null) {
+      throw new BlNotFoundException('App not found');
+    }
     app.comments = numberOfComments;
     await this.communityAppRepository.save(app);
   }
 
   async updateLikes(appId: string, numberOfLikes: number): Promise<void> {
     const app = await this.findOneById(appId);
+    if (app == null) {
+      throw new BlNotFoundException('App not found');
+    }
     app.likes = numberOfLikes;
     await this.communityAppRepository.save(app, { listeners: false });
   }

@@ -16,19 +16,19 @@ export enum HnRunStatAggregateObjectType {
 @Entity('run_stat_aggregate')
 export class HnRunStatAggregate extends BlEntityWithId {
   @Column({ nullable: false })
-  objectId: string;
+  objectId!: string;
 
   @Column({ nullable: false, update: false, type: 'enum', enum: HnRunStatAggregateObjectType })
-  objectType: HnRunStatAggregateObjectType;
+  objectType!: HnRunStatAggregateObjectType;
 
   @Column()
-  executionCount: number;
+  executionCount!: number;
 
   @Column({ type: 'float' })
-  successRate: number;
+  successRate!: number;
 
   @Column({ type: 'float' })
-  averageElapseTime: number;
+  averageElapseTime!: number;
 
   init(runStat: HnRunStat): void {
     this.executionCount = 1;

@@ -16,7 +16,7 @@ import { HnCreateAgentDto } from './hn-agent.dto';
 @Entity('agent')
 export class HnAgent extends BlEntityWithId {
   @Column()
-  title: string;
+  title!: string;
 
   @Column({ type: 'simple-json', nullable: true })
   description?: TeRichTextDTO;
@@ -28,36 +28,36 @@ export class HnAgent extends BlEntityWithId {
   space?: HnSpace;
 
   @BlLuxonDateTimeColumn({ nullable: true, update: false })
-  createdAt: DateTime;
+  createdAt!: DateTime;
 
   @Type(() => HnUser)
   @ManyToOne(() => HnUser, { eager: true, nullable: true })
   createdBy?: HnUser;
 
   @BlLuxonDateTimeColumn({ nullable: true })
-  lastModifiedAt: DateTime;
+  lastModifiedAt!: DateTime;
 
   @Type(() => HnUser)
   @ManyToOne(() => HnUser, { eager: true, nullable: true })
-  lastModifiedBy: HnUser;
+  lastModifiedBy?: HnUser;
 
   @Column({ nullable: true })
   parentAgentVersionId?: string;
 
   @Column({ default: 0 })
-  likes: number;
+  likes!: number;
 
   @Column({ default: 0 })
-  comments: number;
+  comments!: number;
 
   @OneToMany(() => HnAgentCoAuthor, (agentCoAuthor) => agentCoAuthor.agent, {
     nullable: true,
     onDelete: 'CASCADE',
   })
-  agentCoAuthors: HnAgentCoAuthor[];
+  agentCoAuthors!: HnAgentCoAuthor[];
 
   @OneToMany(() => HnFileAgent, (agentFile) => agentFile.entity, { nullable: true })
-  agentFiles: HnFileAgent[];
+  agentFiles!: HnFileAgent[];
 
   @Column({ type: 'simple-json', nullable: true })
   latestStyle?: HnTypingStyle;
@@ -76,8 +76,8 @@ export class HnAgent extends BlEntityWithId {
   @BeforeInsert()
   setCreatedByUser(): void {
     if (this.createdBy == null) {
-      this.createdBy = HnCurrentUserHelper.getCurrentUser();
-      this.lastModifiedBy = HnCurrentUserHelper.getCurrentUser();
+      this.createdBy = HnCurrentUserHelper.getCurrentUser() ?? undefined;
+      this.lastModifiedBy = HnCurrentUserHelper.getCurrentUser() ?? undefined;
     }
     this.createdAt = ClDateHelper.getDate();
     this.lastModifiedAt = ClDateHelper.getDate();
@@ -85,7 +85,7 @@ export class HnAgent extends BlEntityWithId {
 
   @BeforeUpdate()
   setLastModifiedByUser(): void {
-    this.lastModifiedBy = HnCurrentUserHelper.getCurrentUser();
+    this.lastModifiedBy = HnCurrentUserHelper.getCurrentUser() ?? undefined;
     this.lastModifiedAt = ClDateHelper.getDate();
   }
 

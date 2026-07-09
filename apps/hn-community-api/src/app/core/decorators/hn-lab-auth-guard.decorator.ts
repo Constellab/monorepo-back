@@ -11,12 +11,21 @@ const hnLabAllowWithoutUserAuthMetadata = 'labAllowWithoutUserAuth';
 export function HnLabGuard(): MethodDecorator & ClassDecorator {
   // use to combined 2 decorators
   return (target: any, property?: string | symbol, descriptor?: TypedPropertyDescriptor<any>): void => {
-    // set the public metadata
-    SetMetadata('isPublic', true)(target, property, descriptor);
-    // set the labAuth metadata
-    SetMetadata(hnLabAuthMetadata, true)(target, property, descriptor);
-    // activate the CnLabAuthGuard
-    UseGuards(HnLabAuthGuard)(target, property, descriptor);
+    if (property !== undefined && descriptor !== undefined) {
+      // set the public metadata
+      SetMetadata('isPublic', true)(target, property, descriptor);
+      // set the labAuth metadata
+      SetMetadata(hnLabAuthMetadata, true)(target, property, descriptor);
+      // activate the CnLabAuthGuard
+      UseGuards(HnLabAuthGuard)(target, property, descriptor);
+    } else {
+      // set the public metadata
+      SetMetadata('isPublic', true)(target);
+      // set the labAuth metadata
+      SetMetadata(hnLabAuthMetadata, true)(target);
+      // activate the CnLabAuthGuard
+      UseGuards(HnLabAuthGuard)(target);
+    }
   };
 }
 
@@ -33,10 +42,17 @@ export function HnLabGuard(): MethodDecorator & ClassDecorator {
 export function HnLabAllowWithoutUserAuthentication(): MethodDecorator & ClassDecorator {
   // combine 2 decorators
   return (target: any, property?: string | symbol, descriptor?: TypedPropertyDescriptor<any>): void => {
-    // set the public metadata
-    SetMetadata('isPublic', true)(target, property, descriptor);
-    // set the labAuth metadata
-    SetMetadata(hnLabAllowWithoutUserAuthMetadata, true)(target, property, descriptor);
+    if (property !== undefined && descriptor !== undefined) {
+      // set the public metadata
+      SetMetadata('isPublic', true)(target, property, descriptor);
+      // set the labAuth metadata
+      SetMetadata(hnLabAllowWithoutUserAuthMetadata, true)(target, property, descriptor);
+    } else {
+      // set the public metadata
+      SetMetadata('isPublic', true)(target);
+      // set the labAuth metadata
+      SetMetadata(hnLabAllowWithoutUserAuthMetadata, true)(target);
+    }
   };
 }
 

@@ -75,7 +75,7 @@ export class HnExternalSpaceApiService {
   private get(route: string, options: BlExternalApiHttpOption = {}): Promise<any> {
     return lastValueFrom(
       this.externalApiService
-        .get(this.constructRoute(route), null, options)
+        .get(this.constructRoute(route), undefined, options)
         .pipe(catchError((error: BlExternalApiError) => this.catchError(error)))
     );
   }
@@ -85,8 +85,9 @@ export class HnExternalSpaceApiService {
   }
 
   private catchError(error: BlExternalApiError): Observable<never> {
-    if (error?.knownError) {
-      return throwError(() => BlHttpException.fromApiError(error.knownError));
+    const knownError = error?.knownError;
+    if (knownError) {
+      return throwError(() => BlHttpException.fromApiError(knownError));
     }
     return throwError(() => new BlUnauthorizedException());
   }

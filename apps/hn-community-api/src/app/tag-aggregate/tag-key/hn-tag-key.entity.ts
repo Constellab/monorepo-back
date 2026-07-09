@@ -22,30 +22,30 @@ export enum HnTagKeyType {
 @Entity('tag_key')
 export class HnTagKey extends BlEntityWithId {
   @Column({ unique: true })
-  technicalName: string;
+  technicalName!: string;
 
   @Column()
-  label: string;
+  label!: string;
 
   @Column({ type: 'enum', enum: HnTagKeyType, nullable: false })
-  type: HnTagKeyType;
+  type!: HnTagKeyType;
 
   @Column({ default: false })
-  deprecated: boolean;
+  deprecated!: boolean;
 
   @BlLuxonDateTimeColumn({ nullable: true, update: false })
-  createdAt: DateTime;
+  createdAt!: DateTime;
 
   @Type(() => HnUser)
   @ManyToOne(() => HnUser, { eager: true, nullable: true })
   createdBy?: HnUser;
 
   @BlLuxonDateTimeColumn({ nullable: true })
-  lastModifiedAt: DateTime;
+  lastModifiedAt!: DateTime;
 
   @Type(() => HnUser)
   @ManyToOne(() => HnUser, { eager: true, nullable: true })
-  lastModifiedBy: HnUser;
+  lastModifiedBy?: HnUser;
 
   @BlLuxonDateTimeColumn({ nullable: true })
   publishedAt?: DateTime;
@@ -66,22 +66,22 @@ export class HnTagKey extends BlEntityWithId {
     nullable: true,
     onDelete: 'CASCADE',
   })
-  tagCoAuthors: HnTagCoAuthor[];
+  tagCoAuthors!: HnTagCoAuthor[];
 
   @OneToMany(() => HnTagValue, (tagValue) => tagValue.tagKey, { nullable: true, onDelete: 'CASCADE' })
-  tagValues: HnTagValue[];
+  tagValues!: HnTagValue[];
 
   @Column({ default: 0 })
-  likes: number;
+  likes!: number;
 
   @Column({ default: 0 })
-  comments: number;
+  comments!: number;
 
   @BeforeInsert()
   setCreatedByUser(): void {
     if (this.createdBy == null) {
-      this.createdBy = HnCurrentUserHelper.getCurrentUser();
-      this.lastModifiedBy = HnCurrentUserHelper.getCurrentUser();
+      this.createdBy = HnCurrentUserHelper.getCurrentUser() ?? undefined;
+      this.lastModifiedBy = HnCurrentUserHelper.getCurrentUser() ?? undefined;
     }
     this.createdAt = ClDateHelper.getDate();
     this.lastModifiedAt = ClDateHelper.getDate();
@@ -89,7 +89,7 @@ export class HnTagKey extends BlEntityWithId {
 
   @BeforeUpdate()
   setLastModifiedByUser(): void {
-    this.lastModifiedBy = HnCurrentUserHelper.getCurrentUser();
+    this.lastModifiedBy = HnCurrentUserHelper.getCurrentUser() ?? undefined;
     this.lastModifiedAt = ClDateHelper.getDate();
   }
 }

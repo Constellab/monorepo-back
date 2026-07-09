@@ -3,7 +3,7 @@ import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 export class HnRagflowSendMessageDto {
   @IsString()
   @IsNotEmpty()
-  message: string;
+  message!: string;
 
   @IsString()
   @IsOptional()
@@ -23,7 +23,7 @@ export class HnRagflowJoinConversationDto {
 export class HnRagflowAskQuestionDto {
   @IsString()
   @IsNotEmpty()
-  message: string;
+  message!: string;
 
   @IsString()
   @IsOptional()

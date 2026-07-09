@@ -34,7 +34,7 @@ export class HnTaskService {
 
     for (const t of deduped) {
       const task = new HnTask();
-      task.shortDescription = t.short_description ? t.short_description : null;
+      task.shortDescription = t.short_description ? t.short_description : undefined;
       task.doc = t.doc;
       task.brickName = technicalFolder.brickMajorVersion.brick.name;
       task.technicalFolder = technicalFolder;
@@ -93,8 +93,11 @@ export class HnTaskService {
     });
   }
 
-  async findCurrentTecDoc(tecFolder: HnTechnicalFolder, uniqueName: string): Promise<HnGeneratedDocEntity> {
-    const task: HnTask = await this.tasksRepository.findOneBy({
+  async findCurrentTecDoc(
+    tecFolder: HnTechnicalFolder,
+    uniqueName: string
+  ): Promise<HnGeneratedDocEntity | null> {
+    const task: HnTask | null = await this.tasksRepository.findOneBy({
       technicalFolder: {
         id: tecFolder.id,
       },
@@ -107,15 +110,15 @@ export class HnTaskService {
     return task;
   }
 
-  async findTechDocById(id: string): Promise<HnTask> {
+  async findTechDocById(id: string): Promise<HnTask | null> {
     return this.tasksRepository.findOneBy({ id });
   }
 
   //Get a task in the array tasksOfTheDay according to the day number
-  async getTaskOfTheDay(): Promise<HnTask> {
+  async getTaskOfTheDay(): Promise<HnTask | null> {
     const dayNumber: number = Math.floor(new Date().getTime() / (24 * 60 * 60 * 1000));
     let i: number = dayNumber % this.tasksOfTheDay.length;
-    let task: HnTask = await this.findTaskOfTheDay(
+    let task: HnTask | null = await this.findTaskOfTheDay(
       this.tasksOfTheDay[i].uniqueName,
       this.tasksOfTheDay[i].brickName
     );
@@ -126,7 +129,7 @@ export class HnTaskService {
     return task;
   }
 
-  async findTaskOfTheDay(uniqueName: string, brickName: string): Promise<HnTask> {
+  async findTaskOfTheDay(uniqueName: string, brickName: string): Promise<HnTask | null> {
     return this.tasksRepository.findOne({
       where: {
         uniqueName: uniqueName,

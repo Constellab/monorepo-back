@@ -19,7 +19,7 @@ export class HnCommunityAppUserService {
   }
 
   async checkAndRemoveAppUser(appId: string, appUserId: string): Promise<void> {
-    const appUser: HnCommunityAppUser = await this.appUserRepository.findOneBy({
+    const appUser: HnCommunityAppUser | null = await this.appUserRepository.findOneBy({
       app: { id: appId },
       user: { id: appUserId },
     });

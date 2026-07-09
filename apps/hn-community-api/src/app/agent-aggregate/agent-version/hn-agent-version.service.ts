@@ -1,4 +1,4 @@
-import { BlBadRequestException } from '@monorepo/back-core-lib';
+import { BlBadRequestException, BlNotFoundException } from '@monorepo/back-core-lib';
 import { TeRichText } from '@monorepo/te-text-editor';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -37,11 +37,14 @@ export class HnAgentVersionService {
     return entityManager.save(agentVersion);
   }
 
-  public async findOne(id: string): Promise<HnAgentVersion> {
+  public async findOne(id: string): Promise<HnAgentVersion | null> {
     return this.agentVersionRepository.findOneBy({ id: id });
   }
 
-  public async findByAgentIdAndVersionNumber(agentId: string, version: number): Promise<HnAgentVersion> {
+  public async findByAgentIdAndVersionNumber(
+    agentId: string,
+    version: number
+  ): Promise<HnAgentVersion | null> {
     return this.agentVersionRepository.findOneBy({
       agent: {
         id: agentId,
@@ -50,7 +53,7 @@ export class HnAgentVersionService {
     });
   }
 
-  public async findByAgentAndVersionNumber(agent: HnAgent, version: number): Promise<HnAgentVersion> {
+  public async findByAgentAndVersionNumber(agent: HnAgent, version: number): Promise<HnAgentVersion | null> {
     return this.agentVersionRepository.findOneBy({
       agent: {
         id: agent.id,
@@ -59,7 +62,7 @@ export class HnAgentVersionService {
     });
   }
 
-  public async findLatestByAgent(agent: HnAgent): Promise<HnAgentVersion> {
+  public async findLatestByAgent(agent: HnAgent): Promise<HnAgentVersion | null> {
     return this.agentVersionRepository.findOne({
       where: {
         agent: {
@@ -72,7 +75,7 @@ export class HnAgentVersionService {
     });
   }
 
-  public async findSecondLastByAgent(agent: HnAgent): Promise<HnAgentVersion> {
+  public async findSecondLastByAgent(agent: HnAgent): Promise<HnAgentVersion | null> {
     const agentVersions = await this.agentVersionRepository.find({
       where: {
         agent: {
@@ -89,7 +92,7 @@ export class HnAgentVersionService {
     return agentVersions[1];
   }
 
-  public async findLatestPublishedByAgent(agent: HnAgent): Promise<HnAgentVersion> {
+  public async findLatestPublishedByAgent(agent: HnAgent): Promise<HnAgentVersion | null> {
     return this.agentVersionRepository.findOneBy({
       agent: {
         id: agent.id,
@@ -132,18 +135,27 @@ export class HnAgentVersionService {
 
   public async updateParams(id: string, params: Record<string, any>): Promise<HnAgentVersion> {
     const agentVersion = await this.agentVersionRepository.findOneBy({ id: id });
+    if (!agentVersion) {
+      throw new BlNotFoundException('Agent version not found');
+    }
     agentVersion.params = params;
     return this.agentVersionRepository.save(agentVersion);
   }
 
   public async updateCode(id: string, code: string): Promise<HnAgentVersion> {
     const agentVersion = await this.agentVersionRepository.findOneBy({ id: id });
+    if (!agentVersion) {
+      throw new BlNotFoundException('Agent version not found');
+    }
     agentVersion.code = code;
     return this.agentVersionRepository.save(agentVersion);
   }
 
   public async updateEnvironment(id: string, environment: string): Promise<HnAgentVersion> {
     const agentVersion = await this.agentVersionRepository.findOneBy({ id: id });
+    if (!agentVersion) {
+      throw new BlNotFoundException('Agent version not found');
+    }
     agentVersion.environment = environment;
     return this.agentVersionRepository.save(agentVersion);
   }
@@ -159,6 +171,9 @@ export class HnAgentVersionService {
 
   public async publish(id: string, entityManager: EntityManager): Promise<HnAgentVersion> {
     const agentVersion = await this.agentVersionRepository.findOneBy({ id: id });
+    if (!agentVersion) {
+      throw new BlNotFoundException('Agent version not found');
+    }
     if (agentVersion.versionState === HnAgentVersionState.PUBLISHED) {
       throw new BlBadRequestException('Cannot publish the agent version is already published');
     }
@@ -171,6 +186,9 @@ export class HnAgentVersionService {
 
   public async updateVersionInfos(agentVersionId: string, versionInfos: TeRichText): Promise<HnAgentVersion> {
     const agentVersion = await this.agentVersionRepository.findOneBy({ id: agentVersionId });
+    if (!agentVersion) {
+      throw new BlNotFoundException('Agent version not found');
+    }
     agentVersion.setVersionInfoRichText(versionInfos);
     return this.agentVersionRepository.save(agentVersion);
   }

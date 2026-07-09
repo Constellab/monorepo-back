@@ -9,5 +9,5 @@ import { HnAbstractLikeEntity } from '../like-core/hn-abstract-like.entity';
 export class HnLikePartner extends HnAbstractLikeEntity<HnPartner> {
   @Type(() => HnPartner)
   @ManyToOne(() => HnPartner, { eager: true, onDelete: 'CASCADE', nullable: false })
-  entity: HnPartner;
+  entity!: HnPartner;
 }

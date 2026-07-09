@@ -106,7 +106,7 @@ export class HnAgentForLabController {
     return this.agentAggregateService.getAgentsForLab(spacesFilter, titleFilter, personalOnly, page, size);
   }
 
-  private getVersionNumber(jsonVersionNumber: string): number {
+  private getVersionNumber(jsonVersionNumber: string | undefined): number {
     let versionNumber: number;
     if (!jsonVersionNumber) {
       versionNumber = 1;

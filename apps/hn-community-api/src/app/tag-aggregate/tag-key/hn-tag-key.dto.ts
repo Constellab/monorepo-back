@@ -7,12 +7,12 @@ import { HnTagCoAuthorDto } from '../tag-co-author/hn-tag-co-author.dto';
 import { HnTagKey, HnTagKeyType } from './hn-tag-key.entity';
 
 export class HnTagKeyDto extends BlEntityWithIdDTO {
-  technicalName: string;
-  label: string;
-  type: HnTagKeyType;
-  deprecated: boolean;
-  likes: number;
-  comments: number;
+  technicalName!: string;
+  label!: string;
+  type!: HnTagKeyType;
+  deprecated!: boolean;
+  likes!: number;
+  comments!: number;
   publishedAt?: string;
   unit?: string;
   description?: TeRichTextDTO;
@@ -32,16 +32,16 @@ export class HnTagKeyDto extends BlEntityWithIdDTO {
     this.label = tagKey.label;
     this.type = tagKey.type;
     this.deprecated = tagKey.deprecated;
-    this.publishedAt = tagKey.publishedAt?.toISO();
+    this.publishedAt = tagKey.publishedAt?.toISO() ?? undefined;
     this.unit = tagKey.unit;
     this.description = tagKey.description;
     this.additionalInfosSpecs = tagKey.additionalInfosSpecs;
-    this.space = tagKey.space ? new HnSpaceDto(tagKey.space) : null;
+    this.space = tagKey.space ? new HnSpaceDto(tagKey.space) : undefined;
     this.tagCoAuthors = tagKey.tagCoAuthors?.map((tagCoAuthor) => new HnTagCoAuthorDto(tagCoAuthor));
-    this.createdAt = tagKey.createdAt?.toISO();
-    this.createdBy = tagKey.createdBy ? new HnUserDto(tagKey.createdBy) : null;
-    this.lastModifiedAt = tagKey.lastModifiedAt?.toISO();
-    this.lastModifiedBy = tagKey.lastModifiedBy ? new HnUserDto(tagKey.lastModifiedBy) : null;
+    this.createdAt = tagKey.createdAt?.toISO() ?? undefined;
+    this.createdBy = tagKey.createdBy ? new HnUserDto(tagKey.createdBy) : undefined;
+    this.lastModifiedAt = tagKey.lastModifiedAt?.toISO() ?? undefined;
+    this.lastModifiedBy = tagKey.lastModifiedBy ? new HnUserDto(tagKey.lastModifiedBy) : undefined;
     this.likes = tagKey.likes ?? 0;
     this.comments = tagKey.comments ?? 0;
   }
@@ -49,9 +49,9 @@ export class HnTagKeyDto extends BlEntityWithIdDTO {
 
 export class HnCreateTagKeyDto {
   id?: string;
-  technicalName: string;
-  label: string;
-  type: HnTagKeyType;
+  technicalName!: string;
+  label!: string;
+  type!: HnTagKeyType;
   unit?: string;
   scientificName?: string;
   space?: string;
@@ -80,15 +80,15 @@ export class HnTagKeyForLabDto {
     this.label = tagKey.label;
     this.value_format = tagKey.type;
     this.deprecated = tagKey.deprecated;
-    this.published_at = tagKey.publishedAt?.toISO();
+    this.published_at = tagKey.publishedAt?.toISO() ?? undefined;
     this.unit = tagKey.unit;
     this.description = tagKey.description;
-    this.space = tagKey.space ? { id: tagKey.space.id, name: tagKey.space.name } : null;
+    this.space = tagKey.space ? { id: tagKey.space.id, name: tagKey.space.name } : undefined;
     this.tag_co_authors = tagKey.tagCoAuthors?.map((tagCoAuthor) => new HnUserDto(tagCoAuthor.user));
-    this.created_at = tagKey.createdAt?.toISO();
-    this.created_by = tagKey.createdBy ? new HnUserDto(tagKey.createdBy) : null;
-    this.last_modified_at = tagKey.lastModifiedAt?.toISO();
-    this.last_modified_by = tagKey.lastModifiedBy ? new HnUserDto(tagKey.lastModifiedBy) : null;
+    this.created_at = tagKey.createdAt?.toISO() ?? undefined;
+    this.created_by = tagKey.createdBy ? new HnUserDto(tagKey.createdBy) : undefined;
+    this.last_modified_at = tagKey.lastModifiedAt?.toISO() ?? undefined;
+    this.last_modified_by = tagKey.lastModifiedBy ? new HnUserDto(tagKey.lastModifiedBy) : undefined;
     this.additional_infos_specs = tagKey.additionalInfosSpecs;
   }
 }

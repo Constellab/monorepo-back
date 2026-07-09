@@ -15,7 +15,7 @@ export class HnRunStatService {
     return this.runStatRepository.find();
   }
 
-  async findById(id: string): Promise<HnRunStat> {
+  async findById(id: string): Promise<HnRunStat | null> {
     return this.runStatRepository.findOneBy({ id });
   }
 

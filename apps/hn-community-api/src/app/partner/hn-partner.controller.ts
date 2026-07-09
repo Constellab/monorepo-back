@@ -53,7 +53,7 @@ export class HnPartnerController extends HnAbstractFileController<HnPartner> {
 
   @BlPublic()
   @Get('current')
-  async getCurrentUserPartner(): Promise<HnPartnerDetailDto> {
+  async getCurrentUserPartner(): Promise<HnPartnerDetailDto | null> {
     return HnPartnerDetailDto.fromEntity(await this.partnerService.getCurrentUserPartner());
   }
 
@@ -61,13 +61,13 @@ export class HnPartnerController extends HnAbstractFileController<HnPartner> {
   @Get('user/:userId')
   async getPartnerByUserId(
     @Param('userId', new ParseUUIDPipe()) userId: string
-  ): Promise<HnPartnerDetailDto> {
+  ): Promise<HnPartnerDetailDto | null> {
     return HnPartnerDetailDto.fromEntity(await this.partnerService.findByUserId(userId));
   }
 
   @BlPublic()
   @Get(':id')
-  async getPartnerById(@Param('id', new ParseUUIDPipe()) id: string): Promise<HnPartnerDetailDto> {
+  async getPartnerById(@Param('id', new ParseUUIDPipe()) id: string): Promise<HnPartnerDetailDto | null> {
     return HnPartnerDetailDto.fromEntity(await this.partnerService.findById(id));
   }
 

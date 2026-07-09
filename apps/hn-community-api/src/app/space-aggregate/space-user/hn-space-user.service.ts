@@ -13,7 +13,7 @@ export class HnSpaceUserService {
     private spaceUserRepository: Repository<HnSpaceUser>
   ) {}
 
-  public async findSpaceUserByIds(spaceId: string, userId: string): Promise<HnSpaceUser> {
+  public async findSpaceUserByIds(spaceId: string, userId: string): Promise<HnSpaceUser | null> {
     return this.spaceUserRepository.findOneBy({ spaceId: spaceId, userId: userId });
   }
 
@@ -31,7 +31,7 @@ export class HnSpaceUserService {
     return this.spaceUserRepository.save(spaceUser);
   }
 
-  public async updateSpaceUser(spaceUser: HnSpaceUser): Promise<HnSpaceUser> {
+  public async updateSpaceUser(spaceUser: HnSpaceUser): Promise<HnSpaceUser | null> {
     await this.spaceUserRepository.update(
       { spaceId: spaceUser.spaceId, userId: spaceUser.userId },
       {
@@ -52,7 +52,7 @@ export class HnSpaceUserService {
   }
 
   public async checkCurrentUserIsSpaceUser(spaceId: string): Promise<boolean> {
-    const currentUser = HnCurrentUserHelper.getCurrentUser();
+    const currentUser = HnCurrentUserHelper.getAndCheckCurrentUser();
     return await this.checkSpaceUser(spaceId, currentUser.id);
   }
 
@@ -63,28 +63,30 @@ export class HnSpaceUserService {
   }
 
   public async assertCurrentUserIsSpaceUser(spaceId: string): Promise<void> {
-    if (HnCurrentUserHelper.getCurrentUser() == null) {
+    const currentUser = HnCurrentUserHelper.getCurrentUser();
+    if (currentUser == null) {
       throw new BlUnauthorizedException('Current user is not authenticated');
     }
-    if (!(await this.checkSpaceUser(spaceId, HnCurrentUserHelper.getCurrentUser().id))) {
+    if (!(await this.checkSpaceUser(spaceId, currentUser.id))) {
       throw new BlUnauthorizedException('Current user is not space user');
     }
   }
 
   public async checkSpaceUserAdmin(spaceId: string, userId: string): Promise<boolean> {
     const spaceUser = await this.findSpaceUserByIds(spaceId, userId);
-    return spaceUser && spaceUser.role === HnSpaceUserRole.ADMIN;
+    return spaceUser != null && spaceUser.role === HnSpaceUserRole.ADMIN;
   }
 
   public async checkCurrentUserIsSpaceAdmin(spaceId: string): Promise<boolean> {
-    return await this.checkSpaceUserAdmin(spaceId, HnCurrentUserHelper.getCurrentUser().id);
+    return await this.checkSpaceUserAdmin(spaceId, HnCurrentUserHelper.getAndCheckCurrentUser().id);
   }
 
   public async assertCurrentUserIsSpaceAdmin(spaceId: string): Promise<void> {
-    if (HnCurrentUserHelper.getCurrentUser() == null) {
+    const currentUser = HnCurrentUserHelper.getCurrentUser();
+    if (currentUser == null) {
       throw new BlUnauthorizedException('Current user is not authenticated');
     }
-    if (!(await this.checkSpaceUserAdmin(spaceId, HnCurrentUserHelper.getCurrentUser().id))) {
+    if (!(await this.checkSpaceUserAdmin(spaceId, currentUser.id))) {
       throw new BlUnauthorizedException('Current user is not space admin');
     }
   }

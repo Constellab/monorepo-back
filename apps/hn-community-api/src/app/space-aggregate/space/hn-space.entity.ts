@@ -10,24 +10,24 @@ import { HnUser } from '../../users/hn-user.entity';
 @Entity('space')
 export class HnSpace extends BlEntityWithId {
   @Column({ nullable: false })
-  name: string;
+  name!: string;
 
   @Column({ nullable: true })
-  photo: string;
+  photo!: string;
 
   @BlLuxonDateTimeColumn({ nullable: true, update: false })
-  createdAt: DateTime;
+  createdAt!: DateTime;
 
   @Type(() => HnUser)
   @ManyToOne(() => HnUser, { eager: true, nullable: true, onDelete: 'SET NULL' })
-  createdBy?: HnUser;
+  createdBy?: HnUser | null;
 
   @BlLuxonDateTimeColumn({ nullable: true })
-  lastModifiedAt: DateTime;
+  lastModifiedAt!: DateTime;
 
   @Type(() => HnUser)
   @ManyToOne(() => HnUser, { eager: true, nullable: true, onDelete: 'SET NULL' })
-  lastModifiedBy: HnUser;
+  lastModifiedBy!: HnUser | null;
 
   @BeforeInsert()
   setCreatedByUser(): void {

@@ -12,6 +12,7 @@ export class HnIsAdminGuard implements CanActivate {
     if (!isAdmin) {
       return true;
     }
-    return HnCurrentUserHelper.getCurrentUser() && HnCurrentUserHelper.getCurrentUser().isAdmin();
+    const currentUser = HnCurrentUserHelper.getCurrentUser();
+    return currentUser != null && currentUser.isAdmin();
   }
 }

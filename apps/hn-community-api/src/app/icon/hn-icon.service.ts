@@ -42,18 +42,18 @@ export class HnIconService {
   }
 
   async getIconFile(technicalName: string): Promise<BlFileResponse> {
-    const icon: HnIcon = await this.iconRepository.findOneBy({ technicalName: technicalName });
+    const icon: HnIcon | null = await this.iconRepository.findOneBy({ technicalName: technicalName });
     if (!icon) {
       throw new BlNotFoundException('Icon not found');
     }
     return await this.objectStorageService.downloadObject(this.getBucketConfig(), icon.fileName);
   }
 
-  async getIconById(id: string): Promise<HnIcon> {
+  async getIconById(id: string): Promise<HnIcon | null> {
     return this.iconRepository.findOneBy({ id: id });
   }
 
-  async getIconByTechnicalName(technicalName: string): Promise<HnIcon> {
+  async getIconByTechnicalName(technicalName: string): Promise<HnIcon | null> {
     return this.iconRepository.findOneBy({ technicalName: technicalName });
   }
 
@@ -81,7 +81,7 @@ export class HnIconService {
     await this.spaceAggregateService.assertCurrentUserIsInGencoverySpace();
 
     if (_icon.id == null) throw new BlNotFoundException('Icon id is missing');
-    const icon: HnIcon = await this.iconRepository.findOneBy({ id: _icon.id });
+    const icon: HnIcon | null = await this.iconRepository.findOneBy({ id: _icon.id });
     if (!icon) {
       throw new BlNotFoundException('Icon not found');
     }
@@ -131,7 +131,7 @@ export class HnIconService {
   async deleteIcon(id: string): Promise<boolean> {
     await this.spaceAggregateService.assertCurrentUserIsInGencoverySpace();
 
-    const icon: HnIcon = await this.iconRepository.findOneBy({ id: id });
+    const icon: HnIcon | null = await this.iconRepository.findOneBy({ id: id });
     if (!icon) {
       throw new BlNotFoundException('Icon not found');
     }

@@ -6,9 +6,9 @@ import { HnBaseEntity } from '../../core/model/entities/hn-base.entity';
 
 export class HnCommentEntity<T extends BlEntityWithId> extends HnBaseEntity {
   @Column({ type: 'simple-json' })
-  content: TeRichTextInput;
+  content!: TeRichTextInput;
 
-  entityId: string;
+  entityId!: string;
 
   public getContentRichText(): TeRichText {
     return new TeRichText(this.content);
@@ -18,5 +18,5 @@ export class HnCommentEntity<T extends BlEntityWithId> extends HnBaseEntity {
     this.content = content.toJson();
   }
 
-  entity: T;
+  entity!: T;
 }

@@ -15,9 +15,9 @@ export enum HnBrickVisibility {
 }
 
 export class HnBrickFilter {
-  categories: string[];
-  topics: string[];
-  title: string;
+  categories!: string[];
+  topics!: string[];
+  title!: string;
 }
 
 @Unique(['name'])
@@ -25,65 +25,65 @@ export class HnBrickFilter {
 export class HnBrickEntity extends BlEntityWithId {
   @BlNotUpdatable()
   @Column()
-  name: string;
+  name!: string;
 
   @Column()
-  description: string;
+  description!: string;
 
   @Column()
-  isCertified: boolean;
+  isCertified!: boolean;
 
   @Column({ type: 'enum', enum: HnBrickVisibility, default: HnBrickVisibility.PUBLIC })
-  visibility: HnBrickVisibility;
+  visibility!: HnBrickVisibility;
 
   @Column({ nullable: true })
-  pipRepo: string;
+  pipRepo!: string | null;
 
   @Column({ nullable: true })
-  gitRepo: string;
+  gitRepo!: string | null;
 
   @Column({ nullable: true })
-  imageLink?: string;
+  imageLink?: string | null;
 
   @Column({ nullable: true })
-  credentialUsername?: string;
+  credentialUsername?: string | null;
 
   @Column({ nullable: true })
-  credentialPassword?: string;
+  credentialPassword?: string | null;
 
   @BlLuxonDateTimeColumn({ nullable: true, update: false })
-  createdAt: DateTime;
+  createdAt!: DateTime;
 
   @Type(() => HnUser)
   @ManyToOne(() => HnUser, { eager: true, nullable: true })
   createdBy?: HnUser;
 
   @BlLuxonDateTimeColumn({ nullable: true })
-  lastModifiedAt: DateTime;
+  lastModifiedAt!: DateTime;
 
   @Type(() => HnUser)
   @ManyToOne(() => HnUser, { eager: true, nullable: true })
-  lastModifiedBy: HnUser;
+  lastModifiedBy?: HnUser;
 
   @ManyToOne(() => HnSpace, { eager: true, onUpdate: 'CASCADE', onDelete: 'CASCADE', nullable: true })
-  space?: HnSpace;
+  space?: HnSpace | null;
 
   @Column({ default: 0 })
-  likes: number;
+  likes!: number;
 
   @Column({ default: 0 })
-  comments: number;
+  comments!: number;
 
   @BeforeInsert()
   setCreatedByUser(): void {
-    this.createdBy = HnCurrentUserHelper.getCurrentUser();
+    this.createdBy = HnCurrentUserHelper.getCurrentUser() ?? undefined;
     this.createdAt = ClDateHelper.getDate();
   }
 
   @BeforeInsert()
   @BeforeUpdate()
   setLastModifiedByUser(): void {
-    this.lastModifiedBy = HnCurrentUserHelper.getCurrentUser();
+    this.lastModifiedBy = HnCurrentUserHelper.getCurrentUser() ?? undefined;
     this.lastModifiedAt = ClDateHelper.getDate();
   }
 
@@ -100,7 +100,7 @@ export class HnBrickEntity extends BlEntityWithId {
   }
 
   get repositoryUrl(): string {
-    return this.gitRepo || this.pipRepo;
+    return this.gitRepo || this.pipRepo || '';
   }
 
   /**

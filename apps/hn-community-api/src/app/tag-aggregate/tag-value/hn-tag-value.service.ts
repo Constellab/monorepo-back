@@ -64,7 +64,7 @@ export class HnTagValueService {
    * Get tag value by id
    * @param id
    */
-  async getTagValueById(id: string): Promise<HnTagValue> {
+  async getTagValueById(id: string): Promise<HnTagValue | null> {
     return this.tagValueRepository.findOneBy({ id: id });
   }
 

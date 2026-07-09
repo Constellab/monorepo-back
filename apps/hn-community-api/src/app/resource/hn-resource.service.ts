@@ -27,7 +27,7 @@ export class HnResourceService {
 
     for (const r of deduped) {
       const resource = new HnResource();
-      resource.shortDescription = r.short_description ? r.short_description : null;
+      resource.shortDescription = r.short_description ? r.short_description : undefined;
       resource.doc = r.doc;
       resource.brickName = technicalFolder.brickMajorVersion.brick.name;
       resource.technicalFolder = technicalFolder;
@@ -72,8 +72,11 @@ export class HnResourceService {
     });
   }
 
-  async findCurrentTecDoc(tecFolder: HnTechnicalFolder, uniqueName: string): Promise<HnGeneratedDocEntity> {
-    const resource: HnResource = await this.resourceRepository.findOneBy({
+  async findCurrentTecDoc(
+    tecFolder: HnTechnicalFolder,
+    uniqueName: string
+  ): Promise<HnGeneratedDocEntity | null> {
+    const resource: HnResource | null = await this.resourceRepository.findOneBy({
       technicalFolder: {
         id: tecFolder.id,
       },
@@ -85,7 +88,7 @@ export class HnResourceService {
     return resource;
   }
 
-  async findTechDocById(id: string): Promise<HnResource> {
+  async findTechDocById(id: string): Promise<HnResource | null> {
     return this.resourceRepository.findOneBy({ id });
   }
 }

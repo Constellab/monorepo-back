@@ -23,14 +23,14 @@ export abstract class HnAbstractLikeService<T extends BlEntityWithId> {
 
   abstract createLike(entity: T): HnAbstractLikeEntity<T>;
 
-  async getLike(entityId: string): Promise<HnAbstractLikeEntity<BlEntityWithId>> {
+  async getLike(entityId: string): Promise<HnAbstractLikeEntity<BlEntityWithId> | null> {
     return await this.repository.findOne({
       where: {
         entity: {
           id: entityId,
         },
         likedBy: {
-          id: HnCurrentUserHelper.getCurrentUser().id,
+          id: HnCurrentUserHelper.getAndCheckCurrentUser().id,
         },
       },
     });
@@ -63,7 +63,7 @@ export abstract class HnAbstractLikeService<T extends BlEntityWithId> {
   }
 
   async unlike(entityType: HnEntityType, entityId: string): Promise<number> {
-    const like: HnAbstractLikeEntity<BlEntityWithId> = await this.getLike(entityId);
+    const like: HnAbstractLikeEntity<BlEntityWithId> | null = await this.getLike(entityId);
     if (!like) {
       throw new BlBadRequestException('Entity not liked');
     }

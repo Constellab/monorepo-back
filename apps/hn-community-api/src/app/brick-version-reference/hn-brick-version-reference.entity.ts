@@ -12,19 +12,19 @@ export enum HnBrickVersionRefState {
 @Entity('brick_version_reference')
 export class HnBrickVersionReference extends BlEntityWithId {
   @Column({ type: 'enum', enum: HnBrickVersionRefState, nullable: false })
-  versionState: HnBrickVersionRefState;
+  versionState!: HnBrickVersionRefState;
 
   @ManyToOne(() => HnBrickVersion, (object) => object.id, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn()
-  brickVersion: HnBrickVersion;
+  brickVersion!: HnBrickVersion;
 
   @Column({ nullable: false })
-  brickVersionId: string;
+  brickVersionId!: string;
 
   @ManyToOne(() => HnBrickVersion, (object) => object.id, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn()
-  reference: HnBrickVersion;
+  reference!: HnBrickVersion;
 
   @Column({ nullable: false })
-  referenceId: string;
+  referenceId!: string;
 }

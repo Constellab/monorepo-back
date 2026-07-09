@@ -30,32 +30,32 @@ export enum HnAgentVersionType {
 @Entity('agent_version')
 export class HnAgentVersion extends BlEntityWithId {
   @Column({ default: 1 })
-  version: number;
+  version!: number;
 
   @BlNotUpdatable()
   @ManyToOne(() => HnAgent, { eager: true, onDelete: 'CASCADE', nullable: false })
-  agent: HnAgent;
+  agent!: HnAgent;
 
   @Column({ type: 'enum', enum: HnAgentVersionState, nullable: false, default: HnAgentVersionState.DRAFT })
-  versionState: HnAgentVersionState;
+  versionState!: HnAgentVersionState;
 
   @Column({ type: 'enum', enum: HnAgentVersionType, nullable: false, default: HnAgentVersionType.PYTHON })
-  type: HnAgentVersionType;
+  type!: HnAgentVersionType;
 
   @Column({ type: 'simple-json', nullable: true })
   versionInfos?: TeRichTextDTO;
 
   @Column({ type: 'simple-json', nullable: true })
-  params: Record<string, any>;
+  params!: Record<string, any>;
 
   @Column({ type: 'text', nullable: true })
-  environment: string;
+  environment!: string;
 
   @Column({ type: 'text', nullable: true })
-  code: string;
+  code!: string;
 
   @BlLuxonDateTimeColumn({ nullable: true, update: false })
-  createdAt: DateTime;
+  createdAt!: DateTime;
 
   @Column({ type: 'simple-json', nullable: true })
   inputSpecs?: Record<string, any>;

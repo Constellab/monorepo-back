@@ -59,8 +59,8 @@ export class HnTagAggregateLabController {
   async getTagValueForLab(
     @Param('technicalName') technicalName: string,
     @Param('valueId') valueId: string
-  ): Promise<HnTagValueForLabDto> {
-    const tagValue: HnTagValue = await this.tagAggregateService.getTagValue(technicalName, valueId);
+  ): Promise<HnTagValueForLabDto | null> {
+    const tagValue: HnTagValue | null = await this.tagAggregateService.getTagValue(technicalName, valueId);
     if (!tagValue) {
       return null;
     }

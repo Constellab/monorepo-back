@@ -18,7 +18,7 @@ export class HnSimpleGeneratedDocDto extends HnBaseDto {
 }
 
 export class HnGeneratedDocDto extends HnSimpleGeneratedDocDto {
-  doc: string;
+  doc?: string;
   technicalFolder?: HnTechnicalFolderDto;
   style?: Record<string, any>;
   typingName?: string;

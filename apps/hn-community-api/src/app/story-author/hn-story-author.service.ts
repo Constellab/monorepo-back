@@ -20,7 +20,7 @@ export class HnStoryAuthorService {
   }
 
   async removeStoryCoAuthor(storyId: string, storyAuthorUserId: string): Promise<void> {
-    const storyAuthor: HnStoryCoAuthor = await this.storyAuthorRepository.findOneBy({
+    const storyAuthor: HnStoryCoAuthor | null = await this.storyAuthorRepository.findOneBy({
       story: { id: storyId },
       user: { id: storyAuthorUserId },
     });

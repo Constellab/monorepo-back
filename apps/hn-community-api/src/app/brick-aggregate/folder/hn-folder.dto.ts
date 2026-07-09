@@ -5,9 +5,9 @@ import { HnDocumentationDto } from '../documentation/hn-documentation.dto';
 import { HnFolder } from './hn-folder.entity';
 
 export class HnFolderDto extends HnBaseDto {
-  title: string;
-  path: string;
-  completePath: string;
+  title: string | null;
+  path: string | null;
+  completePath: string | null;
   order: number;
   folder?: HnFolderDto;
   folders?: HnFolderDto[];
@@ -45,7 +45,7 @@ export class HnNode extends BlEntityWithId {
 
   completePath: string;
 
-  parentId: string;
+  parentId: string | null;
 
   children?: HnNode[];
 
@@ -72,10 +72,10 @@ export class HnNode extends BlEntityWithId {
 }
 
 export class HnNodeDTO extends BlEntityWithId {
-  title: string;
-  path: string;
+  title!: string | null;
+  path!: string | null;
   folder?: HnFolder;
   folderId?: string;
-  isFolder: boolean;
+  isFolder!: boolean;
   order?: number;
 }

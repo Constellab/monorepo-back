@@ -7,10 +7,10 @@ import { HnTagKey } from '../tag-key/hn-tag-key.entity';
 @Entity('tag_value')
 export class HnTagValue extends BlEntityWithId {
   @Column({ update: false })
-  value: string;
+  value!: string;
 
   @Column()
-  deprecated: boolean;
+  deprecated!: boolean;
 
   @Column({ nullable: true })
   shortDescription?: string;
@@ -24,5 +24,5 @@ export class HnTagValue extends BlEntityWithId {
     onDelete: 'CASCADE',
     nullable: false,
   })
-  tagKey: HnTagKey;
+  tagKey!: HnTagKey;
 }

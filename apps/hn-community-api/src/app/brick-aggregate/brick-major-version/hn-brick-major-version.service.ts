@@ -37,7 +37,7 @@ export class HnBrickMajorVersionService {
   async findBrickMajorVersionByBrickAndVersion(
     brick: HnBrick,
     version: string
-  ): Promise<HnBrickMajorVersion> {
+  ): Promise<HnBrickMajorVersion | null> {
     let major: number;
 
     // check if version is in good format 'latest', 'X.X.X' or 'X.X.X-beta.X'
@@ -65,7 +65,7 @@ export class HnBrickMajorVersionService {
     });
   }
 
-  async getLatestBrickMajorVersion(brickId: string): Promise<HnBrickMajorVersion> {
+  async getLatestBrickMajorVersion(brickId: string): Promise<HnBrickMajorVersion | null> {
     return await this.brickMajorVersionsRepository.findOne({
       where: {
         brick: {
@@ -77,7 +77,7 @@ export class HnBrickMajorVersionService {
     });
   }
 
-  async findOneByBrickIdAndMajor(brickId: string, major: number): Promise<HnBrickMajorVersion> {
+  async findOneByBrickIdAndMajor(brickId: string, major: number): Promise<HnBrickMajorVersion | null> {
     return this.brickMajorVersionsRepository.findOne({
       where: {
         brick: {
@@ -88,7 +88,10 @@ export class HnBrickMajorVersionService {
     });
   }
 
-  async findBrickMajorVersionByBrickAndMajor(brick: HnBrick, major: number): Promise<HnBrickMajorVersion> {
+  async findBrickMajorVersionByBrickAndMajor(
+    brick: HnBrick,
+    major: number
+  ): Promise<HnBrickMajorVersion | null> {
     return this.brickMajorVersionsRepository.findOne({
       where: {
         brick: {

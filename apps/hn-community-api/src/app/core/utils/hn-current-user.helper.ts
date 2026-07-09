@@ -88,7 +88,7 @@ export class HnCurrentUserHelper extends BlRequestContextHelper {
     if (authContext != null && authContext.type === 'lab') {
       return authContext.labId;
     }
-    return null;
+    throw new BlUnauthorizedException('No lab in the context');
   }
 
   static isAdmin(): boolean {

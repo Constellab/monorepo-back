@@ -1,3 +1,4 @@
+import { BlNotFoundException } from '@monorepo/back-core-lib';
 import { ConflictException, Injectable, Logger } from '@nestjs/common';
 import { DataSource, EntityManager } from 'typeorm';
 
@@ -45,7 +46,10 @@ export class HnRunStatAgService {
           this.logger.warn(`User ${stat.executed_by} not found for run stat ${stat.id}, using robot user`);
           user = await this.userService.getRobotUser();
         }
-        let agentVersion: HnAgentVersion;
+        if (!user) {
+          throw new BlNotFoundException(`Robot user not found for run stat ${stat.id}`);
+        }
+        let agentVersion: HnAgentVersion | undefined;
         if (stat.community_agent_version_id) {
           agentVersion = await this.agentAggregateService.findAgentVersionById(
             stat.community_agent_version_id
@@ -81,11 +85,11 @@ export class HnRunStatAgService {
       runStat
     );
     await this.runStatAggregateService.updateAgentRunStatGroup(entityManager, agentVersion.agent.id, runStat);
-    await this.runStatAggregateService.updateUserRunStatGroup(
-      entityManager,
-      runStat,
-      agentVersion.agent.createdBy.id
-    );
+    const agentCreatedBy = agentVersion.agent.createdBy;
+    if (!agentCreatedBy) {
+      throw new BlNotFoundException(`Agent ${agentVersion.agent.id} has no creator`);
+    }
+    await this.runStatAggregateService.updateUserRunStatGroup(entityManager, runStat, agentCreatedBy.id);
     return agentVersionRunStatGroup;
   }
 
@@ -101,12 +105,16 @@ export class HnRunStatAgService {
     );
 
     const brickName: string = HnTypingName.getBrickName(runStat.processTypingName);
-    const brick: HnBrick = await this.brickAggregateService.findBrickByName(brickName, null, false);
+    const brick: HnBrick = await this.brickAggregateService.findBrickByName(brickName, undefined, false);
     if (brick) {
       await this.runStatAggregateService.updateBrickRunStatGroup(entityManager, brick, runStat);
     }
 
-    await this.runStatAggregateService.updateUserRunStatGroup(entityManager, runStat, brick.createdBy.id);
+    const brickCreatedBy = brick.createdBy;
+    if (!brickCreatedBy) {
+      throw new BlNotFoundException(`Brick ${brickName} has no creator`);
+    }
+    await this.runStatAggregateService.updateUserRunStatGroup(entityManager, runStat, brickCreatedBy.id);
 
     return updatedProcessRunStatGroup;
   }
@@ -114,7 +122,7 @@ export class HnRunStatAgService {
   async getObjectRunStatGroup(
     objectId: string,
     objectType: HnRunStatAggregateObjectType
-  ): Promise<HnRunStatAggregate> {
+  ): Promise<HnRunStatAggregate | null> {
     await this.checkRightOnObject(objectId, objectType);
     return this.runStatAggregateService.findObjectRunStatGroup(objectId, objectType);
   }
@@ -144,7 +152,11 @@ export class HnRunStatAgService {
   async getRunStatCreators(runStat: HnRunStat): Promise<string[]> {
     if (runStat.agentVersion) {
       const agentVersion = await this.agentAggregateService.findAgentVersionById(runStat.agentVersion.id);
-      const creators: string[] = [agentVersion.agent.createdBy.id];
+      const agentCreatedBy = agentVersion.agent.createdBy;
+      if (!agentCreatedBy) {
+        throw new BlNotFoundException(`Agent ${agentVersion.agent.id} has no creator`);
+      }
+      const creators: string[] = [agentCreatedBy.id];
       if (agentVersion.agent.agentCoAuthors?.length > 0) {
         for (const agentCoAuthor of agentVersion.agent.agentCoAuthors) {
           if (!creators.includes(agentCoAuthor.user.id)) creators.push(agentCoAuthor.user.id);
@@ -153,8 +165,12 @@ export class HnRunStatAgService {
       return creators;
     }
     const brickName: string = HnTypingName.getBrickName(runStat.processTypingName);
-    const brick: HnBrick = await this.brickAggregateService.findBrickByName(brickName, null, false);
-    const creators: string[] = [brick.createdBy.id];
+    const brick: HnBrick = await this.brickAggregateService.findBrickByName(brickName, undefined, false);
+    const brickCreatedBy = brick.createdBy;
+    if (!brickCreatedBy) {
+      throw new BlNotFoundException(`Brick ${brickName} has no creator`);
+    }
+    const creators: string[] = [brickCreatedBy.id];
     const brickUsers = await this.brickUserService.getBrickUsers(brick);
     if (brickUsers?.length > 0) {
       for (const brickUser of brickUsers) {

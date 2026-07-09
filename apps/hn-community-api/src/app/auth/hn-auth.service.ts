@@ -39,10 +39,10 @@ export class HnAuthService {
 
     // if there is no 2FA, the user can be logged in
     if (checkCredential.status === 'OK' && checkCredential.user) {
-      let user: HnUser = await this.userService.findOne(checkCredential.user.id);
+      let user: HnUser | null = await this.userService.findOne(checkCredential.user.id);
       await this.userService.createOrUpdate(checkCredential.user);
       if (!user) {
-        user = await this.userService.findOne(checkCredential.user.id);
+        user = await this.userService.findByIdAndCheck(checkCredential.user.id);
       }
 
       const token = this.jwtService.generateToken(user.id, user.email);
@@ -64,7 +64,7 @@ export class HnAuthService {
 
     if (!dbUser) {
       await this.userService.createOrUpdate(user);
-      dbUser = await this.userService.findOne(user.id);
+      dbUser = await this.userService.findByIdAndCheck(user.id);
     }
 
     return this.jwtService.generateToken(dbUser.id, dbUser.email);

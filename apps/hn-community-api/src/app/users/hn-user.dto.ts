@@ -4,7 +4,7 @@ export class HnUserDto {
   id: string;
   alias: string;
   userCode: string;
-  photo: string;
+  photo: string | null;
 
   constructor(user: HnUser) {
     this.id = user.id;
@@ -20,11 +20,11 @@ export class HnUserDetailDto {
   userCode: string;
   firstname: string;
   lastname: string;
-  photo: string;
-  githubLink: string;
-  linkedinLink: string;
-  xLink: string;
-  interests: string;
+  photo: string | null;
+  githubLink: string | null;
+  linkedinLink: string | null;
+  xLink: string | null;
+  interests: string | null;
 
   constructor(user: HnUser) {
     this.id = user.id;
@@ -41,10 +41,10 @@ export class HnUserDetailDto {
 }
 
 export class HnUserEditDetailDto {
-  id: string;
-  alias: string;
-  githubLink: string;
-  linkedinLink: string;
-  xLink: string;
-  interests: string;
+  id!: string;
+  alias!: string;
+  githubLink!: string;
+  linkedinLink!: string;
+  xLink!: string;
+  interests!: string;
 }

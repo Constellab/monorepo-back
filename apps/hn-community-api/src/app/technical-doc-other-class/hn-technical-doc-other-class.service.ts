@@ -55,8 +55,11 @@ export class HnTechnicalDocOtherClassService {
     });
   }
 
-  async findCurrentTecDoc(tecFolder: HnTechnicalFolder, uniqueName: string): Promise<HnGeneratedDocEntity> {
-    const resource: HnTechnicalDocOtherClass = await this.techDocOtherClassesRepository.findOneBy({
+  async findCurrentTecDoc(
+    tecFolder: HnTechnicalFolder,
+    uniqueName: string
+  ): Promise<HnGeneratedDocEntity | null> {
+    const resource: HnTechnicalDocOtherClass | null = await this.techDocOtherClassesRepository.findOneBy({
       technicalFolder: {
         id: tecFolder.id,
       },
@@ -68,7 +71,7 @@ export class HnTechnicalDocOtherClassService {
     return resource;
   }
 
-  async findTechnicalDocOtherClassById(id: string): Promise<HnTechnicalDocOtherClass> {
+  async findTechnicalDocOtherClassById(id: string): Promise<HnTechnicalDocOtherClass | null> {
     return this.techDocOtherClassesRepository.findOneBy({ id });
   }
 }

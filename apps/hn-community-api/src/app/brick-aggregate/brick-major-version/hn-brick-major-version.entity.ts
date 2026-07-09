@@ -14,13 +14,13 @@ export enum HnVersionState {
 export class HnBrickMajorVersion extends HnBaseEntity {
   @BlNotUpdatable()
   @ManyToOne(() => HnBrickEntity, { eager: true, onDelete: 'CASCADE', nullable: false })
-  brick: HnBrick;
+  brick!: HnBrick;
 
   @Column({ default: 1 })
-  major: number;
+  major!: number;
 
   @Column({ type: 'enum', enum: HnVersionState, nullable: false, default: HnVersionState.STABLE })
-  versionState: HnVersionState;
+  versionState!: HnVersionState;
 
   initialize(brick: HnBrick, major: number): void {
     this.brick = brick;

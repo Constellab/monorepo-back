@@ -11,17 +11,17 @@ export abstract class HnUserInvite extends HnBaseEntity {
   static readonly INVITE_EXPIRY_DAYS = 7;
 
   @Column()
-  email: string;
+  email!: string;
 
   @Column('enum', { enum: HnInviteStatus, default: HnInviteStatus.PENDING })
   status: HnInviteStatus = HnInviteStatus.PENDING;
 
   @Expose()
   @Column('uuid')
-  token: string;
+  token!: string;
 
   @BlLuxonDateTimeColumn({ nullable: true })
-  expiresAt: DateTime;
+  expiresAt!: DateTime;
 
   user?: HnUserDto;
 

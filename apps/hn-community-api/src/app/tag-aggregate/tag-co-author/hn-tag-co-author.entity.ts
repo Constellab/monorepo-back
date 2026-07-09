@@ -7,8 +7,8 @@ import { HnTagKey } from '../tag-key/hn-tag-key.entity';
 @Entity('tag_co_author')
 export class HnTagCoAuthor extends BlEntityWithId {
   @ManyToOne(() => HnTagKey, (tagKey) => tagKey.tagCoAuthors, { nullable: false })
-  tagKey: HnTagKey;
+  tagKey!: HnTagKey;
 
   @ManyToOne(() => HnUser, { eager: true, onDelete: 'CASCADE', nullable: false })
-  user: HnUser;
+  user!: HnUser;
 }

@@ -17,7 +17,7 @@ export class HnSpaceService {
     return this.spaceRepository.find();
   }
 
-  public async findOne(id: string): Promise<HnSpace> {
+  public async findOne(id: string): Promise<HnSpace | null> {
     return this.spaceRepository.findOneBy({ id: id });
   }
 
@@ -33,7 +33,7 @@ export class HnSpaceService {
     await this.spaceRepository.delete(id);
   }
 
-  public async getGencoverySpace(): Promise<HnSpace> {
+  public async getGencoverySpace(): Promise<HnSpace | null> {
     return this.spaceRepository.findOneBy({ id: this.coreConfigService.getGencoverySpaceId() });
   }
 }

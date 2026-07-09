@@ -24,7 +24,7 @@ export class HnAgentCoAuthorService {
   }
 
   async removeAgentCoAuthor(agentId: string, agentCoAuthorUserId: string): Promise<void> {
-    const agentCoAuthor: HnAgentCoAuthor = await this.agentCoAuthorRepository.findOneBy({
+    const agentCoAuthor: HnAgentCoAuthor | null = await this.agentCoAuthorRepository.findOneBy({
       agent: { id: agentId },
       user: { id: agentCoAuthorUserId },
     });

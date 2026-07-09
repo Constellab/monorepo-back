@@ -11,7 +11,7 @@ export class HnTechnicalDocOtherClass extends HnGeneratedDocEntity {
   @Column({ type: 'simple-json', nullable: true })
   methods?: Record<string, any>;
 
-  objectType: string;
+  objectType!: string;
 
   getFolderName(): string {
     return 'other-classes';

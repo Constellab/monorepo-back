@@ -16,11 +16,11 @@ export enum HnVersionType {
 }
 
 export class HnNewVersionDTO {
-  brickName: string;
+  brickName!: string;
 
-  version: string;
+  version!: string;
 
-  repoType: HnRepoType;
+  repoType!: HnRepoType;
 
   references?: HnReferenceDTO[];
 
@@ -28,9 +28,9 @@ export class HnNewVersionDTO {
 }
 
 export class HnBrickSettingsDTO {
-  name: string;
+  name!: string;
   author?: string;
-  version: string;
+  version!: string;
   variables?: Record<string, any>;
   technical_info?: Record<string, any>;
   environment?: HnBrickSettingsEnvironmentDTO;
@@ -47,8 +47,8 @@ export class HnBrickSettingsPipSourceDTO {
 }
 
 export class HnBrickSettingsPipPackageDTO {
-  name: string;
-  version: string;
+  name!: string;
+  version!: string;
   comment?: string;
 }
 
@@ -62,23 +62,23 @@ export interface HnReferenceDTO {
 @Entity('brick_version')
 export class HnBrickVersion extends HnBaseEntity {
   @Column({ default: 0 })
-  minor: number;
+  minor!: number;
 
   @Column({ default: 0 })
-  patch: number;
+  patch!: number;
 
   @Column({ default: null, nullable: true })
-  subPatch: number;
+  subPatch!: number | null;
 
   @Column({ type: 'enum', enum: HnVersionType, nullable: false })
-  versionType: HnVersionType;
+  versionType!: HnVersionType;
 
   @Column({ type: 'enum', enum: HnRepoType, nullable: false })
-  repoType: HnRepoType;
+  repoType!: HnRepoType;
 
   @BlNotUpdatable()
   @ManyToOne(() => HnBrickMajorVersion, { eager: true, onDelete: 'CASCADE', nullable: false })
-  brickMajorVersion: HnBrickMajorVersion;
+  brickMajorVersion!: HnBrickMajorVersion;
 
   @Column({ type: 'simple-json', nullable: true })
   technicalInfo?: Record<string, any>;
@@ -87,7 +87,7 @@ export class HnBrickVersion extends HnBaseEntity {
     brickMajorVersion: HnBrickMajorVersion,
     version: BlVersion,
     repoType: HnRepoType,
-    technicalInfo: Record<string, any>
+    technicalInfo?: Record<string, any>
   ): void {
     this.brickMajorVersion = brickMajorVersion;
     this.version = version;
@@ -100,7 +100,7 @@ export class HnBrickVersion extends HnBaseEntity {
       this.brickMajorVersion.major,
       this.minor,
       this.patch,
-      this.versionType === HnVersionType.BETA ? this.subPatch : null
+      this.versionType === HnVersionType.BETA ? (this.subPatch ?? undefined) : undefined
     );
   }
 
@@ -110,7 +110,7 @@ export class HnBrickVersion extends HnBaseEntity {
     this.brickMajorVersion.major = version.major;
     if (version.isBeta()) {
       this.versionType = HnVersionType.BETA;
-      this.subPatch = version.subPatch;
+      this.subPatch = version.subPatch ?? null;
     } else {
       this.versionType = HnVersionType.NORMAL;
     }

@@ -7,7 +7,7 @@ import { HnStory } from '../story/hn-story.entity';
 @Entity('topic')
 export class HnTopic extends BlEntityWithId {
   @Column()
-  name: string;
+  name!: string;
 
   @ManyToMany(() => HnStory, (story) => story.topics, { nullable: true })
   stories?: HnStory[];

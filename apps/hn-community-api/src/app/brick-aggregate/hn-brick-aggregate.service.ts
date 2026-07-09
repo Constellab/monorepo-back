@@ -82,8 +82,8 @@ import { HnFolderService } from './folder/hn-folder.service';
 import { HnBrickSecurity } from './security/hn-brick.security';
 
 export interface HnBrickUserBasedWhereOptionalParams {
-  spacesFilter?: string[];
-  user?: HnUser;
+  spacesFilter?: string[] | null;
+  user?: HnUser | null;
 }
 
 @Injectable()
@@ -244,7 +244,7 @@ export class HnBrickAggregateService {
     return this.findUserBricksWithCommonSpaces(user, commonSpacesIds, page, size);
   }
 
-  async findBrickById(id: string, user: HnUser = null): Promise<HnBrick> {
+  async findBrickById(id: string, user: HnUser | null = null): Promise<HnBrick | null> {
     const whereConditions: FindOptionsWhere<HnBrickEntity>[] | FindOptionsWhere<HnBrickEntity> =
       await this.getUserBasedWhereBrickConditions(null, { spacesFilter: null, user: user });
     if (whereConditions instanceof Array) {
@@ -259,7 +259,7 @@ export class HnBrickAggregateService {
    * Lightweight findBrickById that skips eager relations.
    * Use when only brick columns (id, name, etc.) are needed.
    */
-  async findBrickByIdLight(id: string, user: HnUser = null): Promise<HnBrick> {
+  async findBrickByIdLight(id: string, user: HnUser | null = null): Promise<HnBrick | null> {
     const whereConditions: FindOptionsWhere<HnBrickEntity>[] | FindOptionsWhere<HnBrickEntity> =
       await this.getUserBasedWhereBrickConditions(null, { spacesFilter: null, user: user });
     if (whereConditions instanceof Array) {
@@ -270,7 +270,7 @@ export class HnBrickAggregateService {
     return this.brickService.findOneLight(whereConditions);
   }
 
-  async findBrickByIdAndCheck(id: string, user: HnUser = null): Promise<HnBrick> {
+  async findBrickByIdAndCheck(id: string, user: HnUser | null = null): Promise<HnBrick> {
     const brick = await this.findBrickById(id, user);
     if (brick == null) {
       throw new BlBadRequestException(HnErrorText.BRICK_NOT_FOUND, {
@@ -280,7 +280,7 @@ export class HnBrickAggregateService {
     return brick;
   }
 
-  async findBrickByName(name: string, userId: string = null, strict: boolean = true): Promise<HnBrick> {
+  async findBrickByName(name: string, userId: string | null = null, strict: boolean = true): Promise<HnBrick> {
     let whereConditions: FindOptionsWhere<HnBrickEntity>[] | FindOptionsWhere<HnBrickEntity> = {};
 
     if (strict) {
@@ -310,7 +310,7 @@ export class HnBrickAggregateService {
    * Lightweight findBrickByName that skips eager relations.
    * Use when only brick columns (id, name, etc.) are needed.
    */
-  async findBrickByNameLight(name: string, userId: string = null, strict: boolean = true): Promise<HnBrick> {
+  async findBrickByNameLight(name: string, userId: string | null = null, strict: boolean = true): Promise<HnBrick> {
     let whereConditions: FindOptionsWhere<HnBrickEntity>[] | FindOptionsWhere<HnBrickEntity> = {};
 
     if (strict) {
@@ -341,11 +341,11 @@ export class HnBrickAggregateService {
   }
 
   async assertCheckBrickSpaceUserById(id: string): Promise<void> {
-    const brick: HnBrick = await this.findBrickById(id, HnCurrentUserHelper.getCurrentUser());
-    if (brick.space != null) {
+    const brick = await this.findBrickById(id, HnCurrentUserHelper.getCurrentUser());
+    if (brick?.space != null) {
       await this.spaceAggregateService.assertCheckSpaceUser(
         brick.space.id,
-        HnCurrentUserHelper.getCurrentUser()?.id
+        HnCurrentUserHelper.getAndCheckCurrentUser().id
       );
     }
   }
@@ -355,7 +355,7 @@ export class HnBrickAggregateService {
     if (brick.space != null) {
       await this.spaceAggregateService.assertCheckSpaceUser(
         brick.space.id,
-        HnCurrentUserHelper.getCurrentUser()?.id
+        HnCurrentUserHelper.getAndCheckCurrentUser().id
       );
     }
   }
@@ -410,18 +410,20 @@ export class HnBrickAggregateService {
             brickMajorVersion.id
           );
 
-          for (const doc of technicalDocs) {
-            brickMap.push({
-              url: this.frontService.getBrickTechnicalDocUrl(
-                brickMajorVersion.brick.name,
-                brickMajorVersion.getStrVersion(),
-                doc.getCompletePath()
-              ),
-              // last mode with format YYYY-MM-DD
-              lastmod: technicalFolder.lastModifiedAt.toFormat('yyyy-MM-dd'),
-              changefreq: HnSiteMapEnumChangefreq.MONTHLY,
-              priority: brickMajorVersion.isLatest ? 0.7 : 0.1,
-            });
+          if (technicalFolder != null) {
+            for (const doc of technicalDocs) {
+              brickMap.push({
+                url: this.frontService.getBrickTechnicalDocUrl(
+                  brickMajorVersion.brick.name,
+                  brickMajorVersion.getStrVersion(),
+                  doc.getCompletePath()
+                ),
+                // last mode with format YYYY-MM-DD
+                lastmod: technicalFolder.lastModifiedAt.toFormat('yyyy-MM-dd'),
+                changefreq: HnSiteMapEnumChangefreq.MONTHLY,
+                priority: brickMajorVersion.isLatest ? 0.7 : 0.1,
+              });
+            }
           }
         }
         map.push(...brickMap);
@@ -431,8 +433,7 @@ export class HnBrickAggregateService {
   }
 
   async createBrick(body: HnCreateBrickDTO): Promise<HnBrick> {
-    let brick: HnBrick;
-    const brickVersion: HnBrickVersion = await this.dataSource.transaction(async (entityManager) => {
+    const { brick, brickVersion } = await this.dataSource.transaction(async (entityManager) => {
       if (body.name.includes(' ')) {
         throw new BlBadRequestException(HnErrorText.BRICK_NAME_INVALID);
       }
@@ -450,6 +451,7 @@ export class HnBrickAggregateService {
       }
 
       // Create brick - catch duplicate in case of concurrent creation
+      let brick: HnBrick;
       try {
         brick = await this.brickService.create(newBrick, entityManager);
       } catch (e: any) {
@@ -502,7 +504,7 @@ export class HnBrickAggregateService {
       // Create main doc
       await this.documentationService.createMainDoc(mainFolder, entityManager);
 
-      return bv;
+      return { brick, brickVersion: bv };
     });
 
     // Send brick version to transport
@@ -528,9 +530,14 @@ export class HnBrickAggregateService {
 
   async acceptBrickUserInvite(token: string): Promise<HnBrick> {
     const brickUserInvite: HnBrickUserInvite = await this.brickUserInviteService.getAndCheckInvite(token);
-    const brick: HnBrick = await this.brickService.findBrickForInviteById(brickUserInvite.brick.id);
+    const brick = await this.brickService.findBrickForInviteById(brickUserInvite.brick.id);
+    if (brick == null) {
+      throw new BlBadRequestException(HnErrorText.BRICK_NOT_FOUND, {
+        detailArgs: { id: brickUserInvite.brick.id },
+      });
+    }
     await this.brickUserInviteService.acceptUserInvite(brickUserInvite);
-    await this.brickUserService.createBrickUser(brick, HnCurrentUserHelper.getCurrentUser());
+    await this.brickUserService.createBrickUser(brick, HnCurrentUserHelper.getAndCheckCurrentUser());
     return brick;
   }
 
@@ -542,14 +549,17 @@ export class HnBrickAggregateService {
 
   async editBrick(editedBrick: HnEditBrickDTO): Promise<HnBrick> {
     await this.assertUserCanEditBrick(editedBrick.id, false);
-    let brick: HnBrick = await this.findBrickById(editedBrick.id);
+    let brick: HnBrick = await this.findBrickByIdAndCheck(editedBrick.id);
     brick = await this.brickService.editBrick(brick, editedBrick);
 
     try {
-      const lastBrickMajorVersion: HnBrickMajorVersion =
-        await this.brickMajorVersionService.getLatestBrickMajorVersion(brick.id);
-      const brickVersion = await this.brickVersionService.getLatestBrickVersion(lastBrickMajorVersion.id);
-      await this.brickVersionService.sendBrickVersionIdToTransport(brickVersion.id);
+      const lastBrickMajorVersion = await this.brickMajorVersionService.getLatestBrickMajorVersion(brick.id);
+      const brickVersion = lastBrickMajorVersion
+        ? await this.brickVersionService.getLatestBrickVersion(lastBrickMajorVersion.id)
+        : null;
+      if (brickVersion != null) {
+        await this.brickVersionService.sendBrickVersionIdToTransport(brickVersion.id);
+      }
     } catch (e: any) {
       this.logger.error('Failed to send brick version to transport after edit', e);
     }
@@ -660,11 +670,10 @@ export class HnBrickAggregateService {
 
       await this.brickSecurity.assertIsCreatorOrCoAuthor(brick, HnCurrentUserHelper.getAndCheckCurrentUser());
 
-      const brickMajorVersion: HnBrickMajorVersion =
-        await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(
-          brick,
-          body.inputBrickVersion
-        );
+      const brickMajorVersion = await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(
+        brick,
+        body.inputBrickVersion
+      );
 
       if (brickMajorVersion == null) {
         throw new BlUnauthorizedException('Impossible to create a new major version');
@@ -681,7 +690,11 @@ export class HnBrickAggregateService {
 
   async updateFolder(updatedFolder: HnNodeDTO): Promise<HnFolder> {
     await this.checkIfUserHasRightsOnFolder(updatedFolder.id);
-    return this.updateFolderRecusive(updatedFolder);
+    const folder = await this.updateFolderRecusive(updatedFolder);
+    if (folder == null) {
+      throw new BlBadRequestException('Failed to update folder');
+    }
+    return folder;
   }
 
   async getAndCheckBrickVersion(name: string, version: string): Promise<HnBrickVersion> {
@@ -691,27 +704,36 @@ export class HnBrickAggregateService {
   //------------------------------------- FOLDERS -------------------------------------
 
   async checkIfUserHasRightsOnFolder(id: string): Promise<void> {
-    const folder: HnFolder = await this.folderService.findById(id);
+    const folder = await this.folderService.findById(id);
+    if (folder == null) {
+      throw new BlBadRequestException('Folder not found', { detailArgs: { id: id } });
+    }
     const brickMajorVersion: HnBrickMajorVersion = folder.brickMajorVersion;
     const brick: HnBrick = brickMajorVersion.brick;
     await this.brickSecurity.assertIsCreatorOrCoAuthor(brick, HnCurrentUserHelper.getAndCheckCurrentUser());
   }
 
   async createFolder(createFolder: HnNodeDTO): Promise<HnFolder> {
+    if (createFolder.folderId == null) {
+      throw new BlBadRequestException('Folder id is required');
+    }
     await this.checkIfUserHasRightsOnFolder(createFolder.folderId);
     return this.folderService.create(createFolder);
   }
 
   private static readonly MAX_RECURSION_DEPTH = 50;
 
-  async updateFolderRecusive(updatedFolder: HnNodeDTO, depth: number = 0): Promise<HnFolder> {
+  async updateFolderRecusive(updatedFolder: HnNodeDTO, depth: number = 0): Promise<HnFolder | null> {
     if (depth > HnBrickAggregateService.MAX_RECURSION_DEPTH) return null;
-    let folder: HnFolder = await this.folderService.findWithRelationById(updatedFolder.id);
-    folder.path = ClStringHelper.generateUrlPathFromString(updatedFolder.title);
+    let folder = await this.folderService.findWithRelationById(updatedFolder.id);
+    if (folder == null) {
+      throw new BlBadRequestException('Folder not found', { detailArgs: { id: updatedFolder.id } });
+    }
+    folder.path = ClStringHelper.generateUrlPathFromString(updatedFolder.title ?? '');
     folder.title = updatedFolder.title;
-    folder.completePath = folder.folder.completePath
-      ? folder.folder.completePath + folder.path + '/'
-      : folder.path + '/';
+    folder.completePath = folder.folder?.completePath
+      ? folder.folder.completePath + (folder.path ?? '') + '/'
+      : (folder.path ?? '') + '/';
 
     folder = await this.folderService.save(folder);
 
@@ -732,7 +754,7 @@ export class HnBrickAggregateService {
       for (const f of folder.folders) {
         const fDTO = new HnNodeDTO();
         fDTO.isFolder = true;
-        fDTO.title = f.title;
+        fDTO.title = f.title ?? '';
         fDTO.id = f.id;
         await this.updateFolderRecusive(fDTO, depth + 1);
       }
@@ -749,8 +771,11 @@ export class HnBrickAggregateService {
     mainFolderId: string
   ): Promise<HnNode> {
     await this.checkIfUserHasRightsOnFolder(mainFolderId);
-    const olderParent: HnFolder = await this.folderService.findById(olderParentId);
-    const newParent: HnFolder = await this.folderService.findById(newParentId);
+    const olderParent = await this.folderService.findById(olderParentId);
+    const newParent = await this.folderService.findById(newParentId);
+    if (olderParent == null || newParent == null) {
+      throw new BlBadRequestException('Folder not found');
+    }
 
     if (olderParentId != newParentId) {
       for (const childFolder of olderParent.folders) {
@@ -814,26 +839,39 @@ export class HnBrickAggregateService {
 
     if (nodeType == HnNodeType.DOCUMENTATION) {
       const doc = await this.documentationService.findById(nodeId);
+      if (doc == null) {
+        throw new BlBadRequestException(HnErrorText.DOCUMENTATION_NOT_FOUND, { detailArgs: { id: nodeId } });
+      }
       doc.folder = newParent;
       doc.order = newOrder;
       doc.completePath = (newParent.completePath ?? '') + doc.path + '/';
       await this.documentationService.save(doc);
     } else {
       const folder = await this.folderService.findById(nodeId);
+      if (folder == null) {
+        throw new BlBadRequestException('Folder not found', { detailArgs: { id: nodeId } });
+      }
       folder.folder = newParent;
       folder.order = newOrder;
       folder.completePath = (newParent.completePath ?? '') + folder.path + '/';
       await this.folderService.save(folder);
     }
 
-    return await this.folderService.findBrickDocsNodesTree(await this.folderService.findById(mainFolderId));
+    const mainFolder = await this.folderService.findById(mainFolderId);
+    if (mainFolder == null) {
+      throw new BlBadRequestException('Folder not found', { detailArgs: { id: mainFolderId } });
+    }
+    return await this.folderService.findBrickDocsNodesTree(mainFolder);
   }
 
   async updateTreeFolder(updatedTree: HnNode[]): Promise<HnNode[]> {
     for (const node of updatedTree) {
       let isUpdated = false;
       if (node.children) {
-        const f: HnFolder = await this.folderService.findWithRelationById(node.id);
+        const f = await this.folderService.findWithRelationById(node.id);
+        if (f == null || f.folder == null || node.parentId == null) {
+          throw new BlBadRequestException('Folder not found', { detailArgs: { id: node.id } });
+        }
         if (f.order != node.order || f.folder.id != node.parentId) {
           isUpdated = true;
           f.order = node.order;
@@ -844,7 +882,12 @@ export class HnBrickAggregateService {
         }
         await this.updateTreeFolder(node.children);
       } else {
-        const d: HnDocumentation = await this.documentationService.findById(node.id);
+        const d = await this.documentationService.findById(node.id);
+        if (d == null || d.folder == null || node.parentId == null) {
+          throw new BlBadRequestException(HnErrorText.DOCUMENTATION_NOT_FOUND, {
+            detailArgs: { id: node.id },
+          });
+        }
         if (d.order != node.order || d.folder.id != node.parentId) {
           isUpdated = true;
           d.order = node.order;
@@ -859,25 +902,38 @@ export class HnBrickAggregateService {
   }
 
   async findDocsNodeByBrick(brickId: string, version: string): Promise<HnNode> {
-    const brick: HnBrick = await this.findBrickByIdLight(brickId);
+    const brick = await this.findBrickByIdLight(brickId);
     if (brick == null) {
-      return null;
+      throw new BlBadRequestException(HnErrorText.BRICK_NOT_FOUND, { detailArgs: { id: brickId } });
     }
 
-    const brickMajorVersion: HnBrickMajorVersion =
-      await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(brick, version);
-    const mainFolder: HnFolder = await this.folderService.findFolderByBrickMajorVersion(brickMajorVersion);
+    const brickMajorVersion = await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(
+      brick,
+      version
+    );
+    if (brickMajorVersion == null) {
+      throw new BlBadRequestException(HnErrorText.BRICK_VERSION_NOT_FOUND, { detailArgs: { version } });
+    }
+    const mainFolder = await this.folderService.findFolderByBrickMajorVersion(brickMajorVersion);
+    if (mainFolder == null) {
+      throw new BlBadRequestException('Folder not found');
+    }
     return await this.folderService.findBrickDocsNodesTree(mainFolder);
   }
 
   async findAllDocsByBrick(brickName: string, version: string): Promise<HnDocumentation[]> {
     const brick: HnBrick = await this.findBrickByName(brickName);
-    if (brick == null) {
-      return null;
+    const brickMajorVersion = await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(
+      brick,
+      version
+    );
+    if (brickMajorVersion == null) {
+      throw new BlBadRequestException(HnErrorText.BRICK_VERSION_NOT_FOUND, { detailArgs: { version } });
     }
-    const brickMajorVersion: HnBrickMajorVersion =
-      await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(brick, version);
-    const mainFolder: HnFolder = await this.folderService.findFolderByBrickMajorVersion(brickMajorVersion);
+    const mainFolder = await this.folderService.findFolderByBrickMajorVersion(brickMajorVersion);
+    if (mainFolder == null) {
+      throw new BlBadRequestException('Folder not found');
+    }
     return await this.folderService.findAllDocsByBrick(mainFolder);
   }
 
@@ -886,13 +942,15 @@ export class HnBrickAggregateService {
     version: string
   ): Promise<Record<string, HnGeneratedDocEntity[]>> {
     const brick: HnBrick = await this.findBrickByName(brickName);
-    if (brick == null) {
-      return null;
+    const brickMajorVersion = await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(
+      brick,
+      version
+    );
+    if (brickMajorVersion == null) {
+      return {};
     }
-    const brickMajorVersion: HnBrickMajorVersion =
-      await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(brick, version);
-    const technicalFolder: HnTechnicalFolder = await this.technicalFolderService.findTechnicalFolder(
-      brickMajorVersion?.id
+    const technicalFolder: HnTechnicalFolder | null = await this.technicalFolderService.findTechnicalFolder(
+      brickMajorVersion.id
     );
     if (!technicalFolder) {
       return {};
@@ -905,7 +963,11 @@ export class HnBrickAggregateService {
   }
 
   async findFolderById(id: string): Promise<HnFolderDto> {
-    return new HnFolderDto(await this.folderService.findById(id));
+    const folder = await this.folderService.findById(id);
+    if (folder == null) {
+      throw new BlBadRequestException('Folder not found', { detailArgs: { id: id } });
+    }
+    return new HnFolderDto(folder);
   }
 
   async findFoldersByParentId(id: string): Promise<HnFolderDto[]> {
@@ -920,9 +982,17 @@ export class HnBrickAggregateService {
   //------------------------------------- DOCS -------------------------------------
 
   async createDoc(createDocumentation: HnNodeDTO): Promise<HnDocumentation> {
+    if (createDocumentation.folderId == null) {
+      throw new BlBadRequestException('Folder id is required');
+    }
     await this.checkIfUserHasRightsOnFolder(createDocumentation.folderId);
 
     const folder = await this.folderService.findById(createDocumentation.folderId);
+    if (folder == null) {
+      throw new BlBadRequestException('Folder not found', {
+        detailArgs: { id: createDocumentation.folderId },
+      });
+    }
     return this.documentationService.create(createDocumentation, folder);
   }
 
@@ -930,7 +1000,7 @@ export class HnBrickAggregateService {
     const docs: HnDocumentation[] = await this.documentationService.findAll();
     const docsDto: HnDocumentationDTO[] = [];
     docs.map((doc) => {
-      if (!doc.path.includes('/')) {
+      if (!(doc.path ?? '').includes('/')) {
         docsDto.push(new HnDocumentationDTO(doc));
       }
     });
@@ -959,7 +1029,10 @@ export class HnBrickAggregateService {
 
   async saveDocImage(file: BlFile, docId: string): Promise<TeBlockFigureUploadedResponse> {
     await this.checkIfUserHasRightsOnDoc(docId);
-    const documentation: HnDocumentation = await this.documentationService.findById(docId);
+    const documentation = await this.documentationService.findById(docId);
+    if (documentation == null) {
+      throw new BlBadRequestException(HnErrorText.DOCUMENTATION_NOT_FOUND, { detailArgs: { id: docId } });
+    }
     return this.fileDocumentationService.saveImage(documentation, file);
   }
 
@@ -969,7 +1042,10 @@ export class HnBrickAggregateService {
   }
 
   async checkIfUserHasRightsOnDoc(id: string): Promise<void> {
-    const doc: HnDocumentation = await this.documentationService.findById(id);
+    const doc = await this.documentationService.findById(id);
+    if (doc == null || doc.folder == null) {
+      throw new BlBadRequestException(HnErrorText.DOCUMENTATION_NOT_FOUND, { detailArgs: { id: id } });
+    }
     const folder: HnFolder = doc.folder;
     const brickMajorVersion: HnBrickMajorVersion = folder.brickMajorVersion;
     const brick: HnBrick = brickMajorVersion.brick;
@@ -981,14 +1057,19 @@ export class HnBrickAggregateService {
   }
 
   async findRootFolderId(brickId: string, version: string): Promise<{ id: string }> {
-    const brick: HnBrick = await this.findBrickById(brickId);
-    if (brick == null) {
-      return { id: null };
-    }
+    const brick: HnBrick = await this.findBrickByIdAndCheck(brickId);
 
-    const brickMajorVersion: HnBrickMajorVersion =
-      await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(brick, version);
+    const brickMajorVersion = await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(
+      brick,
+      version
+    );
+    if (brickMajorVersion == null) {
+      throw new BlBadRequestException(HnErrorText.BRICK_VERSION_NOT_FOUND, { detailArgs: { version } });
+    }
     const mainFolder = await this.folderService.findFolderByBrickMajorVersion(brickMajorVersion);
+    if (mainFolder == null) {
+      throw new BlBadRequestException('Folder not found');
+    }
     return { id: mainFolder.id };
   }
 
@@ -999,8 +1080,13 @@ export class HnBrickAggregateService {
   ): Promise<HnDocumentationDto> {
     const brick: HnBrick = await this.findBrickByName(brickName);
 
-    const brickMajorVersion: HnBrickMajorVersion =
-      await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(brick, version);
+    const brickMajorVersion = await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(
+      brick,
+      version
+    );
+    if (brickMajorVersion == null) {
+      throw new BlBadRequestException(HnErrorText.BRICK_VERSION_NOT_FOUND, { detailArgs: { version } });
+    }
 
     if (!completePath.endsWith('/')) {
       completePath += '/';
@@ -1018,10 +1104,24 @@ export class HnBrickAggregateService {
 
   async findFirstDoc(brickName: string, version: string): Promise<HnDocumentationDto> {
     const brick: HnBrick = await this.findBrickByName(brickName);
-    const brickMajorVersion: HnBrickMajorVersion =
-      await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(brick, version);
-    const findFirstDocNode: HnNode = await this.folderService.findFirstDocNode(brickMajorVersion);
-    return new HnDocumentationDto(await this.documentationService.findById(findFirstDocNode.id));
+    const brickMajorVersion = await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(
+      brick,
+      version
+    );
+    if (brickMajorVersion == null) {
+      throw new BlBadRequestException(HnErrorText.BRICK_VERSION_NOT_FOUND, { detailArgs: { version } });
+    }
+    const findFirstDocNode = await this.folderService.findFirstDocNode(brickMajorVersion);
+    if (findFirstDocNode == null) {
+      throw new BlBadRequestException(HnErrorText.DOCUMENTATION_NOT_FOUND);
+    }
+    const doc = await this.documentationService.findById(findFirstDocNode.id);
+    if (doc == null) {
+      throw new BlBadRequestException(HnErrorText.DOCUMENTATION_NOT_FOUND, {
+        detailArgs: { id: findFirstDocNode.id },
+      });
+    }
+    return new HnDocumentationDto(doc);
   }
 
   async getDocsByBrickNameMajor(brickName: string, major: string): Promise<HnDocumentationSearchDTO[]> {
@@ -1029,12 +1129,14 @@ export class HnBrickAggregateService {
       major === 'latest' ? (await this.getLatestBrickVersion(brickName)).version.major : +major.slice(1);
 
     const brick: HnBrick = await this.findBrickByName(brickName);
-    if (brick == null) {
-      return null;
-    }
 
-    const brickMajorVersion: HnBrickMajorVersion =
-      await this.brickMajorVersionService.findOneByBrickIdAndMajor(brick.id, majorNumber);
+    const brickMajorVersion = await this.brickMajorVersionService.findOneByBrickIdAndMajor(
+      brick.id,
+      majorNumber
+    );
+    if (brickMajorVersion == null) {
+      throw new BlBadRequestException(HnErrorText.BRICK_VERSION_NOT_FOUND, { detailArgs: { major } });
+    }
 
     let res: HnDocumentationSearchDTO[] = [];
     // Add all docs from the main folder to result
@@ -1071,23 +1173,37 @@ export class HnBrickAggregateService {
       linkArray[2] === 'latest'
         ? (await this.getLatestBrickVersion(brick.name)).version.major
         : +linkArray[2];
-    const brickMajorVersion: HnBrickMajorVersion =
-      await this.brickMajorVersionService.findBrickMajorVersionByBrickAndMajor(brick, brickVersionNumber);
+    const brickMajorVersion = await this.brickMajorVersionService.findBrickMajorVersionByBrickAndMajor(
+      brick,
+      brickVersionNumber
+    );
+    if (brickMajorVersion == null) {
+      throw new BlBadRequestException(HnErrorText.BRICK_VERSION_NOT_FOUND, {
+        detailArgs: { major: brickVersionNumber },
+      });
+    }
 
     const isATechnicalDoc: boolean = linkArray[4] === 'technical';
 
     // Prepare complete path and anchor of the doc
     let completePath: string = linkArray.slice(4).join('/');
-    let anchor: string = null;
+    let anchor = '';
     if (completePath.includes('#')) {
       [completePath, anchor] = completePath.split('#');
     }
     completePath = completePath + '/';
 
     // Get doc or technical doc
-    return isATechnicalDoc
-      ? this.technicalFolderService.getTechDocByLink(brickMajorVersion, completePath, anchor)
-      : this.documentationService.getDocByLink(brickMajorVersion, completePath, anchor);
+    if (isATechnicalDoc) {
+      return this.technicalFolderService.getTechDocByLink(brickMajorVersion, completePath, anchor);
+    }
+    const doc = await this.documentationService.getDocByLink(brickMajorVersion, completePath, anchor);
+    if (doc == null) {
+      throw new BlBadRequestException(HnErrorText.DOCUMENTATION_NOT_FOUND, {
+        detailArgs: { completePath: completePath },
+      });
+    }
+    return doc;
   }
 
   async createTechnicalDoc(content: HnCreateTechnicalDocContent): Promise<boolean> {
@@ -1105,8 +1221,10 @@ export class HnBrickAggregateService {
 
     // Get brick major version
     const importVersion: BlVersion = BlVersion.fromString(content.importFile.brick_version);
-    const brickMajorVersion: HnBrickMajorVersion =
-      await this.brickMajorVersionService.findOneByBrickIdAndMajor(brick.id, importVersion.major);
+    const brickMajorVersion = await this.brickMajorVersionService.findOneByBrickIdAndMajor(
+      brick.id,
+      importVersion.major
+    );
     if (brickMajorVersion == null) {
       return false;
     }
@@ -1116,13 +1234,19 @@ export class HnBrickAggregateService {
   }
 
   async getDocFiles(docId: string): Promise<HnAbstractFileEntityDTO[]> {
-    const documentation: HnDocumentation = await this.documentationService.findById(docId);
+    const documentation = await this.documentationService.findById(docId);
+    if (documentation == null) {
+      throw new BlBadRequestException(HnErrorText.DOCUMENTATION_NOT_FOUND, { detailArgs: { id: docId } });
+    }
     return this.fileDocumentationService.getDocFiles(documentation);
   }
 
   //------------------------------------- DOC HISTORY -------------------------------------
   async getDocModifications(docId: string): Promise<TeRichTextBlockModificationWithUser[]> {
-    const doc: HnDocumentation = await this.documentationService.findById(docId);
+    const doc = await this.documentationService.findById(docId);
+    if (doc == null) {
+      throw new BlBadRequestException(HnErrorText.DOCUMENTATION_NOT_FOUND, { detailArgs: { id: docId } });
+    }
 
     const richText = doc.getRichTextAggregate();
 
@@ -1130,32 +1254,55 @@ export class HnBrickAggregateService {
   }
 
   async getUndoContent(docId: string, modificationId: string): Promise<TeRichTextAggregate> {
-    const doc: HnDocumentation = await this.documentationService.findById(docId);
+    const doc = await this.documentationService.findById(docId);
+    if (doc == null) {
+      throw new BlBadRequestException(HnErrorText.DOCUMENTATION_NOT_FOUND, { detailArgs: { id: docId } });
+    }
     return this.documentationService.getUndoContent(doc, modificationId);
   }
 
   async rollbackContent(docId: string, modificationId: string): Promise<HnDocumentation> {
-    const doc: HnDocumentation = await this.documentationService.findById(docId);
+    const doc = await this.documentationService.findById(docId);
+    if (doc == null) {
+      throw new BlBadRequestException(HnErrorText.DOCUMENTATION_NOT_FOUND, { detailArgs: { id: docId } });
+    }
     return this.documentationService.rollbackContent(doc, modificationId);
   }
 
   //------------------------------------- TECHNICAL DOCS -------------------------------------
 
   async findTechnicalDoc(brickId: string, version: string): Promise<HnNode> {
-    const brick: HnBrick = await this.findBrickByIdLight(brickId);
-    const brickMajorVersion: HnBrickMajorVersion =
-      await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(brick, version);
-    return this.technicalFolderService.findTechnicalDoc(brickMajorVersion.id);
+    const brick: HnBrick = await this.findBrickByIdAndCheck(brickId);
+    const brickMajorVersion = await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(
+      brick,
+      version
+    );
+    if (brickMajorVersion == null) {
+      throw new BlBadRequestException(HnErrorText.BRICK_VERSION_NOT_FOUND, { detailArgs: { version } });
+    }
+    const node = await this.technicalFolderService.findTechnicalDoc(brickMajorVersion.id);
+    if (node == null) {
+      throw new BlBadRequestException(HnErrorText.TECHNICAL_DOCUMENTATION_NOT_FOUND);
+    }
+    return node;
   }
 
   async findTechDocByPath(input: HnTechnicalDocInputDTO): Promise<HnGeneratedDocEntity> {
     const brick: HnBrick = await this.findBrickByName(input.brickName);
-    if (brick == null) {
-      return null;
+    const brickMajorVersion = await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(
+      brick,
+      input.brickVersion
+    );
+    if (brickMajorVersion == null) {
+      throw new BlBadRequestException(HnErrorText.BRICK_VERSION_NOT_FOUND, {
+        detailArgs: { version: input.brickVersion },
+      });
     }
-    const brickMajorVersion: HnBrickMajorVersion =
-      await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(brick, input.brickVersion);
-    return await this.technicalFolderService.findCurrentTecDoc(brickMajorVersion, input);
+    const techDoc = await this.technicalFolderService.findCurrentTecDoc(brickMajorVersion, input);
+    if (techDoc == null) {
+      throw new BlBadRequestException(HnErrorText.TECHNICAL_DOCUMENTATION_NOT_FOUND);
+    }
+    return techDoc;
   }
 
   async createNewVersion(newVersion: HnNewVersionDTO): Promise<HnNewVersionDTO> {
@@ -1163,12 +1310,15 @@ export class HnBrickAggregateService {
 
     await this.assertUserCanEditBrick(brick.id, false);
 
-    const brickMajorVersion: HnBrickMajorVersion =
-      await this.brickMajorVersionService.getLatestBrickMajorVersion(brick.id);
+    const brickMajorVersion = await this.brickMajorVersionService.getLatestBrickMajorVersion(brick.id);
+    if (brickMajorVersion == null) {
+      throw new BlBadRequestException(HnErrorText.BRICK_VERSION_NOT_FOUND);
+    }
 
-    const brickVersion: HnBrickVersion = await this.brickVersionService.getLatestBrickVersion(
-      brickMajorVersion.id
-    );
+    const brickVersion = await this.brickVersionService.getLatestBrickVersion(brickMajorVersion.id);
+    if (brickVersion == null) {
+      throw new BlBadRequestException(HnErrorText.BRICK_VERSION_NOT_FOUND);
+    }
 
     newVersion.repoType = brickVersion.repoType;
     const newMajor = parseInt(newVersion.version.split('.')[0]);
@@ -1187,7 +1337,7 @@ export class HnBrickAggregateService {
   }
 
   async createVersionFromSettings(settings: HnBrickSettingsDTO): Promise<HnNewVersionDTO> {
-    const repoType = settings.environment?.pip?.length > 0 ? HnRepoType.PIP : HnRepoType.GIT;
+    const repoType = (settings.environment?.pip?.length ?? 0) > 0 ? HnRepoType.PIP : HnRepoType.GIT;
 
     const newVersionDTO = new HnNewVersionDTO();
     newVersionDTO.brickName = settings.name;
@@ -1203,7 +1353,14 @@ export class HnBrickAggregateService {
   async getLatestBrickVersion(brickName: string): Promise<HnBrickVersion> {
     const brick: HnBrick = await this.findBrickByNameLight(brickName);
     const brickMajorVersion = await this.brickMajorVersionService.getLatestBrickMajorVersion(brick.id);
-    return this.brickVersionService.getLatestBrickVersion(brickMajorVersion.id);
+    if (brickMajorVersion == null) {
+      throw new BlBadRequestException(HnErrorText.BRICK_VERSION_NOT_FOUND);
+    }
+    const brickVersion = await this.brickVersionService.getLatestBrickVersion(brickMajorVersion.id);
+    if (brickVersion == null) {
+      throw new BlBadRequestException(HnErrorText.BRICK_VERSION_NOT_FOUND);
+    }
+    return brickVersion;
   }
 
   async getCurrentBrickVersion(
@@ -1211,17 +1368,21 @@ export class HnBrickAggregateService {
     size: number,
     brickId: string
   ): Promise<ClPage<HnBrickVersionDto>> {
-    const brick: HnBrick = await this.findBrickById(brickId);
+    const brick: HnBrick = await this.findBrickByIdAndCheck(brickId);
     const brickUsers = await this.brickUserService.getBrickUsers(brick);
     return this.brickVersionService.getCurrentBrickVersion(
       page,
       size,
       brickId,
-      this.communitySecurity.isCreatorOrCoAuthor(brick, brickUsers, HnCurrentUserHelper.getCurrentUser()?.id)
+      this.communitySecurity.isCreatorOrCoAuthor(
+        brick,
+        brickUsers,
+        HnCurrentUserHelper.getCurrentUser()?.id ?? ''
+      )
     );
   }
 
-  async getVersionsList(brickId: string, userId: string = null, strict: boolean = true): Promise<string[]> {
+  async getVersionsList(brickId: string, userId: string | null = null, strict: boolean = true): Promise<string[]> {
     if (strict) {
       const brick = await this.findBrickById(
         brickId,
@@ -1254,6 +1415,9 @@ export class HnBrickAggregateService {
   async saveDocResourceViewFile(docId: string, file: BlFile): Promise<string> {
     await this.checkIfUserHasRightsOnDoc(docId);
     const doc = await this.documentationService.findById(docId);
+    if (doc == null) {
+      throw new BlBadRequestException(HnErrorText.DOCUMENTATION_NOT_FOUND, { detailArgs: { id: docId } });
+    }
     return this.fileDocumentationService.saveResourceView(doc, file);
   }
 
@@ -1277,12 +1441,15 @@ export class HnBrickAggregateService {
   async saveFile(file: BlFile, docId: string): Promise<HnUploadFileResponseDto> {
     await this.checkIfUserHasRightsOnDoc(docId);
     const doc = await this.documentationService.findById(docId);
+    if (doc == null) {
+      throw new BlBadRequestException(HnErrorText.DOCUMENTATION_NOT_FOUND, { detailArgs: { id: docId } });
+    }
     return await this.fileDocumentationService.saveFile(doc, file);
   }
 
   async inviteBrickCoAuthor(brickId: string, emailOrId: string): Promise<HnBrick> {
     await this.assertUserCanEditBrick(brickId);
-    const brick: HnBrick = await this.findBrickById(brickId);
+    const brick: HnBrick = await this.findBrickByIdAndCheck(brickId);
     await this.brickUserInviteService.createUserInviteMail(brick, emailOrId);
     return brick;
   }
@@ -1297,17 +1464,20 @@ export class HnBrickAggregateService {
   }
 
   async getBrickCoAuthors(brickId: string): Promise<HnBrickUser[]> {
-    return this.brickUserService.getBrickUsers(await this.findBrickById(brickId));
+    return this.brickUserService.getBrickUsers(await this.findBrickByIdAndCheck(brickId));
   }
 
   async checkIfUserCanEditBrick(brickId: string, fullRight = true): Promise<boolean> {
-    const brick = await this.findBrickById(brickId);
+    const brick = await this.findBrickByIdAndCheck(brickId);
     const user = HnCurrentUserHelper.getCurrentUser();
+    if (user == null) {
+      return false;
+    }
     return this.brickSecurity.canEdit(brick, user, fullRight);
   }
 
   async assertUserCanEditBrick(brickId: string, fullRight = true): Promise<void> {
-    const brick = await this.findBrickById(brickId);
+    const brick = await this.findBrickByIdAndCheck(brickId);
     const user = HnCurrentUserHelper.getAndCheckCurrentUser();
     await this.brickSecurity.assertCanEdit(brick, user, fullRight);
   }
@@ -1315,9 +1485,9 @@ export class HnBrickAggregateService {
   public async getMyBricksWhereBrickConditions(
     publicSelected: boolean,
     spacesFilter: string[],
-    user: HnUser = null
+    user: HnUser | null = null
   ): Promise<FindOptionsWhere<HnBrickEntity>[] | FindOptionsWhere<HnBrickEntity>> {
-    const currentUser: HnUser = user ?? HnCurrentUserHelper.getCurrentUser();
+    const currentUser: HnUser | null = user ?? HnCurrentUserHelper.getCurrentUser();
 
     if (currentUser == null) {
       throw new BlUnauthorizedException('You are not authorized to perform this action');
@@ -1394,6 +1564,9 @@ export class HnBrickAggregateService {
 
   public async downloadDocsZip(brickId: string): Promise<BlFileResponse> {
     const brickMajorVersion = await this.brickMajorVersionService.getLatestBrickMajorVersion(brickId);
+    if (brickMajorVersion == null) {
+      throw new BlBadRequestException(HnErrorText.BRICK_VERSION_NOT_FOUND);
+    }
     const docs = await this.documentationService.getDocsByBrickVersion(brickMajorVersion.id);
 
     const docsMarkDowns: HnMarkdownFile[] = [];
@@ -1422,8 +1595,8 @@ export class HnBrickAggregateService {
   }
 
   public async downloadDocMarkdown(docId: string): Promise<BlFileResponse> {
-    const doc: HnDocumentation = await this.documentationService.findById(docId);
-    if (doc == null) {
+    const doc = await this.documentationService.findById(docId);
+    if (doc == null || doc.folder == null) {
       throw new BlBadRequestException(HnErrorText.DOCUMENTATION_NOT_FOUND, {
         detailArgs: { id: docId },
       });
@@ -1448,10 +1621,7 @@ export class HnBrickAggregateService {
   }
 
   public async downloadTechnicalDocMarkdown(techDocType: string, techDocId: string): Promise<BlFileResponse> {
-    const techDoc: HnGeneratedDocEntity = await this.technicalFolderService.findTechDocByIdAndType(
-      techDocId,
-      techDocType
-    );
+    const techDoc = await this.technicalFolderService.findTechDocByIdAndType(techDocId, techDocType);
     if (techDoc == null) {
       throw new BlBadRequestException(HnErrorText.TECHNICAL_DOCUMENTATION_NOT_FOUND, {
         detailArgs: { id: techDocId },
@@ -1466,10 +1636,10 @@ export class HnBrickAggregateService {
   }
 
   private async getUserBasedWhereBrickConditions(
-    publicSelected: boolean = null,
+    publicSelected: boolean | null = null,
     optionalParams?: HnBrickUserBasedWhereOptionalParams
   ): Promise<FindOptionsWhere<HnBrickEntity>[] | FindOptionsWhere<HnBrickEntity>> {
-    const currentUser: HnUser = optionalParams?.user ?? HnCurrentUserHelper.getCurrentUser();
+    const currentUser: HnUser | null = optionalParams?.user ?? HnCurrentUserHelper.getCurrentUser();
     let whereConditions: FindOptionsWhere<HnBrickEntity>[] | FindOptionsWhere<HnBrickEntity>;
 
     if (currentUser == null) {

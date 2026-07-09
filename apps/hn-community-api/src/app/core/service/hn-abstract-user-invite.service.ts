@@ -25,12 +25,12 @@ export abstract class HnAbstractUserInviteService<T extends HnUserInvite, E> {
   ) {}
 
   async createUserInviteMail(entity: E, emailOrId: string): Promise<boolean> {
-    const currentUser = HnCurrentUserHelper.getCurrentUser();
+    const currentUser = HnCurrentUserHelper.getAndCheckCurrentUser();
 
     const userInviteMail: T = this.initNewUserInvite(entity);
     userInviteMail.token = ClStringHelper.generateUUID();
     userInviteMail.expiresAt = DateTime.now().plus({ days: HnUserInvite.INVITE_EXPIRY_DAYS });
-    let user: HnUser;
+    let user: HnUser | null;
     if (ClStringHelper.isEmail(emailOrId)) {
       if (emailOrId === currentUser.email) {
         throw new BlBadRequestException('You cannot invite yourself as a co-author');
@@ -43,6 +43,9 @@ export abstract class HnAbstractUserInviteService<T extends HnUserInvite, E> {
         throw new BlBadRequestException('You cannot invite yourself as a co-author');
       }
       user = await this.userService.findOne(emailOrId);
+      if (user == null) {
+        throw new BlNotFoundException('User not found');
+      }
       userInviteMail.email = user.email;
     }
 
@@ -68,7 +71,7 @@ export abstract class HnAbstractUserInviteService<T extends HnUserInvite, E> {
       };
     } else {
       template = this.getNewUserInviteMailTemplate();
-      lang = savedUserInviteMail.createdBy.lang;
+      lang = currentUser.lang;
       data.subscribeUrl = this.frontService.getConstellabLoginUrl();
     }
 
@@ -88,7 +91,7 @@ export abstract class HnAbstractUserInviteService<T extends HnUserInvite, E> {
     if (
       !userInvite ||
       userInvite.status !== HnInviteStatus.PENDING ||
-      userInvite.email !== HnCurrentUserHelper.getCurrentUser().email
+      userInvite.email !== HnCurrentUserHelper.getAndCheckCurrentUser().email
     ) {
       throw new BlUnauthorizedException('This invite is not valid');
     }
@@ -117,7 +120,7 @@ export abstract class HnAbstractUserInviteService<T extends HnUserInvite, E> {
     const userInvites = await this.getPendingUserInvites(entityId);
     for (const userInvite of userInvites) {
       const user = await this.userService.findOneByEmail(userInvite.email);
-      userInvite.user = user ? new HnUserDto(user) : null;
+      userInvite.user = user ? new HnUserDto(user) : undefined;
     }
     return userInvites;
   }

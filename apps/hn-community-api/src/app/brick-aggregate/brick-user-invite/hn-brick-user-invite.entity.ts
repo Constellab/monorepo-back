@@ -6,5 +6,5 @@ import { HnBrick, HnBrickEntity } from '../brick/hn-brick.entity';
 @Entity('brick_user_invite')
 export class HnBrickUserInvite extends HnUserInvite {
   @ManyToOne(() => HnBrickEntity, { eager: true, nullable: false })
-  brick: HnBrick;
+  brick!: HnBrick;
 }

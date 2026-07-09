@@ -5,8 +5,8 @@ import { HnUserDto } from '../../users/hn-user.dto';
 import { HnAbstractFileEntity, HnFileType } from './hn-abstract-file.entity';
 
 export class HnUploadFileResponseDto extends BlEntityWithIdDTO implements TeBlockFileUploadResponse {
-  name: string;
-  size: number;
+  name!: string;
+  size!: number;
 }
 
 export class HnAbstractFileEntityDTO {
@@ -14,9 +14,9 @@ export class HnAbstractFileEntityDTO {
 
   name: string;
 
-  createdAt: string;
+  createdAt: string | null;
 
-  createdBy: HnUserDto;
+  createdBy: HnUserDto | null;
 
   size?: number;
 
@@ -24,7 +24,7 @@ export class HnAbstractFileEntityDTO {
     this.type = fileEntity.type;
     this.name = fileEntity.name;
     this.createdAt = fileEntity.createdAt.toISO();
-    this.createdBy = new HnUserDto(fileEntity.createdBy);
+    this.createdBy = fileEntity.createdBy ? new HnUserDto(fileEntity.createdBy) : null;
     this.size = fileEntity.size;
   }
 }

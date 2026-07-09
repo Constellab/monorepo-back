@@ -26,7 +26,7 @@ export class HnProtocolService {
 
     for (const p of deduped) {
       const proto = new HnProtocol();
-      proto.shortDescription = p.short_description ? p.short_description : null;
+      proto.shortDescription = p.short_description ? p.short_description : undefined;
       proto.doc = p.doc;
       proto.brickName = technicalFolder.brickMajorVersion.brick.name;
       proto.technicalFolder = technicalFolder;
@@ -85,8 +85,8 @@ export class HnProtocolService {
     });
   }
 
-  async findCurrentTecDoc(tecFolder: HnTechnicalFolder, uniqueName: string): Promise<any> {
-    const proto: HnProtocol = await this.protocolsRepository.findOneBy({
+  async findCurrentTecDoc(tecFolder: HnTechnicalFolder, uniqueName: string): Promise<HnProtocol | null> {
+    const proto: HnProtocol | null = await this.protocolsRepository.findOneBy({
       technicalFolder: {
         id: tecFolder.id,
       },
@@ -98,7 +98,7 @@ export class HnProtocolService {
     return proto;
   }
 
-  async findTechDocById(id: string): Promise<HnProtocol> {
+  async findTechDocById(id: string): Promise<HnProtocol | null> {
     return this.protocolsRepository.findOneBy({ id });
   }
 }

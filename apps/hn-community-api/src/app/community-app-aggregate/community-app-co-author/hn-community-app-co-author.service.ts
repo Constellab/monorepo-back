@@ -30,7 +30,7 @@ export class HnCommunityAppCoAuthorService {
     communityAppId: string,
     communityAppCoAuthorUserId: string
   ): Promise<void> {
-    const communityAppCoAuthor: HnCommunityAppCoAuthor = await this.communityAppCoAuthorRepository.findOneBy({
+    const communityAppCoAuthor: HnCommunityAppCoAuthor | null = await this.communityAppCoAuthorRepository.findOneBy({
       communityApp: { id: communityAppId },
       user: { id: communityAppCoAuthorUserId },
     });

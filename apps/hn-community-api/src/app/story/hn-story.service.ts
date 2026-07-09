@@ -123,16 +123,18 @@ export class HnStoryService extends BlAbstractService<HnStory> {
     return await this.storyRepository.save(story);
   }
 
-  async findById(id: string): Promise<HnStory> {
+  async findById(id: string): Promise<HnStory | null> {
     return await this.storyRepository.findOneBy({ id: id });
   }
 
   async getStoryTitle(id: string): Promise<string> {
     const story = await this.getStory(id);
-    return story?.title;
+    return story.title;
   }
 
-  async getStory(id: string, strict = true): Promise<HnStory> {
+  async getStory(id: string, strict?: true): Promise<HnStory>;
+  async getStory(id: string, strict: boolean): Promise<HnStory | null>;
+  async getStory(id: string, strict = true): Promise<HnStory | null> {
     const story = await this.storyRepository.findOne({
       where: {
         id: id,
@@ -152,7 +154,7 @@ export class HnStoryService extends BlAbstractService<HnStory> {
       await this.deleteAllStoryCoAuthorsInvites(id, entityManager);
       await this.deleteAllStoryCoAuthors(id, entityManager);
       const res = await entityManager.delete(HnStory, { id: id });
-      return res.affected > 0;
+      return (res.affected ?? 0) > 0;
     });
     if (!deleteRes) {
       throw new BlBadRequestException('Error during the deletion, the story is not deleted');
@@ -194,13 +196,13 @@ export class HnStoryService extends BlAbstractService<HnStory> {
     const where: FindOptionsWhere<HnStory>[] = [
       {
         createdBy: {
-          id: HnCurrentUserHelper.getCurrentUser().id,
+          id: HnCurrentUserHelper.getAndCheckCurrentUser().id,
         },
       },
       {
         storyAuthors: {
           user: {
-            id: HnCurrentUserHelper.getCurrentUser().id,
+            id: HnCurrentUserHelper.getAndCheckCurrentUser().id,
           },
         },
       },
@@ -270,13 +272,13 @@ export class HnStoryService extends BlAbstractService<HnStory> {
           where: [
             {
               createdBy: {
-                id: HnCurrentUserHelper.getCurrentUser().id,
+                id: HnCurrentUserHelper.getAndCheckCurrentUser().id,
               },
             },
             {
               storyAuthors: {
                 user: {
-                  id: HnCurrentUserHelper.getCurrentUser().id,
+                  id: HnCurrentUserHelper.getAndCheckCurrentUser().id,
                 },
               },
             },
@@ -369,19 +371,20 @@ export class HnStoryService extends BlAbstractService<HnStory> {
     await this.assertCanEdit(id);
     const t: HnTopic = await this.topicService.getOrCreateTopic(topic);
     const story: HnStory = await this.getStory(id);
+    story.topics ??= [];
     story.topics.push(t);
     await this.storyRepository.save(story);
-    t.popularityIndex++;
+    t.popularityIndex = (t.popularityIndex ?? 0) + 1;
     return this.topicService.saveTopic(t);
   }
 
   async removeTopic(id: string, topicId: string): Promise<HnStory> {
     await this.assertCanEdit(id);
     const story = await this.getStory(id);
-    story.topics = story.topics.filter((t) => t.id !== topicId);
-    const topic: HnTopic = await this.topicService.getTopic(topicId);
-    if (topic.popularityIndex > 0) {
-      topic.popularityIndex--;
+    story.topics = (story.topics ?? []).filter((t) => t.id !== topicId);
+    const topic: HnTopic | null = await this.topicService.getTopic(topicId);
+    if (topic != null && (topic.popularityIndex ?? 0) > 0) {
+      topic.popularityIndex = (topic.popularityIndex ?? 0) - 1;
       await this.topicService.saveTopic(topic);
     }
     return this.storyRepository.save(story);
@@ -501,28 +504,30 @@ export class HnStoryService extends BlAbstractService<HnStory> {
     return this.storyAuthorService.inviteStoryCoAuthor(story, emailOrId);
   }
 
-  async isInviteValid(token: string): Promise<HnStoryCoAuthorInvite> {
+  async isInviteValid(token: string): Promise<HnStoryCoAuthorInvite | null> {
     const storyAuthorInvite: HnStoryCoAuthorInvite =
       await this.storyAuthorService.getStoryAuthorInviteByToken(token);
     return storyAuthorInvite &&
       storyAuthorInvite.status === HnInviteStatus.PENDING &&
-      storyAuthorInvite.email === HnCurrentUserHelper.getCurrentUser().email
+      storyAuthorInvite.email === HnCurrentUserHelper.getCurrentUser()?.email
       ? storyAuthorInvite
       : null;
   }
 
   async acceptInvite(token: string): Promise<HnStory> {
-    const storyAuthorInvite: HnStoryCoAuthorInvite = await this.isInviteValid(token);
+    const storyAuthorInvite: HnStoryCoAuthorInvite | null = await this.isInviteValid(token);
     if (storyAuthorInvite) {
       const story: HnStory = await this.getStory(storyAuthorInvite.story.id);
       const storyAuthor: HnStoryCoAuthor = new HnStoryCoAuthor();
-      storyAuthor.user = HnCurrentUserHelper.getCurrentUser();
+      storyAuthor.user = HnCurrentUserHelper.getAndCheckCurrentUser();
       storyAuthor.story = story;
       const acceptStoryInvite: boolean = await this.storyAuthorService.acceptInvite(
         storyAuthor,
         storyAuthorInvite
       );
-      return acceptStoryInvite ? story : null;
+      if (acceptStoryInvite) {
+        return story;
+      }
     }
     throw new BlNotFoundException('Invalid invite');
   }
@@ -555,7 +560,7 @@ export class HnStoryService extends BlAbstractService<HnStory> {
       relations: { storyAuthors: true },
     });
     for (const story of stories) {
-      story.createdBy = HnCurrentUserHelper.getCurrentUser();
+      story.createdBy = HnCurrentUserHelper.getAndCheckCurrentUser();
       await this.storyRepository.save(story);
     }
   }

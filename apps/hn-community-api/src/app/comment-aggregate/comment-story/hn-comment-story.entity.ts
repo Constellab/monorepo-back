@@ -8,5 +8,5 @@ import { HnCommentEntity } from '../comment-core/hn-comment.entity';
 export class HnCommentStory extends HnCommentEntity<HnStory> {
   @Type(() => HnStory)
   @ManyToOne(() => HnStory, { onDelete: 'CASCADE', nullable: false })
-  entity: HnStory;
+  entity!: HnStory;
 }

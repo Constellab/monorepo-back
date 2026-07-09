@@ -6,5 +6,5 @@ import { HnAbstractFileEntity } from '../file-core/hn-abstract-file.entity';
 @Entity('file_documentation')
 export class HnFileDocumentation extends HnAbstractFileEntity<HnDocumentation> {
   @ManyToOne(() => HnDocumentation, { nullable: false, onDelete: 'CASCADE' })
-  entity: HnDocumentation;
+  entity!: HnDocumentation;
 }

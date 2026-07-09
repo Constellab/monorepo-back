@@ -11,8 +11,8 @@ import { HnAgentVersionType } from '../agent-version/hn-agent-version.entity';
 import { HnAgent } from './hn-agent.entity';
 
 export class HnAgentDto extends BlEntityWithIdDTO {
-  title: string;
-  description: TeRichTextDTO;
+  title!: string;
+  description!: TeRichTextDTO;
   latestPublishVersion?: number;
   space?: HnSpaceDto;
   createdAt?: string;
@@ -32,11 +32,11 @@ export class HnAgentDto extends BlEntityWithIdDTO {
     this.title = agent.title;
     this.description = agent.getDescriptionRichText().toJson();
     this.latestPublishVersion = agent.latestPublishVersion;
-    this.space = agent.space ? new HnSpaceDto(agent.space) : null;
-    this.createdAt = agent.createdAt.toISO();
-    this.createdBy = new HnUserDto(agent.createdBy);
-    this.lastModifiedAt = agent.lastModifiedAt.toISO();
-    this.lastModifiedBy = new HnUserDto(agent.lastModifiedBy);
+    this.space = agent.space ? new HnSpaceDto(agent.space) : undefined;
+    this.createdAt = agent.createdAt.toISO() ?? undefined;
+    this.createdBy = agent.createdBy ? new HnUserDto(agent.createdBy) : undefined;
+    this.lastModifiedAt = agent.lastModifiedAt.toISO() ?? undefined;
+    this.lastModifiedBy = agent.lastModifiedBy ? new HnUserDto(agent.lastModifiedBy) : undefined;
     this.parentAgentVersionId = agent.parentAgentVersionId;
     this.likes = agent.likes;
     this.comments = agent.comments;
@@ -46,38 +46,38 @@ export class HnAgentDto extends BlEntityWithIdDTO {
 }
 
 export class HnCreateAgentDto {
-  title: string;
+  title!: string;
   space?: HnSpace;
-  versionFile: HnAgentVersionFileInput;
+  versionFile!: HnAgentVersionFileInput;
 }
 
 export class HnAgentVersionFileInputBrick {
-  name: string;
-  version: string;
+  name!: string;
+  version!: string;
 }
 
 export class HnAgentVersionFileInput {
-  json_version: number;
-  params: string | string[] | Record<string, any>;
-  code: string;
-  environment: string;
-  input_specs: Record<string, any>;
-  output_specs: Record<string, any>;
-  config_specs: Record<string, any>;
-  bricks: HnAgentVersionFileInputBrick[];
-  task_type: HnAgentVersionType;
+  json_version!: number;
+  params!: string | string[] | Record<string, any>;
+  code!: string;
+  environment!: string;
+  input_specs!: Record<string, any>;
+  output_specs!: Record<string, any>;
+  config_specs!: Record<string, any>;
+  bricks!: HnAgentVersionFileInputBrick[];
+  task_type!: HnAgentVersionType;
   style?: HnTypingStyle;
 }
 
 export class HnAgentForLabDto {
-  id: string;
-  title: string;
+  id!: string;
+  title!: string;
   space?: HnSpaceForLabDto;
   created_at?: string;
   last_modified_at?: string;
   created_by?: HnUserDto;
   description?: TeRichTextDTO;
-  latest_publish_version: number;
+  latest_publish_version?: number;
   latest_style?: HnTypingStyle;
   agent_co_authors?: HnUserDto[];
   likes?: number;
@@ -106,16 +106,16 @@ export class HnAgentForLabDto {
 }
 
 export class HnAgentVersionForLabDto {
-  id: string;
-  version: number;
-  type: string;
-  environment: string;
-  params: string | string[] | Record<string, any>;
-  code: string;
-  input_specs: Record<string, any>;
-  output_specs: Record<string, any>;
-  config_specs: Record<string, any>;
-  agent: HnAgentForLabDto;
+  id!: string;
+  version!: number;
+  type!: string;
+  environment!: string | null;
+  params!: string | string[] | Record<string, any>;
+  code!: string;
+  input_specs?: Record<string, any>;
+  output_specs?: Record<string, any>;
+  config_specs?: Record<string, any>;
+  agent!: HnAgentForLabDto;
   style?: HnTypingStyle;
 
   static fromAgentVersionDto(agentVersion: HnAgentVersionDto): HnAgentVersionForLabDto {
@@ -184,9 +184,9 @@ export enum HnAgentTyping {
 }
 
 export class HnCreateAgentVersionFromLabResponseDto {
-  agent_version: string;
-  title: string;
-  id: string;
+  agent_version!: string;
+  title!: string;
+  id!: string;
 }
 
 export class HnCreateAgentVersionFromLabResponseDtoOldFormat {
@@ -211,12 +211,12 @@ export class HnAgentVersionForLabDtoOldFormat {
   id: string;
   version: number;
   type: string;
-  environment: string;
+  environment: string | null;
   params: string | string[] | Record<string, any>;
   code: string;
-  input_specs: Record<string, any>;
-  output_specs: Record<string, any>;
-  config_specs: Record<string, any>;
+  input_specs?: Record<string, any>;
+  output_specs?: Record<string, any>;
+  config_specs?: Record<string, any>;
   live_task: HnAgentForLabDto;
   style?: HnTypingStyle;
 

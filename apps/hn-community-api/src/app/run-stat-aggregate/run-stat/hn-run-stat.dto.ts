@@ -2,31 +2,31 @@ import { HnUserDto } from '../../users/hn-user.dto';
 import { HnRunStat } from './hn-run-stat.entity';
 
 export class HnRunStatFromLabDto {
-  id: string;
-  created_at: string;
-  last_modified_at: string;
-  process_typing_name: string;
-  status: string;
+  id!: string;
+  created_at!: string;
+  last_modified_at!: string;
+  process_typing_name!: string;
+  status!: string;
   error_info?: Record<string, any>;
-  started_at: string;
-  ended_at: string;
-  elapsed_time: number;
-  brick_version_on_run: string;
-  brick_version_on_create: string;
-  config_value: Record<string, any>;
-  lab_env: 'DEV' | 'PROD';
-  executed_by: string;
+  started_at!: string;
+  ended_at!: string;
+  elapsed_time!: number;
+  brick_version_on_run!: string;
+  brick_version_on_create!: string;
+  config_value!: Record<string, any>;
+  lab_env!: 'DEV' | 'PROD';
+  executed_by!: string;
   community_agent_version_id?: string;
 }
 
 export class HnRunStatDto {
   id: string;
-  createdAt: string;
-  lastModifiedAt: string;
+  createdAt: string | null;
+  lastModifiedAt: string | null;
   processTypingName: string;
   status: string;
-  startedAt: string;
-  endedAt: string;
+  startedAt: string | null;
+  endedAt: string | null;
   elapsedTime: number;
   brickVersionOnRun: string;
   brickVersionOnCreate: string;

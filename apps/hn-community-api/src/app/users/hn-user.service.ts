@@ -32,7 +32,7 @@ export class HnUserService implements BlUserService {
   ) {}
 
   async createOrUpdate(user: HnUserConstellabDTO): Promise<void> {
-    let u: HnUser = await this.userRepository.findOneBy({ id: user.id });
+    let u: HnUser | null = await this.userRepository.findOneBy({ id: user.id });
     if (!u) {
       u = new HnUser();
       u.setData(user);
@@ -61,7 +61,7 @@ export class HnUserService implements BlUserService {
     await this.userRepository.delete({ id });
   }
 
-  async findOne(id: string): Promise<HnUser> {
+  async findOne(id: string): Promise<HnUser | null> {
     return await this.userRepository.findOneBy({ id: id });
   }
 
@@ -78,23 +78,23 @@ export class HnUserService implements BlUserService {
       return {
         id: user.id,
         alias: user.alias,
-        photo: user.photo,
+        photo: user.photo ?? '',
         firstname: user.firstname,
         lastname: user.lastname,
       };
     });
   }
 
-  async findOneByEmail(email: string): Promise<HnUser> {
+  async findOneByEmail(email: string): Promise<HnUser | null> {
     return await this.userRepository.findOneBy({ email: email });
   }
 
-  public getRobotUser(): Promise<HnUser> {
+  public getRobotUser(): Promise<HnUser | null> {
     return this.userRepository.findOneBy({ email: this.configService.getRobotUserMail() });
   }
 
   getCurrent(): HnUser {
-    return HnCurrentUserHelper.getCurrentUser();
+    return HnCurrentUserHelper.getAndCheckCurrentUser();
   }
 
   async getCount(): Promise<number> {
@@ -102,7 +102,7 @@ export class HnUserService implements BlUserService {
   }
 
   async getUserCredentialsResponse(credentials: BlCredentials): Promise<HnExternalCheckCredentialResponse> {
-    const user: HnUser = await this.userRepository.findOneBy({ email: credentials.email });
+    const user: HnUser | null = await this.userRepository.findOneBy({ email: credentials.email });
     if (!user) {
       return {
         status: '2FA_REQUIRED',
@@ -110,7 +110,7 @@ export class HnUserService implements BlUserService {
     }
     return {
       status: 'OK',
-      user: await this.userRepository.findOneBy({ email: credentials.email }),
+      user: user,
     };
   }
 

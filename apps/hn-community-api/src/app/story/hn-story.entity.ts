@@ -32,59 +32,59 @@ export enum HnStoryStatus {
 @Entity('story')
 export class HnStory extends BlEntityWithId {
   @Column()
-  title: string;
+  title!: string;
 
   // the database was modified to use a long text instead of a json
   @Column({ type: 'simple-json' })
-  content: TeRichTextDTO;
+  content!: TeRichTextDTO;
 
   @Column({ type: 'simple-json', nullable: true })
   contentEdition?: TeRichTextDTO;
 
   @Column({ type: 'longtext', nullable: true })
-  modifications: string;
+  modifications?: string | null;
 
   @Column({ nullable: true, type: 'varchar' })
-  firstParagraph?: string;
+  firstParagraph?: string | null;
 
   @Column({ nullable: true })
-  mainPicture?: string;
+  mainPicture?: string | null;
 
   @ManyToMany(() => HnTopic, (topic) => topic.stories, { nullable: true })
   @JoinTable()
   topics?: HnTopic[];
 
   @Column({ type: 'enum', enum: HnStoryStatus, default: HnStoryStatus.DRAFT })
-  status: HnStoryStatus;
+  status!: HnStoryStatus;
 
   @BlLuxonDateTimeColumn({ nullable: true })
-  publishedAt: DateTime;
+  publishedAt?: DateTime | null;
 
   @OneToMany(() => HnStoryCoAuthor, (storyAuthor) => storyAuthor.story, { nullable: true })
-  storyAuthors: HnStoryCoAuthor[];
+  storyAuthors!: HnStoryCoAuthor[];
 
   @BlLuxonDateTimeColumn({ nullable: true, update: false })
-  createdAt: DateTime;
+  createdAt!: DateTime;
 
   @BlLuxonDateTimeColumn({ nullable: true })
-  lastModifiedAt: DateTime;
+  lastModifiedAt!: DateTime;
 
   @Type(() => HnUser)
   @ManyToOne(() => HnUser, { eager: true, nullable: true })
-  createdBy: HnUser;
+  createdBy!: HnUser;
 
   @Column({ default: 0 })
-  likes: number;
+  likes!: number;
 
   @Column({ default: 0 })
-  comments: number;
+  comments!: number;
 
   @Column({ nullable: true })
-  titlePath: string;
+  titlePath?: string;
 
   @BeforeInsert()
   setCreatedDate(): void {
-    this.createdBy = HnCurrentUserHelper.getCurrentUser();
+    this.createdBy = HnCurrentUserHelper.getAndCheckCurrentUser();
     this.createdAt = ClDateHelper.getDate();
   }
 
@@ -112,7 +112,7 @@ export class HnStory extends BlEntityWithId {
 
   public getContentEditionRichTextAggregate(): TeRichTextAggregate {
     const richText = this.getContentRichText();
-    const modifications = TeRichTextModifications.fromJsonObjectString(this.modifications);
+    const modifications = TeRichTextModifications.fromJsonObjectString(this.modifications ?? '');
 
     return new TeRichTextAggregate(richText, modifications);
   }

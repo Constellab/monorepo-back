@@ -23,7 +23,7 @@ export class HnTagCoAuthorInviteService extends HnAbstractUserInviteService<HnTa
     super(tagCoAuthorInviteRepository, userService, frontService, mailService);
   }
 
-  async getTagCoAuthorInviteByToken(token: string): Promise<HnTagCoAuthorInvite> {
+  async getTagCoAuthorInviteByToken(token: string): Promise<HnTagCoAuthorInvite | null> {
     return this.tagCoAuthorInviteRepository.findOne({ where: { token } });
   }
 

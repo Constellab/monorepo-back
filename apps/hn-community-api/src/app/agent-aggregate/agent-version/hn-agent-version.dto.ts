@@ -6,15 +6,15 @@ import { HnAgentDto } from '../agent/hn-agent.dto';
 import { HnAgentVersion, HnAgentVersionState, HnAgentVersionType } from './hn-agent-version.entity';
 
 export class HnAgentVersionDto extends BlEntityWithIdDTO {
-  version: number;
-  agent: HnAgentDto;
-  versionState: HnAgentVersionState;
-  type: HnAgentVersionType;
-  versionInfos: TeRichTextDTO;
-  params: string | string[] | Record<string, any>;
-  environment: string;
-  code: string;
-  createdAt: string;
+  version!: number;
+  agent!: HnAgentDto;
+  versionState!: HnAgentVersionState;
+  type!: HnAgentVersionType;
+  versionInfos!: TeRichTextDTO;
+  params!: string | string[] | Record<string, any>;
+  environment!: string;
+  code!: string;
+  createdAt!: string | null;
   inputSpecs?: Record<string, any>;
   outputSpecs?: Record<string, any>;
   configSpecs?: Record<string, any>;
@@ -31,7 +31,7 @@ export class HnAgentVersionDto extends BlEntityWithIdDTO {
     this.params = agentVersion?.params;
     this.environment = agentVersion?.environment;
     this.code = agentVersion?.code;
-    this.createdAt = agentVersion?.createdAt?.toISO();
+    this.createdAt = agentVersion?.createdAt?.toISO() ?? null;
     this.inputSpecs = agentVersion?.inputSpecs;
     this.outputSpecs = agentVersion?.outputSpecs;
     this.configSpecs = agentVersion?.configSpecs;

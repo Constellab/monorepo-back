@@ -9,11 +9,11 @@ import { HnUser } from '../../users/hn-user.entity';
 
 export abstract class HnAbstractLikeEntity<T extends BlEntityWithId> extends BlEntityWithId {
   @BlLuxonDateTimeColumn({ update: false })
-  likedAt: DateTime;
+  likedAt!: DateTime;
 
   @Type(() => HnUser)
   @ManyToOne(() => HnUser, { eager: true, nullable: false })
-  likedBy: HnUser;
+  likedBy!: HnUser;
 
   abstract entity: T;
 

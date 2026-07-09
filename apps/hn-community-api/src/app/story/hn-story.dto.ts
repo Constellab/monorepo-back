@@ -7,24 +7,24 @@ import { HnUserDto } from '../users/hn-user.dto';
 import { HnStory, HnStoryStatus } from './hn-story.entity';
 
 export class HnCreateStoryDto {
-  title: string;
+  title!: string;
 }
 
 export class HnStoryFilter {
-  title: string;
+  title!: string;
 }
 
 export class HnStoryDto extends BlEntityWithIdDTO {
   title: string;
   content: TeRichTextDTO;
   contentEdition: TeRichTextDTO;
-  firstParagraph?: string;
-  mainPicture?: string;
+  firstParagraph?: string | null;
+  mainPicture?: string | null;
   status: HnStoryStatus;
-  publishedAt: string;
-  storyAuthors: HnStoryCoAuthorDto[];
-  createdAt: string;
-  lastModifiedAt: string;
+  publishedAt: string | null;
+  storyAuthors?: HnStoryCoAuthorDto[];
+  createdAt: string | null;
+  lastModifiedAt: string | null;
   createdBy: HnUserDto;
   topics?: HnTopic[];
   likes: number;
@@ -40,9 +40,9 @@ export class HnStoryDto extends BlEntityWithIdDTO {
     this.firstParagraph = story.firstParagraph;
     this.mainPicture = story.mainPicture;
     this.status = story.status;
-    this.publishedAt = story.publishedAt?.toISO();
-    this.createdAt = story.createdAt?.toISO();
-    this.lastModifiedAt = story.lastModifiedAt?.toISO();
+    this.publishedAt = story.publishedAt?.toISO() ?? null;
+    this.createdAt = story.createdAt?.toISO() ?? null;
+    this.lastModifiedAt = story.lastModifiedAt?.toISO() ?? null;
     this.createdBy = new HnUserDto(story.createdBy);
     this.likes = story.likes;
     this.comments = story.comments;

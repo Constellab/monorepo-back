@@ -44,13 +44,13 @@ export class HnIconController {
 
   @BlPublic()
   @Get('technical-name/:technicalName')
-  async getIconByTechnicalName(@Param('technicalName') technicalName: string): Promise<HnIcon> {
+  async getIconByTechnicalName(@Param('technicalName') technicalName: string): Promise<HnIcon | null> {
     return await this.iconService.getIconByTechnicalName(technicalName);
   }
 
   @BlPublic()
   @Get(':id')
-  async getIconById(@Param('id') id: string): Promise<HnIcon> {
+  async getIconById(@Param('id') id: string): Promise<HnIcon | null> {
     return await this.iconService.getIconById(id);
   }
 

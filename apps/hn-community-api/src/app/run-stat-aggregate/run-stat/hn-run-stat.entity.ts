@@ -9,52 +9,52 @@ import { HnRunStatFromLabDto } from './hn-run-stat.dto';
 @Entity('run_stat')
 export class HnRunStat extends BlEntityWithId {
   @BlLuxonDateTimeColumn()
-  createdAt: DateTime;
+  createdAt!: DateTime;
 
   @BlLuxonDateTimeColumn()
-  lastModifiedAt: DateTime;
+  lastModifiedAt!: DateTime;
 
   @Column()
-  processTypingName: string;
+  processTypingName!: string;
 
   @Column()
-  status: string;
+  status!: string;
 
   @Column({ type: 'simple-json', nullable: true })
-  errorInfo: Record<string, any>;
+  errorInfo?: Record<string, any>;
 
   @BlLuxonDateTimeColumn()
-  startedAt: DateTime;
+  startedAt!: DateTime;
 
   @BlLuxonDateTimeColumn()
-  endedAt: DateTime;
+  endedAt!: DateTime;
 
   @Column({ type: 'float' })
-  elapsedTime: number;
+  elapsedTime!: number;
 
   @Column()
-  brickVersionOnRun: string;
+  brickVersionOnRun!: string;
 
   @Column()
-  brickVersionOnCreate: string;
+  brickVersionOnCreate!: string;
 
   @Column({ type: 'simple-json' })
-  configValue: Record<string, any>;
+  configValue!: Record<string, any>;
 
   @Column()
-  labId: string;
+  labId!: string;
 
   @Column()
-  labEnv: 'DEV' | 'PROD';
+  labEnv!: 'DEV' | 'PROD';
 
   @Column('simple-array')
-  creators: string[];
+  creators!: string[];
 
   @ManyToOne(() => HnUser, { eager: true, onUpdate: 'CASCADE', onDelete: 'CASCADE', nullable: false })
-  executedBy: HnUser;
+  executedBy!: HnUser;
 
   @ManyToOne(() => HnAgentVersion, { nullable: true, eager: true, onUpdate: 'CASCADE', onDelete: 'CASCADE' })
-  agentVersion: HnAgentVersion;
+  agentVersion?: HnAgentVersion;
 
   init(stat: HnRunStatFromLabDto, user: HnUser, labId: string, agentVersion?: HnAgentVersion): void {
     this.id = stat.id;

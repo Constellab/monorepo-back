@@ -7,10 +7,10 @@ import { HnCommunityApp, HnCommunityAppEntity } from '../community-app/hn-commun
 @Entity('app_user')
 export class HnCommunityAppUser extends BlEntityWithId {
   @ManyToOne(() => HnCommunityAppEntity, (app) => app.appUsers, { nullable: false })
-  app: HnCommunityApp;
+  app!: HnCommunityApp;
 
   @ManyToOne(() => HnUser, { eager: true, onDelete: 'CASCADE', nullable: false })
-  user: HnUser;
+  user!: HnUser;
 
   initAppUser(brick: HnCommunityApp, user: HnUser): void {
     this.app = brick;

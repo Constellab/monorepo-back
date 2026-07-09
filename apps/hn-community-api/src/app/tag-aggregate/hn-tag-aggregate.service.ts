@@ -82,7 +82,7 @@ export class HnTagAggregateService {
     sortsCriteria: BlSearchSortCriteria[],
     page: number,
     size: number,
-    user: HnUser = null,
+    user: HnUser | null = null,
     personalOnly: boolean = false
   ): Promise<ClPage<HnTagKey>> {
     const currentUser = user ?? HnCurrentUserHelper.getCurrentUser();
@@ -91,9 +91,14 @@ export class HnTagAggregateService {
     for (const spaceId of spacesFilter) {
       if (spaceId === 'public') publicSelected = true;
       else if (spaceId === 'my-tag-keys') myTagKeysSelected = true;
-      else await this.spaceAggregateService.assertCheckSpaceUser(spaceId, currentUser?.id);
+      else {
+        if (currentUser == null) {
+          throw new BlUnauthorizedException('You must be logged in to filter by space');
+        }
+        await this.spaceAggregateService.assertCheckSpaceUser(spaceId, currentUser.id);
+      }
     }
-    let userSpacesIds: string[] = null;
+    let userSpacesIds: string[] | null = null;
     let coAuthorTagKeysIds: string[] = [];
     if (currentUser) {
       userSpacesIds = (await this.spaceAggregateService.findSpacesOfUser(currentUser?.id)).map(
@@ -129,7 +134,7 @@ export class HnTagAggregateService {
     );
   }
 
-  async getTagValue(technicalName: string, valueId: string): Promise<HnTagValue> {
+  async getTagValue(technicalName: string, valueId: string): Promise<HnTagValue | null> {
     const tagKey = await this.getTagKeyByTechnicalName(technicalName, false);
     if (!tagKey) {
       return null;
@@ -137,7 +142,9 @@ export class HnTagAggregateService {
     return this.tagValueService.getTagValueById(valueId);
   }
 
-  async getTagKeyByTechnicalName(technicalName: string, strict: boolean = true): Promise<HnTagKey> {
+  async getTagKeyByTechnicalName(technicalName: string, strict?: true): Promise<HnTagKey>;
+  async getTagKeyByTechnicalName(technicalName: string, strict: boolean): Promise<HnTagKey | null>;
+  async getTagKeyByTechnicalName(technicalName: string, strict: boolean = true): Promise<HnTagKey | null> {
     const currentUser = HnCurrentUserHelper.getCurrentUser();
     let userSpacesIds: string[];
     if (currentUser) {
@@ -147,7 +154,7 @@ export class HnTagAggregateService {
     } else {
       userSpacesIds = [];
     }
-    const tagKey: HnTagKey = await this.tagKeyService.getTagKeyByTechnicalName(technicalName, userSpacesIds);
+    const tagKey = await this.tagKeyService.getTagKeyByTechnicalName(technicalName, userSpacesIds);
     if (strict && !tagKey) {
       throw new BlNotFoundException('Tag key not found');
     }
@@ -156,7 +163,7 @@ export class HnTagAggregateService {
 
   async getTagKeyById(id: string): Promise<HnTagKey> {
     const currentUser = HnCurrentUserHelper.getCurrentUser();
-    let tagKey: HnTagKey;
+    let tagKey: HnTagKey | null;
     if (currentUser) {
       const userSpacesIds = (await this.spaceAggregateService.findSpacesOfUser(currentUser?.id)).map(
         (space) => space.id
@@ -175,12 +182,12 @@ export class HnTagAggregateService {
     if (await this.checkIfTagKeyExists(createTagKeyDto.technicalName)) {
       throw new BlBadRequestException('A tag with this technical name already exist');
     }
-    let space: HnSpace = null;
+    let space: HnSpace | null = null;
     if (createTagKeyDto.space) {
       space = await this.getSpaceById(createTagKeyDto.space);
     }
     return await this.dataSource.transaction(async (entityManager) => {
-      const tagKey = await this.tagKeyService.createTagKey(createTagKeyDto, space, entityManager);
+      const tagKey = await this.tagKeyService.createTagKey(createTagKeyDto, space ?? undefined, entityManager);
       if (tagKey && tagKey.type === HnTagKeyType.BOOLEAN) {
         await this.tagValueService.createTagValue(
           tagKey,
@@ -202,12 +209,13 @@ export class HnTagAggregateService {
   }
 
   async updateTagKey(updateTagKeyDto: HnCreateTagKeyDto): Promise<HnTagKey> {
-    let space: HnSpace = null;
+    let space: HnSpace | null = null;
     if (updateTagKeyDto.space) {
       space = await this.getSpaceById(updateTagKeyDto.space);
     }
+    if (!updateTagKeyDto.id) throw new BlBadRequestException('Tag key id is required');
     const tagKey = await this.getTagKeyAndCheckRights(updateTagKeyDto.id);
-    return await this.tagKeyService.updateTagKey(tagKey, updateTagKeyDto, space);
+    return await this.tagKeyService.updateTagKey(tagKey, updateTagKeyDto, space ?? undefined);
   }
 
   async updateTagKeyDescription(tagKeyId: string, description: TeRichTextDTO): Promise<HnTagKey> {
@@ -240,7 +248,7 @@ export class HnTagAggregateService {
     spec: HnTagParamSpec
   ): Promise<HnTagKeyAdditionalInfosSpecs> {
     const tagKey = await this.getTagKeyByTechnicalName(technicalName);
-    const additionalInfosSpecs: HnTagKeyAdditionalInfosSpecs = tagKey.additionalInfosSpecs;
+    const additionalInfosSpecs: HnTagKeyAdditionalInfosSpecs | undefined = tagKey.additionalInfosSpecs;
     if (!additionalInfosSpecs || !(specName in additionalInfosSpecs)) {
       throw new BlNotFoundException(`Additional info spec ${specName} does not exist`);
     }
@@ -256,7 +264,7 @@ export class HnTagAggregateService {
     spec: HnTagParamSpec
   ): Promise<HnTagKeyAdditionalInfosSpecs> {
     const tagKey = await this.getTagKeyByTechnicalName(technicalName);
-    const additionalInfosSpecs: HnTagKeyAdditionalInfosSpecs = tagKey.additionalInfosSpecs;
+    const additionalInfosSpecs: HnTagKeyAdditionalInfosSpecs | undefined = tagKey.additionalInfosSpecs;
     if (!additionalInfosSpecs || !(oldName in additionalInfosSpecs)) {
       throw new BlNotFoundException(`Additional info spec ${oldName} does not exist`);
     }
@@ -274,7 +282,7 @@ export class HnTagAggregateService {
     additionalInfoSpecName: string
   ): Promise<HnTagKeyAdditionalInfosSpecs> {
     const tagKey = await this.getTagKeyByTechnicalName(technicalName);
-    const additionalInfosSpecs: HnTagKeyAdditionalInfosSpecs = tagKey.additionalInfosSpecs;
+    const additionalInfosSpecs: HnTagKeyAdditionalInfosSpecs | undefined = tagKey.additionalInfosSpecs;
     if (!additionalInfosSpecs || !(additionalInfoSpecName in additionalInfosSpecs)) {
       throw new BlNotFoundException(`Additional info spec ${additionalInfoSpecName} does not exist`);
     }
@@ -371,10 +379,10 @@ export class HnTagAggregateService {
     return this.tagValueService.deleteTagValue(tagValueId);
   }
 
-  private verifyTagValue(tagKey: HnTagKey, additionalInfos: Record<string, any>): void {
+  private verifyTagValue(tagKey: HnTagKey, additionalInfos?: Record<string, any>): void {
     if (tagKey.additionalInfosSpecs) {
       for (const key in tagKey.additionalInfosSpecs) {
-        if (!tagKey.additionalInfosSpecs[key].optional && !additionalInfos[key]) {
+        if (!tagKey.additionalInfosSpecs[key].optional && !additionalInfos?.[key]) {
           throw new BlBadRequestException(`Missing additional info ${key}`);
         }
       }
@@ -386,14 +394,14 @@ export class HnTagAggregateService {
   async shareTagToCommunity(
     labTagKey: HnTagKeyForLabDto,
     labTagValues: HnTagValueForLabDto[],
-    spaceId: string = null
+    spaceId: string | null = null
   ): Promise<HnTagKey> {
     const currentUser = HnCurrentUserHelper.getAndCheckCurrentUser();
     if (!currentUser) {
       throw new BlUnauthorizedException('You must be logged in to share a tag key');
     }
 
-    let space: HnSpace = null;
+    let space: HnSpace | null = null;
     if (spaceId) {
       space = await this.getSpaceById(spaceId);
       if (!space) {
@@ -411,10 +419,10 @@ export class HnTagAggregateService {
     tagKey.label = labTagKey.label;
     tagKey.type = labTagKey.value_format;
     tagKey.deprecated = labTagKey.deprecated;
-    tagKey.publishedAt = null;
+    tagKey.publishedAt = undefined;
     tagKey.description = labTagKey.description;
     tagKey.additionalInfosSpecs = labTagKey.additional_infos_specs;
-    tagKey.space = space;
+    tagKey.space = space ?? undefined;
     tagKey.publishedAt = DateTime.now();
 
     return await this.dataSource.transaction(async (entityManager) => {
@@ -452,7 +460,10 @@ export class HnTagAggregateService {
   }
 
   private async getSpaceById(spaceId: string): Promise<HnSpace> {
-    await this.spaceAggregateService.assertCheckSpaceUser(spaceId, HnCurrentUserHelper.getCurrentUser()?.id);
+    await this.spaceAggregateService.assertCheckSpaceUser(
+      spaceId,
+      HnCurrentUserHelper.getAndCheckCurrentUser().id
+    );
     const space = await this.spaceAggregateService.findSpaceById(spaceId);
     if (!space) {
       throw new BlNotFoundException('Space not found');

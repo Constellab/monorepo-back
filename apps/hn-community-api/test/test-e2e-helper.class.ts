@@ -12,7 +12,7 @@ import { TestGetOptions, TestIdOptions } from './test-e2e-helper.config';
 import { TestRequest } from './test-request.class';
 
 export class HnTestE2EHelper {
-  public app: INestApplication;
+  public app!: INestApplication;
 
   private token?: string;
 

@@ -1,7 +1,13 @@
-import { BlCredentials, BlCredentials2Fa, BlPublicSecure } from '@monorepo/back-core-lib';
+import {
+  BlCredentials,
+  BlCredentials2Fa,
+  BlPublicSecure,
+  BlUnauthorizedException,
+} from '@monorepo/back-core-lib';
 import { Body, Controller, Post, Res } from '@nestjs/common';
 import { Response } from 'express';
 
+import { HnErrorText } from '../core/model/config/hn-error-text.class';
 import { HnCoreConfigService } from '../core/modules/core-config/hn-core-config.service';
 import { HnAuthResponse, HnAuthService } from './hn-auth.service';
 import { HN_JWT_CONFIG } from './hn-jwt.config';
@@ -25,6 +31,9 @@ export class HnAuthController {
     const result: HnAuthResponse = await this.authService.login(credentials);
 
     if (result.status === 'LOGGED_IN') {
+      if (!result.token) {
+        throw new BlUnauthorizedException(HnErrorText.WRONG_CREDENTIALS);
+      }
       this.setTokenInCookie(result.token, response);
       response.send({ status: 'LOGGED_IN', expiresIn: HN_JWT_CONFIG.tokenDurationInMilliseconds });
     } else {

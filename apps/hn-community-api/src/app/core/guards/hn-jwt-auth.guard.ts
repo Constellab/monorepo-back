@@ -23,7 +23,11 @@ export class HnJwtAuthGuard extends AuthGuard('jwt') {
     // jwt authentication
     try {
       if (await (super.canActivate(context) as Promise<boolean>)) {
-        const request = BlRequestContext.currentContext.req as HnRequest;
+        const requestContext = BlRequestContext.currentContext;
+        if (requestContext == null) {
+          return false;
+        }
+        const request = requestContext.req as HnRequest;
 
         // the user is available in the request from super.canActivate
         const user = request.user;

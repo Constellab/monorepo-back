@@ -108,6 +108,10 @@ export class HnCliAuthService {
       return { status: 'expired' };
     }
 
+    if (!authCode.user) {
+      throw new BlNotFoundException('cli_auth_invalid_code');
+    }
+
     const token = this.jwtService.generateToken(authCode.user.id, authCode.user.email);
     this.codeStore.delete(code);
     return { status: 'success', token };
@@ -118,7 +122,7 @@ export class HnCliAuthService {
   }
 
   private isValidatedExpired(authCode: HnCliAuthCode): boolean {
-    return Date.now() - authCode.validatedAt > VALIDATED_EXPIRATION;
+    return Date.now() - (authCode.validatedAt ?? 0) > VALIDATED_EXPIRATION;
   }
 
   private cleanupExpiredCodes(): void {
@@ -133,7 +137,7 @@ export class HnCliAuthService {
         this.codeStore.delete(code);
       } else if (
         authCode.status === HnCliAuthCodeStatus.VALIDATED &&
-        now - authCode.validatedAt > VALIDATED_EXPIRATION
+        now - (authCode.validatedAt ?? 0) > VALIDATED_EXPIRATION
       ) {
         this.codeStore.delete(code);
       } else if (

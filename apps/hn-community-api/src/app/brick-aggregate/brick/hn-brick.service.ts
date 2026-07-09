@@ -75,7 +75,7 @@ export class HnBrickService extends BlAbstractService<HnBrickEntity> {
 
   async findOne(
     whereConditions: FindOptionsWhere<HnBrickEntity>[] | FindOptionsWhere<HnBrickEntity>
-  ): Promise<HnBrick> {
+  ): Promise<HnBrick | null> {
     return this.bricksRepository.findOne({ where: whereConditions });
   }
 
@@ -85,17 +85,17 @@ export class HnBrickService extends BlAbstractService<HnBrickEntity> {
    */
   async findOneLight(
     whereConditions: FindOptionsWhere<HnBrickEntity>[] | FindOptionsWhere<HnBrickEntity>
-  ): Promise<HnBrick> {
+  ): Promise<HnBrick | null> {
     return this.bricksRepository.findOne({ where: whereConditions, loadEagerRelations: false });
   }
 
-  async findByNameSpace(name: string): Promise<HnBrick> {
+  async findByNameSpace(name: string): Promise<HnBrick | null> {
     return await this.bricksRepository.findOne({
       where: { name: name },
     });
   }
 
-  async findBrickForInviteById(id: string): Promise<HnBrick> {
+  async findBrickForInviteById(id: string): Promise<HnBrick | null> {
     return this.bricksRepository.findOneBy({ id: id });
   }
 
@@ -110,7 +110,12 @@ export class HnBrickService extends BlAbstractService<HnBrickEntity> {
     );
 
     const brick = await this.bricksRepository.findOneBy({ id: id });
-    await this.deleteBrickImage(brick.imageLink);
+    if (!brick) {
+      throw new BlBadRequestException('Brick not found');
+    }
+    if (brick.imageLink) {
+      await this.deleteBrickImage(brick.imageLink);
+    }
     brick.imageLink = filename;
     await this.bricksRepository.save(brick);
 
@@ -125,13 +130,16 @@ export class HnBrickService extends BlAbstractService<HnBrickEntity> {
     return await this.objectStorageService.downloadObject(this.getBucketConfig(), filename);
   }
 
-  async deleteBrickImage(filename: string, brickId: string = null): Promise<void> {
+  async deleteBrickImage(filename: string, brickId: string | null = null): Promise<void> {
     await this.objectStorageService.deleteObjectIfExist(
       [this.getBucketConfig(), this.getBackupBucketConfig()],
       filename
     );
     if (brickId) {
       const brick = await this.bricksRepository.findOneBy({ id: brickId });
+      if (!brick) {
+        throw new BlBadRequestException('Brick not found');
+      }
       brick.imageLink = null;
       await this.bricksRepository.save(brick);
     }
@@ -139,6 +147,9 @@ export class HnBrickService extends BlAbstractService<HnBrickEntity> {
 
   async updateLikes(brickId: string, numberOfLikes: number): Promise<void> {
     const brick = await this.bricksRepository.findOneBy({ id: brickId });
+    if (!brick) {
+      throw new BlBadRequestException('Brick not found');
+    }
     brick.likes = numberOfLikes;
     await this.bricksRepository.save(brick, { listeners: false });
   }

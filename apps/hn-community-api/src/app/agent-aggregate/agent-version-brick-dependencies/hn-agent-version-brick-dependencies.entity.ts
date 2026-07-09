@@ -6,16 +6,16 @@ import { HnAgentVersion } from '../agent-version/hn-agent-version.entity';
 @Entity('agent_version_brick_dependencies')
 export class HnAgentVersionBrickDependencies {
   @PrimaryColumn({ type: 'varchar', length: 36 })
-  agentVersionId: string;
+  agentVersionId!: string;
 
   @ManyToOne(() => HnAgentVersion, { eager: true, onUpdate: 'CASCADE', onDelete: 'CASCADE', nullable: false })
-  agentVersion: HnAgentVersion;
+  agentVersion!: HnAgentVersion;
 
   @PrimaryColumn({ type: 'varchar', length: 36 })
-  brickVersionId: string;
+  brickVersionId!: string;
 
   @ManyToOne(() => HnBrickVersion, { eager: true, onUpdate: 'CASCADE', onDelete: 'CASCADE', nullable: false })
-  brickVersion: HnBrickVersion;
+  brickVersion!: HnBrickVersion;
 
   init(agentVersion: HnAgentVersion, brickVersion: HnBrickVersion): void {
     this.agentVersionId = agentVersion.id;

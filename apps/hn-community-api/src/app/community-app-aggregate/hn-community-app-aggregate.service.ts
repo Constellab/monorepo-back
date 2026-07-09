@@ -134,7 +134,7 @@ export class HnCommunityAppAggregateService {
       whereConditions.push({
         communityAppCoAuthors: {
           user: {
-            id: HnCurrentUserHelper.getCurrentUser().id,
+            id: HnCurrentUserHelper.getAndCheckCurrentUser().id,
           },
         },
         space: {
@@ -154,7 +154,7 @@ export class HnCommunityAppAggregateService {
       whereConditions.push({
         communityAppCoAuthors: {
           user: {
-            id: HnCurrentUserHelper.getCurrentUser().id,
+            id: HnCurrentUserHelper.getAndCheckCurrentUser().id,
           },
         },
         space: IsNull(),
@@ -173,7 +173,7 @@ export class HnCommunityAppAggregateService {
   ): Promise<ClPage<HnCommunityApp>> {
     let publicSelected = false;
     let myApps = false;
-    const currentUser: HnUser = HnCurrentUserHelper.getCurrentUser();
+    const currentUser: HnUser | null = HnCurrentUserHelper.getCurrentUser();
 
     for (const spaceId of spacesFilter) {
       if (spaceId === 'public') publicSelected = true;
@@ -207,7 +207,7 @@ export class HnCommunityAppAggregateService {
   async create(dto: HnCommunityAppEditDto): Promise<HnCommunityApp> {
     this.checkCommunityAppUrl(dto);
 
-    let space: HnSpace = null;
+    let space: HnSpace | null = null;
     if (dto.spaceId) {
       await this.spaceAggregateService.checkIfSpaceExists(dto.spaceId);
       space = await this.spaceAggregateService.findSpaceById(dto.spaceId);
@@ -218,7 +218,7 @@ export class HnCommunityAppAggregateService {
   async update(dto: HnCommunityAppEditDto): Promise<HnCommunityApp> {
     if (dto.id == null) throw new BlBadRequestException('Id is required');
     this.checkCommunityAppUrl(dto);
-    let space: HnSpace = null;
+    let space: HnSpace | null = null;
     if (dto.spaceId) {
       await this.spaceAggregateService.checkIfSpaceExists(dto.spaceId);
       space = await this.spaceAggregateService.findSpaceById(dto.spaceId);
@@ -294,11 +294,11 @@ export class HnCommunityAppAggregateService {
   }
 
   private async getUserBasedWhereAppConditions(
-    publicSelected: boolean = null,
-    spacesFilter: string[] = null,
-    user: HnUser = null
+    publicSelected: boolean | null = null,
+    spacesFilter: string[] | null = null,
+    user: HnUser | null = null
   ): Promise<FindOptionsWhere<HnCommunityApp>[] | FindOptionsWhere<HnCommunityApp>> {
-    const currentUser: HnUser = user ?? HnCurrentUserHelper.getCurrentUser();
+    const currentUser: HnUser | null = user ?? HnCurrentUserHelper.getCurrentUser();
     let whereConditions: FindOptionsWhere<HnCommunityApp>[] | FindOptionsWhere<HnCommunityApp>;
 
     if (currentUser == null) {
@@ -313,7 +313,7 @@ export class HnCommunityAppAggregateService {
       whereConditions = [
         {
           space: {
-            id: In(spacesFilter),
+            id: In(spacesFilter ?? []),
           },
         },
         {
@@ -351,9 +351,9 @@ export class HnCommunityAppAggregateService {
   private async getMyAppsWhereAppConditions(
     publicSelected: boolean,
     spacesFilter: string[],
-    user: HnUser = null
+    user: HnUser | null = null
   ): Promise<FindOptionsWhere<HnCommunityApp>[] | FindOptionsWhere<HnCommunityApp>> {
-    const currentUser: HnUser = user ?? HnCurrentUserHelper.getCurrentUser();
+    const currentUser: HnUser | null = user ?? HnCurrentUserHelper.getCurrentUser();
 
     if (currentUser == null) {
       throw new BlUnauthorizedException('You are not authorized to perform this action');
@@ -430,7 +430,7 @@ export class HnCommunityAppAggregateService {
   }
 
   private checkCommunityAppUrl(dto: HnCommunityAppEditDto): void {
-    const appUrl: string = dto.appUrl;
+    const appUrl: string | undefined = dto.appUrl;
 
     if (!appUrl || appUrl.trim().length === 0) {
       if (!dto.contactMail || dto.contactMail.trim().length === 0)
@@ -481,7 +481,7 @@ export class HnCommunityAppAggregateService {
     return this.communityAppCoAuthorService.removeCommunityAppCoAuthor(id, communityAppCoAuthorUserId);
   }
 
-  public async isInviteValid(token: string): Promise<HnCommunityAppCoAuthorInvite> {
+  public async isInviteValid(token: string): Promise<HnCommunityAppCoAuthorInvite | null> {
     const coAuthorInvite: HnCommunityAppCoAuthorInvite =
       await this.communityAppCoAuthorService.getCommunityAppCoAuthorInviteByToken(token);
     return coAuthorInvite &&
@@ -491,24 +491,23 @@ export class HnCommunityAppAggregateService {
       : null;
   }
 
-  public async acceptInvite(token: string): Promise<HnCommunityApp> {
+  public async acceptInvite(token: string): Promise<HnCommunityApp | null> {
     const coAuthorInvite: HnCommunityAppCoAuthorInvite =
       await this.communityAppCoAuthorService.getCommunityAppCoAuthorInviteByToken(token);
     if (!coAuthorInvite) throw new BlNotFoundException('Invalid invite');
     const communityApp = await this.communityAppService.findOneById(coAuthorInvite.communityApp.id);
+    if (!communityApp) throw new BlNotFoundException('Community App not found');
+    const currentUser = HnCurrentUserHelper.getAndCheckCurrentUser();
     if (
       communityApp.space &&
-      !(await this.spaceAggregateService.checkSpaceUser(
-        communityApp.space.id,
-        HnCurrentUserHelper.getCurrentUser()?.id
-      ))
+      !(await this.spaceAggregateService.checkSpaceUser(communityApp.space.id, currentUser.id))
     ) {
       throw new BlUnauthorizedException('User is not in the space of the app');
     }
 
     const communityAppCoAuthor: HnCommunityAppCoAuthor = new HnCommunityAppCoAuthor();
     communityAppCoAuthor.communityApp = communityApp;
-    communityAppCoAuthor.user = HnCurrentUserHelper.getCurrentUser();
+    communityAppCoAuthor.user = currentUser;
     const acceptInvite = await this.communityAppCoAuthorService.acceptInvite(
       communityAppCoAuthor,
       coAuthorInvite
@@ -526,7 +525,7 @@ export class HnCommunityAppAggregateService {
     if (!app) {
       return;
     }
-    const user: HnUser = app.createdBy;
+    const user: HnUser | undefined = app.createdBy;
     if (!user) {
       throw new BlNotFoundException('App creator not found');
     }

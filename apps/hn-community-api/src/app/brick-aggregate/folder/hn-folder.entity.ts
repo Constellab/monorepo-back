@@ -9,29 +9,29 @@ import { HnDocumentation } from '../documentation/hn-documentation.entity';
 @Tree('materialized-path')
 export class HnFolder extends HnBaseEntity {
   @Column({ nullable: true })
-  title: string;
+  title!: string | null;
 
   @BlNotUpdatable()
   @ManyToOne(() => HnBrickMajorVersion, { eager: true, onDelete: 'CASCADE', nullable: false })
-  brickMajorVersion: HnBrickMajorVersion;
+  brickMajorVersion!: HnBrickMajorVersion;
 
   @Column({ nullable: true })
-  path: string;
+  path!: string | null;
 
   @Column({ nullable: true })
-  completePath: string;
+  completePath!: string | null;
 
   @Column()
-  order: number;
+  order!: number;
 
   @TreeParent({ onDelete: 'CASCADE' })
-  folder: HnFolder;
+  folder!: HnFolder | null;
 
   @TreeChildren()
-  folders: HnFolder[];
+  folders!: HnFolder[];
 
   @OneToMany(() => HnDocumentation, (doc) => doc.folder)
-  documentations: HnDocumentation[];
+  documentations!: HnDocumentation[];
 
   nextOrder(): number {
     let maxOrder: number = 0;

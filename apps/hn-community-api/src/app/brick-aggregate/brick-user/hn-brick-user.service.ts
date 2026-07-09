@@ -17,7 +17,7 @@ export class HnBrickUserService {
   }
 
   async checkAndRemoveBrickUser(brickId: string, brickUserId: string): Promise<void> {
-    const brickUser: HnBrickUser = await this.brickUserRepository.findOneBy({
+    const brickUser: HnBrickUser | null = await this.brickUserRepository.findOneBy({
       brick: { id: brickId },
       user: { id: brickUserId },
     });

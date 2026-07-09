@@ -234,12 +234,12 @@ export class HnCommunityAppController extends HnAbstractFileController<HnCommuni
   }
 
   @Get('co-authors/invite/:token/is-valid')
-  isInviteValid(@Param('token') token: string): Promise<HnCommunityAppCoAuthorInvite> {
+  isInviteValid(@Param('token') token: string): Promise<HnCommunityAppCoAuthorInvite | null> {
     return this.communityAppAggregateService.isInviteValid(token);
   }
 
   @Put('co-authors/invite/:token/accept')
-  acceptInvite(@Param('token') token: string): Promise<HnCommunityApp> {
+  acceptInvite(@Param('token') token: string): Promise<HnCommunityApp | null> {
     return this.communityAppAggregateService.acceptInvite(token);
   }
 

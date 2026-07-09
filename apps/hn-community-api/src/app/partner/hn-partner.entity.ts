@@ -9,27 +9,27 @@ import { HnUser } from '../users/hn-user.entity';
 @Entity('partner')
 export class HnPartner extends HnBaseEntity {
   @Column({ type: 'boolean', default: false })
-  certified: boolean;
+  certified!: boolean;
 
   @Column()
-  name: string;
+  name!: string;
 
   @Column({ nullable: true })
-  logo?: string;
+  logo?: string | null;
 
   @Column({ type: 'simple-json' })
-  info: TeRichTextDTO;
+  info!: TeRichTextDTO;
 
   @Type(() => HnUser)
   @JoinColumn()
   @OneToOne(() => HnUser, { eager: true, onDelete: 'CASCADE', nullable: false })
-  user: HnUser;
+  user!: HnUser;
 
   @Column({ default: 0 })
-  likes: number;
+  likes!: number;
 
   @Column({ default: 0 })
-  comments: number;
+  comments!: number;
 }
 
 export const HN_PARTNER_INFO_TEMPLATE: TeRichTextDTO = {

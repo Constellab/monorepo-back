@@ -5,7 +5,7 @@ import { HnBrickVersion, HnVersionType } from './hn-brick-version.entity';
 export class HnBrickVersionDto extends HnBaseDto {
   minor: number;
   patch: number;
-  subPatch?: number;
+  subPatch?: number | null;
   versionType: HnVersionType;
   repoType: string;
   brickMajorVersion: HnBrickMajorVersionDTO;

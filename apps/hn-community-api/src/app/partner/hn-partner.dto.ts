@@ -5,12 +5,12 @@ import { HnUserDto } from '../users/hn-user.dto';
 import { HnPartner } from './hn-partner.entity';
 
 export class HnPartnerDto extends HnBaseDto {
-  certified: boolean;
-  user: HnUserDto;
-  name: string;
-  logo?: string;
-  likes: number;
-  comments: number;
+  certified!: boolean;
+  user!: HnUserDto;
+  name!: string;
+  logo?: string | null;
+  likes!: number;
+  comments!: number;
 
   constructor(partner: HnPartner) {
     super(partner);
@@ -25,14 +25,16 @@ export class HnPartnerDto extends HnBaseDto {
     this.comments = partner.comments;
   }
 
-  static fromEntity(partner: HnPartner): HnPartnerDto {
+  static fromEntity(partner: HnPartner): HnPartnerDto;
+  static fromEntity(partner: HnPartner | null | undefined): HnPartnerDto | null;
+  static fromEntity(partner: HnPartner | null | undefined): HnPartnerDto | null {
     if (!partner) return null;
     return new HnPartnerDto(partner);
   }
 }
 
 export class HnPartnerDetailDto extends HnPartnerDto {
-  info: TeRichTextDTO;
+  info!: TeRichTextDTO;
 
   constructor(partner: HnPartner) {
     super(partner);
@@ -40,7 +42,9 @@ export class HnPartnerDetailDto extends HnPartnerDto {
     this.info = partner.info;
   }
 
-  static fromEntity(partner: HnPartner): HnPartnerDetailDto {
+  static fromEntity(partner: HnPartner): HnPartnerDetailDto;
+  static fromEntity(partner: HnPartner | null | undefined): HnPartnerDetailDto | null;
+  static fromEntity(partner: HnPartner | null | undefined): HnPartnerDetailDto | null {
     if (!partner) return null;
     return new HnPartnerDetailDto(partner);
   }

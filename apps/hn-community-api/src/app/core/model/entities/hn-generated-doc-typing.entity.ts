@@ -6,23 +6,23 @@ import { HnBaseEntity } from './hn-base.entity';
 
 export abstract class HnGeneratedDocEntity extends HnBaseEntity {
   @Column()
-  brickName: string;
+  brickName!: string;
 
   @Column()
-  brickMajor: number;
+  brickMajor!: number;
 
   @Column()
-  uniqueName: string;
+  uniqueName!: string;
 
   @Column()
-  humanName: string;
+  humanName!: string;
 
   @Column({ type: 'text', nullable: true })
-  doc: string;
+  doc?: string;
 
   @Type(() => HnTechnicalFolder)
   @ManyToOne(() => HnTechnicalFolder, { eager: true, nullable: false, onDelete: 'CASCADE' })
-  technicalFolder: HnTechnicalFolder;
+  technicalFolder!: HnTechnicalFolder;
 
   abstract getFolderName(): string;
 
@@ -36,7 +36,7 @@ export abstract class HnGeneratedDocTypingEntity extends HnGeneratedDocEntity {
   shortDescription?: string;
 
   @Column()
-  typingName: string;
+  typingName!: string;
 
   @Column({ nullable: true })
   parentHumanName?: string;
@@ -51,7 +51,7 @@ export abstract class HnGeneratedDocTypingEntity extends HnGeneratedDocEntity {
   parentVersion?: string;
 
   @Column()
-  hide: boolean;
+  hide!: boolean;
 
   @Column({ nullable: true })
   deprecatedSince?: string;
@@ -63,7 +63,7 @@ export abstract class HnGeneratedDocTypingEntity extends HnGeneratedDocEntity {
   style?: Record<string, any>;
 
   @Column({ nullable: true })
-  objectSubType: string;
+  objectSubType?: string;
 
-  objectType: string;
+  objectType!: string;
 }

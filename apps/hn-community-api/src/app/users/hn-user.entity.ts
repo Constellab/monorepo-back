@@ -13,49 +13,49 @@ import { BeforeInsert, Column, Entity, PrimaryColumn, Unique } from 'typeorm';
 @Entity('user')
 export class HnUser {
   @PrimaryColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column({ nullable: false, length: 11, update: false })
-  userCode: string;
+  userCode!: string;
 
   @Column({ nullable: false, length: 52 })
-  alias: string;
+  alias!: string;
 
   @Column({ nullable: false, length: 50 })
-  firstname: string;
+  firstname!: string;
 
   @Column({ nullable: false, length: 50 })
-  lastname: string;
+  lastname!: string;
 
   @Column({ unique: true, nullable: false, update: false })
-  email: string;
+  email!: string;
 
   @Column({ nullable: true })
-  photo: string;
+  photo!: string | null;
 
   @Column({ nullable: true })
-  githubLink: string;
+  githubLink!: string | null;
 
   @Column({ nullable: true })
-  linkedinLink: string;
+  linkedinLink!: string | null;
 
   @Column({ nullable: true })
-  xLink: string;
+  xLink!: string | null;
 
   @Column({ nullable: true })
-  interests: string;
+  interests!: string | null;
 
   @Column({ nullable: false, type: 'enum', enum: BlUserCategory })
-  category: BlUserCategory;
+  category!: BlUserCategory;
 
   @BlLuxonDateTimeColumn({ nullable: false, update: false })
-  createdAt: DateTime;
+  createdAt!: DateTime;
 
   @Column({ nullable: false, type: 'enum', enum: ClSupportedLanguage, default: CL_DEFAULT_LANG })
-  lang: ClSupportedLanguage;
+  lang!: ClSupportedLanguage;
 
   @Column({ nullable: false, type: 'enum', enum: ClTheme, default: CL_DEFAULT_THEME })
-  theme: ClTheme;
+  theme!: ClTheme;
 
   @BeforeInsert()
   initValues(): void {
@@ -97,7 +97,7 @@ export interface HnUserConstellabDTO {
   email: string;
   category: BlUserCategory;
   theme: ClTheme;
-  photo: string;
+  photo: string | null;
   lang: ClSupportedLanguage;
 }
 

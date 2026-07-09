@@ -17,7 +17,7 @@ export class HnRunStatAggregateController {
   async getObjectRunStatGroup(
     @Param('objectType') objectType: HnRunStatAggregateObjectType,
     @Param('objectId') objectId: string
-  ): Promise<HnRunStatAggregate> {
+  ): Promise<HnRunStatAggregate | null> {
     return this.runStatAgService.getObjectRunStatGroup(objectId, objectType);
   }
 

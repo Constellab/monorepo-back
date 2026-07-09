@@ -10,7 +10,7 @@ import { HnCommunityAppUser } from '../community-app-user/hn-community-app-user.
 @Entity('app')
 export class HnCommunityAppEntity extends HnBaseEntity {
   @Column({ nullable: false })
-  title: string;
+  title!: string;
 
   @Column({ type: 'simple-json', nullable: true })
   description?: TeRichTextDTO;
@@ -20,34 +20,34 @@ export class HnCommunityAppEntity extends HnBaseEntity {
 
   @Column({ nullable: true })
   @Index({ unique: true })
-  appUrl: string;
+  appUrl?: string;
 
   @Column({ nullable: true })
   contactMail?: string;
 
   @Column({ default: 0 })
-  likes: number;
+  likes!: number;
 
   @Column({ default: 0 })
-  comments: number;
+  comments!: number;
 
   @Column({ default: 0 })
-  executions: number;
+  executions!: number;
 
   @ManyToOne(() => HnSpace, { eager: true, onUpdate: 'CASCADE', onDelete: 'CASCADE', nullable: true })
   space?: HnSpace;
 
   @OneToMany(() => HnFileApp, (appFile) => appFile.entity, { nullable: true })
-  appFiles: HnFileApp[];
+  appFiles!: HnFileApp[];
 
   @OneToMany(() => HnCommunityAppUser, (appUser) => appUser.app, { nullable: true, eager: true })
-  appUsers: HnCommunityAppUser[];
+  appUsers!: HnCommunityAppUser[];
 
   @OneToMany(() => HnCommunityAppCoAuthor, (communityAppCoAuthor) => communityAppCoAuthor.communityApp, {
     nullable: true,
     onDelete: 'CASCADE',
   })
-  communityAppCoAuthors: HnCommunityAppCoAuthor[];
+  communityAppCoAuthors!: HnCommunityAppCoAuthor[];
 
   @Column({ nullable: true })
   video?: string;

@@ -22,31 +22,31 @@ export interface HnDocumentationSearchDTO {
 @Entity('documentation')
 export class HnDocumentation extends HnBaseEntity {
   @Column()
-  title: string;
+  title!: string;
 
   @Column({ type: 'simple-json', nullable: true })
   content?: TeRichTextDTO;
 
   @Column({ type: 'longtext', nullable: true })
-  modifications: string;
+  modifications!: string | null;
 
   // TODO: TO REMOVE
   @Column({ type: 'longtext', nullable: true })
-  modificationsBackup: string;
+  modificationsBackup!: string | null;
 
   @Column()
-  path: string;
+  path!: string;
 
   @Column()
-  completePath: string;
+  completePath!: string;
 
   @Column()
-  order: number;
+  order!: number;
 
   @ManyToOne(() => HnFolder, { eager: true, onDelete: 'CASCADE', nullable: false })
-  folder: HnFolder;
+  folder!: HnFolder;
 
-  public setPath(path: string, folderCompletePath: string): void {
+  public setPath(path: string, folderCompletePath: string | null): void {
     this.path = path;
 
     if (folderCompletePath != null) {
@@ -64,7 +64,7 @@ export class HnDocumentation extends HnBaseEntity {
 
   public getRichTextAggregate(): TeRichTextAggregate {
     const richText = this.getRichText();
-    const modifications = TeRichTextModifications.fromJsonObjectString(this.modifications);
+    const modifications = TeRichTextModifications.fromJsonObjectString(this.modifications ?? '');
 
     return new TeRichTextAggregate(richText, modifications);
   }

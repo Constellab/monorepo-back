@@ -53,11 +53,14 @@ export abstract class HnAbstractFileService<T extends BlEntityWithId> {
     });
   }
 
-  async getEntityFile(id: string): Promise<HnAbstractFileEntity<T>> {
+  async getEntityFile(id: string): Promise<HnAbstractFileEntity<T> | null> {
     return this.repository.findOneBy({ id: id });
   }
 
-  async getEntityFileByEntityIdAndName(entityId: string, name: string): Promise<HnAbstractFileEntity<T>> {
+  async getEntityFileByEntityIdAndName(
+    entityId: string,
+    name: string
+  ): Promise<HnAbstractFileEntity<T> | null> {
     return this.repository.findOneBy({
       entity: {
         id: entityId,
@@ -66,12 +69,15 @@ export abstract class HnAbstractFileService<T extends BlEntityWithId> {
     });
   }
 
-  async getEntityFileByFileName(fileName: string): Promise<HnAbstractFileEntity<T>> {
+  async getEntityFileByFileName(fileName: string): Promise<HnAbstractFileEntity<T> | null> {
     return this.repository.findOneBy({ fileName: fileName });
   }
 
-  async getFile(entityId: string, name: string): Promise<BlFileResponse> {
-    const entityFile: HnAbstractFileEntity<T> = await this.getEntityFileByEntityIdAndName(entityId, name);
+  async getFile(entityId: string, name: string): Promise<BlFileResponse | null> {
+    const entityFile: HnAbstractFileEntity<T> | null = await this.getEntityFileByEntityIdAndName(
+      entityId,
+      name
+    );
     if (entityFile == null) {
       return null;
     }
@@ -81,7 +87,7 @@ export abstract class HnAbstractFileService<T extends BlEntityWithId> {
   }
 
   async renameFile(id: string, newName: string): Promise<HnAbstractFileEntityDTO> {
-    const entityFile: HnAbstractFileEntity<T> = await this.getEntityFile(id);
+    const entityFile: HnAbstractFileEntity<T> | null = await this.getEntityFile(id);
     if (entityFile == null) {
       throw new BlBadRequestException('File not found');
     }

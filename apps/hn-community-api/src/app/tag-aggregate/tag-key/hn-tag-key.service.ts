@@ -39,7 +39,7 @@ export class HnTagKeyService {
    * Simple get tag key by id method
    * @param id
    */
-  async getTagKeyById(id: string): Promise<HnTagKey> {
+  async getTagKeyById(id: string): Promise<HnTagKey | null> {
     return this.tagKeyRepository.findOneBy({ id: id });
   }
 
@@ -47,7 +47,7 @@ export class HnTagKeyService {
    * Get tag key by id method if user is not connected
    * @param id
    */
-  async getPublicTagKeyById(id: string): Promise<HnTagKey> {
+  async getPublicTagKeyById(id: string): Promise<HnTagKey | null> {
     return this.tagKeyRepository.findOneBy({
       id: id,
       space: IsNull(),
@@ -60,7 +60,7 @@ export class HnTagKeyService {
    * @param id
    * @param userSpacesIds
    */
-  async getTagKeyByIdWithUserSpacesIds(id: string, userSpacesIds: string[]): Promise<HnTagKey> {
+  async getTagKeyByIdWithUserSpacesIds(id: string, userSpacesIds: string[]): Promise<HnTagKey | null> {
     return this.tagKeyRepository.findOne({
       where: [
         {
@@ -77,7 +77,7 @@ export class HnTagKeyService {
     });
   }
 
-  async getTagKeyByTechnicalName(technicalName: string, userSpacesIds: string[]): Promise<HnTagKey> {
+  async getTagKeyByTechnicalName(technicalName: string, userSpacesIds: string[]): Promise<HnTagKey | null> {
     return this.tagKeyRepository.findOne({
       where: [
         {
@@ -137,9 +137,9 @@ export class HnTagKeyService {
     sortsCriteria: BlSearchSortCriteria[],
     page: number,
     size: number,
-    user: HnUser = null,
-    userSpacesIds: string[] = null,
-    coAuthorTagKeysIds: string[] = null
+    user: HnUser | null = null,
+    userSpacesIds: string[] | null = null,
+    coAuthorTagKeysIds: string[] | null = null
   ): Promise<ClPage<HnTagKey>> {
     const where = this.buildFindWhereWithFilters(
       spacesFilter,
@@ -250,7 +250,7 @@ export class HnTagKeyService {
   public async updateAdditionalInfosSpecs(
     tagKey: HnTagKey,
     additionalInfosSpecs: HnTagKeyAdditionalInfosSpecs,
-    entityManager: EntityManager = null
+    entityManager: EntityManager | null = null
   ): Promise<HnTagKeyAdditionalInfosSpecs> {
     tagKey.additionalInfosSpecs = additionalInfosSpecs;
     let savedTagKey: HnTagKey;
@@ -259,7 +259,7 @@ export class HnTagKeyService {
     } else {
       savedTagKey = await this.tagKeyRepository.save(tagKey);
     }
-    return savedTagKey?.additionalInfosSpecs;
+    return savedTagKey.additionalInfosSpecs ?? additionalInfosSpecs;
   }
 
   /**
@@ -321,9 +321,9 @@ export class HnTagKeyService {
     publicSelected: boolean,
     myTagKeysSelected: boolean,
     personalOnly: boolean,
-    user: HnUser,
-    userSpacesIds: string[],
-    coAuthorTagKeysIds: string[]
+    user: HnUser | null,
+    userSpacesIds: string[] | null,
+    coAuthorTagKeysIds: string[] | null
   ): FindOptionsWhere<HnTagKey>[] {
     let where: FindOptionsWhere<HnTagKey>[];
     const currentUser = user ? user : HnCurrentUserHelper.getCurrentUser();
@@ -359,13 +359,13 @@ export class HnTagKeyService {
           space: {
             id: In(spacesFilter),
           },
-          id: In(coAuthorTagKeysIds),
+          id: In(coAuthorTagKeysIds ?? []),
         },
         {
           space: {
             id: IsNull(),
           },
-          id: In(coAuthorTagKeysIds),
+          id: In(coAuthorTagKeysIds ?? []),
         },
       ];
     } else if (publicSelected && !myTagKeysSelected) {
@@ -398,7 +398,7 @@ export class HnTagKeyService {
             space: {
               id: In(spacesFilter),
             },
-            id: In(coAuthorTagKeysIds),
+            id: In(coAuthorTagKeysIds ?? []),
           },
         ];
       } else {
@@ -409,7 +409,7 @@ export class HnTagKeyService {
             },
           },
           {
-            id: In(coAuthorTagKeysIds),
+            id: In(coAuthorTagKeysIds ?? []),
           },
         ];
       }
@@ -457,6 +457,9 @@ export class HnTagKeyService {
     }
 
     if (personalOnly) {
+      if (currentUser == null) {
+        throw new BlUnauthorizedException('User has no space');
+      }
       where = where.map((w) => {
         w.createdBy = {
           id: currentUser.id,

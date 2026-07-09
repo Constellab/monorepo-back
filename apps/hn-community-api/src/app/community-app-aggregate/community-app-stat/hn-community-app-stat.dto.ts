@@ -2,10 +2,10 @@ import { HnUserDto } from '../../users/hn-user.dto';
 import { HnCommunityAppStat } from './hn-community-app-stat.entity';
 
 export class HnCommunityAppStatDto {
-  id: string;
-  appUrl: string;
-  executionDate: string;
-  creator: HnUserDto;
+  id!: string;
+  appUrl!: string;
+  executionDate!: string | null;
+  creator!: HnUserDto;
 
   constructor(appStat: HnCommunityAppStat) {
     if (!appStat) return;
@@ -17,5 +17,5 @@ export class HnCommunityAppStatDto {
 }
 
 export class HnCommunityAppStatLabDto {
-  app_url: string;
+  app_url!: string;
 }

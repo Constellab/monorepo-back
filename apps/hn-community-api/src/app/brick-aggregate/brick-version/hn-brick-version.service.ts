@@ -59,7 +59,7 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
   ): Promise<HnBrickVersion> {
     const version: BlVersion = BlVersion.fromString(newVersion.version);
 
-    const existing: HnBrickVersion = await this.brickVersionsRepository.findOne({
+    const existing: HnBrickVersion | null = await this.brickVersionsRepository.findOne({
       where: {
         brickMajorVersion: { id: brickMajorVersion.id },
         minor: version.minor,
@@ -163,6 +163,10 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
       relations: { brickMajorVersion: { brick: true } },
     });
 
+    if (!brickVersion) {
+      throw new BlUnauthorizedException(HnErrorText.BRICK_VERSION_NOT_FOUND);
+    }
+
     this.sendBrickVersionToTransport(brickVersion);
   }
 
@@ -209,7 +213,7 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
     });
   }
 
-  async getLatestBrickVersion(brickMajorVersionId: string): Promise<HnBrickVersion> {
+  async getLatestBrickVersion(brickMajorVersionId: string): Promise<HnBrickVersion | null> {
     return this.brickVersionsRepository.findOne({
       where: {
         brickMajorVersion: {
@@ -229,7 +233,7 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
     version: string
   ): Promise<HnIsActualBrickAndNewVersionResponseDTO> {
     const v: BlVersion = BlVersion.fromString(version);
-    const bv: HnBrickVersion = await this.brickVersionsRepository.findOne({
+    const bv: HnBrickVersion | null = await this.brickVersionsRepository.findOne({
       where: {
         brickMajorVersion: {
           id: brickMajorVersion.id,
@@ -293,15 +297,23 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
   }
 
   async bVRToRef(bVR: HnBrickVersionReference): Promise<HnReferenceDTO> {
+    const referenceVersion = await this.brickVersionsRepository.findOneBy({ id: bVR.referenceId });
+    if (!referenceVersion) {
+      throw new BlUnauthorizedException(HnErrorText.BRICK_VERSION_NOT_FOUND);
+    }
     return {
       name: await this.getBrickName(bVR.referenceId),
-      version: (await this.brickVersionsRepository.findOneBy({ id: bVR.referenceId })).version.toString(),
+      version: referenceVersion.version.toString(),
       referenceState: bVR.versionState,
     };
   }
 
   async getBrickName(id: string): Promise<string> {
-    return (await this.brickVersionsRepository.findOneBy({ id: id })).brickMajorVersion.brick.name;
+    const brickVersion = await this.brickVersionsRepository.findOneBy({ id: id });
+    if (!brickVersion) {
+      throw new BlUnauthorizedException(HnErrorText.BRICK_VERSION_NOT_FOUND);
+    }
+    return brickVersion.brickMajorVersion.brick.name;
   }
 
   private sendBrickVersionToTransport(brickVersion: HnBrickVersion): void {
@@ -321,7 +333,7 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
           subPatch: brickVersion.subPatch,
           versionState: brickVersion.brickMajorVersion.versionState,
           repoType: brickVersion.repoType,
-          technicalInfo: brickVersion.technicalInfo,
+          technicalInfo: brickVersion.technicalInfo ?? {},
         },
       ],
     };
@@ -332,7 +344,7 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
 
   public async getAndCheckBrickVersion(brickName: string, versionStr: string): Promise<HnBrickVersion> {
     if (versionStr == 'latest') {
-      return await this.brickVersionsRepository.findOne({
+      const latestBrickVersion = await this.brickVersionsRepository.findOne({
         where: {
           brickMajorVersion: {
             brick: {
@@ -346,6 +358,12 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
           patch: 'DESC',
         },
       });
+      if (!latestBrickVersion) {
+        throw new BlUnauthorizedException(HnErrorText.BRICK_VERSION_NOT_FOUND, {
+          detailArgs: { name: brickName, version: versionStr },
+        });
+      }
+      return latestBrickVersion;
     }
     const brickVersion = await this.findByNameAndVersion(brickName, versionStr);
 

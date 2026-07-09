@@ -55,7 +55,7 @@ export class HnPartnerService extends BlAbstractService<HnPartner> {
     });
   }
 
-  async findById(partnerId: string): Promise<HnPartner> {
+  async findById(partnerId: string): Promise<HnPartner | null> {
     const partner = await this.partnerRepository.findOne({ where: { id: partnerId } });
     if (partner) {
       const currentUser = HnCurrentUserHelper.getCurrentUser();
@@ -85,11 +85,11 @@ export class HnPartnerService extends BlAbstractService<HnPartner> {
     return partner;
   }
 
-  async findByUserId(userId: string): Promise<HnPartner> {
+  async findByUserId(userId: string): Promise<HnPartner | null> {
     return this.partnerRepository.findOneBy({ user: { id: userId } });
   }
 
-  async getCurrentUserPartner(): Promise<HnPartner> {
+  async getCurrentUserPartner(): Promise<HnPartner | null> {
     const currentUser = HnCurrentUserHelper.getCurrentUser();
     return currentUser ? this.findByUserId(currentUser.id) : null;
   }

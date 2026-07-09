@@ -67,7 +67,7 @@ export class HnLabAuthGuard implements CanActivate {
 
     let currentUser: HnUser | undefined;
     if (!allowWithoutUser) {
-      currentUser = await this.userService.findOne(request.header('user'));
+      currentUser = (await this.userService.findOne(request.header('user'))) ?? undefined;
       if (!currentUser) throw new BlUnauthorizedException();
     }
 

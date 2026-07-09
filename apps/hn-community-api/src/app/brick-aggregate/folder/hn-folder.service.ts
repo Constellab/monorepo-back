@@ -23,9 +23,9 @@ export class HnFolderService {
     entityManager?: EntityManager,
     brickMajorVersion?: HnBrickMajorVersion
   ): Promise<HnFolder> {
-    createFolderRes.path = ClStringHelper.generateUrlPathFromString(createFolderRes.title);
+    createFolderRes.path = ClStringHelper.generateUrlPathFromString(createFolderRes.title ?? '');
 
-    let folder: HnFolder;
+    let folder: HnFolder | null = null;
     if (createFolderRes.folderId) {
       folder = await this.foldersRepository.findOne({
         where: { id: createFolderRes.folderId },
@@ -39,8 +39,16 @@ export class HnFolderService {
     createFolder.completePath = folder
       ? (folder.completePath ? folder.completePath : '') + createFolderRes.path + '/'
       : null;
-    createFolder.brickMajorVersion = brickMajorVersion ? brickMajorVersion : folder.brickMajorVersion;
-    createFolder.order = createFolderRes.order != null ? createFolderRes.order : folder.nextOrder();
+    if (brickMajorVersion) {
+      createFolder.brickMajorVersion = brickMajorVersion;
+    } else {
+      if (folder == null) {
+        throw new BlBadRequestException('Cannot create a folder without a parent or a brick major version');
+      }
+      createFolder.brickMajorVersion = folder.brickMajorVersion;
+    }
+    createFolder.order =
+      createFolderRes.order != null ? createFolderRes.order : folder ? folder.nextOrder() : 0;
 
     return entityManager
       ? await entityManager.save(createFolder)
@@ -64,7 +72,7 @@ export class HnFolderService {
     return this.treeToArray(tree[0]);
   }
 
-  async findFolderByBrickMajorVersion(brickMajorVersion: HnBrickMajorVersion): Promise<HnFolder> {
+  async findFolderByBrickMajorVersion(brickMajorVersion: HnBrickMajorVersion): Promise<HnFolder | null> {
     return this.foldersRepository.findOne({
       where: { brickMajorVersion: { id: brickMajorVersion.id }, completePath: IsNull() },
       relations: { documentations: true },
@@ -97,16 +105,19 @@ export class HnFolderService {
     return docs;
   }
 
-  async findFirstDocNode(brickMajorVersion: HnBrickMajorVersion): Promise<HnNode> {
-    const mainFolder: HnFolder = await this.findFolderByBrickMajorVersion(brickMajorVersion);
+  async findFirstDocNode(brickMajorVersion: HnBrickMajorVersion): Promise<HnNode | null> {
+    const mainFolder = await this.findFolderByBrickMajorVersion(brickMajorVersion);
+    if (mainFolder == null) {
+      throw new BlBadRequestException('Main folder not found');
+    }
     const tree: HnNode = await this.findBrickDocsNodesTree(mainFolder);
     return this.findFirstDocNodeInTree(tree);
   }
 
-  private findFirstDocNodeInTree(tree: HnNode, depth: number = 0): HnNode {
+  private findFirstDocNodeInTree(tree: HnNode, depth: number = 0): HnNode | null {
     if (depth > HnFolderService.MAX_RECURSION_DEPTH) return null;
-    let node: HnNode = null;
-    for (const c of tree.children) {
+    let node: HnNode | null = null;
+    for (const c of tree.children ?? []) {
       if (c.children) {
         node = this.findFirstDocNodeInTree(c, depth + 1);
         if (node) break;
@@ -123,11 +134,11 @@ export class HnFolderService {
 
     const currentParent: HnNode = new HnNode(
       folder.id,
-      folder.title,
-      folder.path,
-      folder.completePath,
+      folder.title ?? '',
+      folder.path ?? '',
+      folder.completePath ?? '',
       folder.order,
-      folder.folder ? folder.folder.id : null,
+      folder.folder ? folder.folder.id : undefined,
       []
     );
 
@@ -136,7 +147,7 @@ export class HnFolderService {
     if (folder.documentations != null) {
       folder.documentations.forEach((doc) => {
         currentChild.push(
-          new HnNode(doc.id, doc.title, doc.path, doc.completePath, doc.order, folder ? folder.id : null)
+          new HnNode(doc.id, doc.title, doc.path, doc.completePath, doc.order, folder ? folder.id : undefined)
         );
       });
     }
@@ -166,7 +177,7 @@ export class HnFolderService {
     return array;
   }
 
-  findById(id: string): Promise<HnFolder> {
+  findById(id: string): Promise<HnFolder | null> {
     return this.foldersRepository.findOne({
       where: { id: id },
       relations: { documentations: true, folders: true },
@@ -174,13 +185,19 @@ export class HnFolderService {
   }
 
   async findFoldersByParentId(id: string): Promise<HnFolder[]> {
-    const parent: HnFolder = await this.findById(id);
+    const parent = await this.findById(id);
+    if (parent == null) {
+      throw new BlBadRequestException('Folder not found');
+    }
 
     return parent.folders;
   }
 
   async findDocsByParentId(id: string): Promise<HnDocumentation[]> {
-    const parent: HnFolder = await this.findById(id);
+    const parent = await this.findById(id);
+    if (parent == null) {
+      throw new BlBadRequestException('Folder not found');
+    }
 
     return parent.documentations;
   }
@@ -189,7 +206,7 @@ export class HnFolderService {
     return this.foldersRepository.save(folder);
   }
 
-  async findWithRelationById(id: string): Promise<HnFolder> {
+  async findWithRelationById(id: string): Promise<HnFolder | null> {
     return this.foldersRepository.findOne({
       where: { id: id },
       relations: { folder: true, folders: true, documentations: true },
@@ -197,13 +214,16 @@ export class HnFolderService {
   }
 
   async remove(id: string): Promise<void> {
-    const folderToDelete: HnFolder = await this.foldersRepository.findOne({
+    const folderToDelete = await this.foldersRepository.findOne({
       where: { id: id },
       relations: {
         documentations: true,
         folders: true,
       },
     });
+    if (folderToDelete == null) {
+      throw new BlBadRequestException('Folder not found');
+    }
     if (folderToDelete.documentations.length <= 0 && folderToDelete.folders.length <= 0) {
       await this.foldersRepository.delete(id);
     } else {
@@ -216,10 +236,13 @@ export class HnFolderService {
     major: string,
     brickName: string
   ): Promise<HnDocumentationSearchDTO[]> {
-    const brickDocs: HnFolder = await this.foldersTreeRepository.findDescendantsTree(
-      await this.findFolderByBrickMajorVersion(brickMajorVersion),
-      { relations: ['documentations', 'folders', 'folder'] }
-    );
+    const mainFolder = await this.findFolderByBrickMajorVersion(brickMajorVersion);
+    if (mainFolder == null) {
+      throw new BlBadRequestException('Main folder not found');
+    }
+    const brickDocs: HnFolder = await this.foldersTreeRepository.findDescendantsTree(mainFolder, {
+      relations: ['documentations', 'folders', 'folder'],
+    });
 
     return this.getDocsByFolder(brickDocs, major, brickName);
   }

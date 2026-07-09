@@ -148,7 +148,7 @@ function typeOrmConfig(configService: HnCoreConfigService): TypeOrmModuleOptions
 function configureLogger(configService: HnCoreConfigService): WinstonModuleOptions {
   const logConfig: BlLoggerConfig = {
     logLevel: configService.getLogLevel(),
-    logFilePath: configService.isLocal() ? null : configService.getLogPath(),
+    logFilePath: configService.isLocal() ? '' : configService.getLogPath(),
   };
   return blConfigureLogger(logConfig);
 }
@@ -159,7 +159,7 @@ function configureJwtModule(configService: HnCoreConfigService, userService: HnU
     jwtFromRequest: (request: Request) => {
       return (
         request.headers.authorization ??
-        BlCookieHelper.getCookieFromHeader(request.headers.cookie, HN_JWT_CONFIG.authorizationCookie)
+        BlCookieHelper.getCookieFromHeader(request.headers.cookie ?? '', HN_JWT_CONFIG.authorizationCookie)
       );
     },
     usersService: userService,

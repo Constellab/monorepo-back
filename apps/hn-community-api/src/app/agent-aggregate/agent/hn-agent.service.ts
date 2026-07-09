@@ -1,5 +1,6 @@
 import {
   BlAbstractPaginatedService,
+  BlNotFoundException,
   BlSearchSortCriteria,
   BlUnauthorizedException,
 } from '@monorepo/back-core-lib';
@@ -36,7 +37,7 @@ export class HnAgentService {
     });
   }
 
-  public async findOne(id: string): Promise<HnAgent> {
+  public async findOne(id: string): Promise<HnAgent | null> {
     return this.agentRepository.findOneBy({ id: id });
   }
 
@@ -90,7 +91,7 @@ export class HnAgentService {
     ).map((agent) => new HnAgentDto(agent));
   }
 
-  public async findAgentByIdWithUserSpaces(id: string, userSpacesId: string[]): Promise<HnAgent> {
+  public async findAgentByIdWithUserSpaces(id: string, userSpacesId: string[]): Promise<HnAgent | null> {
     return this.agentRepository.findOne({
       where: [
         {
@@ -113,9 +114,9 @@ export class HnAgentService {
     publicSelected: boolean,
     myAgentsSelected: boolean,
     personalOnly: boolean,
-    user: HnUser,
-    userSpacesIds: string[],
-    coAuthorAgentsIds: string[]
+    user: HnUser | null,
+    userSpacesIds: string[] | null,
+    coAuthorAgentsIds: string[] | null
   ): FindOptionsWhere<HnAgent>[] {
     let where: FindOptionsWhere<HnAgent>[];
     const currentUser = user ? user : HnCurrentUserHelper.getCurrentUser();
@@ -151,13 +152,13 @@ export class HnAgentService {
           space: {
             id: In(spacesFilter),
           },
-          id: In(coAuthorAgentsIds),
+          id: In(coAuthorAgentsIds ?? []),
         },
         {
           space: {
             id: IsNull(),
           },
-          id: In(coAuthorAgentsIds),
+          id: In(coAuthorAgentsIds ?? []),
         },
       ];
     } else if (publicSelected && !myAgentsSelected) {
@@ -190,7 +191,7 @@ export class HnAgentService {
             space: {
               id: In(spacesFilter),
             },
-            id: In(coAuthorAgentsIds),
+            id: In(coAuthorAgentsIds ?? []),
           },
         ];
       } else {
@@ -201,7 +202,7 @@ export class HnAgentService {
             },
           },
           {
-            id: In(coAuthorAgentsIds),
+            id: In(coAuthorAgentsIds ?? []),
           },
         ];
       }
@@ -242,6 +243,9 @@ export class HnAgentService {
     }
 
     if (personalOnly) {
+      if (currentUser == null) {
+        throw new BlUnauthorizedException('User has no space');
+      }
       where = where.map((w) => {
         w.createdBy = {
           id: currentUser.id,
@@ -258,9 +262,9 @@ export class HnAgentService {
     publicSelected: boolean,
     myAgentsSelected: boolean,
     personalOnly: boolean,
-    user: HnUser = null,
-    userSpacesIds: string[] = null,
-    coAuthorAgentsIds: string[] = null
+    user: HnUser | null = null,
+    userSpacesIds: string[] | null = null,
+    coAuthorAgentsIds: string[] | null = null
   ): Promise<HnAgent[]> {
     const where = this.buildFindWhereWithFilters(
       spacesFilter,
@@ -288,9 +292,9 @@ export class HnAgentService {
     page: number,
     size: number,
     sortsCriteria: BlSearchSortCriteria[] = [{ key: 'createdAt', direction: 'DESC' }],
-    user: HnUser = null,
-    userSpacesIds: string[] = null,
-    coAuthorAgentsIds: string[] = null
+    user: HnUser | null = null,
+    userSpacesIds: string[] | null = null,
+    coAuthorAgentsIds: string[] | null = null
   ): Promise<ClPage<HnAgentDto>> {
     const where = this.buildFindWhereWithFilters(
       spacesFilter,
@@ -349,7 +353,7 @@ export class HnAgentService {
         space: {
           id: In(commonSpacesIds),
         },
-        id: In(coAuthorAgentsIds),
+        id: In(coAuthorAgentsIds ?? []),
       });
     }
 
@@ -362,7 +366,7 @@ export class HnAgentService {
 
     whereOpts.push({
       space: IsNull(),
-      id: In(coAuthorAgentsIds),
+      id: In(coAuthorAgentsIds ?? []),
     });
 
     whereOpts.map((w) => {
@@ -384,7 +388,7 @@ export class HnAgentService {
     ).map((agent) => new HnAgentDto(agent));
   }
 
-  public async findPublicAgentById(id: string): Promise<HnAgent> {
+  public async findPublicAgentById(id: string): Promise<HnAgent | null> {
     return this.agentRepository.findOneBy({
       id: id,
       space: IsNull(),
@@ -412,8 +416,8 @@ export class HnAgentService {
     return this.agentRepository.save(agent);
   }
 
-  public async updateSpace(agent: HnAgent, space: HnSpace): Promise<HnAgent> {
-    agent.space = space;
+  public async updateSpace(agent: HnAgent, space: HnSpace | null): Promise<HnAgent> {
+    agent.space = space ?? undefined;
     return this.agentRepository.save(agent);
   }
 
@@ -440,20 +444,29 @@ export class HnAgentService {
     await entityManager.delete(HnAgent, { id: id });
   }
 
-  public async updateLatestStyle(agentId: string, style: HnTypingStyle): Promise<HnAgent> {
+  public async updateLatestStyle(agentId: string, style: HnTypingStyle | undefined): Promise<HnAgent> {
     const agent = await this.agentRepository.findOneBy({ id: agentId });
+    if (agent == null) {
+      throw new BlNotFoundException('Agent not found');
+    }
     agent.latestStyle = style;
     return this.agentRepository.save(agent);
   }
 
   public async updateComments(agentId: string, numberOfComments: number): Promise<void> {
     const agent = await this.findOne(agentId);
+    if (agent == null) {
+      throw new BlNotFoundException('Agent not found');
+    }
     agent.comments = numberOfComments;
     await this.agentRepository.save(agent);
   }
 
   public async updateLikes(agentId: string, numberOfLikes: number): Promise<void> {
     const agent = await this.findOne(agentId);
+    if (agent == null) {
+      throw new BlNotFoundException('Agent not found');
+    }
     agent.likes = numberOfLikes;
     await this.agentRepository.save(agent, { listeners: false });
   }

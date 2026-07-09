@@ -127,34 +127,32 @@ export class HnAgentVersionMigrator {
         agentVersionDtoRes = agentVersionDto;
       }
 
-      if (agentVersionDtoRes.inputSpecs.specs) {
-        for (const spec of Object.keys(agentVersionDtoRes.inputSpecs.specs)) {
-          if ('is_optional' in agentVersionDtoRes.inputSpecs.specs[spec]) {
-            agentVersionDtoRes.inputSpecs.specs[spec]['optional'] =
-              agentVersionDtoRes.inputSpecs.specs[spec]['is_optional'];
-            delete agentVersionDtoRes.inputSpecs.specs[spec]['is_optional'];
+      const inputSpecs = agentVersionDtoRes.inputSpecs?.specs;
+      if (inputSpecs) {
+        for (const spec of Object.keys(inputSpecs)) {
+          if ('is_optional' in inputSpecs[spec]) {
+            inputSpecs[spec]['optional'] = inputSpecs[spec]['is_optional'];
+            delete inputSpecs[spec]['is_optional'];
           }
 
-          if ('is_constant' in agentVersionDtoRes.inputSpecs.specs[spec]) {
-            agentVersionDtoRes.inputSpecs.specs[spec]['constant'] =
-              agentVersionDtoRes.inputSpecs.specs[spec]['is_constant'];
-            delete agentVersionDtoRes.inputSpecs.specs[spec]['is_constant'];
+          if ('is_constant' in inputSpecs[spec]) {
+            inputSpecs[spec]['constant'] = inputSpecs[spec]['is_constant'];
+            delete inputSpecs[spec]['is_constant'];
           }
         }
       }
 
-      if (agentVersionDtoRes.outputSpecs.specs) {
-        for (const spec of Object.keys(agentVersionDtoRes.outputSpecs.specs)) {
-          if ('is_optional' in agentVersionDtoRes.outputSpecs.specs[spec]) {
-            agentVersionDtoRes.outputSpecs.specs[spec]['optional'] =
-              agentVersionDtoRes.outputSpecs.specs[spec]['is_optional'];
-            delete agentVersionDtoRes.outputSpecs.specs[spec]['is_optional'];
+      const outputSpecs = agentVersionDtoRes.outputSpecs?.specs;
+      if (outputSpecs) {
+        for (const spec of Object.keys(outputSpecs)) {
+          if ('is_optional' in outputSpecs[spec]) {
+            outputSpecs[spec]['optional'] = outputSpecs[spec]['is_optional'];
+            delete outputSpecs[spec]['is_optional'];
           }
 
-          if ('is_constant' in agentVersionDtoRes.outputSpecs.specs[spec]) {
-            agentVersionDtoRes.outputSpecs.specs[spec]['constant'] =
-              agentVersionDtoRes.outputSpecs.specs[spec]['is_constant'];
-            delete agentVersionDtoRes.outputSpecs.specs[spec]['is_constant'];
+          if ('is_constant' in outputSpecs[spec]) {
+            outputSpecs[spec]['constant'] = outputSpecs[spec]['is_constant'];
+            delete outputSpecs[spec]['is_constant'];
           }
         }
       }

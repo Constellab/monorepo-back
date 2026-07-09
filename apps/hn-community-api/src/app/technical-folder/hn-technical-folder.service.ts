@@ -1,3 +1,4 @@
+import { BlNotFoundException } from '@monorepo/back-core-lib';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -32,7 +33,7 @@ export class HnTechnicalFolderService {
     brickMajorVersion: HnBrickMajorVersion,
     importFile: HnImportTechnicalDocDTO
   ): Promise<boolean> {
-    const existingFolder: HnTechnicalFolder = await this.findTechnicalFolder(brickMajorVersion.id);
+    const existingFolder: HnTechnicalFolder | null = await this.findTechnicalFolder(brickMajorVersion.id);
 
     if (existingFolder) {
       // Explicitly delete all children before deleting the folder
@@ -73,8 +74,8 @@ export class HnTechnicalFolderService {
     return resourcesOk && tasksOk && protocolsOk && otherClassesOk;
   }
 
-  async findTechnicalDoc(brickMajorVersionId: string): Promise<HnNode> {
-    const technicalFolder: HnTechnicalFolder = await this.findTechnicalFolder(brickMajorVersionId);
+  async findTechnicalDoc(brickMajorVersionId: string): Promise<HnNode | null> {
+    const technicalFolder: HnTechnicalFolder | null = await this.findTechnicalFolder(brickMajorVersionId);
 
     if (technicalFolder) {
       const children: HnNode[] = [];
@@ -145,7 +146,7 @@ export class HnTechnicalFolderService {
         'technical-folder',
         'technical-folder/',
         0,
-        null,
+        undefined,
         children
       );
     }
@@ -177,8 +178,11 @@ export class HnTechnicalFolderService {
   async findCurrentTecDoc(
     brickMajorVersion: HnBrickMajorVersion,
     input: HnTechnicalDocInputDTO
-  ): Promise<HnGeneratedDocEntity> {
-    const techFolder: HnTechnicalFolder = await this.findTechnicalFolder(brickMajorVersion.id);
+  ): Promise<HnGeneratedDocEntity | null> {
+    const techFolder: HnTechnicalFolder | null = await this.findTechnicalFolder(brickMajorVersion.id);
+    if (techFolder == null) {
+      return null;
+    }
     switch (input.techDocType) {
       case 'resource':
         return this.resourceService.findCurrentTecDoc(techFolder, input.techDocUniqueName);
@@ -193,7 +197,7 @@ export class HnTechnicalFolderService {
     }
   }
 
-  async findTechDocByIdAndType(techDocId: string, techDocType: string): Promise<HnGeneratedDocEntity> {
+  async findTechDocByIdAndType(techDocId: string, techDocType: string): Promise<HnGeneratedDocEntity | null> {
     switch (techDocType) {
       case 'resources':
       case 'resource':
@@ -216,11 +220,11 @@ export class HnTechnicalFolderService {
     majorVersion: string,
     brickName: string
   ): Promise<HnDocumentationSearchDTO[]> {
-    const parentNode: HnNode = await this.findTechnicalDoc(brickMajorVersionId);
+    const parentNode: HnNode | null = await this.findTechnicalDoc(brickMajorVersionId);
 
     let res: HnDocumentationSearchDTO[] = [];
 
-    if (parentNode && parentNode.children.length > 0) {
+    if (parentNode && parentNode.children && parentNode.children.length > 0) {
       for (const c of parentNode.children) {
         res = res.concat(this.getTechDocsForSearch(c, majorVersion, brickName));
       }
@@ -230,6 +234,9 @@ export class HnTechnicalFolderService {
   }
 
   private getTechDocsForSearch(folder: HnNode, major: string, brickName: string): HnDocumentationSearchDTO[] {
+    if (!folder.children) {
+      return [];
+    }
     return folder.children.map((doc) => {
       return {
         id: doc.id,
@@ -247,10 +254,13 @@ export class HnTechnicalFolderService {
     completePath: string,
     anchor: string
   ): Promise<HnDocumentationSearchDTO> {
-    const techFolder: HnTechnicalFolder = await this.findTechnicalFolder(brickMajorVersion.id);
+    const techFolder: HnTechnicalFolder | null = await this.findTechnicalFolder(brickMajorVersion.id);
+    if (techFolder == null) {
+      throw new BlNotFoundException('Technical folder not found');
+    }
 
     const linkBroken: string[] = completePath.split('/');
-    let techDoc: HnGeneratedDocEntity;
+    let techDoc: HnGeneratedDocEntity | null = null;
 
     switch (linkBroken[1]) {
       case 'resource':
@@ -267,6 +277,10 @@ export class HnTechnicalFolderService {
         break;
     }
 
+    if (techDoc == null) {
+      throw new BlNotFoundException('Technical documentation not found');
+    }
+
     return {
       id: techDoc.id,
       isTechnical: true,
@@ -279,7 +293,7 @@ export class HnTechnicalFolderService {
   }
 
   async findTechDocsByBrickMajor(brickMajorVersionId: string): Promise<HnGeneratedDocEntity[]> {
-    const techFolder: HnTechnicalFolder = await this.findTechnicalFolder(brickMajorVersionId);
+    const techFolder: HnTechnicalFolder | null = await this.findTechnicalFolder(brickMajorVersionId);
     if (techFolder == null) return [];
 
     const resources: HnResource[] = await this.resourceService.findResources(techFolder.id);
@@ -291,7 +305,7 @@ export class HnTechnicalFolderService {
     return [...resources, ...tasks, ...protocols, ...otherClasses];
   }
 
-  async findTechnicalFolder(brickMajorVersionId: string): Promise<HnTechnicalFolder> {
+  async findTechnicalFolder(brickMajorVersionId: string): Promise<HnTechnicalFolder | null> {
     return await this.technicalFolderRepository.findOne({
       where: {
         brickMajorVersion: {

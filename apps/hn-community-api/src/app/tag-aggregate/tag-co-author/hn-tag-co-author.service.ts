@@ -24,7 +24,7 @@ export class HnTagCoAuthorService {
   }
 
   async removeTagCoAuthor(tagKeyId: string, userId: string): Promise<void> {
-    const tagCoAuthor: HnTagCoAuthor = await this.tagCoAuthorRepository.findOneBy({
+    const tagCoAuthor: HnTagCoAuthor | null = await this.tagCoAuthorRepository.findOneBy({
       tagKey: { id: tagKeyId },
       user: { id: userId },
     });
@@ -33,7 +33,7 @@ export class HnTagCoAuthorService {
     }
   }
 
-  async getTagCoAuthorInviteByToken(token: string): Promise<HnTagCoAuthorInvite> {
+  async getTagCoAuthorInviteByToken(token: string): Promise<HnTagCoAuthorInvite | null> {
     return this.tagCoAuthorInviteService.getTagCoAuthorInviteByToken(token);
   }
 

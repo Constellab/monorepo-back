@@ -7,10 +7,10 @@ import { HnBrick, HnBrickEntity } from '../brick/hn-brick.entity';
 @Entity('brick_user')
 export class HnBrickUser extends BlEntityWithId {
   @ManyToOne(() => HnBrickEntity, { nullable: false })
-  brick: HnBrick;
+  brick!: HnBrick;
 
   @ManyToOne(() => HnUser, { eager: true, onDelete: 'CASCADE', nullable: false })
-  user: HnUser;
+  user!: HnUser;
 
   initBrickUser(brick: HnBrick, user: HnUser): void {
     this.brick = brick;

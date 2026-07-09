@@ -63,19 +63,22 @@ export class HnAgentAggregateService {
 
   public async create(
     createAgentDto: HnCreateAgentDto,
-    parentAgentVersionId: string = null,
-    user: HnUser = null
+    parentAgentVersionId: string | null = null,
+    user: HnUser | null = null
   ): Promise<HnAgentVersion> {
     const currentUser = user ? user : HnCurrentUserHelper.getCurrentUser();
     return await this.dataSource.transaction(async (entityManager) => {
       if (createAgentDto.space != null) {
+        if (currentUser == null) {
+          throw new BlUnauthorizedException('No user in the context');
+        }
         await this.spaceAggregateService.assertCheckSpaceUser(createAgentDto.space.id, currentUser.id);
       }
       const agent: HnAgent = await this.agentService.create(
         createAgentDto,
         entityManager,
-        parentAgentVersionId,
-        user
+        parentAgentVersionId ?? undefined,
+        user ?? undefined
       );
       const newAgentVersion = await this.agentVersionService.createFirstVersion(
         agent,
@@ -127,7 +130,10 @@ export class HnAgentAggregateService {
     newAgentVersionFile: HnAgentVersionFileInput
   ): Promise<HnCreateAgentVersionFromLabResponseDto> {
     const user = HnCurrentUserHelper.getAndCheckCurrentUser();
-    const agent: HnAgent = await this.agentService.findOne(agentId);
+    const agent = await this.agentService.findOne(agentId);
+    if (agent == null) {
+      throw new BlNotFoundException('Agent not found');
+    }
     await this.agentSecurity.assertCanEdit(agent, user);
     const newAgentVersion = await this.createNewDraftVersion(agentId, newAgentVersionFile, true, true);
     return {
@@ -139,20 +145,29 @@ export class HnAgentAggregateService {
 
   public async updateTitle(id: string, title: string): Promise<HnAgent> {
     const agent = await this.agentService.findOne(id);
+    if (agent == null) {
+      throw new BlNotFoundException('Agent not found');
+    }
     await this.agentSecurity.assertCanEdit(agent, HnCurrentUserHelper.getAndCheckCurrentUser());
     return this.agentService.updateTitle(agent, title);
   }
 
   public async updateDescription(id: string, description: TeRichText): Promise<HnAgent> {
     const agent = await this.agentService.findOne(id);
+    if (agent == null) {
+      throw new BlNotFoundException('Agent not found');
+    }
     await this.agentSecurity.assertCanEdit(agent, HnCurrentUserHelper.getAndCheckCurrentUser());
     return this.agentService.updateDescription(agent, description);
   }
 
   public async updateSpace(id: string, spaceId: string): Promise<HnAgent> {
     const agent = await this.agentService.findOne(id);
+    if (agent == null) {
+      throw new BlNotFoundException('Agent not found');
+    }
     await this.agentSecurity.assertCanEdit(agent, HnCurrentUserHelper.getAndCheckCurrentUser());
-    let space: HnSpace = null;
+    let space: HnSpace | null = null;
     if (spaceId) {
       await this.spaceAggregateService.checkIfSpaceExists(spaceId);
       space = await this.spaceAggregateService.findSpaceById(spaceId);
@@ -190,7 +205,7 @@ export class HnAgentAggregateService {
     versionNumber: number
   ): Promise<HnAgentForLabDto> {
     const user = HnCurrentUserHelper.getAndCheckCurrentUser();
-    const agentVersion: HnAgentVersion = await this.agentVersionService.findOne(versionId);
+    const agentVersion: HnAgentVersion | null = await this.agentVersionService.findOne(versionId);
     if (agentVersion == null || agentVersion.agent == null) {
       throw new BlNotFoundException('Agent not found');
     }
@@ -209,8 +224,11 @@ export class HnAgentAggregateService {
     versionNumber: number
   ): Promise<HnAgentForLabDto> {
     const user = HnCurrentUserHelper.getAndCheckCurrentUser();
-    const agentVersion: HnAgentVersion = await this.agentVersionService.findOne(versionId);
-    const agent = await this.agentService.findOne(agentVersion?.agent.id);
+    const agentVersion: HnAgentVersion | null = await this.agentVersionService.findOne(versionId);
+    if (agentVersion == null || agentVersion.agent == null) {
+      throw new BlNotFoundException('Agent not found');
+    }
+    const agent = await this.agentService.findOne(agentVersion.agent.id);
     if (agent == null) {
       throw new BlNotFoundException('Agent not found');
     }
@@ -231,7 +249,7 @@ export class HnAgentAggregateService {
     sortsCriteria: BlSearchSortCriteria[],
     page: number,
     size: number,
-    user: HnUser = null,
+    user: HnUser | null = null,
     personalOnly: boolean = false
   ): Promise<ClPage<HnAgentDto>> {
     const currentUser = user ? user : HnCurrentUserHelper.getCurrentUser();
@@ -240,9 +258,14 @@ export class HnAgentAggregateService {
     for (const spaceId of spacesFilter) {
       if (spaceId === 'public') publicSelected = true;
       else if (spaceId === 'my-agents') myAgentsSelected = true;
-      else await this.spaceAggregateService.assertCheckSpaceUser(spaceId, currentUser?.id);
+      else {
+        if (currentUser == null) {
+          throw new BlUnauthorizedException('No user in the context');
+        }
+        await this.spaceAggregateService.assertCheckSpaceUser(spaceId, currentUser.id);
+      }
     }
-    let userSpacesIds: string[] = null;
+    let userSpacesIds: string[] | null = null;
     let coAuthorAgentsIds: string[] = [];
     if (currentUser) {
       userSpacesIds = (await this.spaceAggregateService.findSpacesOfUser(currentUser?.id)).map(
@@ -330,7 +353,13 @@ export class HnAgentAggregateService {
   public async findAgentById(id: string): Promise<HnAgent> {
     const currentUser = HnCurrentUserHelper.getCurrentUser();
 
-    if (!currentUser) return await this.agentService.findPublicAgentById(id);
+    if (!currentUser) {
+      const publicAgent = await this.agentService.findPublicAgentById(id);
+      if (publicAgent == null) {
+        throw new BlNotFoundException('Agent not found');
+      }
+      return publicAgent;
+    }
 
     const userSpacesId: string[] = (await this.spaceAggregateService.findSpacesOfCurrentUser()).map(
       (space) => space.id
@@ -344,6 +373,9 @@ export class HnAgentAggregateService {
 
   public async deleteAgent(id: string): Promise<void> {
     const agent = await this.agentService.findOne(id);
+    if (agent == null) {
+      throw new BlNotFoundException('Agent not found');
+    }
     const user = HnCurrentUserHelper.getAndCheckCurrentUser();
     this.agentSecurity.assertIsCreator(agent, user);
     await this.dataSource.transaction(async (entityManager) => {
@@ -360,15 +392,22 @@ export class HnAgentAggregateService {
   }
 
   public async updateStyle(id: string, data: HnAgentEditStyleData): Promise<HnAgent> {
-    let agent = await this.agentService.findOne(id);
-    await this.agentSecurity.assertCanEdit(agent, HnCurrentUserHelper.getAndCheckCurrentUser());
+    const foundAgent = await this.agentService.findOne(id);
+    if (foundAgent == null) {
+      throw new BlNotFoundException('Agent not found');
+    }
+    await this.agentSecurity.assertCanEdit(foundAgent, HnCurrentUserHelper.getAndCheckCurrentUser());
     return this.dataSource.transaction(async (entityManager) => {
+      let agent = foundAgent;
       agent = await this.agentService.updateLatestStyleWithEntityManager(agent, data.style, entityManager);
       // if not all versions checked, update the latest version
       if (!data.allVersionsChecked || !agent.latestPublishVersion) {
         const version = !agent.latestPublishVersion
           ? await this.agentVersionService.findLatestByAgent(agent)
           : await this.agentVersionService.findLatestPublishedByAgent(agent);
+        if (version == null) {
+          throw new BlNotFoundException('Agent version not found');
+        }
         version.agent = agent;
         await this.agentVersionService.updateStyle(version, data.style, entityManager);
         return agent;
@@ -388,6 +427,9 @@ export class HnAgentAggregateService {
 
   public async assertCheckAgentUser(agentId: string): Promise<void> {
     const agent = await this.agentService.findOne(agentId);
+    if (agent == null) {
+      throw new BlNotFoundException('Agent not found');
+    }
     const user = HnCurrentUserHelper.getCurrentUser();
     if (user) {
       await this.agentSecurity.assertCanView(agent, user);
@@ -398,11 +440,18 @@ export class HnAgentAggregateService {
 
   //////////////////////////////////////////// Agent Version ////////////////////////////////////////////
   public async findAgentVersionById(id: string): Promise<HnAgentVersion> {
-    return await this.agentVersionService.findOne(id);
+    const agentVersion = await this.agentVersionService.findOne(id);
+    if (agentVersion == null) {
+      throw new BlNotFoundException('Agent version not found');
+    }
+    return agentVersion;
   }
 
   public async assertCheckAgentVersionUser(agentVersionId: string): Promise<void> {
     const agentVersion = await this.agentVersionService.findOne(agentVersionId);
+    if (agentVersion == null) {
+      throw new BlNotFoundException('Agent version not found');
+    }
     const user = HnCurrentUserHelper.getCurrentUser();
     if (user) {
       await this.agentSecurity.assertCanView(agentVersion.agent, user);
@@ -413,7 +462,13 @@ export class HnAgentAggregateService {
 
   private async assertCanEditAgentVersion(agentVersionId: string): Promise<void> {
     const agentVersion = await this.agentVersionService.findOne(agentVersionId);
+    if (agentVersion == null) {
+      throw new BlNotFoundException('Agent version not found');
+    }
     const agent = await this.agentService.findOne(agentVersion.agent.id);
+    if (agent == null) {
+      throw new BlNotFoundException('Agent not found');
+    }
     await this.agentSecurity.assertCanEdit(agent, HnCurrentUserHelper.getAndCheckCurrentUser());
   }
 
@@ -422,11 +477,17 @@ export class HnAgentAggregateService {
     versionNumber: number
   ): Promise<HnAgentVersion> {
     const version = await this.agentVersionService.findByAgentIdAndVersionNumber(agentId, versionNumber);
+    if (version == null) {
+      throw new BlNotFoundException('Agent version not found');
+    }
     if (version.versionState == HnAgentVersionState.PUBLISHED) {
       return version;
     }
 
     const agent = await this.agentService.findOne(agentId);
+    if (agent == null) {
+      throw new BlNotFoundException('Agent not found');
+    }
     await this.agentSecurity.assertCanEdit(agent, HnCurrentUserHelper.getAndCheckCurrentUser());
     return version;
   }
@@ -441,11 +502,17 @@ export class HnAgentAggregateService {
     versionNumber: number
   ): Promise<HnAgentVersionForLabDto> {
     const user: HnUser = HnCurrentUserHelper.getAndCheckCurrentUser();
-    const agent: HnAgent = await this.agentService.findOne(id);
+    const agent = await this.agentService.findOne(id);
+    if (agent == null) {
+      throw new BlNotFoundException('Agent not found');
+    }
     if (agent.space != null) {
       await this.spaceAggregateService.assertCheckSpaceUser(agent.space.id, user.id);
     }
     const agentVersion = await this.agentVersionService.findLatestPublishedByAgent(agent);
+    if (agentVersion == null) {
+      throw new BlNotFoundException('Agent version not found');
+    }
     const agentVersionDto = new HnAgentVersionDto(agentVersion);
     const migrator = new HnAgentVersionMigrator();
     return HnAgentVersionForLabDto.fromAgentVersionDto(
@@ -454,14 +521,21 @@ export class HnAgentAggregateService {
   }
 
   public async findLatestPublishedAgentVersionByAgentId(id: string): Promise<HnAgentVersion> {
-    const agent: HnAgent = await this.agentService.findOne(id);
+    const agent = await this.agentService.findOne(id);
+    if (agent == null) {
+      throw new BlNotFoundException('Agent not found');
+    }
     if (agent.space != null) {
       await this.spaceAggregateService.assertCheckSpaceUser(
         agent.space.id,
-        HnCurrentUserHelper.getCurrentUser().id
+        HnCurrentUserHelper.getAndCheckCurrentUser().id
       );
     }
-    return this.agentVersionService.findLatestPublishedByAgent(agent);
+    const agentVersion = await this.agentVersionService.findLatestPublishedByAgent(agent);
+    if (agentVersion == null) {
+      throw new BlNotFoundException('Agent version not found');
+    }
+    return agentVersion;
   }
 
   public async updateAgentVersionParams(id: string, params: Record<string, any>): Promise<HnAgentVersion> {
@@ -499,15 +573,24 @@ export class HnAgentAggregateService {
     replaceDraft: boolean = false
   ): Promise<HnAgentVersion> {
     const agent = await this.agentService.findOne(agentId);
+    if (agent == null) {
+      throw new BlNotFoundException('Agent not found');
+    }
     if (!fromLab) await this.agentSecurity.assertCanEdit(agent, HnCurrentUserHelper.getAndCheckCurrentUser());
 
     return await this.dataSource.transaction(async (entityManager) => {
       let latestAgentVersion = await this.agentVersionService.findLatestByAgent(agent);
+      if (latestAgentVersion == null) {
+        throw new BlNotFoundException('Agent version not found');
+      }
 
       if (latestAgentVersion.versionState == HnAgentVersionState.DRAFT) {
         if (replaceDraft) {
           await this.agentVersionService.deleteById(entityManager, latestAgentVersion.id);
           latestAgentVersion = await this.agentVersionService.findSecondLastByAgent(agent);
+          if (latestAgentVersion == null) {
+            throw new BlNotFoundException('Agent version not found');
+          }
         } else {
           throw new BlBadRequestException('The agent has already a draft version');
         }
@@ -535,14 +618,19 @@ export class HnAgentAggregateService {
     newAgentVersionFile: HnAgentVersionFileInput,
     fromLab: boolean = false
   ): Promise<HnAgentVersion> {
-    let agent = await this.agentService.findOne(agentId);
-    if (!fromLab) await this.agentSecurity.assertCanEdit(agent, HnCurrentUserHelper.getAndCheckCurrentUser());
-    const latestAgentVersion = await this.agentVersionService.findLatestByAgent(agent);
+    const foundAgent = await this.agentService.findOne(agentId);
+    if (foundAgent == null) {
+      throw new BlNotFoundException('Agent not found');
+    }
+    if (!fromLab)
+      await this.agentSecurity.assertCanEdit(foundAgent, HnCurrentUserHelper.getAndCheckCurrentUser());
+    const latestAgentVersion = await this.agentVersionService.findLatestByAgent(foundAgent);
 
     if (latestAgentVersion?.versionState != HnAgentVersionState.DRAFT)
       throw new BlBadRequestException('The latest agent version could not be replaced');
 
     return await this.dataSource.transaction(async (entityManager) => {
+      let agent = foundAgent;
       if (latestAgentVersion.version == 1) {
         agent = await this.agentService.updateLatestStyle(agent.id, newAgentVersionFile.style);
       }
@@ -568,7 +656,10 @@ export class HnAgentAggregateService {
   }
 
   public async getPublishedAgentVersions(agentId: string): Promise<HnAgentVersion[]> {
-    const agent: HnAgent = await this.agentService.findOne(agentId);
+    const agent = await this.agentService.findOne(agentId);
+    if (agent == null) {
+      throw new BlNotFoundException('Agent not found');
+    }
     const user = HnCurrentUserHelper.getCurrentUser();
     if (user && (await this.agentSecurity.isCreatorOrCoAuthor(agent, user))) {
       return this.agentVersionService.findAllByAgentId(agentId);
@@ -592,7 +683,13 @@ export class HnAgentAggregateService {
 
   public async updateVersionStyle(versionId: string, data: HnAgentEditStyleData): Promise<HnAgentVersion> {
     const version = await this.agentVersionService.findOne(versionId);
+    if (version == null) {
+      throw new BlNotFoundException('Agent version not found');
+    }
     const agent = await this.agentService.findOne(version.agent.id);
+    if (agent == null) {
+      throw new BlNotFoundException('Agent not found');
+    }
     await this.agentSecurity.assertCanEdit(agent, HnCurrentUserHelper.getAndCheckCurrentUser());
 
     return this.dataSource.transaction(async (entityManager) => {
@@ -611,6 +708,9 @@ export class HnAgentAggregateService {
   ////////////////////////////////////////// AGENT CO AUTHORS //////////////////////////////////////////
   public async inviteAgentCoAuthor(agentId: string, emailOrId: string): Promise<boolean> {
     const agent = await this.agentService.findOne(agentId);
+    if (agent == null) {
+      throw new BlNotFoundException('Agent not found');
+    }
     this.agentSecurity.assertIsCreator(agent, HnCurrentUserHelper.getAndCheckCurrentUser());
     return this.agentCoAuthorService.inviteAgentCoAuthor(agent, emailOrId);
   }
@@ -621,17 +721,23 @@ export class HnAgentAggregateService {
 
   public async getAgentCoAuthorsPendingInvites(agentId: string): Promise<HnAgentCoAuthorInvite[]> {
     const agent = await this.agentService.findOne(agentId);
+    if (agent == null) {
+      throw new BlNotFoundException('Agent not found');
+    }
     this.agentSecurity.assertIsCreator(agent, HnCurrentUserHelper.getAndCheckCurrentUser());
     return this.agentCoAuthorService.getAgentCoAuthorsPendingInvites(agentId);
   }
 
   public async removeAgentCoAuthor(id: string, agentCoAuthorUserId: string): Promise<void> {
     const agent = await this.agentService.findOne(id);
+    if (agent == null) {
+      throw new BlNotFoundException('Agent not found');
+    }
     this.agentSecurity.assertIsCreator(agent, HnCurrentUserHelper.getAndCheckCurrentUser());
     return this.agentCoAuthorService.removeAgentCoAuthor(id, agentCoAuthorUserId);
   }
 
-  public async isInviteValid(token: string): Promise<HnAgentCoAuthorInvite> {
+  public async isInviteValid(token: string): Promise<HnAgentCoAuthorInvite | null> {
     const agentCoAuthorInvite: HnAgentCoAuthorInvite =
       await this.agentCoAuthorService.getAgentCoAuthorInviteByToken(token);
     return agentCoAuthorInvite &&
@@ -641,22 +747,25 @@ export class HnAgentAggregateService {
       : null;
   }
 
-  public async acceptInvite(token: string): Promise<HnAgent> {
-    const agentCoAuthorInvite: HnAgentCoAuthorInvite = await this.isInviteValid(token);
+  public async acceptInvite(token: string): Promise<HnAgent | null> {
+    const agentCoAuthorInvite = await this.isInviteValid(token);
     if (!agentCoAuthorInvite) throw new BlNotFoundException('Invalid invite');
     const agent = await this.agentService.findOne(agentCoAuthorInvite.agent.id);
+    if (agent == null) {
+      throw new BlNotFoundException('Agent not found');
+    }
     if (
       agent.space &&
       !(await this.spaceAggregateService.checkSpaceUser(
         agent.space.id,
-        HnCurrentUserHelper.getCurrentUser().id
+        HnCurrentUserHelper.getAndCheckCurrentUser().id
       ))
     ) {
       throw new BlUnauthorizedException('User is not in the space of the agent');
     }
     const agentCoAuthor: HnAgentCoAuthor = new HnAgentCoAuthor();
     agentCoAuthor.agent = agent;
-    agentCoAuthor.user = HnCurrentUserHelper.getCurrentUser();
+    agentCoAuthor.user = HnCurrentUserHelper.getAndCheckCurrentUser();
     const acceptAgentInvite: boolean = await this.agentCoAuthorService.acceptInvite(
       agentCoAuthor,
       agentCoAuthorInvite
@@ -670,7 +779,13 @@ export class HnAgentAggregateService {
 
   public async deleteAgentVersion(id: string): Promise<void> {
     const agentVersion = await this.agentVersionService.findOne(id);
+    if (agentVersion == null) {
+      throw new BlNotFoundException('Agent version not found');
+    }
     const agent = await this.agentService.findOne(agentVersion.agent.id);
+    if (agent == null) {
+      throw new BlNotFoundException('Agent not found');
+    }
     await this.agentSecurity.assertCanEdit(agent, HnCurrentUserHelper.getAndCheckCurrentUser());
 
     //Check number of agentVersion
@@ -684,6 +799,9 @@ export class HnAgentAggregateService {
       await this.agentVersionService.deleteById(entityManager, id);
       if (agent.latestPublishVersion == agentVersion.version) {
         const latestVersion = await this.agentVersionService.findSecondLastByAgent(agent);
+        if (latestVersion == null) {
+          throw new BlNotFoundException('Agent version not found');
+        }
         await this.agentService.updateAgentLatestPublishVersion(agent, latestVersion, entityManager);
       }
     });
@@ -692,18 +810,27 @@ export class HnAgentAggregateService {
   /////////////////////////////////////// FILES  ////////////////////////////////////
   public async saveFile(file: BlFile, agentId: string): Promise<HnUploadFileResponseDto> {
     const agent = await this.agentService.findOne(agentId);
+    if (agent == null) {
+      throw new BlNotFoundException('Agent not found');
+    }
     await this.agentSecurity.assertCanEdit(agent, HnCurrentUserHelper.getAndCheckCurrentUser());
     return await this.fileAgentService.saveFile(agent, file);
   }
 
   public async saveImage(file: BlFile, agentId: string): Promise<TeBlockFigureUploadedResponse> {
     const agent = await this.agentService.findOne(agentId);
+    if (agent == null) {
+      throw new BlNotFoundException('Agent not found');
+    }
     await this.agentSecurity.assertCanEdit(agent, HnCurrentUserHelper.getAndCheckCurrentUser());
     return await this.fileAgentService.saveImage(agent, file);
   }
 
   public async saveView(file: BlFile, agentId: string): Promise<string> {
     const agent = await this.agentService.findOne(agentId);
+    if (agent == null) {
+      throw new BlNotFoundException('Agent not found');
+    }
     await this.agentSecurity.assertCanEdit(agent, HnCurrentUserHelper.getAndCheckCurrentUser());
     return await this.fileAgentService.saveResourceView(agent, file);
   }

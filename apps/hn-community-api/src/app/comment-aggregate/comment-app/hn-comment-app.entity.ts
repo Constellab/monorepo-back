@@ -11,5 +11,5 @@ import { HnCommentEntity } from '../comment-core/hn-comment.entity';
 export class HnCommentApp extends HnCommentEntity<HnCommunityApp> {
   @Type(() => HnCommunityAppEntity)
   @ManyToOne(() => HnCommunityAppEntity, { onDelete: 'CASCADE', nullable: false })
-  entity: HnCommunityApp;
+  entity!: HnCommunityApp;
 }
