@@ -3,7 +3,9 @@
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
     "types": ["jest", "node"],
-    "isolatedModules": true
+    "isolatedModules": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true
   },
   "include": ["**/*.spec.ts", "**/*.d.ts", "jest.config.ts"]
 }
