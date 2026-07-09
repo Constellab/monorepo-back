@@ -1,5 +1,3 @@
-import { TeBlockWithMetadata } from './te-metadata-block-config.class';
-
 export enum TeBlockType {
   PARAGRAPH = 'paragraph',
   FIGURE = 'figure',
@@ -70,6 +68,19 @@ export enum TeBlockHeaderLevel {
   HEADER_1 = 2,
   HEADER_2 = 3,
   HEADER_3 = 4,
+}
+
+/**
+ * Optional metadata carried by a block.
+ * The concrete config/permission types live in the back-only `TeMetadataBlockConfig`
+ * (outside this shared `lib/` folder). Here we only keep the structural shape so the
+ * shared blocks stay self-contained.
+ */
+export interface TeBlockWithMetadata {
+  metadata?: {
+    appRoute?: string;
+    permission?: string;
+  };
 }
 
 export interface TeBlockHeaderData extends TeBlockWithMetadata {

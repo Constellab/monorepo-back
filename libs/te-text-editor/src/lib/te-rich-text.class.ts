@@ -9,7 +9,6 @@ import {
   TeBlockType,
   TeBlockViewData,
 } from './te-block.class';
-import { TeMarkdown } from './te-markdown.class';
 import { TeRichTextMigrator } from './te-rich-text-migrator.class';
 
 /**
@@ -234,38 +233,5 @@ export class TeRichText {
       time: Date.now(),
       blocks: this.blocks,
     };
-  }
-
-  ///////////////////////////////////// MARKDOWN ///////////////////////////////////////////////
-  public toMarkdown(imageUrlPrefix: string = '', textEditorUrlPage: string | null = null): string {
-    let result = '';
-    for (const block of this.blocks) {
-      switch (block.type) {
-        case TeBlockType.PARAGRAPH:
-          result += TeMarkdown.getParagraphBlockMarkdown(block.data.text) + '\n\n';
-          break;
-        case TeBlockType.HEADER:
-          result += TeMarkdown.getHeaderBlockMarkdown(block.data, textEditorUrlPage) + '\n\n';
-          break;
-        case TeBlockType.LIST:
-          result += TeMarkdown.getListBlockDataMarkdown(block.data) + '\n\n';
-          break;
-        case TeBlockType.FIGURE:
-          result += TeMarkdown.getImageBlockMarkdown(block.data, imageUrlPrefix) + '\n\n';
-          break;
-        case TeBlockType.CODE:
-          result += TeMarkdown.getCodeBlockMarkdown(block.data) + '\n\n';
-          break;
-        case TeBlockType.HINT:
-          result += TeMarkdown.getHintBlockMarkdown(block.data) + '\n\n';
-          break;
-        case TeBlockType.TABLE:
-          result += TeMarkdown.getTableBlockMarkdown(block.data) + '\n\n';
-          break;
-        default:
-          break;
-      }
-    }
-    return result;
   }
 }

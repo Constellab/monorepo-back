@@ -13,6 +13,7 @@ import {
 import { ClPage, ClStringHelper } from '@monorepo/core-lib';
 import {
   TeBlockFigureUploadedResponse,
+  TeMarkdown,
   TeRichText,
   TeRichTextAggregate,
   TeRichTextBlockModificationWithUser,
@@ -102,9 +103,11 @@ export class HnStoryService extends BlAbstractService<HnStory> {
 
   public getStoryMarkdown(story: HnStory, storyUrl: string): string {
     let storyMarkDown = `# ${story.title}\n\n`;
-    storyMarkDown += story
-      .getContentRichText()
-      .toMarkdown(`${this.coreConfigService.getApiUrl()}/story/${story.id}/image`, storyUrl);
+    storyMarkDown += TeMarkdown.fromRichText(
+      story.getContentRichText(),
+      `${this.coreConfigService.getApiUrl()}/story/${story.id}/image`,
+      storyUrl
+    );
     return storyMarkDown;
   }
 

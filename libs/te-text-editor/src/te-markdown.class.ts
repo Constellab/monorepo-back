@@ -9,9 +9,50 @@ import {
   TeBlockListItem,
   TeBlockListType,
   TeBlockTableData,
-} from './te-block.class';
+  TeBlockType,
+} from './lib/te-block.class';
+import { TeRichText } from './lib/te-rich-text.class';
 
 export class TeMarkdown {
+  // Convert a rich text document to markdown.
+  // Lives here (outside the shared `lib/` folder) because it depends on `node-html-markdown`,
+  // a back-only dependency we don't want to ship to the front repo.
+  public static fromRichText(
+    richText: TeRichText,
+    imageUrlPrefix: string = '',
+    textEditorUrlPage: string | null = null
+  ): string {
+    let result = '';
+    for (const block of richText.getBlocks()) {
+      switch (block.type) {
+        case TeBlockType.PARAGRAPH:
+          result += this.getParagraphBlockMarkdown(block.data.text) + '\n\n';
+          break;
+        case TeBlockType.HEADER:
+          result += this.getHeaderBlockMarkdown(block.data, textEditorUrlPage) + '\n\n';
+          break;
+        case TeBlockType.LIST:
+          result += this.getListBlockDataMarkdown(block.data) + '\n\n';
+          break;
+        case TeBlockType.FIGURE:
+          result += this.getImageBlockMarkdown(block.data, imageUrlPrefix) + '\n\n';
+          break;
+        case TeBlockType.CODE:
+          result += this.getCodeBlockMarkdown(block.data) + '\n\n';
+          break;
+        case TeBlockType.HINT:
+          result += this.getHintBlockMarkdown(block.data) + '\n\n';
+          break;
+        case TeBlockType.TABLE:
+          result += this.getTableBlockMarkdown(block.data) + '\n\n';
+          break;
+        default:
+          break;
+      }
+    }
+    return result;
+  }
+
   // This class is used to convert string with html tags to markdown
   public static getParagraphBlockMarkdown(text: string): string {
     return NodeHtmlMarkdown.translate(text);

@@ -11,6 +11,7 @@ import {
 import { ClPage, ClStringHelper } from '@monorepo/core-lib';
 import {
   TeBlockFigureUploadedResponse,
+  TeMarkdown,
   TeRichText,
   TeRichTextAggregate,
   TeRichTextBlockModificationWithUser,
@@ -280,7 +281,11 @@ export class HnBrickAggregateService {
     return brick;
   }
 
-  async findBrickByName(name: string, userId: string | null = null, strict: boolean = true): Promise<HnBrick> {
+  async findBrickByName(
+    name: string,
+    userId: string | null = null,
+    strict: boolean = true
+  ): Promise<HnBrick> {
     let whereConditions: FindOptionsWhere<HnBrickEntity>[] | FindOptionsWhere<HnBrickEntity> = {};
 
     if (strict) {
@@ -310,7 +315,11 @@ export class HnBrickAggregateService {
    * Lightweight findBrickByName that skips eager relations.
    * Use when only brick columns (id, name, etc.) are needed.
    */
-  async findBrickByNameLight(name: string, userId: string | null = null, strict: boolean = true): Promise<HnBrick> {
+  async findBrickByNameLight(
+    name: string,
+    userId: string | null = null,
+    strict: boolean = true
+  ): Promise<HnBrick> {
     let whereConditions: FindOptionsWhere<HnBrickEntity>[] | FindOptionsWhere<HnBrickEntity> = {};
 
     if (strict) {
@@ -1382,7 +1391,11 @@ export class HnBrickAggregateService {
     );
   }
 
-  async getVersionsList(brickId: string, userId: string | null = null, strict: boolean = true): Promise<string[]> {
+  async getVersionsList(
+    brickId: string,
+    userId: string | null = null,
+    strict: boolean = true
+  ): Promise<string[]> {
     if (strict) {
       const brick = await this.findBrickById(
         brickId,
@@ -1579,9 +1592,11 @@ export class HnBrickAggregateService {
       );
 
       let docContentMarkdown = `# ${doc.title}\n\n`;
-      docContentMarkdown += doc
-        .getRichText()
-        .toMarkdown(`${this.configService.getApiUrl()}/documentation/${doc.id}/image`, docUrl);
+      docContentMarkdown += TeMarkdown.fromRichText(
+        doc.getRichText(),
+        `${this.configService.getApiUrl()}/documentation/${doc.id}/image`,
+        docUrl
+      );
       docsMarkDowns.push({
         name: ClStringHelper.getCleanUrlPath(doc.title),
         content: docContentMarkdown,
@@ -1610,9 +1625,11 @@ export class HnBrickAggregateService {
     );
 
     let docContentMarkdown = `# ${doc.title}\n\n`;
-    docContentMarkdown += doc
-      .getRichText()
-      .toMarkdown(`${this.configService.getApiUrl()}/documentation/${doc.id}/image`, docUrl);
+    docContentMarkdown += TeMarkdown.fromRichText(
+      doc.getRichText(),
+      `${this.configService.getApiUrl()}/documentation/${doc.id}/image`,
+      docUrl
+    );
 
     return HnMarkdownHelper.createMarkdownResponse(
       ClStringHelper.getCleanUrlPath(doc.title) + '.md',

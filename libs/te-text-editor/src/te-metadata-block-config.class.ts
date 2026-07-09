@@ -1,7 +1,3 @@
-export interface TeBlockWithMetadata {
-  metadata?: TeMetadataBlockConfig;
-}
-
 export class TeMetadataBlockConfig {
   appRoute?: string;
   permission?: TeMetadataPermission | string;
