@@ -188,6 +188,18 @@ export class CnGroupsAggregateService {
     return await this.groupsService.getUsersOfGroups(groupIds);
   }
 
+  /**
+   * Get all the users of a group. Uses the same security as getting a team:
+   * the current user must be a member of the space (not a visitor) and the group
+   * must belong to the current space.
+   * @param groupId
+   */
+  public async getUsersOfGroupSecured(groupId: string): Promise<CnUser[]> {
+    await this.getAndCheckCurrentAuthorizationToGetTeam(groupId);
+
+    return await this.groupsService.getUsersOfGroups([groupId]);
+  }
+
   public async getUserSingleGroup(userId: string): Promise<CnGroupSingleUser> {
     return await this.groupsService.getUserSingleGroup(userId);
   }

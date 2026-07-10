@@ -81,6 +81,7 @@ import { CnSupportService } from '../cn-support/cn-support.service';
 import { CnUser } from '../cn-users/cn-user.entity';
 import {
   CnExternalLabTagsDTO,
+  CnGroupUsersDTO,
   CnRichTextCompareRequestDTO,
   CnRichTextUndoRequestDTO,
 } from './cn-external-labs.dto';
@@ -215,6 +216,19 @@ export class CnExternalLabsController {
     return this.constellabDocumentAggregateService.createConstellabDocumentFromLab(folderId, name.name);
   }
 
+  /**
+   * Get the content of a Constellab document as rich text
+   * @param documentId The ID of the Constellab document
+   */
+  @CnLabAllowDev()
+  @Get('constellab-document/:documentId/content')
+  async getConstellabDocumentContent(
+    @Param('documentId', new ParseUUIDPipe()) documentId: string
+  ): Promise<TeRichTextDTO> {
+    const document = await this.constellabDocumentAggregateService.getConstellabDocument(documentId);
+    return document.content;
+  }
+
   //////////////////////////// RESOURCE ////////////////////////////
 
   @Put(['folder/:parentFolderId/resource'])
@@ -326,6 +340,18 @@ export class CnExternalLabsController {
   @Get('groups/all')
   getCurrentLabAllGroups(): Promise<CnGroup[]> {
     return this.groupsAggregateService.getCurrentLabAllGroups();
+  }
+
+  /**
+   * Get all the users of a group.
+   * The current user must be at least a User of the space.
+   * @param groupId The ID of the group
+   */
+  @CnLabAllowDev()
+  @Get('groups/:groupId/users')
+  async getGroupUsers(@Param('groupId', new ParseUUIDPipe()) groupId: string): Promise<CnGroupUsersDTO> {
+    const users = await this.groupsAggregateService.getUsersOfGroupSecured(groupId);
+    return { users };
   }
 
   //////////////////////////// FOLDER //////////////////////////

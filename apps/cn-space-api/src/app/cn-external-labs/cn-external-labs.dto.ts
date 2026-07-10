@@ -1,6 +1,7 @@
 import { TeRichTextBlockModificationsDTO, TeRichTextDTO } from '@monorepo/te-text-editor';
 
 import { CnTag } from '../cn-folders-aggregate/cn-hierarchy-object-tags/cn-hierarchy-object-tag.dto';
+import { CnUser } from '../cn-users/cn-user.entity';
 
 export interface CnRichTextCompareRequestDTO {
   version: number;
@@ -19,4 +20,8 @@ export interface CnRichTextUndoRequestDTO {
 
 export interface CnExternalLabTagsDTO {
   tags: CnTag[];
+}
+
+export interface CnGroupUsersDTO {
+  users: CnUser[];
 }
