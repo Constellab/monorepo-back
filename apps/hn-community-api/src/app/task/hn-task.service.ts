@@ -34,7 +34,7 @@ export class HnTaskService {
 
     for (const t of deduped) {
       const task = new HnTask();
-      task.shortDescription = t.short_description ? t.short_description : undefined;
+      task.shortDescription = t.short_description ? t.short_description : null;
       task.doc = t.doc;
       task.brickName = technicalFolder.brickMajorVersion.brick.name;
       task.technicalFolder = technicalFolder;

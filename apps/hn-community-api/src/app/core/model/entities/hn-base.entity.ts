@@ -13,25 +13,25 @@ export abstract class HnBaseEntity extends BlEntityWithId {
 
   @Type(() => HnUser)
   @ManyToOne(() => HnUser, { eager: true, nullable: true })
-  createdBy?: HnUser;
+  createdBy!: HnUser | null;
 
   @BlLuxonDateTimeColumn({ nullable: true })
   lastModifiedAt!: DateTime;
 
   @Type(() => HnUser)
   @ManyToOne(() => HnUser, { eager: true, nullable: true })
-  lastModifiedBy?: HnUser;
+  lastModifiedBy!: HnUser | null;
 
   @BeforeInsert()
   setCreatedByUser(): void {
-    this.createdBy = HnCurrentUserHelper.getCurrentUser() ?? undefined;
+    this.createdBy = HnCurrentUserHelper.getCurrentUser() ?? null;
     this.createdAt = ClDateHelper.getDate();
   }
 
   @BeforeInsert()
   @BeforeUpdate()
   setLastModifiedByUser(): void {
-    this.lastModifiedBy = HnCurrentUserHelper.getCurrentUser() ?? undefined;
+    this.lastModifiedBy = HnCurrentUserHelper.getCurrentUser() ?? null;
     this.lastModifiedAt = ClDateHelper.getDate();
   }
 }

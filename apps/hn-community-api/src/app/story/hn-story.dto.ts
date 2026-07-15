@@ -26,10 +26,10 @@ export class HnStoryDto extends BlEntityWithIdDTO {
   createdAt: string | null;
   lastModifiedAt: string | null;
   createdBy: HnUserDto;
-  topics?: HnTopic[];
+  topics?: HnTopic[] | null;
   likes: number;
   comments: number;
-  titlePath?: string;
+  titlePath?: string | null;
 
   constructor(story: HnStory) {
     super();

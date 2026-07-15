@@ -19,7 +19,7 @@ export class CnBucketCredentials extends CnBaseEntity {
   name!: string;
 
   @ManyToOne(() => CnCloudProvider, { nullable: true })
-  cloudProvider?: CnCloudProvider;
+  cloudProvider!: CnCloudProvider | null;
 
   @BlTrim()
   @Exclude({ toPlainOnly: true })
@@ -33,14 +33,14 @@ export class CnBucketCredentials extends CnBaseEntity {
 
   // might be associated to a space
   @ManyToOne(() => CnSpaceEntity, { nullable: true })
-  space?: CnSpace;
+  space!: CnSpace | null;
 
-  @Column({ nullable: true, length: 36 })
-  spaceId?: string;
+  @Column({ nullable: true, type: 'varchar', length: 36 })
+  spaceId!: string | null;
 
-  @Column({ nullable: true, length: 50 })
-  s3Username?: string;
+  @Column({ nullable: true, type: 'varchar', length: 50 })
+  s3Username!: string | null;
 
-  @Column({ nullable: true, length: 255 })
-  shortDescription?: string;
+  @Column({ nullable: true, type: 'varchar', length: 255 })
+  shortDescription!: string | null;
 }

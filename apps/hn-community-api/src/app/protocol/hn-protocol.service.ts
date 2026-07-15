@@ -26,7 +26,7 @@ export class HnProtocolService {
 
     for (const p of deduped) {
       const proto = new HnProtocol();
-      proto.shortDescription = p.short_description ? p.short_description : undefined;
+      proto.shortDescription = p.short_description ? p.short_description : null;
       proto.doc = p.doc;
       proto.brickName = technicalFolder.brickMajorVersion.brick.name;
       proto.technicalFolder = technicalFolder;

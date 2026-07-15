@@ -84,10 +84,10 @@ export class HnCommunityAppService {
 
   updateFromDto(app: HnCommunityApp, dto: HnCommunityAppEditDto, space: HnSpace | null = null): HnCommunityApp {
     app.title = dto.title;
-    app.appUrl = dto.appUrl;
-    app.contactMail = dto.contactMail;
-    app.picture = dto.picture;
-    app.space = space ?? undefined;
+    app.appUrl = dto.appUrl ?? null;
+    app.contactMail = dto.contactMail ?? null;
+    app.picture = dto.picture ?? null;
+    app.space = space ?? null;
     return app;
   }
 

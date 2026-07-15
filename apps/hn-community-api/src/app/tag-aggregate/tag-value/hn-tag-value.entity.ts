@@ -12,11 +12,11 @@ export class HnTagValue extends BlEntityWithId {
   @Column()
   deprecated!: boolean;
 
-  @Column({ nullable: true })
-  shortDescription?: string;
+  @Column({ nullable: true, type: 'varchar' })
+  shortDescription!: string | null;
 
   @Column({ nullable: true, type: 'simple-json' })
-  additionalInfos?: Record<string, any>;
+  additionalInfos!: Record<string, any> | null;
 
   @ManyToOne(() => HnTagKey, (tagKey) => tagKey, {
     eager: true,

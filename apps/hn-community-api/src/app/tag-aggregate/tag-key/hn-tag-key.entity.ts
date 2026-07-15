@@ -38,29 +38,29 @@ export class HnTagKey extends BlEntityWithId {
 
   @Type(() => HnUser)
   @ManyToOne(() => HnUser, { eager: true, nullable: true })
-  createdBy?: HnUser;
+  createdBy!: HnUser | null;
 
   @BlLuxonDateTimeColumn({ nullable: true })
   lastModifiedAt!: DateTime;
 
   @Type(() => HnUser)
   @ManyToOne(() => HnUser, { eager: true, nullable: true })
-  lastModifiedBy?: HnUser;
+  lastModifiedBy!: HnUser | null;
 
   @BlLuxonDateTimeColumn({ nullable: true })
-  publishedAt?: DateTime;
+  publishedAt!: DateTime | null;
 
-  @Column({ nullable: true })
-  unit?: string;
+  @Column({ nullable: true, type: 'varchar' })
+  unit!: string | null;
 
   @Column({ type: 'simple-json', nullable: true })
-  description?: TeRichTextDTO;
+  description!: TeRichTextDTO | null;
 
   @Column({ nullable: true, type: 'simple-json' })
-  additionalInfosSpecs?: HnTagAdditionalInfoSpecs;
+  additionalInfosSpecs!: HnTagAdditionalInfoSpecs | null;
 
   @ManyToOne(() => HnSpace, { eager: true, onUpdate: 'CASCADE', onDelete: 'CASCADE', nullable: true })
-  space?: HnSpace;
+  space!: HnSpace | null;
 
   @OneToMany(() => HnTagCoAuthor, (tagCoAuthor) => tagCoAuthor.tagKey, {
     nullable: true,
@@ -80,8 +80,8 @@ export class HnTagKey extends BlEntityWithId {
   @BeforeInsert()
   setCreatedByUser(): void {
     if (this.createdBy == null) {
-      this.createdBy = HnCurrentUserHelper.getCurrentUser() ?? undefined;
-      this.lastModifiedBy = HnCurrentUserHelper.getCurrentUser() ?? undefined;
+      this.createdBy = HnCurrentUserHelper.getCurrentUser() ?? null;
+      this.lastModifiedBy = HnCurrentUserHelper.getCurrentUser() ?? null;
     }
     this.createdAt = ClDateHelper.getDate();
     this.lastModifiedAt = ClDateHelper.getDate();
@@ -89,7 +89,7 @@ export class HnTagKey extends BlEntityWithId {
 
   @BeforeUpdate()
   setLastModifiedByUser(): void {
-    this.lastModifiedBy = HnCurrentUserHelper.getCurrentUser() ?? undefined;
+    this.lastModifiedBy = HnCurrentUserHelper.getCurrentUser() ?? null;
     this.lastModifiedAt = ClDateHelper.getDate();
   }
 }

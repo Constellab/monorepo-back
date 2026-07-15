@@ -97,7 +97,7 @@ export class HnAgentVersionService {
       agent: {
         id: agent.id,
       },
-      version: agent.latestPublishVersion,
+      version: agent.latestPublishVersion ?? undefined,
       versionState: HnAgentVersionState.PUBLISHED,
     });
   }

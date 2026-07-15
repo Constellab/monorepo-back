@@ -50,11 +50,11 @@ export class CnBucket extends CnBaseEntity {
 
   @Type(() => CnCloudProviderRegion)
   @ManyToOne(() => CnCloudProviderRegion, { nullable: true })
-  region?: CnCloudProviderRegion;
+  region!: CnCloudProviderRegion | null;
 
   @Type(() => CnLabEntity)
   @ManyToOne(() => CnLabEntity, { nullable: true })
-  lab?: CnLabEntity;
+  lab!: CnLabEntity | null;
 
   @Type(() => CnBucketCredentials)
   @ManyToOne(() => CnBucketCredentials, { nullable: false })
@@ -164,7 +164,7 @@ export class CnBucket extends CnBaseEntity {
       bucketId: this.id,
       locationName: this.getLocationName(),
       bucketType: this.bucketType,
-      cloudRegion: this.isCloudBucket() ? this.region : undefined,
+      cloudRegion: this.isCloudBucket() ? (this.region ?? undefined) : undefined,
     };
   }
 

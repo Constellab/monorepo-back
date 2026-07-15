@@ -33,7 +33,7 @@ export class CnStoragePrice extends CnBaseEntity {
   startDate!: DateTime;
 
   @BlLuxonDateTimeColumn({ nullable: true })
-  endDate?: DateTime;
+  endDate!: DateTime | null;
 
   get volumePricePerHour(): number {
     return this.volumeStoragePrice / CnStoragePrice.HOURS_IN_MONTH;

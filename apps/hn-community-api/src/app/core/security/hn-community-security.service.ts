@@ -7,11 +7,11 @@ import { HnSpaceAggregateService } from '../../space-aggregate/hn-space-aggregat
 export class HnCommunitySecurity {
   constructor(private spaceAggregateService: HnSpaceAggregateService) {}
 
-  isCreator(entity: { createdBy?: { id: string } }, userId: string): boolean {
+  isCreator(entity: { createdBy?: { id: string } | null }, userId: string): boolean {
     return entity.createdBy?.id === userId;
   }
 
-  assertIsCreator(entity: { createdBy?: { id: string } }, userId: string): void {
+  assertIsCreator(entity: { createdBy?: { id: string } | null }, userId: string): void {
     if (!this.isCreator(entity, userId)) {
       throw new BlUnauthorizedException('You are not the creator of this resource');
     }
@@ -22,7 +22,7 @@ export class HnCommunitySecurity {
   }
 
   isCreatorOrCoAuthor(
-    entity: { createdBy?: { id: string } },
+    entity: { createdBy?: { id: string } | null },
     coAuthors: { user: { id: string } }[],
     userId: string
   ): boolean {
@@ -30,7 +30,7 @@ export class HnCommunitySecurity {
   }
 
   assertIsCreatorOrCoAuthor(
-    entity: { createdBy?: { id: string } },
+    entity: { createdBy?: { id: string } | null },
     coAuthors: { user: { id: string } }[],
     userId: string
   ): void {
@@ -45,7 +45,7 @@ export class HnCommunitySecurity {
     }
   }
 
-  async assertSpaceMembership(entity: { space?: { id: string } }, userId: string): Promise<void> {
+  async assertSpaceMembership(entity: { space?: { id: string } | null }, userId: string): Promise<void> {
     if (entity.space) {
       await this.spaceAggregateService.assertCheckSpaceUser(entity.space.id, userId);
     }

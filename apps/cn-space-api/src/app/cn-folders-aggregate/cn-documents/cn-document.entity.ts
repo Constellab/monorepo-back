@@ -66,7 +66,7 @@ export class CnDocumentEntity extends CnHierarchyRepresentation {
   // In this case images of document has the document as parent
   @BlNotUpdatable()
   @ManyToOne(() => CnDocumentEntity, { nullable: true })
-  parentDocument?: CnDocument;
+  parentDocument!: CnDocument | null;
 
   // Use to differentiate between the different types of bucket
   // to calculate storage
@@ -81,8 +81,8 @@ export class CnDocumentEntity extends CnHierarchyRepresentation {
    * Preview token can be generated for a document to make it available in public route
    */
   @Exclude()
-  @Column({ nullable: true, length: 36 })
-  previewToken?: string;
+  @Column({ nullable: true, type: 'varchar', length: 36 })
+  previewToken!: string | null;
 
   @Exclude()
   @BlLuxonDateTimeColumn({ nullable: true })

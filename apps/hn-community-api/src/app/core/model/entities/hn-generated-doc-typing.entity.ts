@@ -18,7 +18,7 @@ export abstract class HnGeneratedDocEntity extends HnBaseEntity {
   humanName!: string;
 
   @Column({ type: 'text', nullable: true })
-  doc?: string;
+  doc!: string | null;
 
   @Type(() => HnTechnicalFolder)
   @ManyToOne(() => HnTechnicalFolder, { eager: true, nullable: false, onDelete: 'CASCADE' })
@@ -32,38 +32,38 @@ export abstract class HnGeneratedDocEntity extends HnBaseEntity {
 }
 
 export abstract class HnGeneratedDocTypingEntity extends HnGeneratedDocEntity {
-  @Column({ nullable: true })
-  shortDescription?: string;
+  @Column({ nullable: true, type: 'varchar' })
+  shortDescription!: string | null;
 
   @Column()
   typingName!: string;
 
-  @Column({ nullable: true })
-  parentHumanName?: string;
+  @Column({ nullable: true, type: 'varchar' })
+  parentHumanName!: string | null;
 
-  @Column({ nullable: true })
-  parentTypingName?: string;
+  @Column({ nullable: true, type: 'varchar' })
+  parentTypingName!: string | null;
 
-  @Column({ nullable: true })
-  parentMajorVersion?: number;
+  @Column({ nullable: true, type: 'int' })
+  parentMajorVersion!: number | null;
 
-  @Column({ nullable: true })
-  parentVersion?: string;
+  @Column({ nullable: true, type: 'varchar' })
+  parentVersion!: string | null;
 
   @Column()
   hide!: boolean;
 
-  @Column({ nullable: true })
-  deprecatedSince?: string;
+  @Column({ nullable: true, type: 'varchar' })
+  deprecatedSince!: string | null;
 
-  @Column({ nullable: true })
-  deprecatedMessage?: string;
+  @Column({ nullable: true, type: 'varchar' })
+  deprecatedMessage!: string | null;
 
   @Column({ type: 'simple-json', nullable: true })
-  style?: Record<string, any>;
+  style!: Record<string, any> | null;
 
-  @Column({ nullable: true })
-  objectSubType?: string;
+  @Column({ nullable: true, type: 'varchar' })
+  objectSubType!: string | null;
 
   objectType!: string;
 }

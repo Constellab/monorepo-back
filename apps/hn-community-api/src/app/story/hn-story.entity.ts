@@ -39,26 +39,26 @@ export class HnStory extends BlEntityWithId {
   content!: TeRichTextDTO;
 
   @Column({ type: 'simple-json', nullable: true })
-  contentEdition?: TeRichTextDTO;
+  contentEdition!: TeRichTextDTO | null;
 
   @Column({ type: 'longtext', nullable: true })
-  modifications?: string | null;
+  modifications!: string | null;
 
   @Column({ nullable: true, type: 'varchar' })
-  firstParagraph?: string | null;
+  firstParagraph!: string | null;
 
-  @Column({ nullable: true })
-  mainPicture?: string | null;
+  @Column({ nullable: true, type: 'varchar' })
+  mainPicture!: string | null;
 
   @ManyToMany(() => HnTopic, (topic) => topic.stories, { nullable: true })
   @JoinTable()
-  topics?: HnTopic[];
+  topics!: HnTopic[] | null;
 
   @Column({ type: 'enum', enum: HnStoryStatus, default: HnStoryStatus.DRAFT })
   status!: HnStoryStatus;
 
   @BlLuxonDateTimeColumn({ nullable: true })
-  publishedAt?: DateTime | null;
+  publishedAt!: DateTime | null;
 
   @OneToMany(() => HnStoryCoAuthor, (storyAuthor) => storyAuthor.story, { nullable: true })
   storyAuthors!: HnStoryCoAuthor[];
@@ -79,8 +79,8 @@ export class HnStory extends BlEntityWithId {
   @Column({ default: 0 })
   comments!: number;
 
-  @Column({ nullable: true })
-  titlePath?: string;
+  @Column({ nullable: true, type: 'varchar' })
+  titlePath!: string | null;
 
   @BeforeInsert()
   setCreatedDate(): void {

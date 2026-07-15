@@ -49,7 +49,7 @@ export class CnNotification extends BlEntityWithId implements BlNotification {
   @ManyToOne(() => CnSpaceEntity, { eager: true, nullable: true })
   space!: CnSpace;
 
-  @Column({ nullable: true, update: false, length: 36 })
+  @Column({ nullable: true, update: false, type: 'varchar', length: 36 })
   spaceId!: string | null;
 
   @Exclude()

@@ -20,7 +20,7 @@ export enum CnCloudProviderRegionType {
 export class CnCloudProviderRegion extends CnBaseEntity {
   @Type(() => CnCloudProvider)
   @ManyToOne(() => CnCloudProvider, { nullable: true, eager: true })
-  cloudProvider?: CnCloudProvider;
+  cloudProvider!: CnCloudProvider | null;
 
   @ManyToOne(() => CnCity, { nullable: false, eager: true })
   city!: CnCity;
@@ -37,8 +37,8 @@ export class CnCloudProviderRegion extends CnBaseEntity {
   name!: string;
 
   @BlTrim()
-  @Column({ nullable: true, length: 255 })
-  s3Endpoint: string | null = null;
+  @Column({ nullable: true, length: 255, type: 'varchar' })
+  s3Endpoint!: string | null;
 
   supportsServer(): boolean {
     return this.type === CnCloudProviderRegionType.ALL || this.type === CnCloudProviderRegionType.SERVER;

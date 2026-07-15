@@ -417,7 +417,7 @@ export class HnAgentService {
   }
 
   public async updateSpace(agent: HnAgent, space: HnSpace | null): Promise<HnAgent> {
-    agent.space = space ?? undefined;
+    agent.space = space ?? null;
     return this.agentRepository.save(agent);
   }
 
@@ -449,7 +449,7 @@ export class HnAgentService {
     if (agent == null) {
       throw new BlNotFoundException('Agent not found');
     }
-    agent.latestStyle = style;
+    agent.latestStyle = style ?? null;
     return this.agentRepository.save(agent);
   }
 

@@ -13,10 +13,10 @@ export class HnTagKeyDto extends BlEntityWithIdDTO {
   deprecated!: boolean;
   likes!: number;
   comments!: number;
-  publishedAt?: string;
-  unit?: string;
-  description?: TeRichTextDTO;
-  additionalInfosSpecs?: Record<string, any>;
+  publishedAt?: string | null;
+  unit?: string | null;
+  description?: TeRichTextDTO | null;
+  additionalInfosSpecs?: Record<string, any> | null;
   space?: HnSpaceDto;
   tagCoAuthors?: HnTagCoAuthorDto[];
   createdAt?: string;
@@ -63,16 +63,16 @@ export class HnTagKeyForLabDto {
   label: string;
   value_format: HnTagKeyType;
   deprecated: boolean;
-  published_at?: string;
-  unit?: string;
-  description?: TeRichTextDTO;
+  published_at?: string | null;
+  unit?: string | null;
+  description?: TeRichTextDTO | null;
   space?: HnSpaceForLabDto;
   tag_co_authors?: HnUserDto[];
   created_at?: string;
   created_by?: HnUserDto;
   last_modified_at?: string;
   last_modified_by?: HnUserDto;
-  additional_infos_specs?: Record<string, any>;
+  additional_infos_specs?: Record<string, any> | null;
 
   constructor(tagKey: HnTagKey) {
     this.id = tagKey.id;

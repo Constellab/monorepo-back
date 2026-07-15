@@ -32,8 +32,8 @@ export abstract class HnAbstractFileEntity<T extends BlEntityWithId> extends BlE
   @ManyToOne(() => HnUser, { eager: true, nullable: true })
   createdBy: HnUser | null = null;
 
-  @Column({ nullable: true })
-  size?: number;
+  @Column({ nullable: true, type: 'int' })
+  size!: number | null;
 
   abstract entity: T;
 
@@ -41,7 +41,7 @@ export abstract class HnAbstractFileEntity<T extends BlEntityWithId> extends BlE
     this.entity = entity;
     this.fileName = fileName;
     this.name = name;
-    this.size = size;
+    this.size = size ?? null;
     this.type = type;
   }
 

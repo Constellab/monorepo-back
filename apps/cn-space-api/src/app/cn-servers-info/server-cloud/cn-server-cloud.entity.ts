@@ -43,9 +43,9 @@ export class CnServerCloud extends CnBaseEntity {
 
   // number of GPU
   @Column({ nullable: true, type: 'int' })
-  gpuCount?: number;
+  gpuCount!: number | null;
 
   // info about the GPU
-  @Column({ nullable: true, length: 30 })
-  gpuType?: string;
+  @Column({ nullable: true, type: 'varchar', length: 30 })
+  gpuType!: string | null;
 }

@@ -77,8 +77,8 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
 
   // name of the lab used in the cloud provider if the lab is hosted on a cloud
   @BlTrim()
-  @Column({ nullable: true, length: 36 })
-  cloudName?: string;
+  @Column({ nullable: true, type: 'varchar', length: 36 })
+  cloudName!: string | null;
 
   @Column({
     type: 'enum',
@@ -89,10 +89,10 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
 
   @Type(() => CnLabConfig)
   @ManyToOne(() => CnLabConfig, { nullable: true })
-  labConfig?: CnLabConfig;
+  labConfig!: CnLabConfig | null;
 
-  @Column({ nullable: true, length: 36 })
-  labConfigId?: string;
+  @Column({ nullable: true, type: 'varchar', length: 36 })
+  labConfigId!: string | null;
 
   @Type(() => CnLabStatusHistory)
   @OneToOne(() => CnLabStatusHistory, {
@@ -116,11 +116,11 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
 
   // api key shared with the lab manager APImi
   @Exclude()
-  @Column({ nullable: true, length: 255, unique: true })
+  @Column({ nullable: true, type: 'varchar', length: 255, unique: true })
   labManagerApiKey!: string | null;
 
   @BlTrim()
-  @Column({ nullable: true, length: 255, unique: true })
+  @Column({ nullable: true, type: 'varchar', length: 255, unique: true })
   virtualHost!: string | null;
 
   // for on-premise labs only reachable on the client network: private IP the
@@ -128,8 +128,8 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
   // to, since the public DNS points elsewhere. When set, the external API calls
   // override DNS resolution to this IP instead of relying on an /etc/hosts entry.
   @BlTrim()
-  @Column({ nullable: true, length: 255 })
-  labIpOverride?: string;
+  @Column({ nullable: true, type: 'varchar', length: 255 })
+  labIpOverride!: string | null;
 
   // for on-premise labs reachable through a non-standard port (client NAT/reverse
   // proxy): optional port injected into the lab URLs (glab/lab-manager) instead of
@@ -137,13 +137,13 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
   // connection port changes. Combine with labIpOverride to reach e.g.
   // https://lab-manager.<host>:10443 while resolving the name to a private IP.
   @Column({ type: 'int', nullable: true })
-  labPortOverride?: number;
+  labPortOverride!: number | null;
 
   // api key shared with the lab manager API
   @BlTrim()
   @Exclude()
-  @Column({ nullable: true, length: 255 })
-  codelabToken?: string | null;
+  @Column({ nullable: true, type: 'varchar', length: 255 })
+  codelabToken!: string | null;
 
   @BlTrim()
   @Exclude()
@@ -159,7 +159,7 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
   space!: CnSpace;
 
   @Column({ nullable: false, length: 36 })
-  spaceId?: string;
+  spaceId!: string;
 
   @OneToMany(() => CnLabUserEntity, (instanceGroup) => instanceGroup.lab, { cascade: ['insert'] })
   sharedGroups!: CnLabUser[];
@@ -173,21 +173,21 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
 
   // id of the ovh, aws, instance
   @Exclude()
-  @Column({ nullable: true, length: 255 })
-  serverInstanceId?: string | null;
+  @Column({ nullable: true, type: 'varchar', length: 255 })
+  serverInstanceId!: string | null;
 
   // id of the ovh, aws, volume
   @Exclude()
-  @Column({ nullable: true, length: 255 })
-  serverVolumeId?: string | null;
+  @Column({ nullable: true, type: 'varchar', length: 255 })
+  serverVolumeId!: string | null;
 
   /**
    * Only provided for cloud provider that handle ip address
    * independently of the instance (GCP)
    */
   @Exclude()
-  @Column({ nullable: true, length: 255 })
-  serverIpAddressId?: string | null;
+  @Column({ nullable: true, type: 'varchar', length: 255 })
+  serverIpAddressId!: string | null;
 
   @Exclude()
   @Column({ nullable: false, default: false })
@@ -196,7 +196,7 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
   // text about the current or last server task status
   @Exclude()
   @Column({ type: 'text', nullable: true })
-  serverTaskText?: string;
+  serverTaskText!: string | null;
 
   @Exclude()
   @Column({
@@ -209,7 +209,7 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
 
   @Exclude()
   @BlLuxonDateTimeColumn({ nullable: true })
-  serverTaskDatetime?: DateTime;
+  serverTaskDatetime!: DateTime | null;
 
   @Column({
     type: 'enum',

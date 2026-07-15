@@ -18,7 +18,7 @@ export class HnAbstractFileEntityDTO {
 
   createdBy: HnUserDto | null;
 
-  size?: number;
+  size?: number | null;
 
   constructor(fileEntity: HnAbstractFileEntity<any>) {
     this.type = fileEntity.type;

@@ -15,10 +15,10 @@ export class HnAgentVersionDto extends BlEntityWithIdDTO {
   environment!: string;
   code!: string;
   createdAt!: string | null;
-  inputSpecs?: Record<string, any>;
-  outputSpecs?: Record<string, any>;
-  configSpecs?: Record<string, any>;
-  style?: HnTypingStyle;
+  inputSpecs?: Record<string, any> | null;
+  outputSpecs?: Record<string, any> | null;
+  configSpecs?: Record<string, any> | null;
+  style?: HnTypingStyle | null;
 
   constructor(agentVersion: HnAgentVersion) {
     super();

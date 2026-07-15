@@ -6,10 +6,10 @@ import { HnGeneratedDocTypingEntity } from '../core/model/entities/hn-generated-
 @Entity('resource')
 export class HnResource extends HnGeneratedDocTypingEntity {
   @Column({ type: 'simple-json', nullable: true })
-  variables?: Record<string, any>;
+  variables!: Record<string, any> | null;
 
   @Column({ type: 'simple-json', nullable: true })
-  methods?: Record<string, any>;
+  methods!: Record<string, any> | null;
 
   getFolderName(): string {
     return 'resource';

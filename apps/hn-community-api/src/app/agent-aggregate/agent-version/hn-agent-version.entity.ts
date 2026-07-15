@@ -43,7 +43,7 @@ export class HnAgentVersion extends BlEntityWithId {
   type!: HnAgentVersionType;
 
   @Column({ type: 'simple-json', nullable: true })
-  versionInfos?: TeRichTextDTO;
+  versionInfos!: TeRichTextDTO | null;
 
   @Column({ type: 'simple-json', nullable: true })
   params!: Record<string, any>;
@@ -58,16 +58,16 @@ export class HnAgentVersion extends BlEntityWithId {
   createdAt!: DateTime;
 
   @Column({ type: 'simple-json', nullable: true })
-  inputSpecs?: Record<string, any>;
+  inputSpecs!: Record<string, any> | null;
 
   @Column({ type: 'simple-json', nullable: true })
-  outputSpecs?: Record<string, any>;
+  outputSpecs!: Record<string, any> | null;
 
   @Column({ type: 'simple-json', nullable: true })
-  configSpecs?: Record<string, any>;
+  configSpecs!: Record<string, any> | null;
 
   @Column({ type: 'simple-json', nullable: true })
-  style?: HnTypingStyle;
+  style!: HnTypingStyle | null;
 
   initVersion(agent: HnAgent, versionFile: HnAgentVersionFileInput): void {
     this.agent = agent;
@@ -95,7 +95,7 @@ export class HnAgentVersion extends BlEntityWithId {
     this.configSpecs = versionFile.config_specs;
     this.environment = versionFile.environment;
     this.type = versionFile.task_type;
-    this.style = versionFile.style;
+    this.style = versionFile.style ?? null;
   }
 
   @BeforeInsert()

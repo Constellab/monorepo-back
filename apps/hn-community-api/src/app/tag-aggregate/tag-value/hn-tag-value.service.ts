@@ -28,8 +28,8 @@ export class HnTagValueService {
   ): Promise<HnTagValue> {
     const tagValue = new HnTagValue();
     tagValue.value = createTagValueDto.value;
-    tagValue.shortDescription = createTagValueDto.shortDescription;
-    tagValue.additionalInfos = createTagValueDto.additionalInfos;
+    tagValue.shortDescription = createTagValueDto.shortDescription ?? null;
+    tagValue.additionalInfos = createTagValueDto.additionalInfos ?? null;
     tagValue.deprecated = false;
     tagValue.tagKey = tagKey;
     if (entityManager) {
@@ -48,8 +48,8 @@ export class HnTagValueService {
     if (!tagValue || tagValue.tagKey.id !== tagKey.id || tagValue.value !== updateTagValueDto.value) {
       throw new BlNotFoundException('Tag value not found');
     }
-    tagValue.shortDescription = updateTagValueDto.shortDescription;
-    tagValue.additionalInfos = updateTagValueDto.additionalInfos;
+    tagValue.shortDescription = updateTagValueDto.shortDescription ?? null;
+    tagValue.additionalInfos = updateTagValueDto.additionalInfos ?? null;
     return this.tagValueRepository.save(tagValue);
   }
 

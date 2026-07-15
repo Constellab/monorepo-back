@@ -14,8 +14,8 @@ export class HnPartner extends HnBaseEntity {
   @Column()
   name!: string;
 
-  @Column({ nullable: true })
-  logo?: string | null;
+  @Column({ nullable: true, type: 'varchar' })
+  logo!: string | null;
 
   @Column({ type: 'simple-json' })
   info!: TeRichTextDTO;

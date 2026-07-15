@@ -67,7 +67,7 @@ export class HnBrickVersion extends HnBaseEntity {
   @Column({ default: 0 })
   patch!: number;
 
-  @Column({ default: null, nullable: true })
+  @Column({ default: null, nullable: true, type: 'int' })
   subPatch!: number | null;
 
   @Column({ type: 'enum', enum: HnVersionType, nullable: false })
@@ -81,7 +81,7 @@ export class HnBrickVersion extends HnBaseEntity {
   brickMajorVersion!: HnBrickMajorVersion;
 
   @Column({ type: 'simple-json', nullable: true })
-  technicalInfo?: Record<string, any>;
+  technicalInfo!: Record<string, any> | null;
 
   initialize(
     brickMajorVersion: HnBrickMajorVersion,
@@ -92,7 +92,7 @@ export class HnBrickVersion extends HnBaseEntity {
     this.brickMajorVersion = brickMajorVersion;
     this.version = version;
     this.repoType = repoType;
-    this.technicalInfo = technicalInfo;
+    this.technicalInfo = technicalInfo ?? null;
   }
 
   public get version(): BlVersion {

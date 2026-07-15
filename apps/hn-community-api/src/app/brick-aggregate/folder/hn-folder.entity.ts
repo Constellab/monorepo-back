@@ -8,17 +8,17 @@ import { HnDocumentation } from '../documentation/hn-documentation.entity';
 @Entity('folder')
 @Tree('materialized-path')
 export class HnFolder extends HnBaseEntity {
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'varchar' })
   title!: string | null;
 
   @BlNotUpdatable()
   @ManyToOne(() => HnBrickMajorVersion, { eager: true, onDelete: 'CASCADE', nullable: false })
   brickMajorVersion!: HnBrickMajorVersion;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'varchar' })
   path!: string | null;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'varchar' })
   completePath!: string | null;
 
   @Column()

@@ -29,7 +29,7 @@ export class HnTechnicalDocOtherClassService {
       const otherClass = new HnTechnicalDocOtherClass();
       otherClass.uniqueName = oC.name;
       otherClass.humanName = oC.name;
-      otherClass.doc = oC.doc;
+      otherClass.doc = oC.doc ?? null;
       otherClass.brickName = technicalFolder.brickMajorVersion.brick.name;
       otherClass.technicalFolder = technicalFolder;
       otherClass.brickMajor = technicalFolder.brickMajorVersion.major;

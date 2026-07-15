@@ -197,7 +197,7 @@ export class HnPartnerService extends BlAbstractService<HnPartner> {
   async updatePartner(partnerId: string, updatePartnerDto: HnEditPartnerDto): Promise<HnPartner> {
     const partner = await this.findByIdAndCheckRights(partnerId);
     partner.name = updatePartnerDto.name;
-    partner.logo = updatePartnerDto.logo;
+    partner.logo = updatePartnerDto.logo ?? null;
     return this.partnerRepository.save(partner);
   }
 

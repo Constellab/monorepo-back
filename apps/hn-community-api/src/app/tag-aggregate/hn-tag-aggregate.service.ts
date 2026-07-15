@@ -248,7 +248,7 @@ export class HnTagAggregateService {
     spec: HnTagParamSpec
   ): Promise<HnTagKeyAdditionalInfosSpecs> {
     const tagKey = await this.getTagKeyByTechnicalName(technicalName);
-    const additionalInfosSpecs: HnTagKeyAdditionalInfosSpecs | undefined = tagKey.additionalInfosSpecs;
+    const additionalInfosSpecs: HnTagKeyAdditionalInfosSpecs | null = tagKey.additionalInfosSpecs;
     if (!additionalInfosSpecs || !(specName in additionalInfosSpecs)) {
       throw new BlNotFoundException(`Additional info spec ${specName} does not exist`);
     }
@@ -264,7 +264,7 @@ export class HnTagAggregateService {
     spec: HnTagParamSpec
   ): Promise<HnTagKeyAdditionalInfosSpecs> {
     const tagKey = await this.getTagKeyByTechnicalName(technicalName);
-    const additionalInfosSpecs: HnTagKeyAdditionalInfosSpecs | undefined = tagKey.additionalInfosSpecs;
+    const additionalInfosSpecs: HnTagKeyAdditionalInfosSpecs | null = tagKey.additionalInfosSpecs;
     if (!additionalInfosSpecs || !(oldName in additionalInfosSpecs)) {
       throw new BlNotFoundException(`Additional info spec ${oldName} does not exist`);
     }
@@ -282,7 +282,7 @@ export class HnTagAggregateService {
     additionalInfoSpecName: string
   ): Promise<HnTagKeyAdditionalInfosSpecs> {
     const tagKey = await this.getTagKeyByTechnicalName(technicalName);
-    const additionalInfosSpecs: HnTagKeyAdditionalInfosSpecs | undefined = tagKey.additionalInfosSpecs;
+    const additionalInfosSpecs: HnTagKeyAdditionalInfosSpecs | null = tagKey.additionalInfosSpecs;
     if (!additionalInfosSpecs || !(additionalInfoSpecName in additionalInfosSpecs)) {
       throw new BlNotFoundException(`Additional info spec ${additionalInfoSpecName} does not exist`);
     }
@@ -419,10 +419,10 @@ export class HnTagAggregateService {
     tagKey.label = labTagKey.label;
     tagKey.type = labTagKey.value_format;
     tagKey.deprecated = labTagKey.deprecated;
-    tagKey.publishedAt = undefined;
-    tagKey.description = labTagKey.description;
-    tagKey.additionalInfosSpecs = labTagKey.additional_infos_specs;
-    tagKey.space = space ?? undefined;
+    tagKey.publishedAt = null;
+    tagKey.description = labTagKey.description ?? null;
+    tagKey.additionalInfosSpecs = labTagKey.additional_infos_specs ?? null;
+    tagKey.space = space ?? null;
     tagKey.publishedAt = DateTime.now();
 
     return await this.dataSource.transaction(async (entityManager) => {
@@ -433,8 +433,8 @@ export class HnTagAggregateService {
         tagValue.id = tagValueDto.id;
         tagValue.value = tagValueDto.value;
         tagValue.deprecated = tagValueDto.deprecated;
-        tagValue.shortDescription = tagValueDto.short_description;
-        tagValue.additionalInfos = tagValueDto.additional_infos;
+        tagValue.shortDescription = tagValueDto.short_description ?? null;
+        tagValue.additionalInfos = tagValueDto.additional_infos ?? null;
         tagValue.tagKey = savedTagKey;
 
         await this.tagValueService.saveTagValueWithEntityManager(tagValue, entityManager);

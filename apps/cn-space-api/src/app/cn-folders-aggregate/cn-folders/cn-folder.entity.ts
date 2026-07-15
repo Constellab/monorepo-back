@@ -30,28 +30,28 @@ export class CnFolderEntity extends CnHierarchyRepresentation {
   @Column({ nullable: false, length: 100 })
   name!: string;
 
-  @Column({ nullable: true, length: 20 })
-  code?: string;
+  @Column({ nullable: true, type: 'varchar', length: 20 })
+  code!: string | null;
 
   // this column is not selected by default
   @Exclude()
   @Column({ type: 'simple-json', nullable: true, select: false })
-  description?: TeRichTextInput;
+  description!: TeRichTextInput | null;
 
   @BlLuxonDateColumn({ nullable: true })
-  startingDate?: DateTime;
+  startingDate!: DateTime | null;
 
   @BlLuxonDateColumn({ nullable: true })
-  endingDate?: DateTime;
+  endingDate!: DateTime | null;
 
   // the storage is only provided in root folder
   @Exclude()
   @ManyToOne(() => CnBucket, { nullable: true })
-  mainStorage?: CnBucket;
+  mainStorage!: CnBucket | null;
 
   @Exclude()
   @ManyToOne(() => CnBucket, { nullable: true })
-  backupStorage?: CnBucket;
+  backupStorage!: CnBucket | null;
 
   @Column({ nullable: false, default: false })
   chatEnabled!: boolean;

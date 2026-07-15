@@ -13,17 +13,17 @@ export class HnCommunityAppEntity extends HnBaseEntity {
   title!: string;
 
   @Column({ type: 'simple-json', nullable: true })
-  description?: TeRichTextDTO;
+  description!: TeRichTextDTO | null;
 
-  @Column({ nullable: true })
-  picture?: string;
+  @Column({ nullable: true, type: 'varchar' })
+  picture!: string | null;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'varchar' })
   @Index({ unique: true })
-  appUrl?: string;
+  appUrl!: string | null;
 
-  @Column({ nullable: true })
-  contactMail?: string;
+  @Column({ nullable: true, type: 'varchar' })
+  contactMail!: string | null;
 
   @Column({ default: 0 })
   likes!: number;
@@ -35,7 +35,7 @@ export class HnCommunityAppEntity extends HnBaseEntity {
   executions!: number;
 
   @ManyToOne(() => HnSpace, { eager: true, onUpdate: 'CASCADE', onDelete: 'CASCADE', nullable: true })
-  space?: HnSpace;
+  space!: HnSpace | null;
 
   @OneToMany(() => HnFileApp, (appFile) => appFile.entity, { nullable: true })
   appFiles!: HnFileApp[];
@@ -49,11 +49,11 @@ export class HnCommunityAppEntity extends HnBaseEntity {
   })
   communityAppCoAuthors!: HnCommunityAppCoAuthor[];
 
-  @Column({ nullable: true })
-  video?: string;
+  @Column({ nullable: true, type: 'varchar' })
+  video!: string | null;
 
   @Column('simple-array', { nullable: true })
-  figures?: string[];
+  figures!: string[] | null;
 }
 
 export type HnCommunityApp = Omit<HnCommunityAppEntity, 'appFiles' | 'appUsers'>;

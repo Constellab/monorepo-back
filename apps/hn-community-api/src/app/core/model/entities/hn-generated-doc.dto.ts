@@ -18,17 +18,17 @@ export class HnSimpleGeneratedDocDto extends HnBaseDto {
 }
 
 export class HnGeneratedDocDto extends HnSimpleGeneratedDocDto {
-  doc?: string;
+  doc?: string | null;
   technicalFolder?: HnTechnicalFolderDto;
-  style?: Record<string, any>;
+  style?: Record<string, any> | null;
   typingName?: string;
-  parentHumanName?: string;
-  parentTypingName?: string;
-  parentMajorVersion?: number;
-  parentVersion?: string;
-  deprecatedSince?: string;
-  deprecatedMessage?: string;
-  objectSubType?: string;
+  parentHumanName?: string | null;
+  parentTypingName?: string | null;
+  parentMajorVersion?: number | null;
+  parentVersion?: string | null;
+  deprecatedSince?: string | null;
+  deprecatedMessage?: string | null;
+  objectSubType?: string | null;
   objectType?: string;
 
   constructor(generatedDocEntity: HnGeneratedDocEntity) {

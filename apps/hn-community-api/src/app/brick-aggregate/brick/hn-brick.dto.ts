@@ -168,7 +168,7 @@ export class HnBrickVersionInfoDTO {
   brickVersion!: string;
   repoType!: HnRepoType;
   repositoryUrl!: string;
-  technicalInfo?: Record<string, any>;
+  technicalInfo?: Record<string, any> | null;
 }
 
 /**

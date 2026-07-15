@@ -9,7 +9,7 @@ export class HnBrickVersionDto extends HnBaseDto {
   versionType: HnVersionType;
   repoType: string;
   brickMajorVersion: HnBrickMajorVersionDTO;
-  technicalInfo?: Record<string, any>;
+  technicalInfo?: Record<string, any> | null;
 
   constructor(brickVersion: HnBrickVersion) {
     super(brickVersion);

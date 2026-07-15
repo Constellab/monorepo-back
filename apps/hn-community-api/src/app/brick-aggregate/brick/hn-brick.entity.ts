@@ -36,37 +36,37 @@ export class HnBrickEntity extends BlEntityWithId {
   @Column({ type: 'enum', enum: HnBrickVisibility, default: HnBrickVisibility.PUBLIC })
   visibility!: HnBrickVisibility;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'varchar' })
   pipRepo!: string | null;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'varchar' })
   gitRepo!: string | null;
 
-  @Column({ nullable: true })
-  imageLink?: string | null;
+  @Column({ nullable: true, type: 'varchar' })
+  imageLink!: string | null;
 
-  @Column({ nullable: true })
-  credentialUsername?: string | null;
+  @Column({ nullable: true, type: 'varchar' })
+  credentialUsername!: string | null;
 
-  @Column({ nullable: true })
-  credentialPassword?: string | null;
+  @Column({ nullable: true, type: 'varchar' })
+  credentialPassword!: string | null;
 
   @BlLuxonDateTimeColumn({ nullable: true, update: false })
   createdAt!: DateTime;
 
   @Type(() => HnUser)
   @ManyToOne(() => HnUser, { eager: true, nullable: true })
-  createdBy?: HnUser;
+  createdBy!: HnUser | null;
 
   @BlLuxonDateTimeColumn({ nullable: true })
   lastModifiedAt!: DateTime;
 
   @Type(() => HnUser)
   @ManyToOne(() => HnUser, { eager: true, nullable: true })
-  lastModifiedBy?: HnUser;
+  lastModifiedBy!: HnUser | null;
 
   @ManyToOne(() => HnSpace, { eager: true, onUpdate: 'CASCADE', onDelete: 'CASCADE', nullable: true })
-  space?: HnSpace | null;
+  space!: HnSpace | null;
 
   @Column({ default: 0 })
   likes!: number;
@@ -76,14 +76,14 @@ export class HnBrickEntity extends BlEntityWithId {
 
   @BeforeInsert()
   setCreatedByUser(): void {
-    this.createdBy = HnCurrentUserHelper.getCurrentUser() ?? undefined;
+    this.createdBy = HnCurrentUserHelper.getCurrentUser() ?? null;
     this.createdAt = ClDateHelper.getDate();
   }
 
   @BeforeInsert()
   @BeforeUpdate()
   setLastModifiedByUser(): void {
-    this.lastModifiedBy = HnCurrentUserHelper.getCurrentUser() ?? undefined;
+    this.lastModifiedBy = HnCurrentUserHelper.getCurrentUser() ?? null;
     this.lastModifiedAt = ClDateHelper.getDate();
   }
 
@@ -94,9 +94,9 @@ export class HnBrickEntity extends BlEntityWithId {
     this.gitRepo = createdBrick.repoGit;
     this.pipRepo = createdBrick.repoPip;
     this.visibility = createdBrick.visibility;
-    this.credentialUsername = createdBrick.credentialUsername;
-    this.credentialPassword = createdBrick.credentialPassword;
-    this.space = createdBrick.visibility == HnBrickVisibility.PRIVATE ? createdBrick.space : null;
+    this.credentialUsername = createdBrick.credentialUsername ?? null;
+    this.credentialPassword = createdBrick.credentialPassword ?? null;
+    this.space = createdBrick.visibility == HnBrickVisibility.PRIVATE ? (createdBrick.space ?? null) : null;
   }
 
   get repositoryUrl(): string {

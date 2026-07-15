@@ -44,20 +44,20 @@ export class CnLabBackupHistoryEntity extends CnBaseEntity {
   startedAt!: DateTime;
 
   @BlLuxonDateTimeColumn({ nullable: true })
-  endedAt?: DateTime;
+  endedAt!: DateTime | null;
 
-  @Column({ nullable: true, length: 60, unique: true })
-  backupId?: string;
+  @Column({ nullable: true, type: 'varchar', length: 60, unique: true })
+  backupId!: string | null;
 
   @Column({ nullable: false, type: 'enum', enum: CnLabBackupStatus })
   status!: CnLabBackupStatus;
 
   @Exclude()
   @OneToMany(() => CnLabBackupHistoryDetail, (detail) => detail.history, { eager: true })
-  details?: CnLabBackupHistoryDetail[];
+  details!: CnLabBackupHistoryDetail[] | null;
 
-  @Column({ nullable: true })
-  s3Prefix?: string;
+  @Column({ nullable: true, type: 'varchar' })
+  s3Prefix!: string | null;
 
   // expose only the region, not the bucket
   @Type(() => CnCloudProviderRegion)

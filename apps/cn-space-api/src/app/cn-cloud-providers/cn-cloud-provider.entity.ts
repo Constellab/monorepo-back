@@ -14,11 +14,11 @@ export class CnCloudProvider extends CnBaseEntity {
   @Column({ nullable: false, length: 50 })
   name!: CnCloudProviderName;
 
-  @Column({ nullable: true })
-  description?: string;
+  @Column({ nullable: true, type: 'varchar' })
+  description!: string | null;
 
-  @Column({ nullable: true })
-  logo?: string;
+  @Column({ nullable: true, type: 'varchar' })
+  logo!: string | null;
 
   /**
    * return true if the cloud provided support native S3

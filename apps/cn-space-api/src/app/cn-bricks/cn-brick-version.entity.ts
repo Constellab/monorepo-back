@@ -44,7 +44,7 @@ export class CnBrickVersion extends BlEntityWithId {
   @Column({ default: 0 })
   patch!: number;
 
-  @Column({ default: null, nullable: true })
+  @Column({ default: null, nullable: true, type: 'int' })
   subPatch!: number | null;
 
   @Column({ type: 'enum', enum: CnVersionType, nullable: false })
@@ -57,7 +57,7 @@ export class CnBrickVersion extends BlEntityWithId {
   repoType!: CnRepoType;
 
   @Column({ type: 'simple-json', nullable: true })
-  technicalInfo?: Record<string, string>;
+  technicalInfo!: Record<string, string> | null;
 
   @BlVersionTransform()
   @Expose()

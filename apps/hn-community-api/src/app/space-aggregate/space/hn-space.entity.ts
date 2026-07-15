@@ -20,7 +20,7 @@ export class HnSpace extends BlEntityWithId {
 
   @Type(() => HnUser)
   @ManyToOne(() => HnUser, { eager: true, nullable: true, onDelete: 'SET NULL' })
-  createdBy?: HnUser | null;
+  createdBy!: HnUser | null;
 
   @BlLuxonDateTimeColumn({ nullable: true })
   lastModifiedAt!: DateTime;

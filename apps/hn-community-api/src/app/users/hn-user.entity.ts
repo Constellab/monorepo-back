@@ -30,19 +30,19 @@ export class HnUser {
   @Column({ unique: true, nullable: false, update: false })
   email!: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'varchar' })
   photo!: string | null;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'varchar' })
   githubLink!: string | null;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'varchar' })
   linkedinLink!: string | null;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'varchar' })
   xLink!: string | null;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'varchar' })
   interests!: string | null;
 
   @Column({ nullable: false, type: 'enum', enum: BlUserCategory })

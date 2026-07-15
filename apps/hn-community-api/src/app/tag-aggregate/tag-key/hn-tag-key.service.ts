@@ -190,8 +190,8 @@ export class HnTagKeyService {
     tagKey.technicalName = createTagKeyDto.technicalName;
     tagKey.label = createTagKeyDto.label;
     tagKey.type = createTagKeyDto.type;
-    tagKey.unit = createTagKeyDto.unit;
-    tagKey.space = space;
+    tagKey.unit = createTagKeyDto.unit ?? null;
+    tagKey.space = space ?? null;
     tagKey.tagValues = [];
     if (entityManager) {
       return entityManager.save(tagKey);
@@ -215,8 +215,8 @@ export class HnTagKeyService {
     }
     tagKey.label = updateTagKeyDto.label;
     tagKey.type = updateTagKeyDto.type;
-    tagKey.unit = updateTagKeyDto.unit;
-    tagKey.space = space;
+    tagKey.unit = updateTagKeyDto.unit ?? null;
+    tagKey.space = space ?? null;
     return this.tagKeyRepository.save(tagKey);
   }
 

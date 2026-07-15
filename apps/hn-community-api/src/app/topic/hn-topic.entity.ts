@@ -10,8 +10,8 @@ export class HnTopic extends BlEntityWithId {
   name!: string;
 
   @ManyToMany(() => HnStory, (story) => story.topics, { nullable: true })
-  stories?: HnStory[];
+  stories!: HnStory[] | null;
 
-  @Column({ nullable: true })
-  popularityIndex?: number;
+  @Column({ nullable: true, type: 'int' })
+  popularityIndex!: number | null;
 }

@@ -51,7 +51,7 @@ export class CnActivity extends BlEntityWithId {
   @BlLuxonDateTimeColumn({ nullable: false, update: false })
   createdAt!: DateTime;
 
-  @Column({ update: false, nullable: true, length: 36 })
+  @Column({ update: false, nullable: true, type: 'varchar', length: 36 })
   spaceId!: string | null;
 
   @Type(() => CnSpaceEntity)
@@ -59,7 +59,7 @@ export class CnActivity extends BlEntityWithId {
   @BlNotUpdatable()
   space!: Relation<CnSpace> | null;
 
-  @Column({ update: false, nullable: true, length: 36 })
+  @Column({ update: false, nullable: true, type: 'varchar', length: 36 })
   parentEntityId!: string | null;
 
   @Expose({ name: 'title' })

@@ -35,10 +35,10 @@ export class CnNoteEntity extends CnHierarchyRepresentation {
 
   @Type(() => CnUserEntity)
   @ManyToOne(() => CnUserEntity, { eager: true, nullable: true })
-  validatedBy?: CnUser;
+  validatedBy!: CnUser | null;
 
   @BlLuxonDateTimeColumn({ nullable: true })
-  validatedAt?: DateTime;
+  validatedAt!: DateTime | null;
 
   @Type(() => CnUserEntity)
   @ManyToOne(() => CnUserEntity, { eager: true, nullable: false })
@@ -49,7 +49,7 @@ export class CnNoteEntity extends CnHierarchyRepresentation {
 
   @Type(() => CnDocumentEntity)
   @ManyToOne(() => CnDocumentEntity, { nullable: true })
-  document?: CnDocument;
+  document!: CnDocument | null;
 
   getHierarchyObjectInfo(): CnHierarchyObjectInfo {
     return {

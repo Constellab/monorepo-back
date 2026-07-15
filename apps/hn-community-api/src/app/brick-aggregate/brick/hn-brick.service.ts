@@ -167,8 +167,8 @@ export class HnBrickService extends BlAbstractService<HnBrickEntity> {
       }
       brick.space = editedBrick.space;
     }
-    brick.credentialUsername = editedBrick.credentialUsername;
-    brick.credentialPassword = editedBrick.credentialPassword;
+    brick.credentialUsername = editedBrick.credentialUsername ?? null;
+    brick.credentialPassword = editedBrick.credentialPassword ?? null;
 
     return this.bricksRepository.save(brick);
   }

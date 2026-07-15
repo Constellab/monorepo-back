@@ -525,7 +525,7 @@ export class HnCommunityAppAggregateService {
     if (!app) {
       return;
     }
-    const user: HnUser | undefined = app.createdBy;
+    const user: HnUser | null = app.createdBy;
     if (!user) {
       throw new BlNotFoundException('App creator not found');
     }

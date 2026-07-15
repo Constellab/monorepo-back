@@ -45,10 +45,10 @@ export class CnUserEntity extends BlEntityWithId implements BlUser {
   @Column({ nullable: false, type: 'enum', enum: BlUserCategory, default: BlUserCategory.USER })
   category!: BlUserCategory;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'varchar' })
   activity!: string | null;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'varchar' })
   biography!: string | null;
 
   @Exclude()
@@ -82,17 +82,17 @@ export class CnUserEntity extends BlEntityWithId implements BlUser {
   @BlLuxonDateTimeColumn({ nullable: false, update: false })
   createdAt!: DateTime;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'varchar' })
   photo!: string | null;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'varchar' })
   company!: string | null;
 
   @Exclude()
   @Column({ default: false })
   has2FA!: boolean;
 
-  @Column({ nullable: true, length: 50 })
+  @Column({ nullable: true, type: 'varchar', length: 50 })
   phone!: string | null;
 
   @Column({ nullable: false, type: 'enum', enum: CnUserLicense, default: CnUserLicense.FREE })

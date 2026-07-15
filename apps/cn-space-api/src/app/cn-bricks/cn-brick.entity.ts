@@ -17,11 +17,11 @@ export class CnBrick extends BlEntityWithId {
   @Column({ nullable: false, unique: true })
   name!: string;
 
-  @Column({ nullable: true })
-  pipRepo?: string;
+  @Column({ nullable: true, type: 'varchar' })
+  pipRepo!: string | null;
 
-  @Column({ nullable: true })
-  gitRepo?: string;
+  @Column({ nullable: true, type: 'varchar' })
+  gitRepo!: string | null;
 
   @OneToMany(() => CnBrickVersion, (brickVersion: CnBrickVersion) => brickVersion.brick)
   versions!: CnBrickVersion[];

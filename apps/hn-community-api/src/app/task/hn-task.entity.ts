@@ -6,16 +6,16 @@ import { HnGeneratedDocTypingEntity } from '../core/model/entities/hn-generated-
 @Entity('task')
 export class HnTask extends HnGeneratedDocTypingEntity {
   @Column({ type: 'simple-json', nullable: true })
-  inputSpecs?: Record<string, any>;
+  inputSpecs!: Record<string, any> | null;
 
   @Column({ type: 'simple-json', nullable: true })
-  outputSpecs?: Record<string, any>;
+  outputSpecs!: Record<string, any> | null;
 
   @Column({ type: 'simple-json', nullable: true })
-  configSpecs?: Record<string, any>;
+  configSpecs!: Record<string, any> | null;
 
   @Column({ type: 'simple-json', nullable: true })
-  additionalInfo?: Record<string, any>;
+  additionalInfo!: Record<string, any> | null;
 
   getFolderName(): string {
     return 'task';

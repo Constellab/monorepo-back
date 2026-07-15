@@ -27,7 +27,7 @@ export class CnSpaceEntity extends CnBaseEntity {
   @Column({ nullable: false })
   name!: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'varchar' })
   photo!: string | null;
 
   // front domain for this space
@@ -57,7 +57,7 @@ export class CnSpaceEntity extends CnBaseEntity {
   // use by default for folder bucket
   @Type(() => CnBucket)
   @ManyToOne(() => CnBucket, { nullable: true })
-  defaultFolderBackupBucket?: CnBucket | null;
+  defaultFolderBackupBucket!: CnBucket | null;
 
   // don't set the createdBy and lastModifiedBy automatically
   // because this group it can be created on user signup (so no current user)

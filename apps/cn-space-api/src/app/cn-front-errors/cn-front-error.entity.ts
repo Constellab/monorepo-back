@@ -19,10 +19,10 @@ export class CnFrontError extends BlEntityWithId {
   message!: string;
 
   @Column({ type: 'text', nullable: true })
-  stackTrace?: string;
+  stackTrace!: string | null;
 
-  @Column({ nullable: true, length: 200 })
-  route?: string;
+  @Column({ nullable: true, type: 'varchar', length: 200 })
+  route!: string | null;
 
   @Type(() => CnUserEntity)
   @ManyToOne(() => CnUserEntity, { eager: true, nullable: true })

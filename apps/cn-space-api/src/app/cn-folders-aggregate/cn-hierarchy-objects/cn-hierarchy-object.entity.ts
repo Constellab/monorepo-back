@@ -67,14 +67,14 @@ export class CnHierarchyObjectEntity extends BlEntityWithId {
   @TreeParent({ onDelete: 'RESTRICT' })
   parent!: CnHierarchyObject;
 
-  @Column({ nullable: true, length: 36 })
+  @Column({ nullable: true, type: 'varchar', length: 36 })
   parentId!: string | null;
 
   // @Exclude()
   @ManyToOne(() => CnHierarchyObjectEntity, { nullable: true, onDelete: 'RESTRICT', onUpdate: 'RESTRICT' })
   rootParent!: CnHierarchyObject;
 
-  @Column({ nullable: true, length: 36 })
+  @Column({ nullable: true, type: 'varchar', length: 36 })
   rootParentId!: string | null;
 
   @TreeChildren()
@@ -123,7 +123,7 @@ export class CnHierarchyObjectEntity extends BlEntityWithId {
   // to avoid to make a request to load the tags
   // when we need to display the object list
   @Exclude()
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'text' })
   lastTagsStr!: string | null;
 
   @OneToMany(() => CnHierarchyObjectTagEntity, (tag: CnHierarchyObjectTagEntity) => tag.hierarchyObject)

@@ -11,16 +11,16 @@ export class HnCommunityAppDto {
   createdBy!: HnUserDto | undefined;
   lastModifiedBy!: HnUserDto | undefined;
   title!: string;
-  appUrl?: string;
-  contactMail?: string;
+  appUrl?: string | null;
+  contactMail?: string | null;
   description?: TeRichTextDTO;
   likes!: number;
   comments!: number;
   executions!: number;
-  picture?: string;
+  picture?: string | null;
   space?: HnSpaceDto;
-  video?: string;
-  figures?: string[];
+  video?: string | null;
+  figures?: string[] | null;
 
   constructor(app: HnCommunityApp) {
     if (!app) return;

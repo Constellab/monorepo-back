@@ -13,17 +13,17 @@ import { HnAgent } from './hn-agent.entity';
 export class HnAgentDto extends BlEntityWithIdDTO {
   title!: string;
   description!: TeRichTextDTO;
-  latestPublishVersion?: number;
+  latestPublishVersion?: number | null;
   space?: HnSpaceDto;
   createdAt?: string;
   createdBy?: HnUserDto;
   lastModifiedAt?: string;
   lastModifiedBy?: HnUserDto;
-  parentAgentVersionId?: string;
+  parentAgentVersionId?: string | null;
   likes?: number;
   comments?: number;
   agentCoAuthors?: HnAgentCoAuthorDto[];
-  latestStyle?: HnTypingStyle;
+  latestStyle?: HnTypingStyle | null;
 
   constructor(agent: HnAgent) {
     super();
@@ -77,8 +77,8 @@ export class HnAgentForLabDto {
   last_modified_at?: string;
   created_by?: HnUserDto;
   description?: TeRichTextDTO;
-  latest_publish_version?: number;
-  latest_style?: HnTypingStyle;
+  latest_publish_version?: number | null;
+  latest_style?: HnTypingStyle | null;
   agent_co_authors?: HnUserDto[];
   likes?: number;
   comments?: number;
@@ -112,11 +112,11 @@ export class HnAgentVersionForLabDto {
   environment!: string | null;
   params!: string | string[] | Record<string, any>;
   code!: string;
-  input_specs?: Record<string, any>;
-  output_specs?: Record<string, any>;
-  config_specs?: Record<string, any>;
+  input_specs?: Record<string, any> | null;
+  output_specs?: Record<string, any> | null;
+  config_specs?: Record<string, any> | null;
   agent!: HnAgentForLabDto;
-  style?: HnTypingStyle;
+  style?: HnTypingStyle | null;
 
   static fromAgentVersionDto(agentVersion: HnAgentVersionDto): HnAgentVersionForLabDto {
     const dto = new HnAgentVersionForLabDto();
@@ -214,11 +214,11 @@ export class HnAgentVersionForLabDtoOldFormat {
   environment: string | null;
   params: string | string[] | Record<string, any>;
   code: string;
-  input_specs?: Record<string, any>;
-  output_specs?: Record<string, any>;
-  config_specs?: Record<string, any>;
+  input_specs?: Record<string, any> | null;
+  output_specs?: Record<string, any> | null;
+  config_specs?: Record<string, any> | null;
   live_task: HnAgentForLabDto;
-  style?: HnTypingStyle;
+  style?: HnTypingStyle | null;
 
   constructor(agentVersion: HnAgentVersionForLabDto) {
     this.id = agentVersion.id;

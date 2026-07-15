@@ -19,30 +19,30 @@ export class HnAgent extends BlEntityWithId {
   title!: string;
 
   @Column({ type: 'simple-json', nullable: true })
-  description?: TeRichTextDTO;
+  description!: TeRichTextDTO | null;
 
-  @Column({ nullable: true })
-  latestPublishVersion?: number;
+  @Column({ nullable: true, type: 'int' })
+  latestPublishVersion!: number | null;
 
   @ManyToOne(() => HnSpace, { eager: true, onUpdate: 'CASCADE', onDelete: 'CASCADE', nullable: true })
-  space?: HnSpace;
+  space!: HnSpace | null;
 
   @BlLuxonDateTimeColumn({ nullable: true, update: false })
   createdAt!: DateTime;
 
   @Type(() => HnUser)
   @ManyToOne(() => HnUser, { eager: true, nullable: true })
-  createdBy?: HnUser;
+  createdBy!: HnUser | null;
 
   @BlLuxonDateTimeColumn({ nullable: true })
   lastModifiedAt!: DateTime;
 
   @Type(() => HnUser)
   @ManyToOne(() => HnUser, { eager: true, nullable: true })
-  lastModifiedBy?: HnUser;
+  lastModifiedBy!: HnUser | null;
 
-  @Column({ nullable: true })
-  parentAgentVersionId?: string;
+  @Column({ nullable: true, type: 'varchar' })
+  parentAgentVersionId!: string | null;
 
   @Column({ default: 0 })
   likes!: number;
@@ -60,24 +60,24 @@ export class HnAgent extends BlEntityWithId {
   agentFiles!: HnFileAgent[];
 
   @Column({ type: 'simple-json', nullable: true })
-  latestStyle?: HnTypingStyle;
+  latestStyle!: HnTypingStyle | null;
 
   static init(agentDto: HnCreateAgentDto, parentAgentVersionId?: string, user?: HnUser): HnAgent {
     const agent = new HnAgent();
     agent.title = agentDto.title;
-    agent.space = agentDto.space;
-    agent.parentAgentVersionId = parentAgentVersionId;
-    agent.createdBy = user;
-    agent.lastModifiedBy = user;
-    agent.latestStyle = agentDto.versionFile.style;
+    agent.space = agentDto.space ?? null;
+    agent.parentAgentVersionId = parentAgentVersionId ?? null;
+    agent.createdBy = user ?? null;
+    agent.lastModifiedBy = user ?? null;
+    agent.latestStyle = agentDto.versionFile.style ?? null;
     return agent;
   }
 
   @BeforeInsert()
   setCreatedByUser(): void {
     if (this.createdBy == null) {
-      this.createdBy = HnCurrentUserHelper.getCurrentUser() ?? undefined;
-      this.lastModifiedBy = HnCurrentUserHelper.getCurrentUser() ?? undefined;
+      this.createdBy = HnCurrentUserHelper.getCurrentUser() ?? null;
+      this.lastModifiedBy = HnCurrentUserHelper.getCurrentUser() ?? null;
     }
     this.createdAt = ClDateHelper.getDate();
     this.lastModifiedAt = ClDateHelper.getDate();
@@ -85,7 +85,7 @@ export class HnAgent extends BlEntityWithId {
 
   @BeforeUpdate()
   setLastModifiedByUser(): void {
-    this.lastModifiedBy = HnCurrentUserHelper.getCurrentUser() ?? undefined;
+    this.lastModifiedBy = HnCurrentUserHelper.getCurrentUser() ?? null;
     this.lastModifiedAt = ClDateHelper.getDate();
   }
 

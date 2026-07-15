@@ -25,7 +25,7 @@ export class HnDocumentation extends HnBaseEntity {
   title!: string;
 
   @Column({ type: 'simple-json', nullable: true })
-  content?: TeRichTextDTO;
+  content!: TeRichTextDTO | null;
 
   @Column({ type: 'longtext', nullable: true })
   modifications!: string | null;

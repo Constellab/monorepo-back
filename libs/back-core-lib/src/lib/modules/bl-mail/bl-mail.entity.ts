@@ -29,7 +29,7 @@ export class BlMailEntity extends BlEntityWithId {
   lastModifiedAt!: DateTime;
 
   @Column({ type: 'text', nullable: true })
-  error?: string | null;
+  error!: string | null;
 
   @BeforeInsert()
   @BeforeUpdate()

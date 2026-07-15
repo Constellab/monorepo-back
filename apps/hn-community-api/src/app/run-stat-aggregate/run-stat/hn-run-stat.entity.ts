@@ -21,7 +21,7 @@ export class HnRunStat extends BlEntityWithId {
   status!: string;
 
   @Column({ type: 'simple-json', nullable: true })
-  errorInfo?: Record<string, any>;
+  errorInfo!: Record<string, any> | null;
 
   @BlLuxonDateTimeColumn()
   startedAt!: DateTime;
@@ -54,7 +54,7 @@ export class HnRunStat extends BlEntityWithId {
   executedBy!: HnUser;
 
   @ManyToOne(() => HnAgentVersion, { nullable: true, eager: true, onUpdate: 'CASCADE', onDelete: 'CASCADE' })
-  agentVersion?: HnAgentVersion;
+  agentVersion!: HnAgentVersion | null;
 
   init(stat: HnRunStatFromLabDto, user: HnUser, labId: string, agentVersion?: HnAgentVersion): void {
     this.id = stat.id;
@@ -62,7 +62,7 @@ export class HnRunStat extends BlEntityWithId {
     this.lastModifiedAt = DateTime.fromISO(stat.last_modified_at);
     this.processTypingName = stat.process_typing_name;
     this.status = stat.status;
-    this.errorInfo = stat.error_info;
+    this.errorInfo = stat.error_info ?? null;
     this.startedAt = DateTime.fromISO(stat.started_at);
     this.endedAt = DateTime.fromISO(stat.ended_at);
     this.elapsedTime = stat.elapsed_time;
@@ -72,6 +72,6 @@ export class HnRunStat extends BlEntityWithId {
     this.labId = labId;
     this.labEnv = stat.lab_env;
     this.executedBy = user;
-    this.agentVersion = agentVersion;
+    this.agentVersion = agentVersion ?? null;
   }
 }

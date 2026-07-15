@@ -27,7 +27,7 @@ export class HnResourceService {
 
     for (const r of deduped) {
       const resource = new HnResource();
-      resource.shortDescription = r.short_description ? r.short_description : undefined;
+      resource.shortDescription = r.short_description ? r.short_description : null;
       resource.doc = r.doc;
       resource.brickName = technicalFolder.brickMajorVersion.brick.name;
       resource.technicalFolder = technicalFolder;
@@ -38,7 +38,7 @@ export class HnResourceService {
       resource.humanName = r.human_name;
       resource.style = r.style;
       resource.methods = r.methods;
-      resource.variables = r.variables;
+      resource.variables = r.variables ?? null;
 
       //TODO A MODIFIER pour le parent et deprecatedSince
 

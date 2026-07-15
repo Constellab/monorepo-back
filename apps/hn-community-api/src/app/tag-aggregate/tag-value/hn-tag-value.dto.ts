@@ -7,8 +7,8 @@ export class HnTagValueDto extends BlEntityWithIdDTO {
   value!: string;
   deprecated!: boolean;
   tagKey!: HnTagKeyDto;
-  shortDescription?: string;
-  additionalInfos?: Record<string, any>;
+  shortDescription?: string | null;
+  additionalInfos?: Record<string, any> | null;
 
   constructor(tagValue: HnTagValue) {
     if (!tagValue) return;
@@ -33,8 +33,8 @@ export class HnTagValueForLabDto {
   id!: string;
   value!: string;
   deprecated!: boolean;
-  short_description?: string;
-  additional_infos?: Record<string, any>;
+  short_description?: string | null;
+  additional_infos?: Record<string, any> | null;
   tag_key!: HnTagKeyForLabDto;
 
   constructor(tagValue: HnTagValue) {

@@ -68,10 +68,10 @@ export class CnGroupTeam extends CnGroup {
   @Exclude()
   @BlNotUpdatable()
   @ManyToOne(() => CnSpaceEntity, { nullable: true })
-  space?: CnSpace;
+  space!: CnSpace | null;
 
-  @Column({ nullable: true, update: false, length: 36 })
-  spaceId?: string;
+  @Column({ nullable: true, type: 'varchar', update: false, length: 36 })
+  spaceId!: string | null;
 }
 
 @Entity('user_group')
