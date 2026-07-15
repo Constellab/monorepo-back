@@ -85,8 +85,8 @@ export class CnScenariosService extends BlAbstractService<CnScenarioEntity> {
 
     // handle validated
     scenario.isValidated = labScenarioDto.is_validated;
-    scenario.validatedAt = labScenarioDto.validated_at;
-    scenario.validatedBy = labScenarioDto.validated_by;
+    scenario.validatedAt = labScenarioDto.validated_at ?? null;
+    scenario.validatedBy = labScenarioDto.validated_by ?? null;
 
     // handle last_sync
     if (labScenarioDto.last_sync_at == null || labScenarioDto.last_sync_by == null) {

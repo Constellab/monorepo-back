@@ -18,12 +18,12 @@ export class CnSaveFolderDTO {
   name!: string;
 
   @BlTrim()
-  code?: string;
+  code?: string | null;
 
   @ClLuxonDateTransform()
-  startingDate?: DateTime;
+  startingDate?: DateTime | null;
   @ClLuxonDateTransform()
-  endingDate?: DateTime;
+  endingDate?: DateTime | null;
 
   mainStorage?: CnBucketLocationDTO;
 
@@ -41,10 +41,10 @@ export interface CnFolderStorageLocationDTO {
 
 export class CnFolderBucketsDTO {
   @Type(() => CnBucket)
-  mainStorage?: CnBucket;
+  mainStorage?: CnBucket | null;
 
   @Type(() => CnBucket)
-  backupStorage?: CnBucket;
+  backupStorage?: CnBucket | null;
 }
 
 export interface CnGetFolderDescriptionDTO {

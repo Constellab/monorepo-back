@@ -66,7 +66,7 @@ export class CnLabBackupHistoryService extends BlAbstractService<CnLabBackupHist
     history.frequency = historyDto.frequency;
     history.triggerMode = historyDto.triggerMode;
     history.startedAt = historyDto.startUploadAt;
-    history.endedAt = historyDto.endUploadAt;
+    history.endedAt = historyDto.endUploadAt ?? null;
     history.status = historyDto.status;
     history.s3Prefix = historyDto.s3Prefix;
 

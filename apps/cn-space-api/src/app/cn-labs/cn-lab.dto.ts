@@ -66,15 +66,15 @@ export class CnLabWithSpaceDto extends CnLabDto {
  * DTO for the lab only for G admin
  */
 export class CnLabAdminDto extends CnLabWithSpaceDto {
-  cloudName?: string;
+  cloudName?: string | null;
   glabProdApiKey: string;
   glabDevApiKey: string;
   labManagerApiKey: string | null;
   serverInstanceId?: string | null;
   serverVolumeId?: string | null;
   serverIpAddressId?: string | null;
-  labIpOverride?: string;
-  labPortOverride?: number;
+  labIpOverride?: string | null;
+  labPortOverride?: number | null;
   gwsCoreProdDbPassword: string;
   gwsCoreDevDbPassword: string;
   codelabToken?: string | null;
@@ -213,11 +213,11 @@ export class CnLabStatusDTO {
   hasServerInstanceId!: boolean;
   hasServerVolumeId!: boolean;
   dnsConfigured!: boolean;
-  serverTaskText?: string;
+  serverTaskText?: string | null;
   serverTaskStatus!: CnLabServerTaskStatus;
 
   @ClLuxonDateTimeTransform()
-  serverTaskDatetime?: DateTime;
+  serverTaskDatetime?: DateTime | null;
 }
 
 export class CnLabBusyStatusDTO {
@@ -225,26 +225,26 @@ export class CnLabBusyStatusDTO {
   isBusy: boolean;
   labStatus: CnLabStatus;
   mainText?: string;
-  subText?: string;
+  subText?: string | null;
   progress?: {
     percent: number;
     message: string;
   };
 
   @ClLuxonDateTimeTransform()
-  datetime?: DateTime;
+  datetime?: DateTime | null;
 
   constructor(
     lab: CnLab,
     isBusy: boolean,
     detail?: {
       mainText?: string;
-      subText?: string;
+      subText?: string | null;
       progress?: {
         percent: number;
         message: string;
       };
-      datetime?: DateTime;
+      datetime?: DateTime | null;
     }
   ) {
     this.id = lab.id;
@@ -277,8 +277,8 @@ export class CnLabServerInfoDTO {
 
   ram!: number;
 
-  gpuType?: string;
-  gpuCount?: number;
+  gpuType?: string | null;
+  gpuCount?: number | null;
 
   volumeSize!: number;
   volumeType!: CnLabVolumeType;

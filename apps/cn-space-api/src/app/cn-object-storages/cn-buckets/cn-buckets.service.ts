@@ -79,7 +79,7 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
       }
       // force the name of the lab bucket
       bucket.name = CnBucket.LAB_BUCKET_NAME;
-      bucket.region = undefined;
+      bucket.region = null;
 
       const existingBucket = await this.repository.findOne({
         where: {
@@ -109,7 +109,7 @@ export class CnBucketsService extends BlAbstractService<CnBucket> {
           `Cloud provider must be defined for region ${bucket.region.technicalName}`
         );
       }
-      bucket.lab = undefined;
+      bucket.lab = null;
 
       // there can be only one bucket of type by region
       const existingBucket = await this.findByContentTypeAndRegion(

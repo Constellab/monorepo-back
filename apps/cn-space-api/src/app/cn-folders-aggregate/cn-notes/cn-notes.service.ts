@@ -151,8 +151,8 @@ export class CnNotesService extends BlAbstractService<CnNoteEntity> {
 
     // handle validated
     note.isValidated = noteDto.is_validated;
-    note.validatedAt = noteDto.validated_at;
-    note.validatedBy = noteDto.validated_by;
+    note.validatedAt = noteDto.validated_at ?? null;
+    note.validatedBy = noteDto.validated_by ?? null;
 
     // handle last_sync
     if (noteDto.last_sync_at == null || noteDto.last_sync_by == null) {

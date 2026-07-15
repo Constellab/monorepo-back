@@ -106,7 +106,7 @@ export class CnFolderAggregateService {
         // if the main storage is not set, we use the default storage of the space
         const space = await this.spaceAggregateService.getCurrentSpace();
         entity.mainStorage = space.defaultFolderBucket;
-        entity.backupStorage = space.defaultFolderBackupBucket ?? undefined;
+        entity.backupStorage = space.defaultFolderBackupBucket ?? null;
       }
       const dbFolder = await this.foldersService.create(entity, manager);
 
@@ -195,9 +195,9 @@ export class CnFolderAggregateService {
   private createFolderFromDTO(folderDto: CnSaveFolderDTO): CnFolderEntity {
     const folder = new CnFolderEntity();
     folder.name = folderDto.name;
-    folder.code = folderDto.code;
-    folder.startingDate = folderDto.startingDate;
-    folder.endingDate = folderDto.endingDate;
+    folder.code = folderDto.code ?? null;
+    folder.startingDate = folderDto.startingDate ?? null;
+    folder.endingDate = folderDto.endingDate ?? null;
     return folder;
   }
 
@@ -214,9 +214,9 @@ export class CnFolderAggregateService {
     }
 
     dbFolder.name = entity.name;
-    dbFolder.code = entity.code;
-    dbFolder.startingDate = entity.startingDate;
-    dbFolder.endingDate = entity.endingDate;
+    dbFolder.code = entity.code ?? null;
+    dbFolder.startingDate = entity.startingDate ?? null;
+    dbFolder.endingDate = entity.endingDate ?? null;
 
     const newFolder = await this.foldersService.update(dbFolder);
     this.folderEventService.emitFolderEvent({

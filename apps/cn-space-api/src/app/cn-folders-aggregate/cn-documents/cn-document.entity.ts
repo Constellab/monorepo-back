@@ -185,7 +185,7 @@ export class CnDocumentEntity extends CnHierarchyRepresentation {
     document.entityId = entityId;
     document.bucketType = bucketType;
     document.style = document.buildStyle();
-    document.parentDocument = parentDocument;
+    document.parentDocument = parentDocument ?? null;
     document.hierarchyRepresentation = CnHierarchyObjectEntity.newSubHierarchyObject(
       parentFolder,
       document.getHierarchyObjectInfo()

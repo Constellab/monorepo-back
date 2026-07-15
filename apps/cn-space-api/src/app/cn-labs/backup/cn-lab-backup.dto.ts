@@ -88,7 +88,7 @@ export class CnLabBackupStatusDTO {
   status!: 'SUCCESS' | 'DELETED' | 'NONE';
 
   @ClLuxonDateTimeTransform()
-  lastSuccessBackupAt?: DateTime;
+  lastSuccessBackupAt?: DateTime | null;
 
   lastSuccessBackupSize?: number;
 
