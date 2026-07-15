@@ -402,3 +402,14 @@ ALTER TABLE hierarchy_object_token
   ADD CONSTRAINT FK_hierarchy_object_token_hierarchy_object_id
   FOREIGN KEY (hierarchy_object_id) REFERENCES hierarchy_object (id)
   ON DELETE CASCADE ON UPDATE NO ACTION;
+
+############################ 2.15.0 ##########################
+
+-- Widen the materialized-path tree column of `hierarchy_object`.
+-- TypeORM auto-generates `mpath` as varchar(255). Each nesting level adds a
+-- 36-char UUID + '.' (37 chars), so 255 only holds ~6 levels; a deeper object
+-- overflows and its mpath is truncated, which drops the whole subtree from the
+-- hierarchy (findDescendantsTree filters by `mpath LIKE 'ancestor.%'`).
+-- Widen to 2048 (~55 levels). synchronize is disabled in prod so this sticks.
+ALTER TABLE `hierarchy_object`
+  MODIFY `mpath` varchar(2048) NULL DEFAULT '';

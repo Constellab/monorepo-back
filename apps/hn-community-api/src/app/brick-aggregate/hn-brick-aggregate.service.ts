@@ -861,6 +861,7 @@ export class HnBrickAggregateService {
         throw new BlBadRequestException('Folder not found', { detailArgs: { id: nodeId } });
       }
       folder.folder = newParent;
+      folder.folderId = newParent.id;
       folder.order = newOrder;
       folder.completePath = (newParent.completePath ?? '') + folder.path + '/';
       await this.folderService.save(folder);
@@ -881,10 +882,15 @@ export class HnBrickAggregateService {
         if (f == null || f.folder == null || node.parentId == null) {
           throw new BlBadRequestException('Folder not found', { detailArgs: { id: node.id } });
         }
-        if (f.order != node.order || f.folder.id != node.parentId) {
+        if (f.order != node.order || f.folderId != node.parentId) {
           isUpdated = true;
           f.order = node.order;
-          f.folder.id = node.parentId;
+          const newParent = await this.folderService.findById(node.parentId);
+          if (newParent == null) {
+            throw new BlBadRequestException('Folder not found', { detailArgs: { id: node.parentId } });
+          }
+          f.folder = newParent;
+          f.folderId = newParent.id;
         }
         if (isUpdated) {
           await this.folderService.save(f);
@@ -900,7 +906,11 @@ export class HnBrickAggregateService {
         if (d.order != node.order || d.folder.id != node.parentId) {
           isUpdated = true;
           d.order = node.order;
-          d.folder.id = node.parentId;
+          const newParent = await this.folderService.findById(node.parentId);
+          if (newParent == null) {
+            throw new BlBadRequestException('Folder not found', { detailArgs: { id: node.parentId } });
+          }
+          d.folder = newParent;
         }
         if (isUpdated) {
           await this.documentationService.updatePosition(d);

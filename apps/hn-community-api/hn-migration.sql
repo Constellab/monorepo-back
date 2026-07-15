@@ -765,3 +765,14 @@ COMMIT;
 update `user`
 set email = lower(email)
 where email != lower(email);
+
+######################### 1.12.0 #######################
+
+-- Widen the materialized-path tree column of `folder`.
+-- TypeORM auto-generates `mpath` as varchar(255). Each nesting level adds a
+-- 36-char UUID + '.' (37 chars), so 255 only holds ~6 levels; a deeper folder
+-- overflows and its mpath is truncated, which drops the whole subtree from the
+-- hierarchy (findDescendantsTree filters by `mpath LIKE 'ancestor.%'`).
+-- Widen to 2048 (~55 levels). synchronize is disabled in prod so this sticks.
+ALTER TABLE `folder`
+  MODIFY `mpath` varchar(2048) NULL DEFAULT '';

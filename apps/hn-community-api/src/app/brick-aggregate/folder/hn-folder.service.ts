@@ -267,7 +267,7 @@ export class HnFolderService {
       });
     }
 
-    if (folder.folder) {
+    if (folder.folders) {
       for (const fol of folder.folders) {
         this.getDocsByFolder(fol, major, brickName, depth + 1).forEach((d) => {
           documentations.push(d);

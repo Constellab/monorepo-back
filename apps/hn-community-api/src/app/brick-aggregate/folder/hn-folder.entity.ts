@@ -27,6 +27,9 @@ export class HnFolder extends HnBaseEntity {
   @TreeParent({ onDelete: 'CASCADE' })
   folder!: HnFolder | null;
 
+  @Column({ nullable: true, type: 'varchar', length: 36 })
+  folderId!: string | null;
+
   @TreeChildren()
   folders!: HnFolder[];
 
