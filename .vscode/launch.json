@@ -2,13 +2,13 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "command": "npm run cn-space-api:serve",
+      "command": "bun run cn-space-api:serve",
       "name": "Serve space",
       "request": "launch",
       "type": "node-terminal"
     },
     {
-      "command": "npm run hn-community-api:serve",
+      "command": "bun run hn-community-api:serve",
       "name": "Serve community",
       "request": "launch",
       "type": "node-terminal"

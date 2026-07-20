@@ -19,12 +19,33 @@ This is a monorepo containing NestJS backend applications for Gencovery's platfo
 
 ## Development Commands
 
+### Package manager: Bun only
+
+This repository uses **Bun** exclusively. Never use `npm`, `yarn`, `pnpm` or `npx` — the only
+committed lockfile is `bun.lock` (the other lockfiles are git-ignored).
+
+| Task                      | Command            |
+| ------------------------- | ------------------ |
+| Install dependencies      | `bun install`      |
+| Add a dependency          | `bun add <pkg>`    |
+| Add a dev dependency      | `bun add -d <pkg>` |
+| Remove a dependency       | `bun remove <pkg>` |
+| Run a package.json script | `bun run <script>` |
+| Run a local binary        | `bunx <bin>`       |
+
+### Setup
+
+```bash
+# Install dependencies with Bun
+bun install
+```
+
 ### Build Commands
 
 ```bash
 # Build specific application
-nest build cn-space-api
-nest build hn-community-api
+bunx nest build cn-space-api
+bunx nest build hn-community-api
 
 # Build using bun scripts
 bun run cn-space-api:build
@@ -35,12 +56,22 @@ bun run hn-community-api:build
 
 ```bash
 # Serve applications in development
-nest serve cn-space-api
-nest serve hn-community-api
+bunx nest start cn-space-api --watch
+bunx nest start hn-community-api --watch
 
 # Alternative NestJS watch mode
-bun run cn-space-api:serve-nest
-bun run hn-community-api:serve-nest
+bun run cn-space-api:serve
+bun run hn-community-api:serve
+```
+
+### Tests
+
+```bash
+# Unit tests (Jest)
+bunx jest
+
+# E2E tests for the space api
+bun run cn-space-api:test-e2e
 ```
 
 ## Architecture Guidelines
@@ -87,7 +118,7 @@ Both applications follow a similar modular structure:
 
 ## Development Workflow
 
-1. **Starting Development**: Use `nest serve <app-name>` or bun scripts for watch mode
+1. **Starting Development**: Use `bunx nest start <app-name> --watch` or Bun scripts for watch mode
 2. **Adding Features**: Follow the existing module structure and naming conventions
 3. **Database Changes**: Use TypeORM migrations (synchronize disabled in production)
 4. **Environment Setup**: Configure `.env` files in `environments/` directories
