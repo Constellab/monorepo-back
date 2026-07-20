@@ -5,6 +5,7 @@ import { CnExternalApiInfo } from '../cn-core/model/config/cn-config.class';
 import { CnCoreConfigService } from '../cn-core/modules/cn-core-config/cn-core-config.service';
 import { CnExternalLabManagerApiService } from '../cn-external-lab-api/cn-external-lab-manager-api.service';
 import {
+  CnCustomEnvVariablesDTO,
   CnLabManagerAdminerInfo,
   CnLabManagerBackupInfoDTO,
   CnLabManagerCleanOptions,
@@ -20,6 +21,7 @@ import {
   CnLabManagerRestoreBackupDTO,
   CnLabManagerStatus,
   CnManagerLabComposeRestartOptions,
+  CnMcpConfigDTO,
 } from '../cn-external-lab-api/model/cn-lab-manager.class';
 import { CnLabConfigFile } from '../cn-lab-configs/cn-lab-config-file.class';
 import { CnLabConfigsService } from '../cn-lab-configs/cn-lab-configs.service';
@@ -165,6 +167,22 @@ export class CnLabManagerService {
     const configFile: CnLabConfigFile = await this.labManagerApiService.getConfig(lab.getLabManagerApiInfo());
 
     return this.labConfigService.configFileToLabConfig(configFile);
+  }
+
+  public getMcpConfig(lab: CnLab): Promise<CnMcpConfigDTO> {
+    return this.labManagerApiService.getMcpConfig(lab.getLabManagerApiInfo());
+  }
+
+  public setMcpConfig(lab: CnLab, enabled: boolean): Promise<void> {
+    return this.labManagerApiService.setMcpConfig(lab.getLabManagerApiInfo(), enabled);
+  }
+
+  public getCustomEnvVariables(lab: CnLab): Promise<CnCustomEnvVariablesDTO> {
+    return this.labManagerApiService.getCustomEnvVariables(lab.getLabManagerApiInfo());
+  }
+
+  public setCustomEnvVariables(lab: CnLab, variables: Record<string, string>): Promise<void> {
+    return this.labManagerApiService.setCustomEnvVariables(lab.getLabManagerApiInfo(), variables);
   }
 
   ////////////////////////////////////////// DOCKER COMPOSE //////////////////////////////////////////

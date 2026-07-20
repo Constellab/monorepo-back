@@ -23,6 +23,7 @@ import {
 import { Response } from 'express';
 
 import {
+  CnCustomEnvVariablesDTO,
   CnLabManagerAdminerInfo,
   CnLabManagerCleanOptions,
   CnLabManagerComposeEnv,
@@ -35,6 +36,7 @@ import {
   CnLabManagerErrorLogs,
   CnLabManagerRestoreBackupConfigDTO,
   CnManagerLabComposeRestartOptions,
+  CnMcpConfigDTO,
 } from '../cn-external-lab-api/model/cn-lab-manager.class';
 import { CnLabConfig } from '../cn-lab-configs/cn-lab-config.entity';
 import { CnUser } from '../cn-users/cn-user.entity';
@@ -249,6 +251,29 @@ export class CnLabsController {
     @Body() config: CnLabConfigDTO
   ): Promise<void> {
     return await this.aggregateService.updateConfig(id, config);
+  }
+
+  @Get(':id/mcp-config')
+  getMcpConfig(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnMcpConfigDTO> {
+    return this.aggregateService.getMcpConfig(id);
+  }
+
+  @Put(':id/mcp-config')
+  setMcpConfig(@Param('id', new ParseUUIDPipe()) id: string, @Body() body: CnMcpConfigDTO): Promise<void> {
+    return this.aggregateService.setMcpConfig(id, body.enabled);
+  }
+
+  @Get(':id/custom-env-variable')
+  getCustomEnvVariables(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnCustomEnvVariablesDTO> {
+    return this.aggregateService.getCustomEnvVariables(id);
+  }
+
+  @Put(':id/custom-env-variable')
+  setCustomEnvVariables(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() body: CnCustomEnvVariablesDTO
+  ): Promise<void> {
+    return this.aggregateService.setCustomEnvVariables(id, body.variables);
   }
 
   @Get(':id/server-info')

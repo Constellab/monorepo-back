@@ -216,3 +216,13 @@ export interface CnLabManagerCreateDnsChallenge {
   fqdn: string;
   value: string;
 }
+
+//////////////////////// MCP CONFIG ////////////////////////
+export interface CnMcpConfigDTO {
+  enabled: boolean;
+}
+
+//////////////////////// CUSTOM ENV VARIABLES ////////////////////////
+export interface CnCustomEnvVariablesDTO {
+  variables: Record<string, string>;
+}

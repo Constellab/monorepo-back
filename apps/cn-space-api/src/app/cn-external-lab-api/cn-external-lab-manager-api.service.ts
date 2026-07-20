@@ -18,6 +18,7 @@ import { CnLabConfigFile } from '../cn-lab-configs/cn-lab-config-file.class';
 import { CnLabBackupsHistory } from '../cn-labs/backup/cn-lab-backup.dto';
 import { cnApplyIpOverride } from './cn-external-api-ip-override.helper';
 import {
+  CnCustomEnvVariablesDTO,
   CnLabManagerAdminerInfo,
   CnLabManagerBackupInfoDTO,
   CnLabManagerCleanOptions,
@@ -33,6 +34,7 @@ import {
   CnLabManagerRestoreBackupDTO,
   CnLabManagerStatus,
   CnManagerLabComposeRestartOptions,
+  CnMcpConfigDTO,
 } from './model/cn-lab-manager.class';
 
 /**
@@ -94,6 +96,25 @@ export class CnExternalLabManagerApiService {
 
   public async getConfig(apiInfo: CnExternalApiInfo): Promise<CnLabConfigFile> {
     return lastValueFrom(this.get(apiInfo, `${this.baseLabRoute}/config`));
+  }
+
+  public async getMcpConfig(apiInfo: CnExternalApiInfo): Promise<CnMcpConfigDTO> {
+    return lastValueFrom(this.get(apiInfo, `${this.baseLabRoute}/mcp-config`));
+  }
+
+  public async setMcpConfig(apiInfo: CnExternalApiInfo, enabled: boolean): Promise<void> {
+    return lastValueFrom(this.put(apiInfo, `${this.baseLabRoute}/mcp-config`, { enabled }));
+  }
+
+  public async getCustomEnvVariables(apiInfo: CnExternalApiInfo): Promise<CnCustomEnvVariablesDTO> {
+    return lastValueFrom(this.get(apiInfo, `${this.baseLabRoute}/custom-env-variable`));
+  }
+
+  public async setCustomEnvVariables(
+    apiInfo: CnExternalApiInfo,
+    variables: Record<string, string>
+  ): Promise<void> {
+    return lastValueFrom(this.put(apiInfo, `${this.baseLabRoute}/custom-env-variable`, { variables }));
   }
 
   ////////////////////////////////////////// DOCKER COMPOSE //////////////////////////////////////////
