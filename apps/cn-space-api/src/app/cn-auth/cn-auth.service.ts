@@ -97,9 +97,7 @@ export class CnAuthService {
 
   public async checkCredentialsAndUser(credentials: BlCredentials, checkCaptcha: boolean): Promise<CnUser> {
     if (checkCaptcha) {
-      const captchaCheck =
-        credentials.captcha != null &&
-        (await this.captchaService.validateCaptcha(credentials.captcha, 'login'));
+      const captchaCheck = await this.captchaService.validateCaptcha(credentials.captcha, 'login');
 
       if (!captchaCheck) {
         throw new BlUnauthorizedException(CnErrorText.INVALID_CAPTCHA);
