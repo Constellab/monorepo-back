@@ -25,6 +25,8 @@ import {
   Res,
   UseGuards,
   UseInterceptors,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Request, Response } from 'express';
@@ -195,8 +197,9 @@ export class HnBrickController {
   }
 
   @Post()
-  create(@Body(new BlParsePipe(HnCreateBrickDTO)) createBrick: HnCreateBrickDTO): Promise<HnBrick> {
-    return this.brickAggregateService.createBrick(createBrick);
+  @UsePipes(new ValidationPipe())
+  async create(@Body(new BlParsePipe(HnCreateBrickDTO)) createBrick: HnCreateBrickDTO): Promise<HnBrickDto> {
+    return new HnBrickDto(await this.brickAggregateService.createBrick(createBrick));
   }
 
   @Post('create-technical-doc')
@@ -268,8 +271,11 @@ export class HnBrickController {
   }
 
   @Put('edit')
-  public editBrick(@Body(new BlParsePipe(HnEditBrickDTO)) editedBrick: HnEditBrickDTO): Promise<HnBrick> {
-    return this.brickAggregateService.editBrick(editedBrick);
+  @UsePipes(new ValidationPipe())
+  public async editBrick(
+    @Body(new BlParsePipe(HnEditBrickDTO)) editedBrick: HnEditBrickDTO
+  ): Promise<HnBrickDto> {
+    return new HnBrickDto(await this.brickAggregateService.editBrick(editedBrick));
   }
 
   @BlPublic()

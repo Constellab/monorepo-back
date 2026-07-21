@@ -1,4 +1,5 @@
 import { BlEntityWithIdDTO, BlVersion } from '@monorepo/back-core-lib';
+import { IsOptional } from 'class-validator';
 
 import { HnSpaceDto } from '../../space-aggregate/space/hn-space.dto';
 import { HnSpace } from '../../space-aggregate/space/hn-space.entity';
@@ -6,6 +7,7 @@ import { HnUserDto } from '../../users/hn-user.dto';
 import { HnVersionState } from '../brick-major-version/hn-brick-major-version.entity';
 import { HnReferenceDTO, HnRepoType, HnVersionType } from '../brick-version/hn-brick-version.entity';
 import { HnBrick, HnBrickVisibility } from './hn-brick.entity';
+import { hnIsGitPat } from './hn-git-pat.validator';
 
 export class HnBrickDto extends BlEntityWithIdDTO {
   name!: string;
@@ -15,6 +17,12 @@ export class HnBrickDto extends BlEntityWithIdDTO {
   pipRepo?: string | null;
   gitRepo?: string | null;
   imageLink?: string | null;
+  // Only the username is exposed to the client so the edit form can prefill it.
+  // The credential (PAT) is intentionally never returned to the front.
+  credentialUsername?: string | null;
+  // Tells the front whether a PAT is already stored, without exposing its value,
+  // so the edit form can show a different placeholder ("leave empty to keep the token").
+  hasCredentialPassword!: boolean;
   createdAt!: string | null;
   createdBy?: HnUserDto;
   lastModifiedAt!: string | null;
@@ -36,6 +44,8 @@ export class HnBrickDto extends BlEntityWithIdDTO {
     this.pipRepo = brick.pipRepo;
     this.gitRepo = brick.gitRepo;
     this.imageLink = brick.imageLink;
+    this.credentialUsername = brick.credentialUsername;
+    this.hasCredentialPassword = !!brick.credentialPassword;
     this.createdAt = brick.createdAt.toISO();
     this.createdBy = brick.createdBy ? new HnUserDto(brick.createdBy) : undefined;
     this.lastModifiedAt = brick.lastModifiedAt.toISO();
@@ -149,6 +159,10 @@ export class HnEditBrickDTO {
   gitRepo!: string;
   visibility!: HnBrickVisibility;
   credentialUsername?: string;
+  // Git Personal Access Token (PAT). Not prefilled by the form; only sent when the
+  // user enters a new value. Leave empty/undefined to keep the existing PAT.
+  @IsOptional()
+  @hnIsGitPat()
   credentialPassword?: string;
   space?: HnSpace;
 }
@@ -192,6 +206,8 @@ export class HnCreateBrickDTO {
   technicalInfo?: Record<string, any>;
   visibility!: HnBrickVisibility;
   credentialUsername?: string;
+  @IsOptional()
+  @hnIsGitPat()
   credentialPassword?: string;
   space?: HnSpace;
 }

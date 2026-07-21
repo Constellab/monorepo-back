@@ -168,7 +168,11 @@ export class HnBrickService extends BlAbstractService<HnBrickEntity> {
       brick.space = editedBrick.space;
     }
     brick.credentialUsername = editedBrick.credentialUsername ?? null;
-    brick.credentialPassword = editedBrick.credentialPassword ?? null;
+    // The PAT is never sent back to the front, so the edit form only submits it when
+    // the user actually types a new one. An empty value means "keep the current PAT".
+    if (editedBrick.credentialPassword) {
+      brick.credentialPassword = editedBrick.credentialPassword;
+    }
 
     return this.bricksRepository.save(brick);
   }
