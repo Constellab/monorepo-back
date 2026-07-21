@@ -14,6 +14,7 @@ import {
   CN_EXTERNAL_LAB_API_KEY_SCHEMA,
   CnExternalApiInfo,
 } from '../cn-core/model/config/cn-config.class';
+import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
 import { CnLabConfigFile } from '../cn-lab-configs/cn-lab-config-file.class';
 import { CnLabBackupsHistory } from '../cn-labs/backup/cn-lab-backup.dto';
 import { cnApplyIpOverride } from './cn-external-api-ip-override.helper';
@@ -389,7 +390,7 @@ export class CnExternalLabManagerApiService {
 
   private catchError(error: BlExternalApiError): Observable<never> {
     if (error?.error?.code === 'ECONNREFUSED') {
-      throw new BlBadRequestException('The lab manager is not running, cannot perform the operation');
+      throw new BlBadRequestException(CnErrorText.LAB_MANAGER_UNAVAILABLE);
     }
 
     // convert the known error from the lab manager to a BlHttpException

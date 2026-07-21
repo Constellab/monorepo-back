@@ -82,6 +82,7 @@ export abstract class BlCoreExceptionHandlerFilter implements ExceptionFilter {
 
     return {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
+      detail: 'Server error',
       code: this.options.serverError,
       instanceId: instanceId,
     };

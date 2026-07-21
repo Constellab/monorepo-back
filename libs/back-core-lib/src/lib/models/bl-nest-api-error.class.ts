@@ -8,7 +8,7 @@ export interface BlApiError {
   // unique error code
   code: string;
 
-  // unique id of this error instance
+  // error message detail
   detail?: string;
 
   // unique id of this error instance
