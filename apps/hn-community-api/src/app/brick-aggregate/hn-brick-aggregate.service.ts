@@ -738,11 +738,27 @@ export class HnBrickAggregateService {
     if (folder == null) {
       throw new BlBadRequestException('Folder not found', { detailArgs: { id: updatedFolder.id } });
     }
-    folder.path = ClStringHelper.generateUrlPathFromString(updatedFolder.title ?? '');
-    folder.title = updatedFolder.title;
-    folder.completePath = folder.folder?.completePath
-      ? folder.folder.completePath + (folder.path ?? '') + '/'
-      : (folder.path ?? '') + '/';
+    if (depth === 0) {
+      // real rename: recompute a unique path among the siblings of the parent folder
+      if (folder.folder) {
+        const { path, completePath } = await this.folderService.resolveNodePathInFolderId(
+          folder.folder.id,
+          updatedFolder.title,
+          folder.id
+        );
+        folder.path = path;
+        folder.completePath = completePath;
+      } else {
+        folder.path = ClStringHelper.generateUrlPathFromString(updatedFolder.title ?? '');
+        folder.completePath = (folder.path ?? '') + '/';
+      }
+      folder.title = updatedFolder.title;
+    } else {
+      // propagation after an ancestor rename: keep the folder own path, only rebuild the prefix
+      folder.completePath = folder.folder?.completePath
+        ? folder.folder.completePath + (folder.path ?? '') + '/'
+        : (folder.path ?? '') + '/';
+    }
 
     folder = await this.folderService.save(folder);
 
@@ -770,6 +786,16 @@ export class HnBrickAggregateService {
     }
   }
 
+  /**
+   * Assign to a node (doc or folder) a path and complete path that are unique among the
+   * siblings of its new parent. Used whenever a node is moved into another folder.
+   */
+  private assignResolvedPath(node: HnDocumentation | HnFolder, newParent: HnFolder): void {
+    const { path, completePath } = HnFolderService.resolveNodePath(newParent, node.title, node.id);
+    node.path = path;
+    node.completePath = completePath;
+  }
+
   async updateNodeLocation(
     nodeId: string,
     nodeType: HnNodeType,
@@ -786,7 +812,9 @@ export class HnBrickAggregateService {
       throw new BlBadRequestException('Folder not found');
     }
 
-    if (olderParentId != newParentId) {
+    const parentChanged = olderParentId != newParentId;
+
+    if (parentChanged) {
       for (const childFolder of olderParent.folders) {
         if (childFolder.order > oldOrder) {
           childFolder.order--;
@@ -853,7 +881,10 @@ export class HnBrickAggregateService {
       }
       doc.folder = newParent;
       doc.order = newOrder;
-      doc.completePath = (newParent.completePath ?? '') + doc.path + '/';
+      // only recompute the path on an actual move, so a simple reorder never changes the url
+      if (parentChanged) {
+        this.assignResolvedPath(doc, newParent);
+      }
       await this.documentationService.save(doc);
     } else {
       const folder = await this.folderService.findById(nodeId);
@@ -863,8 +894,14 @@ export class HnBrickAggregateService {
       folder.folder = newParent;
       folder.folderId = newParent.id;
       folder.order = newOrder;
-      folder.completePath = (newParent.completePath ?? '') + folder.path + '/';
-      await this.folderService.save(folder);
+      if (parentChanged) {
+        this.assignResolvedPath(folder, newParent);
+        await this.folderService.save(folder);
+        // the folder moved: cascade the new complete path down to its descendants
+        await this.updateChildCompletePath(folder);
+      } else {
+        await this.folderService.save(folder);
+      }
     }
 
     const mainFolder = await this.folderService.findById(mainFolderId);
@@ -882,18 +919,26 @@ export class HnBrickAggregateService {
         if (f == null || f.folder == null || node.parentId == null) {
           throw new BlBadRequestException('Folder not found', { detailArgs: { id: node.id } });
         }
-        if (f.order != node.order || f.folderId != node.parentId) {
+        const folderParentChanged = f.folderId != node.parentId;
+        if (f.order != node.order || folderParentChanged) {
           isUpdated = true;
           f.order = node.order;
           const newParent = await this.folderService.findById(node.parentId);
           if (newParent == null) {
             throw new BlBadRequestException('Folder not found', { detailArgs: { id: node.parentId } });
           }
+          if (folderParentChanged) {
+            this.assignResolvedPath(f, newParent);
+          }
           f.folder = newParent;
           f.folderId = newParent.id;
         }
         if (isUpdated) {
           await this.folderService.save(f);
+        }
+        // the folder moved: cascade the new complete path down to its descendants before recursing
+        if (folderParentChanged) {
+          await this.updateChildCompletePath(f);
         }
         await this.updateTreeFolder(node.children);
       } else {
@@ -903,12 +948,16 @@ export class HnBrickAggregateService {
             detailArgs: { id: node.id },
           });
         }
-        if (d.order != node.order || d.folder.id != node.parentId) {
+        const docParentChanged = d.folder.id != node.parentId;
+        if (d.order != node.order || docParentChanged) {
           isUpdated = true;
           d.order = node.order;
           const newParent = await this.folderService.findById(node.parentId);
           if (newParent == null) {
             throw new BlBadRequestException('Folder not found', { detailArgs: { id: node.parentId } });
+          }
+          if (docParentChanged) {
+            this.assignResolvedPath(d, newParent);
           }
           d.folder = newParent;
         }
@@ -1043,7 +1092,14 @@ export class HnBrickAggregateService {
 
   async updateDoc(updatedDoc: HnNodeDTO): Promise<HnDocumentation> {
     await this.checkIfUserHasRightsOnDoc(updatedDoc.id);
-    return this.documentationService.update(updatedDoc);
+
+    const doc = await this.documentationService.findById(updatedDoc.id);
+    const parentFolder = await this.folderService.findById(doc.folder.id);
+    if (parentFolder == null) {
+      throw new BlBadRequestException('Folder not found', { detailArgs: { id: doc.folder.id } });
+    }
+
+    return this.documentationService.update(updatedDoc, parentFolder);
   }
 
   async saveDocImage(file: BlFile, docId: string): Promise<TeBlockFigureUploadedResponse> {

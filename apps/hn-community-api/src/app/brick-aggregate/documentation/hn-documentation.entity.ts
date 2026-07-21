@@ -46,18 +46,6 @@ export class HnDocumentation extends HnBaseEntity {
   @ManyToOne(() => HnFolder, { eager: true, onDelete: 'CASCADE', nullable: false })
   folder!: HnFolder;
 
-  public setPath(path: string, folderCompletePath: string | null): void {
-    this.path = path;
-
-    if (folderCompletePath != null) {
-      this.completePath = folderCompletePath + path + '/';
-    } else {
-      this.completePath = path + '/';
-    }
-    // Ensure no special characters
-    this.completePath = this.completePath.replace(/[^a-zA-Z0-9-_/]/g, '');
-  }
-
   public getRichText(): TeRichText {
     return new TeRichText(this.content);
   }

@@ -4,6 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, IsNull, Repository, TreeRepository } from 'typeorm';
 
+import { HnErrorText } from '../../core/model/config/hn-error-text.class';
 import { HnBrickMajorVersion } from '../brick-major-version/hn-brick-major-version.entity';
 import { HnDocumentation, HnDocumentationSearchDTO } from '../documentation/hn-documentation.entity';
 import { HnNode, HnNodeDTO } from './hn-folder.dto';
@@ -18,13 +19,85 @@ export class HnFolderService {
     private foldersTreeRepository: TreeRepository<HnFolder>
   ) {}
 
+  /**
+   * Canonical url segment of a title. This is what actually ends up in the complete path:
+   * accents and special characters are stripped, so 'Test' and 'Testé' both give 'test'.
+   */
+  private static slugify(title: string | null): string {
+    return ClStringHelper.generateUrlPathFromString(title ?? '').replace(/[^a-zA-Z0-9-_]/g, '');
+  }
+
+  /**
+   * Title used to detect strictly identical siblings. Trimmed, spaces collapsed and lower cased
+   * so 'Test' and 'test ' are considered the same title, but 'Test' and 'Testé' are not.
+   */
+  private static normalizedTitle(title: string | null): string {
+    return (ClStringHelper.trimAndRemoveDuplicateSpaces(title ?? '') ?? '').toLowerCase();
+  }
+
+  /**
+   * Compute the path and complete path of a node about to be created, renamed or moved into a
+   * parent folder, guaranteeing a unique complete path among its siblings.
+   *
+   * - A sibling (doc OR folder) with the exact same title is rejected (they would be
+   *   indistinguishable in the tree).
+   * - Two different titles that collapse to the same slug are allowed: the slug is suffixed with
+   *   an incrementing number, so 'Test'/'Testé' give paths 'test'/'test1'. The suffix is checked
+   *   against the real complete paths of the siblings, so it never collides with an existing one.
+   *
+   * @param parentFolder parent folder, with its documentations and folders relations loaded
+   * @param excludedNodeId id of the node being renamed or moved, to not compare it with itself
+   */
+  static resolveNodePath(
+    parentFolder: HnFolder,
+    title: string | null,
+    excludedNodeId?: string
+  ): { path: string; completePath: string } {
+    const siblings = [...(parentFolder.documentations ?? []), ...(parentFolder.folders ?? [])].filter(
+      (node) => node.id !== excludedNodeId
+    );
+
+    const normalizedTitle = HnFolderService.normalizedTitle(title);
+    if (siblings.some((s) => HnFolderService.normalizedTitle(s.title) === normalizedTitle)) {
+      throw new BlBadRequestException(HnErrorText.NODE_TITLE_ALREADY_EXISTS, {
+        detailArgs: { title: title ?? '' },
+      });
+    }
+
+    const parentCompletePath = parentFolder.completePath ?? '';
+    const usedCompletePaths = new Set(siblings.map((s) => s.completePath));
+    const base = HnFolderService.slugify(title);
+
+    let segment = base;
+    let suffix = 1;
+    while (usedCompletePaths.has(parentCompletePath + segment + '/')) {
+      segment = base + suffix;
+      suffix++;
+    }
+
+    return { path: segment, completePath: parentCompletePath + segment + '/' };
+  }
+
+  /**
+   * Same as resolveNodePath but loads the parent folder from its id.
+   */
+  async resolveNodePathInFolderId(
+    parentFolderId: string,
+    title: string | null,
+    excludedNodeId?: string
+  ): Promise<{ path: string; completePath: string }> {
+    const parentFolder = await this.findById(parentFolderId);
+    if (parentFolder == null) {
+      throw new BlBadRequestException('Folder not found', { detailArgs: { id: parentFolderId } });
+    }
+    return HnFolderService.resolveNodePath(parentFolder, title, excludedNodeId);
+  }
+
   async create(
     createFolderRes: HnNodeDTO,
     entityManager?: EntityManager,
     brickMajorVersion?: HnBrickMajorVersion
   ): Promise<HnFolder> {
-    createFolderRes.path = ClStringHelper.generateUrlPathFromString(createFolderRes.title ?? '');
-
     let folder: HnFolder | null = null;
     if (createFolderRes.folderId) {
       folder = await this.foldersRepository.findOne({
@@ -32,13 +105,19 @@ export class HnFolderService {
         relations: { documentations: true, folders: true },
       });
     }
+
     const createFolder: HnFolder = new HnFolder();
     createFolder.title = createFolderRes.title;
     createFolder.folder = folder ? folder : null;
-    createFolder.path = createFolderRes.path;
-    createFolder.completePath = folder
-      ? (folder.completePath ? folder.completePath : '') + createFolderRes.path + '/'
-      : null;
+    if (folder) {
+      const { path, completePath } = HnFolderService.resolveNodePath(folder, createFolderRes.title);
+      createFolder.path = path;
+      createFolder.completePath = completePath;
+    } else {
+      // root (main) folder: no parent, no siblings, no path
+      createFolder.path = ClStringHelper.generateUrlPathFromString(createFolderRes.title ?? '');
+      createFolder.completePath = null;
+    }
     if (brickMajorVersion) {
       createFolder.brickMajorVersion = brickMajorVersion;
     } else {

@@ -1,5 +1,4 @@
 import { BlBadRequestException } from '@monorepo/back-core-lib';
-import { ClStringHelper } from '@monorepo/core-lib';
 import { TeRichText, TeRichTextAggregate } from '@monorepo/te-text-editor';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -9,6 +8,7 @@ import { HnCurrentUserHelper } from '../../core/utils/hn-current-user.helper';
 import { HnBrickMajorVersion } from '../brick-major-version/hn-brick-major-version.entity';
 import { HnNodeDTO } from '../folder/hn-folder.dto';
 import { HnFolder } from '../folder/hn-folder.entity';
+import { HnFolderService } from '../folder/hn-folder.service';
 import { HnDocumentation, HnDocumentationSearchDTO } from './hn-documentation.entity';
 
 @Injectable()
@@ -32,12 +32,13 @@ export class HnDocumentationService {
     folder: HnFolder,
     entityManager?: EntityManager
   ): Promise<HnDocumentation> {
-    const path = ClStringHelper.generateUrlPathFromString(createDocumentation.title ?? '');
+    const { path, completePath } = HnFolderService.resolveNodePath(folder, createDocumentation.title);
 
     const documentation = new HnDocumentation();
 
     documentation.title = createDocumentation.title ?? '';
-    documentation.setPath(path, folder.completePath);
+    documentation.path = path;
+    documentation.completePath = completePath;
     documentation.folder = folder;
     documentation.order = folder.nextOrder();
 
@@ -69,7 +70,11 @@ export class HnDocumentationService {
     return doc;
   }
 
-  async update(updatedDocumentation: HnNodeDTO): Promise<HnDocumentation> {
+  /**
+   * Rename a doc. The parent folder must be loaded with its documentations and folders relations
+   * so the new path can be made unique among the siblings.
+   */
+  async update(updatedDocumentation: HnNodeDTO, parentFolder: HnFolder): Promise<HnDocumentation> {
     const doc = await this.documentationsRepository.findOne({
       where: { id: updatedDocumentation.id },
       relations: { folder: true },
@@ -79,10 +84,13 @@ export class HnDocumentationService {
       throw new BlBadRequestException('Doc not found');
     }
 
-    doc.setPath(
-      ClStringHelper.generateUrlPathFromString(updatedDocumentation.title ?? ''),
-      doc.folder.completePath
+    const { path, completePath } = HnFolderService.resolveNodePath(
+      parentFolder,
+      updatedDocumentation.title,
+      doc.id
     );
+    doc.path = path;
+    doc.completePath = completePath;
     doc.title = updatedDocumentation.title ?? '';
     return this.documentationsRepository.save(doc);
   }
