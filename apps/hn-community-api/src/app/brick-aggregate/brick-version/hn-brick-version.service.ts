@@ -228,6 +228,25 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
     });
   }
 
+  /**
+   * Returns the latest non-beta (NORMAL) version of a brick major version,
+   * or null if the major version only contains beta versions.
+   */
+  async getLatestNormalBrickVersion(brickMajorVersionId: string): Promise<HnBrickVersion | null> {
+    return this.brickVersionsRepository.findOne({
+      where: {
+        brickMajorVersion: {
+          id: brickMajorVersionId,
+        },
+        versionType: HnVersionType.NORMAL,
+      },
+      order: {
+        minor: 'DESC',
+        patch: 'DESC',
+      },
+    });
+  }
+
   async checkIfVersionExist(
     brickMajorVersion: HnBrickMajorVersion,
     version: string

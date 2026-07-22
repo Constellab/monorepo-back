@@ -43,6 +43,8 @@ import { HnUser } from '../users/hn-user.entity';
 import { HnUserService } from '../users/hn-user.service';
 import {
   HnBrickDto,
+  HnBrickInfoDTO,
+  HnBrickInfoRequestDTO,
   HnBrickVersionCloneInfoDTO,
   HnBrickVersionInfoDTO,
   HnCreateBrickDTO,
@@ -1436,6 +1438,63 @@ export class HnBrickAggregateService {
       throw new BlBadRequestException(HnErrorText.BRICK_VERSION_NOT_FOUND);
     }
     return brickVersion;
+  }
+
+  /**
+   * Returns summary info (id, name, description, image, latest version and
+   * whether a newer version exists) for a list of bricks identified by name
+   * and the version the caller currently has.
+   *
+   * Beta versions are ignored: the returned last version and the
+   * hasNewVersion flag are computed against the latest NORMAL (non-beta)
+   * version only.
+   *
+   * Does not perform any space-level access check — intended for
+   * lab-authenticated routes where access is controlled via lab API key.
+   * Bricks that cannot be resolved (unknown name or no published non-beta
+   * version) are silently skipped, so the result may be shorter than the input.
+   */
+  async getMultipleBrickInfo(requests: HnBrickInfoRequestDTO[]): Promise<HnBrickInfoDTO[]> {
+    const result: HnBrickInfoDTO[] = [];
+
+    for (const request of requests) {
+      try {
+        const brick: HnBrick = await this.findBrickByNameLight(request.name, null, false);
+
+        const brickMajorVersion = await this.brickMajorVersionService.getLatestBrickMajorVersion(brick.id);
+        if (brickMajorVersion == null) {
+          continue;
+        }
+        const latestBrickVersion = await this.brickVersionService.getLatestNormalBrickVersion(
+          brickMajorVersion.id
+        );
+        if (latestBrickVersion == null) {
+          continue;
+        }
+        const latestVersion: BlVersion = latestBrickVersion.version;
+
+        let hasNewVersion = false;
+        try {
+          const requestedVersion: BlVersion = BlVersion.fromString(request.version);
+          hasNewVersion = requestedVersion.isLowerThan(latestVersion);
+        } catch {
+          // Invalid requested version string: cannot compare, leave hasNewVersion false.
+        }
+
+        result.push({
+          id: brick.id,
+          name: brick.name,
+          description: brick.description,
+          imageLink: brick.imageLink,
+          lastVersion: latestVersion.toString(),
+          hasNewVersion,
+        });
+      } catch {
+        // Skip bricks that cannot be resolved (unknown name or no published version).
+      }
+    }
+
+    return result;
   }
 
   async getCurrentBrickVersion(

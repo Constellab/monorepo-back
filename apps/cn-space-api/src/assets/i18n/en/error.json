@@ -16,6 +16,7 @@
   "wrong_api_key": "The api key is incorrect",
   "wrong_token": "The token is incorrect",
   "lab_stopped": "The lab in not running",
+  "lab_manager_unavailable": "The lab manager is not running, cannot perform the operation",
   "lab_auth_error": "Error during authentication in lab",
   "account_locked_by_admin": "Your account has been locked by an administrator",
   "language_not_supported": "The language is not supported",

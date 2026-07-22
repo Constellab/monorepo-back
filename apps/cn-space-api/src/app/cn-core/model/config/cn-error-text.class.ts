@@ -28,6 +28,7 @@ export enum CnErrorText {
   WRONG_API_KEY = 'error.wrong_api_key',
   WRONG_TOKEN = 'error.wrong_token',
   LAB_STOPPED = 'error.lab_stopped',
+  LAB_MANAGER_UNAVAILABLE = 'error.lab_manager_unavailable',
   LAB_AUTH_ERROR = 'error.lab_auth_error',
   ACCOUNT_LOCKED_BY_ADMIN = 'error.account_locked_by_admin',
   LANGUAGE_NOT_SUPPORTED = 'error.language_not_supported',

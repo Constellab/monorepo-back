@@ -14,10 +14,13 @@ import {
   CN_EXTERNAL_LAB_API_KEY_SCHEMA,
   CnExternalApiInfo,
 } from '../cn-core/model/config/cn-config.class';
+import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
 import { CnLabConfigFile } from '../cn-lab-configs/cn-lab-config-file.class';
 import { CnLabBackupsHistory } from '../cn-labs/backup/cn-lab-backup.dto';
 import { cnApplyIpOverride } from './cn-external-api-ip-override.helper';
 import {
+  CnBrickInfoDTO,
+  CnCustomEnvVariablesDTO,
   CnLabManagerAdminerInfo,
   CnLabManagerBackupInfoDTO,
   CnLabManagerCleanOptions,
@@ -33,6 +36,7 @@ import {
   CnLabManagerRestoreBackupDTO,
   CnLabManagerStatus,
   CnManagerLabComposeRestartOptions,
+  CnMcpConfigDTO,
 } from './model/cn-lab-manager.class';
 
 /**
@@ -94,6 +98,25 @@ export class CnExternalLabManagerApiService {
 
   public async getConfig(apiInfo: CnExternalApiInfo): Promise<CnLabConfigFile> {
     return lastValueFrom(this.get(apiInfo, `${this.baseLabRoute}/config`));
+  }
+
+  public async getMcpConfig(apiInfo: CnExternalApiInfo): Promise<CnMcpConfigDTO> {
+    return lastValueFrom(this.get(apiInfo, `${this.baseLabRoute}/mcp-config`));
+  }
+
+  public async setMcpConfig(apiInfo: CnExternalApiInfo, enabled: boolean): Promise<void> {
+    return lastValueFrom(this.put(apiInfo, `${this.baseLabRoute}/mcp-config`, { enabled }));
+  }
+
+  public async getCustomEnvVariables(apiInfo: CnExternalApiInfo): Promise<CnCustomEnvVariablesDTO> {
+    return lastValueFrom(this.get(apiInfo, `${this.baseLabRoute}/custom-env-variable`));
+  }
+
+  public async setCustomEnvVariables(
+    apiInfo: CnExternalApiInfo,
+    variables: Record<string, string>
+  ): Promise<void> {
+    return lastValueFrom(this.put(apiInfo, `${this.baseLabRoute}/custom-env-variable`, { variables }));
   }
 
   ////////////////////////////////////////// DOCKER COMPOSE //////////////////////////////////////////
@@ -274,6 +297,17 @@ export class CnExternalLabManagerApiService {
     return lastValueFrom(this.post(apiInfo, `${this.baseBackupRoute}/restore`, restoreBackupDTO));
   }
 
+  ///////////////////////////////////// BRICKS /////////////////////////////////////
+
+  /**
+   * Get the info of the bricks installed on the lab (id, name, description,
+   * image, latest version and whether a newer version exists). Mirrors the
+   * community brick-info response.
+   */
+  public async getBricksInfo(apiInfo: CnExternalApiInfo): Promise<CnBrickInfoDTO[]> {
+    return lastValueFrom(this.get(apiInfo, `${this.baseLabRoute}/bricks-info`));
+  }
+
   ///////////////////////////////////// OLD METHODS /////////////////////////////////////
 
   public async oldDeleteContainers(apiInfo: CnExternalApiInfo): Promise<void> {
@@ -368,7 +402,7 @@ export class CnExternalLabManagerApiService {
 
   private catchError(error: BlExternalApiError): Observable<never> {
     if (error?.error?.code === 'ECONNREFUSED') {
-      throw new BlBadRequestException('The lab manager is not running, cannot perform the operation');
+      throw new BlBadRequestException(CnErrorText.LAB_MANAGER_UNAVAILABLE);
     }
 
     // convert the known error from the lab manager to a BlHttpException

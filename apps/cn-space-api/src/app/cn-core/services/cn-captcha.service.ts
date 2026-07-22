@@ -30,10 +30,13 @@ export class CnCaptchaService {
     return this.recaptchaClient;
   }
 
-  public async validateCaptcha(token: string, action: string): Promise<boolean> {
+  public async validateCaptcha(token: string | undefined, action: string): Promise<boolean> {
     if (!this.configService.getCaptchaSiteKey()) {
       this.logger.warn('Captcha site key not configured, skipping captcha validation.');
       return true;
+    }
+    if (!token) {
+      return false;
     }
     try {
       const projectId = this.configService.getGcpProjectId();

@@ -1,4 +1,4 @@
-import { BlPublic } from '@monorepo/back-core-lib';
+import { BlParsePipe, BlPublic } from '@monorepo/back-core-lib';
 import { ClPage } from '@monorepo/core-lib';
 import { Body, Controller, Get, Param, ParseIntPipe, Post, Query } from '@nestjs/common';
 
@@ -6,7 +6,13 @@ import {
   HnLabAllowWithoutUserAuthentication,
   HnLabGuard,
 } from '../core/decorators/hn-lab-auth-guard.decorator';
-import { HnBrickDto, HnBrickVersionCloneInfoDTO, HnBrickVersionInfoDTO } from './brick/hn-brick.dto';
+import {
+  HnBrickDto,
+  HnBrickInfoDTO,
+  HnBrickVersionCloneInfoDTO,
+  HnBrickVersionInfoDTO,
+  HnMultipleBrickInfoInputDTO,
+} from './brick/hn-brick.dto';
 import { HnBrickAggregateService } from './hn-brick-aggregate.service';
 
 /**
@@ -31,6 +37,22 @@ export class HnBrickLabController {
     @Query('size', new ParseIntPipe()) size: number
   ): Promise<ClPage<HnBrickDto>> {
     return this.brickAggregateService.findPublicBricksWithFilter(titleFilter, page, size);
+  }
+
+  /**
+   * Get summary info for multiple bricks at once. Lab-authenticated:
+   * for each requested brick name/version, returns its id, name, description,
+   * image, latest version and whether a newer version than the requested one
+   * exists. Bricks that cannot be resolved are silently skipped, so the
+   * response may be shorter than the request.
+   */
+  @HnLabGuard()
+  @HnLabAllowWithoutUserAuthentication()
+  @Post('info')
+  getMultipleBrickInfo(
+    @Body(new BlParsePipe(HnMultipleBrickInfoInputDTO)) input: HnMultipleBrickInfoInputDTO
+  ): Promise<HnBrickInfoDTO[]> {
+    return this.brickAggregateService.getMultipleBrickInfo(input.bricks);
   }
 
   /**

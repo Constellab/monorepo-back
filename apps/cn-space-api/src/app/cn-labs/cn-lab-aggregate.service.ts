@@ -23,6 +23,8 @@ import {
   CnExternalLabUserRole,
 } from '../cn-external-lab-api/model/cn-external-lab-api.class';
 import {
+  CnBrickInfoDTO,
+  CnCustomEnvVariablesDTO,
   CnLabManagerAdminerInfo,
   CnLabManagerBackupInfoDTO,
   CnLabManagerCleanOptions,
@@ -38,6 +40,7 @@ import {
   CnLabManagerInitConfig,
   CnLabManagerRestoreBackupConfigDTO,
   CnManagerLabComposeRestartOptions,
+  CnMcpConfigDTO,
 } from '../cn-external-lab-api/model/cn-lab-manager.class';
 import { CnLabConfigDto } from '../cn-lab-configs/cn-lab-config.dto';
 import { CnLabConfig } from '../cn-lab-configs/cn-lab-config.entity';
@@ -993,6 +996,31 @@ export class CnLabAggregateService {
   public async getLabManagerConfig(labId: string): Promise<CnLabConfigDTO> {
     const lab = await this.getAndCheckAuthorizationToManageLab(labId);
     return this.labManagerService.getConfig(lab);
+  }
+
+  public async getMcpConfig(labId: string): Promise<CnMcpConfigDTO> {
+    const lab = await this.getAndCheckAuthorizationToManageLab(labId);
+    return this.labManagerService.getMcpConfig(lab);
+  }
+
+  public async setMcpConfig(labId: string, enabled: boolean): Promise<void> {
+    const lab = await this.getAndCheckAuthorizationToManageLab(labId);
+    return this.labManagerService.setMcpConfig(lab, enabled);
+  }
+
+  public async getCustomEnvVariables(labId: string): Promise<CnCustomEnvVariablesDTO> {
+    const lab = await this.getAndCheckAuthorizationToManageLab(labId);
+    return this.labManagerService.getCustomEnvVariables(lab);
+  }
+
+  public async setCustomEnvVariables(labId: string, variables: Record<string, string>): Promise<void> {
+    const lab = await this.getAndCheckAuthorizationToManageLab(labId);
+    return this.labManagerService.setCustomEnvVariables(lab, variables);
+  }
+
+  public async getBricksInfo(labId: string): Promise<CnBrickInfoDTO[]> {
+    const lab = await this.getAndCheckAuthorizationToManageLab(labId);
+    return this.labManagerService.getBricksInfo(lab);
   }
 
   //////////////////////////// LAB MANAGER - DOCKER COMPOSE ///////////////////////////////
