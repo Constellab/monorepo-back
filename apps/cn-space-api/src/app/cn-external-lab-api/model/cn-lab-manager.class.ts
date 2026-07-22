@@ -226,3 +226,17 @@ export interface CnMcpConfigDTO {
 export interface CnCustomEnvVariablesDTO {
   variables: Record<string, string>;
 }
+
+//////////////////////// BRICKS INFO ////////////////////////
+/**
+ * Info of a brick installed on the lab, as returned by the lab manager
+ * `bricks-info` route (mirrors the community brick-info response).
+ */
+export interface CnBrickInfoDTO {
+  id: string;
+  name: string;
+  description: string;
+  imageLink: string | null;
+  lastVersion: string;
+  hasNewVersion: boolean;
+}

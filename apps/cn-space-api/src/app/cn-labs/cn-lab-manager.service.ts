@@ -5,6 +5,7 @@ import { CnExternalApiInfo } from '../cn-core/model/config/cn-config.class';
 import { CnCoreConfigService } from '../cn-core/modules/cn-core-config/cn-core-config.service';
 import { CnExternalLabManagerApiService } from '../cn-external-lab-api/cn-external-lab-manager-api.service';
 import {
+  CnBrickInfoDTO,
   CnCustomEnvVariablesDTO,
   CnLabManagerAdminerInfo,
   CnLabManagerBackupInfoDTO,
@@ -183,6 +184,10 @@ export class CnLabManagerService {
 
   public setCustomEnvVariables(lab: CnLab, variables: Record<string, string>): Promise<void> {
     return this.labManagerApiService.setCustomEnvVariables(lab.getLabManagerApiInfo(), variables);
+  }
+
+  public getBricksInfo(lab: CnLab): Promise<CnBrickInfoDTO[]> {
+    return this.labManagerApiService.getBricksInfo(lab.getLabManagerApiInfo());
   }
 
   ////////////////////////////////////////// DOCKER COMPOSE //////////////////////////////////////////

@@ -19,6 +19,7 @@ import { CnLabConfigFile } from '../cn-lab-configs/cn-lab-config-file.class';
 import { CnLabBackupsHistory } from '../cn-labs/backup/cn-lab-backup.dto';
 import { cnApplyIpOverride } from './cn-external-api-ip-override.helper';
 import {
+  CnBrickInfoDTO,
   CnCustomEnvVariablesDTO,
   CnLabManagerAdminerInfo,
   CnLabManagerBackupInfoDTO,
@@ -294,6 +295,17 @@ export class CnExternalLabManagerApiService {
 
   restoreBackup(apiInfo: CnExternalApiInfo, restoreBackupDTO: CnLabManagerRestoreBackupDTO): Promise<void> {
     return lastValueFrom(this.post(apiInfo, `${this.baseBackupRoute}/restore`, restoreBackupDTO));
+  }
+
+  ///////////////////////////////////// BRICKS /////////////////////////////////////
+
+  /**
+   * Get the info of the bricks installed on the lab (id, name, description,
+   * image, latest version and whether a newer version exists). Mirrors the
+   * community brick-info response.
+   */
+  public async getBricksInfo(apiInfo: CnExternalApiInfo): Promise<CnBrickInfoDTO[]> {
+    return lastValueFrom(this.get(apiInfo, `${this.baseLabRoute}/bricks-info`));
   }
 
   ///////////////////////////////////// OLD METHODS /////////////////////////////////////

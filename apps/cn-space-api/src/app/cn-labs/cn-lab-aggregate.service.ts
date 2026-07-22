@@ -23,6 +23,7 @@ import {
   CnExternalLabUserRole,
 } from '../cn-external-lab-api/model/cn-external-lab-api.class';
 import {
+  CnBrickInfoDTO,
   CnCustomEnvVariablesDTO,
   CnLabManagerAdminerInfo,
   CnLabManagerBackupInfoDTO,
@@ -1015,6 +1016,11 @@ export class CnLabAggregateService {
   public async setCustomEnvVariables(labId: string, variables: Record<string, string>): Promise<void> {
     const lab = await this.getAndCheckAuthorizationToManageLab(labId);
     return this.labManagerService.setCustomEnvVariables(lab, variables);
+  }
+
+  public async getBricksInfo(labId: string): Promise<CnBrickInfoDTO[]> {
+    const lab = await this.getAndCheckAuthorizationToManageLab(labId);
+    return this.labManagerService.getBricksInfo(lab);
   }
 
   //////////////////////////// LAB MANAGER - DOCKER COMPOSE ///////////////////////////////

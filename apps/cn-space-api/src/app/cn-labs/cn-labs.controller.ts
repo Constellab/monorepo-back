@@ -23,6 +23,7 @@ import {
 import { Response } from 'express';
 
 import {
+  CnBrickInfoDTO,
   CnCustomEnvVariablesDTO,
   CnLabManagerAdminerInfo,
   CnLabManagerCleanOptions,
@@ -458,6 +459,11 @@ export class CnLabsController {
   @Get(':id/lab-manager/config')
   async getConfig(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabConfigDTO> {
     return await this.aggregateService.getLabManagerConfig(id);
+  }
+
+  @Get(':id/lab-manager/config/detail')
+  getBricksInfo(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnBrickInfoDTO[]> {
+    return this.aggregateService.getBricksInfo(id);
   }
 
   /////////////////////////// LAB MANAGER - DOCKER COMPOSE  ///////////////////////////
