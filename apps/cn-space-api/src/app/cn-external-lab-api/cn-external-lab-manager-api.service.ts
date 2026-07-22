@@ -303,9 +303,19 @@ export class CnExternalLabManagerApiService {
    * Get the info of the bricks installed on the lab (id, name, description,
    * image, latest version and whether a newer version exists). Mirrors the
    * community brick-info response.
+   *
+   * The bricks-info route may not exist on older lab managers: in that case
+   * the lab manager answers 404 and we return an empty list instead of failing.
    */
   public async getBricksInfo(apiInfo: CnExternalApiInfo): Promise<CnBrickInfoDTO[]> {
-    return lastValueFrom(this.get(apiInfo, `${this.baseLabRoute}/bricks-info`));
+    return lastValueFrom(this.get(apiInfo, `${this.baseLabRoute}/bricks-info`)).catch(
+      (error: BlExternalApiError) => {
+        if (error?.status === 404) {
+          return [];
+        }
+        throw error;
+      }
+    );
   }
 
   ///////////////////////////////////// OLD METHODS /////////////////////////////////////
