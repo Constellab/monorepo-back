@@ -15,6 +15,14 @@ export class BlNamingStrategy extends DefaultNamingStrategy {
     return snakeCase(`${relationName}_${referencedColumnName}`);
   }
 
+  joinTableColumnName(tableName: string, propertyName: string, columnName?: string): string {
+    return snakeCase(`${tableName}_${columnName ?? propertyName}`);
+  }
+
+  joinTableInverseColumnName(tableName: string, propertyName: string, columnName?: string): string {
+    return this.joinTableColumnName(tableName, propertyName, columnName);
+  }
+
   foreignKeyName(tableOrName: Table | string, columnNames: string[]): string {
     const tableName = typeof tableOrName === 'string' ? tableOrName : tableOrName.name;
     return `FK_${tableName}_${columnNames.join('_')}`;

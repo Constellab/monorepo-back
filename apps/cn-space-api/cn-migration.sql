@@ -413,3 +413,20 @@ ALTER TABLE hierarchy_object_token
 -- Widen to 2048 (~55 levels). synchronize is disabled in prod so this sticks.
 ALTER TABLE `hierarchy_object`
   MODIFY `mpath` varchar(2048) NULL DEFAULT '';
+
+############################ 2.16.0 ##########################
+
+-- BlNamingStrategy now snake_cases many-to-many @JoinTable columns (previously
+-- fell through to TypeORM's default camelCase). Rename the existing join-table
+-- columns so already-synced databases match the entities.
+-- Only M2M @JoinTable columns are affected; regular FK columns were already snake_case.
+
+-- lab_config_brick_version (CnLabConfig.brickVersions)
+ALTER TABLE `lab_config_brick_version`
+  CHANGE `labConfigId` `lab_config_id` varchar(36) NOT NULL,
+  CHANGE `brickVersionId` `brick_version_id` varchar(36) NOT NULL;
+
+-- note_scenario (CnNote.scenarios <-> CnScenario.notes)
+ALTER TABLE `note_scenario`
+  CHANGE `noteId` `note_id` varchar(36) NOT NULL,
+  CHANGE `scenarioId` `scenario_id` varchar(36) NOT NULL;

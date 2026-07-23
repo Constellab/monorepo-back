@@ -776,3 +776,15 @@ where email != lower(email);
 -- Widen to 2048 (~55 levels). synchronize is disabled in prod so this sticks.
 ALTER TABLE `folder`
   MODIFY `mpath` varchar(2048) NULL DEFAULT '';
+
+######################### 1.13.0 #######################
+
+-- BlNamingStrategy now snake_cases many-to-many @JoinTable columns (previously
+-- fell through to TypeORM's default camelCase). Rename the existing join-table
+-- columns so already-synced databases match the entities.
+-- Only M2M @JoinTable columns are affected; regular FK columns were already snake_case.
+
+-- story_topics_topic (HnStory.topics <-> HnTopic.stories)
+ALTER TABLE `story_topics_topic`
+  CHANGE `storyId` `story_id` varchar(36) NOT NULL,
+  CHANGE `topicId` `topic_id` varchar(36) NOT NULL;

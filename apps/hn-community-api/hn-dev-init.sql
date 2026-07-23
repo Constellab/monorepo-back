@@ -140,6 +140,14 @@ VALUES ('9e9beb89-ddd5-4c05-a502-14327cdd39ec', 21, 0, NULL, 'NORMAL', 'GIT', '{
         @adminUserId, @adminUserId,
         @gwsCoreMajorVersionId);
 
+-- gws_core version 0.23.8
+INSERT IGNORE INTO `brick_version` (`id`, `minor`, `patch`, `sub_patch`, `version_type`, `repo_type`, `technical_info`,
+                             `created_at`, `last_modified_at`, `created_by_id`, `last_modified_by_id`, `brick_major_version_id`)
+VALUES ('c1f3a7d2-4b6e-4c9a-8f21-9d5e7a0b3c48', 23, 8, NULL, 'NORMAL', 'GIT', '{"FRONT_VERSION":"2.8.0","GLAB_VERSION":"2.16.0"}',
+        '2023-02-27 17:15:47', '2023-02-27 17:15:47',
+        @adminUserId, @adminUserId,
+        @gwsCoreMajorVersionId);
+
 -- gws_academy version 0.5.1
 INSERT IGNORE INTO `brick_version` (`id`, `minor`, `patch`, `sub_patch`, `version_type`, `repo_type`, `technical_info`,
                              `created_at`, `last_modified_at`, `created_by_id`, `last_modified_by_id`, `brick_major_version_id`)
