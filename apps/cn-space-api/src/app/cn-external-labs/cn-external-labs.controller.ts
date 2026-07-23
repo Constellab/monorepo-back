@@ -229,6 +229,26 @@ export class CnExternalLabsController {
     return document.content;
   }
 
+  /**
+   * Get an image file of a Constellab document
+   * @param documentId The ID of the Constellab document
+   * @param filename The name of the image file
+   * @param response Express response object
+   */
+  @CnLabAllowDev()
+  @Get('constellab-document/:documentId/image/*filename')
+  async getConstellabDocumentImage(
+    @Param('documentId', new ParseUUIDPipe()) documentId: string,
+    @Param('filename') filename: string,
+    @Res() response: Response
+  ): Promise<void> {
+    const file = await this.constellabDocumentAggregateService.getConstellabDocumentContentDocument(
+      documentId,
+      filename
+    );
+    BlResponseHelper.setFileResponse(response, file, { mode: 'preview' });
+  }
+
   //////////////////////////// RESOURCE ////////////////////////////
 
   @Put(['folder/:parentFolderId/resource'])
