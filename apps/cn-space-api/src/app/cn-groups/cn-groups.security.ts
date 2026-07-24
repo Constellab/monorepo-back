@@ -2,6 +2,7 @@ import { BlUnauthorizedException } from '@monorepo/back-core-lib';
 import { Injectable } from '@nestjs/common';
 
 import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
+import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
 import { CnUserSpaceInfo } from '../cn-users/cn-user.dto';
 import { CnGroupTeam } from './cn-group.entity';
 import { CnGroupsService } from './cn-groups.service';
@@ -18,15 +19,25 @@ export class CnGroupsSecurity {
   ) {}
 
   /**
-   * Get the group and check if the user can get it.
-   * He can only if he is a member of the space and is not a visitor.
+   * Get the group and check that the current auth context can view it.
+   * A lab access token is trusted within its own space, so we only check that the
+   * group belongs to the token's space (like {@link CnFoldersSecurityLabAccessToken}).
+   * For a user context, the user must be a member of the space (not a visitor) and
+   * the group must belong to that space.
    */
-  public async getAndCheckAuthorizationToGetTeam(
-    userInfo: CnUserSpaceInfo,
-    teamId: string
-  ): Promise<CnGroupTeam> {
+  public async getAndCheckAuthorizationToGetTeam(teamId: string): Promise<CnGroupTeam> {
     const team = await this.groupService.getAndCheckTeamById(teamId);
-    this.checkAuthorizationToGetTeam(userInfo, team);
+
+    const authContext = CnCurrentUserHelper.getAndCheckAuthContext();
+    if (authContext.type === 'labToken') {
+      // the token is trusted in its space: only check that the group is in that space
+      if (team.spaceId !== authContext.space.id) {
+        throw new BlUnauthorizedException();
+      }
+    } else {
+      this.checkAuthorizationToGetTeam(CnCurrentUserHelper.getAndCheckUserSpaceInfo(), team);
+    }
+
     return team;
   }
 

@@ -189,9 +189,8 @@ export class CnGroupsAggregateService {
   }
 
   /**
-   * Get all the users of a group. Uses the same security as getting a team:
-   * the current user must be a member of the space (not a visitor) and the group
-   * must belong to the current space.
+   * Get all the users of a group. The current context must be authorized to view
+   * the team (see {@link CnGroupsSecurity.getAndCheckAuthorizationToGetTeam}).
    * @param groupId
    */
   public async getUsersOfGroupSecured(groupId: string): Promise<CnUser[]> {
@@ -216,10 +215,7 @@ export class CnGroupsAggregateService {
   /////////////////////////////// AUTHORIZATION ///////////////////////////////
 
   private async getAndCheckCurrentAuthorizationToGetTeam(groupId: string): Promise<CnGroupTeam> {
-    return await this.groupSecurity.getAndCheckAuthorizationToGetTeam(
-      CnCurrentUserHelper.getAndCheckUserSpaceInfo(),
-      groupId
-    );
+    return await this.groupSecurity.getAndCheckAuthorizationToGetTeam(groupId);
   }
 
   private async getAndCheckCurrentAuthorizationToUpdateTeam(groupId: string): Promise<CnGroupTeam> {
