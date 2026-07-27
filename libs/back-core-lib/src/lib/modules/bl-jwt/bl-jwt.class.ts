@@ -16,6 +16,13 @@ export interface BlTokenUser {
   email: string; // user mail
 }
 
+/** Decoded JWT payload, including the standard claims we may inspect. */
+export interface BlDecodedToken extends BlTokenUser {
+  aud?: string | string[];
+  exp?: number;
+  iat?: number;
+}
+
 export abstract class BlUserService {
   public abstract findOne(id: string): Promise<BlUser | null>;
 }
