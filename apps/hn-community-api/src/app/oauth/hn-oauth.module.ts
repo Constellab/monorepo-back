@@ -5,6 +5,7 @@ import { HnMcpResourceGuard } from './hn-mcp-resource.guard';
 import { HnOAuthConfig } from './hn-oauth.config';
 import { HnOAuthController } from './hn-oauth.controller';
 import { HnOAuthClientStore } from './hn-oauth-client.store';
+import { HnOAuthCodeStore } from './hn-oauth-code.store';
 
 /**
  * General (resource-agnostic) Constellab OAuth 2.1 authorization server.
@@ -20,7 +21,7 @@ import { HnOAuthClientStore } from './hn-oauth-client.store';
 @Module({
   imports: [HnCoreConfigModule],
   controllers: [HnOAuthController],
-  providers: [HnOAuthConfig, HnMcpResourceGuard, HnOAuthClientStore],
-  exports: [HnOAuthConfig, HnMcpResourceGuard, HnOAuthClientStore],
+  providers: [HnOAuthConfig, HnMcpResourceGuard, HnOAuthClientStore, HnOAuthCodeStore],
+  exports: [HnOAuthConfig, HnMcpResourceGuard, HnOAuthClientStore, HnOAuthCodeStore],
 })
 export class HnOAuthModule {}

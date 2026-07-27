@@ -57,7 +57,7 @@ export class HnMcpResourceGuard implements CanActivate {
   }
 
   private audienceMatches(aud: string | string[] | undefined, expected: string): boolean {
-    if (aud == null) {
+    if (!aud) {
       return false;
     }
     return Array.isArray(aud) ? aud.includes(expected) : aud === expected;

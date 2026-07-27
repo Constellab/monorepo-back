@@ -1,31 +1,50 @@
-import { BlPublic } from '@monorepo/back-core-lib';
+import { BlJwtService, BlPublic } from '@monorepo/back-core-lib';
 import { BadRequestException, Body, Controller, Get, HttpCode, Post } from '@nestjs/common';
 
+import { HN_JWT_CONFIG } from '../auth/hn-jwt.config';
 import { HnOAuthConfig } from './hn-oauth.config';
 import { HN_OAUTH_PATHS } from './hn-oauth.constants';
 import { HnOAuthClient, HnOAuthClientStore } from './hn-oauth-client.store';
+import { HnOAuthCodeStore } from './hn-oauth-code.store';
 import {
   HnAuthServerMetadata,
   hnBuildAuthServerMetadata,
   hnBuildProtectedResourceMetadata,
   HnProtectedResourceMetadata,
 } from './hn-oauth-metadata.builder';
+import { hnVerifyPkce } from './hn-oauth-pkce.util';
 
 interface HnOAuthRegisterBody {
   redirect_uris?: unknown;
   client_name?: unknown;
 }
 
+interface HnOAuthTokenBody {
+  grant_type?: string;
+  code?: string;
+  redirect_uri?: string;
+  client_id?: string;
+  code_verifier?: string;
+}
+
+interface HnOAuthTokenResponse {
+  access_token: string;
+  token_type: 'Bearer';
+  expires_in: number;
+}
+
 /**
  * OAuth 2.1 endpoints for the (general) Constellab authorization server.
  * Public (bypass the global JWT/admin guards). The discovery documents MUST resolve
- * at the host root so MCP clients can find them.
+ * at the host root so MCP clients can discover them.
  */
 @Controller()
 export class HnOAuthController {
   constructor(
     private readonly config: HnOAuthConfig,
-    private readonly clientStore: HnOAuthClientStore
+    private readonly clientStore: HnOAuthClientStore,
+    private readonly codeStore: HnOAuthCodeStore,
+    private readonly jwtService: BlJwtService
   ) {}
 
   @BlPublic()
@@ -62,6 +81,47 @@ export class HnOAuthController {
     };
   }
 
+  /**
+   * Token endpoint (authorization_code grant + PKCE). Exchanges a one-time code for
+   * an access token (JWT) whose `aud` is the resource the code was issued for.
+   */
+  @BlPublic()
+  @Post(HN_OAUTH_PATHS.token)
+  @HttpCode(200)
+  token(@Body() body: HnOAuthTokenBody): HnOAuthTokenResponse {
+    if (body?.grant_type !== 'authorization_code') {
+      throw this.oauthError('unsupported_grant_type', 'only authorization_code is supported');
+    }
+    const { code, redirect_uri: redirectUri, client_id: clientId, code_verifier: codeVerifier } = body;
+    if (!code || !redirectUri || !clientId || !codeVerifier) {
+      throw this.oauthError(
+        'invalid_request',
+        'code, redirect_uri, client_id and code_verifier are required'
+      );
+    }
+
+    const binding = this.codeStore.consume(code);
+    if (
+      !binding ||
+      binding.clientId !== clientId ||
+      binding.redirectUri !== redirectUri ||
+      !hnVerifyPkce(codeVerifier, binding.codeChallenge)
+    ) {
+      throw this.oauthError('invalid_grant', 'authorization code is invalid, expired or mismatched');
+    }
+
+    const accessToken = this.jwtService.generateTokenForAudience(
+      binding.user.id,
+      binding.user.email,
+      binding.resource
+    );
+    return {
+      access_token: accessToken,
+      token_type: 'Bearer',
+      expires_in: HN_JWT_CONFIG.tokenDurationInSeconds,
+    };
+  }
+
   private parseRedirectUris(value: unknown): string[] {
     if (
       !Array.isArray(value) ||
@@ -74,5 +134,9 @@ export class HnOAuthController {
       });
     }
     return value;
+  }
+
+  private oauthError(error: string, errorDescription: string): BadRequestException {
+    return new BadRequestException({ error, error_description: errorDescription });
   }
 }

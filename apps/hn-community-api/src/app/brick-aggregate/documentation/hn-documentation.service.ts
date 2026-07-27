@@ -64,7 +64,7 @@ export class HnDocumentationService {
         folder: true,
       },
     });
-    if (doc == null && strict) {
+    if (!doc && strict) {
       throw new BlBadRequestException('Doc not found');
     }
     return doc;
