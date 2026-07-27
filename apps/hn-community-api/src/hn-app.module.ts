@@ -86,6 +86,7 @@ import { HnLikePartnerModule } from './app/like-aggregate/like-partner/hn-like-p
 import { HnLikeStoryModule } from './app/like-aggregate/like-story/hn-like-story.module';
 import { HnLikeTagModule } from './app/like-aggregate/like-tag/hn-like-tag.module';
 import { HnMcpDocModule } from './app/mcp-doc/hn-mcp-doc.module';
+import { HnOAuthModule } from './app/oauth/hn-oauth.module';
 import { HnPartnerModule } from './app/partner/hn-partner.module';
 import { HnProtocolModule } from './app/protocol/hn-protocol.module';
 import { HnPublicModule } from './app/public/hn-public.module';
@@ -340,6 +341,7 @@ TeRichTextModifications.setBackTimeDifference();
     HnRagflowChatbotModule,
 
     HnMcpDocModule,
+    HnOAuthModule,
   ],
   controllers: [HnHealthController],
   providers: [
