@@ -22,6 +22,15 @@ export class HnOAuthConfig {
     return this.coreConfig.getApiUrl().replace(/\/+$/, '');
   }
 
+  /**
+   * Front-end login page the /authorize endpoint redirects to when there is no
+   * active session. The front must honor a `returnUrl` param and come back to it
+   * after login (cross-repo dependency — see the OAuth plan).
+   */
+  get frontLoginUrl(): string {
+    return `${this.coreConfig.getFrontBaseUrl().replace(/\/+$/, '')}/login`;
+  }
+
   /** Registry of allowed resource URIs (token audiences). */
   get resources(): string[] {
     return [this.resourceUrl(HN_MCP_COMMUNITY_DOC_RESOURCE_PATH)];
