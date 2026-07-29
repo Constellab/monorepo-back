@@ -49,6 +49,18 @@ export class HnCoreConfigService {
     return this.getConfigString('JWT_SECRET');
   }
 
+  /**
+   * Non-loopback redirect URIs an OAuth client may register, as a comma-separated
+   * list. Loopback URIs are always accepted (RFC 8252), so this only needs to carry
+   * the remote callbacks. An empty value means loopback-only.
+   */
+  public getOAuthAllowedRedirectUris(): string[] {
+    return this.getConfigString('OAUTH_ALLOWED_REDIRECT_URIS')
+      .split(',')
+      .map((uri) => uri.trim())
+      .filter((uri) => uri.length > 0);
+  }
+
   public isLocal(): boolean {
     const env: HnEnvironmentProfile = this.getEnvironmentProfile();
     return env === 'dev' || env === 'docker' || env === 'test';
@@ -191,7 +203,9 @@ export class HnCoreConfigService {
         res = 'http://localhost:4200/';
         break;
       default:
-        throw Error(`No constellab front base url configured for environment '${this.getEnvironmentProfile()}'`);
+        throw Error(
+          `No constellab front base url configured for environment '${this.getEnvironmentProfile()}'`
+        );
     }
     return res;
   }

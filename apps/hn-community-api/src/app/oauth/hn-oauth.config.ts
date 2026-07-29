@@ -31,6 +31,13 @@ export class HnOAuthConfig {
     return `${this.coreConfig.getFrontBaseUrl().replace(/\/+$/, '')}/login`;
   }
 
+  /**
+   * Non-loopback redirect URIs a client may register.
+   */
+  get allowedRedirectUris(): string[] {
+    return this.coreConfig.getOAuthAllowedRedirectUris();
+  }
+
   /** Registry of allowed resource URIs (token audiences). */
   get resources(): string[] {
     return [this.resourceUrl(HN_MCP_COMMUNITY_DOC_RESOURCE_PATH)];

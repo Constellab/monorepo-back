@@ -12,3 +12,19 @@ export const HN_OAUTH_PATHS = {
   token: 'oauth/token',
   register: 'oauth/register',
 } as const;
+
+/**
+ * Bounds on a registration request. `/oauth/register` is public and the body limit is
+ * 50 MB, so without these an attacker could register a client carrying megabytes of
+ * loopback URIs (which always pass the policy) and have them kept in the client store
+ * — memory exhaustion — or get the whole payload echoed back in the error body.
+ *
+ * `maxRejectedUrisReported` keeps the error description useful for diagnosing a real
+ * client without turning it into an amplifier.
+ */
+export const HN_OAUTH_LIMITS = {
+  maxRedirectUris: 10,
+  maxRedirectUriLength: 2048,
+  maxClientNameLength: 200,
+  maxRejectedUrisReported: 3,
+} as const;

@@ -15,7 +15,7 @@ import { Request, Response } from 'express';
 
 import { HN_JWT_CONFIG } from '../auth/hn-jwt.config';
 import { HnOAuthConfig } from './hn-oauth.config';
-import { HN_OAUTH_PATHS } from './hn-oauth.constants';
+import { HN_OAUTH_LIMITS, HN_OAUTH_PATHS } from './hn-oauth.constants';
 import { HnOAuthException, HnOAuthExceptionFilter } from './hn-oauth.exception';
 import { HnAuthorizeQueryDto } from './hn-oauth-authorize.dto';
 import { hnValidateAuthorizeParams } from './hn-oauth-authorize.validator';
@@ -28,6 +28,7 @@ import {
   HnProtectedResourceMetadata,
 } from './hn-oauth-metadata.builder';
 import { hnVerifyPkce } from './hn-oauth-pkce.util';
+import { hnValidateRedirectUris } from './hn-oauth-redirect-uri.validator';
 
 interface HnOAuthRegisterBody {
   redirect_uris?: unknown;
@@ -147,15 +148,30 @@ export class HnOAuthController {
 
   /**
    * Dynamic Client Registration (RFC 7591). Public client, PKCE, no secret.
+   *
+   * Open registration, but the redirect target is constrained: since there is no
+   * consent screen (yet), an unrestricted `redirect_uri` would let anyone collect an
+   * authorization code for a logged-in user.
    */
   @BlPublic()
   @Post(HN_OAUTH_PATHS.register)
   @HttpCode(201)
   register(@Body() body: HnOAuthRegisterBody): HnOAuthClient & Record<string, unknown> {
-    const redirectUris = this.parseRedirectUris(body?.redirect_uris);
-    const clientName = typeof body?.client_name === 'string' ? body.client_name : undefined;
+    const validation = hnValidateRedirectUris(body?.redirect_uris, this.config.allowedRedirectUris);
+    if (!validation.ok) {
+      throw new HnOAuthException('invalid_redirect_uri', validation.errorDescription);
+    }
 
-    const client = this.clientStore.register({ redirect_uris: redirectUris, client_name: clientName });
+    // Bounded because the store keeps it for the lifetime of the client.
+    const clientName =
+      typeof body?.client_name === 'string'
+        ? body.client_name.slice(0, HN_OAUTH_LIMITS.maxClientNameLength)
+        : undefined;
+
+    const client = this.clientStore.register({
+      redirect_uris: validation.redirectUris,
+      client_name: clientName,
+    });
 
     return {
       ...client,
@@ -232,19 +248,5 @@ export class HnOAuthController {
       }
     }
     return url.toString();
-  }
-
-  private parseRedirectUris(value: unknown): string[] {
-    if (
-      !Array.isArray(value) ||
-      value.length === 0 ||
-      !value.every((uri): uri is string => typeof uri === 'string' && uri.length > 0)
-    ) {
-      throw new HnOAuthException(
-        'invalid_redirect_uri',
-        'redirect_uris must be a non-empty array of strings'
-      );
-    }
-    return value;
   }
 }
