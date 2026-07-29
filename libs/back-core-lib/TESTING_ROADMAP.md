@@ -16,23 +16,26 @@ enums, and decorators that only call `SetMetadata`.
 
 Legend: **[U]** = unit test. Everything here is [U].
 
-Status today: nothing yet — the old empty `jest.config.ts` was deleted this session.
+Status today: Phase 0 done. Run the suite with `bun run back-core-lib:test`.
 
 ---
 
 ## Phase 0 — foundation (do first)
 
-- [ ] **Recreate `jest.config.ts`** — self-contained (no `jest.preset.js`), `node`
-      environment, `ts-jest` with `isolatedModules: true`, `@monorepo/*`
-      `moduleNameMapper`, and the `jsdom` stub if any spec pulls in `te-text-editor`.
-      Copy the shape of `apps/cn-space-api/jest.config.ts`.
-- [ ] **Restore `tsconfig.spec.json`** (deleted this session) and re-add its
-      `./tsconfig.spec.json` reference in `tsconfig.json`.
-- [ ] **Add npm scripts**: `back-core-lib:test` (like `te-text-editor:test`).
-- [ ] **Add to VS Code Test Explorer** — a `back-core-lib` entry in
-      `jest.virtualFolders` in `.vscode/settings.json`.
-- [ ] **First reference test** — pick `BlVersion` (pure, self-contained, high value)
-      as the template others copy.
+- [x] **Recreate `jest.config.ts`** — self-contained (no `jest.preset.js`), `node`
+      environment, `ts-jest`, `@monorepo/*` `moduleNameMapper`. `isolatedModules` lives
+      in `tsconfig.spec.json` (the `ts-jest` transform option is deprecated). No `jsdom`
+      stub yet — add one if a spec ever pulls in `te-text-editor`.
+- [x] **Restore `tsconfig.spec.json`** and its `./tsconfig.spec.json` reference in
+      `tsconfig.json`.
+- [x] **Add npm scripts**: `back-core-lib:test` (like `te-text-editor:test`).
+- [x] **Add to VS Code Test Explorer** — `back-core-lib` entry in `jest.virtualFolders`.
+- [x] **First reference test** — ended up being `modules/bl-jwt/bl-jwt.strategy.spec.ts`
+      (Phase 4) rather than `BlVersion`, because the audience-scoped token check landed
+      first. It is the template to copy: direct instantiation, a `jest.fn()` for
+      `usersService`, one assertion per branch.
+
+**Still open from this phase:** `BlVersion` remains untested — see Phase 1.
 
 ---
 
@@ -109,8 +112,10 @@ Real logic, but wrapped in NestJS plumbing. Instantiate directly and feed a mock
 - [ ] **[U]** `interceptors/bl-timeout.interceptor.ts` — reads `BL_TIMEOUT_KEY`;
       passes through under limit; maps `TimeoutError` → `RequestTimeoutException`
       (use RxJS marble/fake timers).
-- [ ] **[U]** `modules/bl-jwt/bl-jwt.strategy.ts` — `validate()` returns the user when
-      found; throws `BlUnauthorizedException` when `usersService` returns null.
+- [x] **[U]** `modules/bl-jwt/bl-jwt.strategy.ts` — `validate()` returns the user when
+      found; throws `BlUnauthorizedException` when `usersService` returns null; and
+      refuses a resource-scoped token (`aud` present, string or array) without
+      querying the database.
 - [ ] **[U]** `decorators/bl-public.decorator.ts` — `blIsDecoratedWithPublic()` reads
       class-level and method-level metadata (mock `Reflector`).
 - [ ] **[U]** `guards/bl-throttler-behind-proxy.guard.ts` — IP extraction from

@@ -33,6 +33,11 @@
       "name": "te-text-editor",
       "rootPath": "libs/te-text-editor",
       "jestCommandLine": "npx jest --config ./jest.config.ts"
+    },
+    {
+      "name": "back-core-lib",
+      "rootPath": "libs/back-core-lib",
+      "jestCommandLine": "bunx jest --config ./jest.config.ts"
     }
   ]
 }

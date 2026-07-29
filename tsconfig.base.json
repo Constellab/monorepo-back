@@ -4,6 +4,7 @@
     "rootDir": ".",
     "sourceMap": true,
     "declaration": false,
+    // Deprecated, removed in TS 7.
     "moduleResolution": "node10",
     "ignoreDeprecations": "5.0",
     "emitDecoratorMetadata": true,
@@ -15,6 +16,7 @@
     "useDefineForClassFields": false,
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
+    // Deprecated, removed in TS 7.
     "baseUrl": ".",
     "strict": true,
     "forceConsistentCasingInFileNames": true,

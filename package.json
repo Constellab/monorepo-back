@@ -28,7 +28,8 @@
     "hn-community-api:caprover-deploy-pre-prod": "node deploy.mjs https://captain.constellab-pre-prod.gencovery.com community-api-pre-prod ghcr.io/constellab/community-api hn_",
     "hn-community-api:caprover-deploy-prod": "node deploy.mjs https://captain.constellab.gencovery.com community-api ghcr.io/constellab/community-api hn_",
     "hn-community-api:build-image": "docker build -f apps/hn-community-api/Dockerfile -t hn-community-api .",
-    "te-text-editor:test": "jest --config ./libs/te-text-editor/jest.config.ts"
+    "te-text-editor:test": "jest --config ./libs/te-text-editor/jest.config.ts",
+    "back-core-lib:test": "jest --config ./libs/back-core-lib/jest.config.ts"
   },
   "private": true,
   "dependencies": {
