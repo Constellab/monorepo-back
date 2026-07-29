@@ -106,12 +106,12 @@ export class HnOAuthController {
    */
   @BlPublic()
   @Get(HN_OAUTH_PATHS.authorize)
-  authorize(
+  async authorize(
     @Query(authorizeQueryPipe) query: HnAuthorizeQueryDto,
     @Req() request: Request,
     @Res() response: Response
-  ): void {
-    const validation = hnValidateAuthorizeParams(query, this.clientStore, this.config);
+  ): Promise<void> {
+    const validation = await hnValidateAuthorizeParams(query, this.clientStore, this.config);
 
     if (!validation.ok) {
       if (validation.kind === 'pre_redirect') {
@@ -136,7 +136,7 @@ export class HnOAuthController {
       return;
     }
 
-    const code = this.codeStore.create({
+    const code = await this.codeStore.create({
       clientId: params.client.client_id,
       redirectUri: params.redirectUri,
       codeChallenge: params.codeChallenge,
@@ -156,7 +156,7 @@ export class HnOAuthController {
   @BlPublic()
   @Post(HN_OAUTH_PATHS.register)
   @HttpCode(201)
-  register(@Body() body: HnOAuthRegisterBody): HnOAuthClient & Record<string, unknown> {
+  async register(@Body() body: HnOAuthRegisterBody): Promise<HnOAuthClient & Record<string, unknown>> {
     const validation = hnValidateRedirectUris(body?.redirect_uris, this.config.allowedRedirectUris);
     if (!validation.ok) {
       throw new HnOAuthException('invalid_redirect_uri', validation.errorDescription);
@@ -168,7 +168,7 @@ export class HnOAuthController {
         ? body.client_name.slice(0, HN_OAUTH_LIMITS.maxClientNameLength)
         : undefined;
 
-    const client = this.clientStore.register({
+    const client = await this.clientStore.register({
       redirect_uris: validation.redirectUris,
       client_name: clientName,
     });
@@ -188,7 +188,7 @@ export class HnOAuthController {
   @BlPublic()
   @Post(HN_OAUTH_PATHS.token)
   @HttpCode(200)
-  token(@Body() body: HnOAuthTokenBody): HnOAuthTokenResponse {
+  async token(@Body() body: HnOAuthTokenBody): Promise<HnOAuthTokenResponse> {
     if (body?.grant_type !== 'authorization_code') {
       throw new HnOAuthException('unsupported_grant_type', 'only authorization_code is supported');
     }
@@ -200,7 +200,7 @@ export class HnOAuthController {
       );
     }
 
-    const binding = this.codeStore.consume(code);
+    const binding = await this.codeStore.consume(code);
     if (
       !binding ||
       binding.clientId !== clientId ||

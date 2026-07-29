@@ -30,7 +30,7 @@ export type HnAuthorizeValidation =
     };
 
 export interface HnClientLookup {
-  find(clientId: string): HnOAuthClient | null;
+  find(clientId: string): Promise<HnOAuthClient | null>;
   redirectUriAllowed(client: HnOAuthClient, redirectUri: string): boolean;
 }
 
@@ -45,13 +45,13 @@ export interface HnResourceRegistry {
  * Parameter types are guaranteed by the `ValidationPipe` + {@link HnAuthorizeQueryDto};
  * empty strings are still treated as absent.
  */
-export function hnValidateAuthorizeParams(
+export async function hnValidateAuthorizeParams(
   query: HnAuthorizeQueryDto,
   clients: HnClientLookup,
   registry: HnResourceRegistry
-): HnAuthorizeValidation {
+): Promise<HnAuthorizeValidation> {
   // 1. client_id + redirect_uri must be trusted before we can redirect anything.
-  const client = query.client_id ? clients.find(query.client_id) : null;
+  const client = query.client_id ? await clients.find(query.client_id) : null;
   if (!client) {
     return {
       ok: false,

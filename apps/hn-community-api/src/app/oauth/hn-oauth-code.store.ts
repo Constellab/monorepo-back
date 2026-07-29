@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { BlRedisStore } from '@monorepo/back-core-lib';
+import { Injectable, Logger } from '@nestjs/common';
 import { randomBytes } from 'crypto';
 
 export interface HnOAuthCodeUser {
@@ -15,34 +16,41 @@ export interface HnOAuthCodeBinding {
   user: HnOAuthCodeUser;
 }
 
+const KEY_PREFIX = 'oauth:code:';
+
+// OAuth 2.1 recommends an authorization code lifetime of <= 60s.
+const TTL_SECONDS = 60;
+
 /**
- * In-memory store of authorization codes (OAuth 2.1). Codes are short-lived and
- * single-use. In-memory for v1 (mirrors the cli-auth pattern) — a dedicated
- * instance, NOT shared with the cli-auth device-flow store.
+ * Redis-backed store of authorization codes (OAuth 2.1): short-lived, single-use.
  */
 @Injectable()
 export class HnOAuthCodeStore {
-  // OAuth 2.1 recommends an authorization code lifetime of <= 60s.
-  private static readonly TTL_MS = 60_000;
+  private readonly logger = new Logger(HnOAuthCodeStore.name);
 
-  private readonly codes = new Map<string, { binding: HnOAuthCodeBinding; expiresAt: number }>();
+  constructor(private readonly redis: BlRedisStore) {}
 
-  create(binding: HnOAuthCodeBinding): string {
+  async create(binding: HnOAuthCodeBinding): Promise<string> {
     const code = randomBytes(32).toString('hex');
-    this.codes.set(code, { binding, expiresAt: Date.now() + HnOAuthCodeStore.TTL_MS });
+    await this.redis.setWithTtl(`${KEY_PREFIX}${code}`, JSON.stringify(binding), TTL_SECONDS);
     return code;
   }
 
-  /** One-time consume: the code is always removed; returns null if unknown or expired. */
-  consume(code: string): HnOAuthCodeBinding | null {
-    const entry = this.codes.get(code);
-    if (!entry) {
+  /**
+   * One-time consume: the code is always removed. Returns null when unknown or
+   * expired, which Redis makes indistinguishable — both are `invalid_grant` anyway.
+   */
+  async consume(code: string): Promise<HnOAuthCodeBinding | null> {
+    const raw = await this.redis.getAndDelete(`${KEY_PREFIX}${code}`);
+    if (raw == null) {
       return null;
     }
-    this.codes.delete(code);
-    if (Date.now() > entry.expiresAt) {
+    try {
+      return JSON.parse(raw) as HnOAuthCodeBinding;
+    } catch {
+      // Corrupt entry: treat as absent rather than failing the request.
+      this.logger.warn('Discarded an unparsable authorization code entry');
       return null;
     }
-    return entry.binding;
   }
 }

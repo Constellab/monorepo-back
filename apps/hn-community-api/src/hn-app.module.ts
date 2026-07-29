@@ -9,6 +9,8 @@ import {
   BlMailModule,
   BlNamingStrategy,
   BlObjectStorageModule,
+  BlRedisConfig,
+  BlRedisModule,
   BlRequestContextMiddleware,
   BlTranslateModule,
   BlTransportModuleConfig,
@@ -173,6 +175,14 @@ function configureTransportModule(configService: HnCoreConfigService): BlTranspo
   return configService.getTransportModuleConfig();
 }
 
+/**
+ * Reuses the queue connection details (BullMQ already needs a Redis instance) and
+ * namespaces the keys, so sharing one server with another app stays safe.
+ */
+function configureRedisModule(configService: HnCoreConfigService): BlRedisConfig {
+  return { ...configService.getTransportModuleConfig(), keyPrefix: 'hn:' };
+}
+
 // configure the text editor
 TeRichTextModifications.setBackTimeDifference();
 
@@ -230,6 +240,12 @@ TeRichTextModifications.setBackTimeDifference();
         inject: [HnCoreConfigService],
       })
     ),
+
+    BlRedisModule.forRootAsync({
+      imports: [HnCoreModule],
+      useFactory: configureRedisModule,
+      inject: [HnCoreConfigService],
+    }),
 
     BlTranslateModule.forRoot({
       getCurrentUserLang: () => HnCurrentUserHelper.getCurrentUser()?.lang ?? null,

@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { BlRedisStore } from '@monorepo/back-core-lib';
+import { Injectable, Logger } from '@nestjs/common';
 import { randomBytes } from 'crypto';
 
 export interface HnOAuthClient {
@@ -12,28 +13,50 @@ export interface HnOAuthClientRegistration {
   client_name?: string;
 }
 
+const KEY_PREFIX = 'oauth:client:';
+
 /**
- * In-memory registry of OAuth clients (RFC 7591 Dynamic Client Registration).
+ * Registrations are disposable — MCP clients re-register through DCR whenever their
+ * client_id is unknown — so they get an expiry rather than living forever. That also
+ * bounds how much an unauthenticated caller can accumulate in the store.
+ */
+const TTL_SECONDS = 30 * 24 * 60 * 60;
+
+/**
+ * Redis-backed registry of OAuth clients (RFC 7591 Dynamic Client Registration).
  *
- * Public clients only (PKCE, no secret). In-memory for v1 — a restart forgets
- * registrations, and MCP clients simply re-register. Persist in DB later.
+ * Public clients only (PKCE, no secret). Redis rather than a process-local Map so a
+ * client_id registered against one replica is resolvable from every other one;
+ * otherwise `/authorize` fails with an intermittent `invalid_client`.
  */
 @Injectable()
 export class HnOAuthClientStore {
-  private readonly clients = new Map<string, HnOAuthClient>();
+  private readonly logger = new Logger(HnOAuthClientStore.name);
 
-  register(registration: HnOAuthClientRegistration): HnOAuthClient {
+  constructor(private readonly redis: BlRedisStore) {}
+
+  async register(registration: HnOAuthClientRegistration): Promise<HnOAuthClient> {
     const client: HnOAuthClient = {
       client_id: randomBytes(16).toString('hex'),
       redirect_uris: registration.redirect_uris,
       client_name: registration.client_name,
     };
-    this.clients.set(client.client_id, client);
+    await this.redis.setWithTtl(`${KEY_PREFIX}${client.client_id}`, JSON.stringify(client), TTL_SECONDS);
     return client;
   }
 
-  find(clientId: string): HnOAuthClient | null {
-    return this.clients.get(clientId) ?? null;
+  async find(clientId: string): Promise<HnOAuthClient | null> {
+    const raw = await this.redis.get(`${KEY_PREFIX}${clientId}`);
+    if (raw == null) {
+      return null;
+    }
+    try {
+      return JSON.parse(raw) as HnOAuthClient;
+    } catch {
+      // Corrupt entry: treat as unknown, the client will simply re-register.
+      this.logger.warn(`Discarded an unparsable client entry for '${clientId}'`);
+      return null;
+    }
   }
 
   /** Exact-match check against the client's registered redirect URIs (anti open-redirect). */
