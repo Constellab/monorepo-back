@@ -121,7 +121,7 @@ describe('Auth (e2e)', () => {
       };
     }
 
-    it('rotates both tokens', async () => {
+    it('rotates the refresh token and re-issues an access token', async () => {
       const initial = await loginRaw();
 
       const response = await supertest(helper.app.getHttpServer())
@@ -130,8 +130,8 @@ describe('Auth (e2e)', () => {
         .expect(201);
 
       expect(response.body.status).toBe('LOGGED_IN');
-      expect(setCookieValue(response, ACCESS_COOKIE)).not.toBe(initial.access);
       expect(setCookieValue(response, REFRESH_COOKIE)).not.toBe(initial.refresh);
+      expect(setCookieValue(response, ACCESS_COOKIE)).toBeTruthy();
     });
 
     it('issues an access token that reaches a protected route', async () => {

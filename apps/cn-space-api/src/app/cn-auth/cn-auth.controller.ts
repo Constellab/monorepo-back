@@ -7,6 +7,22 @@ import { CnUser } from '../cn-users/cn-user.entity';
 import { CnAuthResponse, CnAuthService, CnExternalCheckCredentialResponse } from './cn-auth.service';
 import { CN_JWT_CONFIG } from './cn-jwt.config';
 
+/**
+ * Rate limit for the endpoints an end user hits to verify a credential, tighter than
+ * the app-wide ceiling in `cn-app.module.ts`. Per IP, per minute (`ttl` is in ms).
+ */
+const CREDENTIAL_THROTTLE = { limit: 10, ttl: 60_000 };
+
+/**
+ * The `external/*` routes are called server-to-server by hn-community-api, not by a
+ * browser, so every request arrives from ONE source IP — hn's server.
+ *
+ * The throttler keys on the IP and never reads the body, so it cannot tell which account
+ * is being checked: this budget is **shared by all community users at once**, not per
+ * account.
+ */
+const SERVER_TO_SERVER_THROTTLE = { limit: 1000, ttl: 60_000 };
+
 @Controller('auth')
 export class CnAuthController {
   constructor(
@@ -20,7 +36,7 @@ export class CnAuthController {
    * IF 2FA activated, return 2FA_REQUIRED
    * Else  It stores automatically in a secure cookie
    */
-  @BlPublicSecure()
+  @BlPublicSecure(CREDENTIAL_THROTTLE)
   @Post('login')
   async login(@Body() credentials: BlCredentials, @Res() response: Response): Promise<void> {
     const result: CnAuthResponse = await this.authService.login(credentials);
@@ -37,7 +53,7 @@ export class CnAuthController {
    * Login with 2Fa code after the basic login
    * It stores automatically in a secure cookie
    */
-  @BlPublicSecure()
+  @BlPublicSecure(CREDENTIAL_THROTTLE)
   @Post('login-2fa')
   async login2Fa(@Body() credentials: BlCredentials2Fa, @Res() response: Response): Promise<void> {
     const token = await this.authService.loginWith2FA(credentials);
@@ -46,7 +62,7 @@ export class CnAuthController {
     response.send({ status: 'LOGGED_IN', expiresIn: CN_JWT_CONFIG.tokenDurationInMilliseconds });
   }
 
-  @BlPublicSecure()
+  @BlPublicSecure(SERVER_TO_SERVER_THROTTLE)
   @Post('external/check-credentials')
   checkCredentials(@Body() credentials: BlCredentials): Promise<CnExternalCheckCredentialResponse> {
     return this.authService.externalCheckCredentials(credentials, true);
@@ -55,7 +71,7 @@ export class CnAuthController {
   /**
    * Called by external service to check the 2fa code and return user if ok
    */
-  @BlPublicSecure()
+  @BlPublicSecure(SERVER_TO_SERVER_THROTTLE)
   @Post('external/check-2fa')
   externalCheck2Fa(@Body() credentials: BlCredentials2Fa): Promise<CnUser> {
     return this.authService.externalCheck2FA(credentials);

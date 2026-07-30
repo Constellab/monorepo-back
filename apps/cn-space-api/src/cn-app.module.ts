@@ -123,10 +123,7 @@ function configureJwtModule(configService: CnCoreConfigService, userService: CnU
   return {
     jwtSecret: configService.getJwtSecret(),
     jwtFromRequest: (request: Request) =>
-      BlCookieHelper.getCookieFromHeader(
-        request.headers.cookie ?? '',
-        CN_JWT_CONFIG.authorizationCookie
-      ),
+      BlCookieHelper.getCookieFromHeader(request.headers.cookie ?? '', CN_JWT_CONFIG.authorizationCookie),
     usersService: userService,
     tokenDurationInSeconds: CN_JWT_CONFIG.tokenDurationInSeconds,
   };
@@ -214,11 +211,13 @@ TeRichTextModifications.setBackTimeDifference();
       CnMailConfig.currentUserIsAdmin
     ),
 
+    // Global ceiling for every route carrying @BlPublicSecure().
+    // `ttl` is in MILLISECONDS since throttler v5.
     ThrottlerModule.forRoot({
       throttlers: [
         {
-          ttl: 60,
-          limit: 10,
+          ttl: 60_000,
+          limit: 60,
         },
       ],
     }),

@@ -13,6 +13,12 @@ import { HnCoreConfigService } from '../core/modules/core-config/hn-core-config.
 import { HnAuthResponse, HnAuthService, HnAuthTokens } from './hn-auth.service';
 import { HN_JWT_CONFIG } from './hn-jwt.config';
 
+/**
+ * Rate limit for the endpoints that verify a credential, tighter than the app-wide
+ * ceiling in `hn-app.module.ts`. Per IP, per minute (`ttl` is in milliseconds).
+ */
+const CREDENTIAL_THROTTLE = { limit: 10, ttl: 60_000 };
+
 @Controller('auth')
 export class HnAuthController {
   constructor(
@@ -26,7 +32,7 @@ export class HnAuthController {
    * IF 2FA activated, return 2FA_REQUIRED
    * Else  It stores automatically in a secure cookie
    */
-  @BlPublicSecure()
+  @BlPublicSecure(CREDENTIAL_THROTTLE)
   @Post('login')
   async login(@Body() credentials: BlCredentials, @Res() response: Response): Promise<void> {
     const result: HnAuthResponse = await this.authService.login(credentials);
@@ -45,7 +51,7 @@ export class HnAuthController {
    * Login with 2Fa code after the basic login
    * It stores automatically in a secure cookie
    */
-  @BlPublicSecure()
+  @BlPublicSecure(CREDENTIAL_THROTTLE)
   @Post('login-2fa')
   async login2Fa(@Body() credentials: BlCredentials2Fa, @Res() response: Response): Promise<void> {
     const tokens = await this.authService.loginWith2FA(credentials);

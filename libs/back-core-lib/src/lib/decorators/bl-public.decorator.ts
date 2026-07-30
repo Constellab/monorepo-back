@@ -25,10 +25,13 @@ export const BlPublic = (): CustomDecorator => SetMetadata(publicMetadata, true)
 export const BlPublicSecure = (options?: { limit: number; ttl: number }): any => {
   const decorators = [SetMetadata(publicMetadata, true), UseGuards(BlThrottlerBehindProxyGuard)];
   if (options) {
-    // TODO TO CHECK KEY
+    // The key MUST match a throttler declared in `ThrottlerModule.forRoot`. Both apps
+    // declare a single unnamed one, which @nestjs/throttler names 'default' — an
+    // unmatched key silently leaves the route on the global limit instead of overriding it.
+    // `ttl` is in MILLISECONDS (since throttler v5).
     decorators.push(
       Throttle({
-        test: {
+        default: {
           limit: options.limit,
           ttl: options.ttl,
         },

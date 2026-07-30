@@ -262,11 +262,13 @@ TeRichTextModifications.setBackTimeDifference();
       HnMailConfig.currentUserIsAdmin
     ),
 
+    // Global ceiling for every route carrying @BlPublicSecure().
+    // `ttl` is in MILLISECONDS since throttler v5.
     ThrottlerModule.forRoot({
       throttlers: [
         {
-          ttl: 60,
-          limit: 10,
+          ttl: 60_000,
+          limit: 60,
         },
       ],
     }),
