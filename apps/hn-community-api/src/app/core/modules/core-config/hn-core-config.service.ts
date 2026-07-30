@@ -2,6 +2,7 @@ import { BlMailConfig, BlObjectStorageCredentials, BlTransportModuleConfig } fro
 import { Injectable, Logger, LogLevel } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
+import { HN_JWT_CONFIG } from '../../../auth/hn-jwt.config';
 import {
   HN_BUCKET_AGENTS_BACKUP_KEY,
   HN_BUCKET_AGENTS_KEY,
@@ -47,6 +48,32 @@ export class HnCoreConfigService {
 
   public getJwtSecret(): string {
     return this.getConfigString('JWT_SECRET');
+  }
+
+  /**
+   * Lifetimes of the session token pair and of MCP access tokens, in seconds.
+   *
+   * Optional in the environment: the defaults in `HN_JWT_CONFIG` apply when unset.
+   */
+  public getAccessTokenDurationInSeconds(): number {
+    return this.getConfigNumberOrDefault(
+      'ACCESS_TOKEN_DURATION_SECONDS',
+      HN_JWT_CONFIG.defaultAccessTokenDurationInSeconds
+    );
+  }
+
+  public getRefreshTokenDurationInSeconds(): number {
+    return this.getConfigNumberOrDefault(
+      'REFRESH_TOKEN_DURATION_SECONDS',
+      HN_JWT_CONFIG.defaultRefreshTokenDurationInSeconds
+    );
+  }
+
+  public getMcpAccessTokenDurationInSeconds(): number {
+    return this.getConfigNumberOrDefault(
+      'MCP_ACCESS_TOKEN_DURATION_SECONDS',
+      HN_JWT_CONFIG.defaultMcpAccessTokenDurationInSeconds
+    );
   }
 
   /**
@@ -235,6 +262,23 @@ export class HnCoreConfigService {
       throw Error(`Missing config value for '${configName}'`);
     }
     return value;
+  }
+
+  /**
+   * Read an optional numeric config value, falling back to `defaultValue` when it is
+   * absent, empty or not a number.
+   */
+  protected getConfigNumberOrDefault(configName: string, defaultValue: number): number {
+    const raw: string | undefined = this.configService.get(configName);
+    if (raw == null || raw.trim().length === 0) {
+      return defaultValue;
+    }
+    const parsed: number = parseInt(raw, 10);
+    if (Number.isNaN(parsed)) {
+      this.logger.warn(`Config '${configName}' is not a number ('${raw}'), using ${defaultValue}`);
+      return defaultValue;
+    }
+    return parsed;
   }
 
   protected getConfigNumber(configName: string): number {

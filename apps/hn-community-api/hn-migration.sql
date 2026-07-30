@@ -788,3 +788,24 @@ ALTER TABLE `folder`
 ALTER TABLE `story_topics_topic`
   CHANGE `storyId` `story_id` varchar(36) NOT NULL,
   CHANGE `topicId` `topic_id` varchar(36) NOT NULL;
+
+-- ############################################################################
+-- MUST RUN BEFORE THE APP STARTS. Session refresh tokens live in this table; if
+-- it is missing, /auth/refresh and /oauth/token fail, so nobody can stay logged
+-- in. This is not a degraded feature, it breaks authentication.
+-- ############################################################################
+
+CREATE TABLE `refresh_token`
+(
+  `id`           varchar(36)  NOT NULL,
+  `token_hash`   varchar(64)  NOT NULL,
+  `kind`         varchar(16)  NOT NULL COMMENT 'session | oauth',
+  `user_id`      varchar(36)  NOT NULL,
+  `expires_at`   datetime     NOT NULL,
+  `client_id`    varchar(64)  NULL COMMENT 'OAuth clients only',
+  `resource`     varchar(512) NULL COMMENT 'OAuth clients only: token audience',
+  `created_at`   datetime     NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `IDX_refresh_token_token_hash` (`token_hash`),
+  CONSTRAINT `FK_refresh_token_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
+);

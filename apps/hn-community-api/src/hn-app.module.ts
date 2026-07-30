@@ -39,6 +39,7 @@ import { HnAgentVersionBrickDependenciesModule } from './app/agent-aggregate/age
 import { HnAgentAggregateModule } from './app/agent-aggregate/hn-agent-aggregate.module';
 import { HnAuthModule } from './app/auth/hn-auth.module';
 import { HN_JWT_CONFIG } from './app/auth/hn-jwt.config';
+import { HnRefreshTokenModule } from './app/auth/refresh-token/hn-refresh-token.module';
 import { HnBrickModule } from './app/brick-aggregate/brick/hn-brick.module';
 import { HnBrickMajorVersionModule } from './app/brick-aggregate/brick-major-version/hn-brick-major-version.module';
 import { HnBrickUserModule } from './app/brick-aggregate/brick-user/hn-brick-user.module';
@@ -167,7 +168,9 @@ function configureJwtModule(configService: HnCoreConfigService, userService: HnU
       );
     },
     usersService: userService,
-    tokenDurationInSeconds: HN_JWT_CONFIG.tokenDurationInSeconds,
+    // Module-wide fallback. Login, 2FA and the OAuth token endpoint pass their own
+    // (shorter) lifetime explicitly, so this only applies to `cli-auth`.
+    tokenDurationInSeconds: HN_JWT_CONFIG.legacyTokenDurationInSeconds,
   };
 }
 
@@ -286,6 +289,7 @@ TeRichTextModifications.setBackTimeDifference();
     HnBrickVersionModule,
     HnBrickMajorVersionModule,
     HnAuthModule,
+    HnRefreshTokenModule,
     HnCliAuthModule,
     HnFolderModule,
     HnTechnicalFolderModule,

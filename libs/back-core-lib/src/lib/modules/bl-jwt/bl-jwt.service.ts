@@ -7,11 +7,17 @@ import { BlDecodedToken, BlTokenUser } from './bl-jwt.class';
 export class BlJwtService {
   constructor(private jwtService: JwtService) {}
 
-  // generate a token with the userId and the userEmail
-  public generateToken(userId: string, userEmail: string): string {
+  /**
+   * Generate a token with the userId and the userEmail.
+   *
+   * `expiresInSeconds` overrides the module-wide lifetime configured from
+   * `BlJwtConfig.tokenDurationInSeconds`. Callers that mint short-lived access
+   * tokens pass it; callers that omit it keep the module default.
+   */
+  public generateToken(userId: string, userEmail: string, expiresInSeconds?: number): string {
     // set the userId and email in the token
     const payload: BlTokenUser = { sub: userId, email: userEmail };
-    return this.jwtService.sign(payload);
+    return this.jwtService.sign(payload, this.signOptions(expiresInSeconds));
   }
 
   /**
@@ -19,9 +25,14 @@ export class BlJwtService {
    * tokens scoped to a single resource (e.g. an MCP server) so they can't be
    * mixed up with plain session tokens.
    */
-  public generateTokenForAudience(userId: string, userEmail: string, audience: string): string {
+  public generateTokenForAudience(
+    userId: string,
+    userEmail: string,
+    audience: string,
+    expiresInSeconds?: number
+  ): string {
     const payload: BlTokenUser = { sub: userId, email: userEmail };
-    return this.jwtService.sign(payload, { audience });
+    return this.jwtService.sign(payload, { audience, ...this.signOptions(expiresInSeconds) });
   }
 
   /**
@@ -31,5 +42,13 @@ export class BlJwtService {
    */
   public verifyToken(token: string): BlDecodedToken {
     return this.jwtService.verify<BlDecodedToken>(token);
+  }
+
+  /**
+   * Omit `expiresIn` entirely when no override is given, so `@nestjs/jwt` falls
+   * back to the module's `signOptions` instead of receiving `undefined`.
+   */
+  private signOptions(expiresInSeconds?: number): { expiresIn?: number } {
+    return expiresInSeconds == null ? {} : { expiresIn: expiresInSeconds };
   }
 }

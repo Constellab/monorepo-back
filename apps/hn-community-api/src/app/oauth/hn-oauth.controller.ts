@@ -218,7 +218,10 @@ export class HnOAuthController {
     return {
       access_token: accessToken,
       token_type: 'Bearer',
-      expires_in: HN_JWT_CONFIG.tokenDurationInSeconds,
+      // Still the module-wide lifetime, matching the signature above because neither
+      // passes an override. Shortened to an hour once this endpoint also issues a
+      // refresh token — until then a client would have to re-authorize on expiry.
+      expires_in: HN_JWT_CONFIG.legacyTokenDurationInSeconds,
     };
   }
 
