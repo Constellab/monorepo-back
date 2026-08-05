@@ -40,9 +40,5 @@ export class HnAuthorizeQueryDto {
 
   @IsString()
   @IsOptional()
-  scope?: string;
-
-  @IsString()
-  @IsOptional()
   state?: string;
 }

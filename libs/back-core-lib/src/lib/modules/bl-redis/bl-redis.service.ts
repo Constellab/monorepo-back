@@ -31,10 +31,6 @@ export class BlRedisService extends BlRedisStore implements OnModuleDestroy {
     return await this.client.getdel(key);
   }
 
-  async delete(key: string): Promise<void> {
-    await this.client.del(key);
-  }
-
   async onModuleDestroy(): Promise<void> {
     try {
       await this.client.quit();

@@ -43,7 +43,7 @@ export class HnOAuthConfig {
     return [this.resourceUrl(HN_MCP_COMMUNITY_DOC_RESOURCE_PATH)];
   }
 
-  resourceUrl(resourcePath: string): string {
+  private resourceUrl(resourcePath: string): string {
     return `${this.issuer}/${resourcePath}`;
   }
 

@@ -7,7 +7,6 @@ export interface HnAuthorizeParams {
   codeChallenge: string;
   resource: string;
   state?: string;
-  scope?: string;
 }
 
 /**
@@ -98,6 +97,6 @@ export async function hnValidateAuthorizeParams(
 
   return {
     ok: true,
-    params: { client, redirectUri, codeChallenge, resource, state, scope: query.scope || undefined },
+    params: { client, redirectUri, codeChallenge, resource, state },
   };
 }

@@ -74,7 +74,8 @@ export class HnRefreshTokenService {
     }
 
     const newToken = HnRefreshTokenService.generateToken();
-    // Update the actual row with the new token and expiry
+    // Guarded on the OLD hash, not on the id: the first UPDATE destroys the condition the
+    // second one needs, which is what makes the token single-use under concurrency.
     const result = await this.repository.update(
       { tokenHash: presentedHash },
       {

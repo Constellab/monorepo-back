@@ -14,8 +14,8 @@ import { HnOAuthCodeStore } from './hn-oauth-code.store';
  * including inside the dynamically-created @rekog MCP controllers that reference the
  * guard via their `guards` option.
  *
- * v1 scope: discovery metadata + the Resource Server guard. Client registration,
- * /authorize and /token are added in later steps.
+ * Covers discovery metadata, dynamic client registration, /authorize, /token and the
+ * reusable Resource Server guard.
  */
 @Global()
 @Module({

@@ -43,6 +43,13 @@ interface HnOAuthTokenBody {
   code_verifier?: string;
 }
 
+/** RFC 7591 §3.2.1 response: the registration, plus the capabilities it is fixed to. */
+interface HnOAuthRegisterResponse extends HnOAuthClient {
+  token_endpoint_auth_method: 'none';
+  grant_types: string[];
+  response_types: string[];
+}
+
 interface HnOAuthTokenResponse {
   access_token: string;
   token_type: 'Bearer';
@@ -156,7 +163,7 @@ export class HnOAuthController {
   @BlPublic()
   @Post(HN_OAUTH_PATHS.register)
   @HttpCode(201)
-  async register(@Body() body: HnOAuthRegisterBody): Promise<HnOAuthClient & Record<string, unknown>> {
+  async register(@Body() body: HnOAuthRegisterBody): Promise<HnOAuthRegisterResponse> {
     const validation = hnValidateRedirectUris(body?.redirect_uris, this.config.allowedRedirectUris);
     if (!validation.ok) {
       throw new HnOAuthException('invalid_redirect_uri', validation.errorDescription);

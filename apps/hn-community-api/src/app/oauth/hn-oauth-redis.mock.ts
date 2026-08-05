@@ -37,11 +37,6 @@ export class HnOAuthRedisMock extends BlRedisStore {
     return value;
   }
 
-  // eslint-disable-next-line @typescript-eslint/require-await
-  async delete(key: string): Promise<void> {
-    this.entries.delete(key);
-  }
-
   /** Test helper: raw entry count, to assert that expiry actually removes records. */
   size(): number {
     return this.entries.size;

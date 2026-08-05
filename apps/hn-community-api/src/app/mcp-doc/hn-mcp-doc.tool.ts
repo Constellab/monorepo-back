@@ -4,14 +4,12 @@ import { z } from 'zod';
 
 import { HnMcpDocService } from './hn-mcp-doc.service';
 
-type ContentAsJson = {
+/** The shape @rekog/mcp-nest expects a tool handler to return. */
+type HnMcpToolResponse = {
   content: {
     type: 'text';
     text: string;
   }[];
-};
-
-type McpResponse = ContentAsJson & {
   isError?: boolean;
 };
 
@@ -36,7 +34,7 @@ export class HnMcpDocTool {
       limit: z.number().int().min(1).max(50).default(10).describe('Maximum number of results.'),
     }),
   })
-  async search({ query, limit }: { query: string; limit: number }): Promise<McpResponse> {
+  async search({ query, limit }: { query: string; limit: number }): Promise<HnMcpToolResponse> {
     const results = await this.docService.search(query, limit);
     return this.asJson({ count: results.length, results });
   }
@@ -54,7 +52,7 @@ export class HnMcpDocTool {
       limit: z.number().int().min(1).max(200).default(50).describe('Maximum number of results.'),
     }),
   })
-  async list({ brickName, limit }: { brickName?: string; limit: number }): Promise<McpResponse> {
+  async list({ brickName, limit }: { brickName?: string; limit: number }): Promise<HnMcpToolResponse> {
     const results = await this.docService.list(brickName, limit);
     return this.asJson({ count: results.length, results });
   }
@@ -68,7 +66,7 @@ export class HnMcpDocTool {
       id: z.string().min(1).describe('The documentation page id.'),
     }),
   })
-  async read({ id }: { id: string }): Promise<McpResponse> {
+  async read({ id }: { id: string }): Promise<HnMcpToolResponse> {
     const doc = await this.docService.read(id);
     if (doc == null) {
       return {
@@ -90,7 +88,7 @@ export class HnMcpDocTool {
     };
   }
 
-  private asJson(payload: unknown): ContentAsJson {
+  private asJson(payload: unknown): HnMcpToolResponse {
     return {
       content: [{ type: 'text' as const, text: JSON.stringify(payload, null, 2) }],
     };

@@ -4,13 +4,15 @@ import { McpModule, McpTransportType } from '@rekog/mcp-nest';
 
 import { HnDocumentationModule } from '../brick-aggregate/documentation/hn-documentation.module';
 import { HnMcpResourceGuard } from '../oauth/hn-mcp-resource.guard';
+import { HN_MCP_COMMUNITY_DOC_RESOURCE_PATH } from '../oauth/hn-oauth.config';
 import { HnMcpDocService } from './hn-mcp-doc.service';
 import { HnMcpDocTool } from './hn-mcp-doc.tool';
 
 /**
  * MCP server exposing the community documentation (read-only) over Streamable HTTP.
  *
- * Endpoint: POST /mcp/community-doc
+ * Endpoint: POST /{@link HN_MCP_COMMUNITY_DOC_RESOURCE_PATH} — the same constant the OAuth
+ * config derives this resource's token audience from, so the two cannot drift apart.
  *
  * Auth: `BlPublic()` neutralizes the global JWT/admin guards on this route, and the
  * generic {@link HnMcpResourceGuard} enforces an OAuth Bearer token whose `aud`
@@ -28,7 +30,7 @@ import { HnMcpDocTool } from './hn-mcp-doc.tool';
         'Tools to search and read the Constellab community documentation. ' +
         'Start with community_doc_search or community_doc_list, then community_doc_read for full content.',
       transport: McpTransportType.STREAMABLE_HTTP,
-      mcpEndpoint: 'mcp/community-doc',
+      mcpEndpoint: HN_MCP_COMMUNITY_DOC_RESOURCE_PATH,
       // Neutralize the global HnJwtAuthGuard/HnIsAdminGuard on this route...
       decorators: [BlPublic()],
       // ...and enforce the OAuth Resource Server check (Bearer token + audience).

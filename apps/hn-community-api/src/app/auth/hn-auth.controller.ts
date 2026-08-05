@@ -78,7 +78,7 @@ export class HnAuthController {
    */
   @BlPublicSecure()
   @Post('logout')
-  async logout(@Body() body: any, @Req() request: Request, @Res() response: Response): Promise<void> {
+  async logout(@Req() request: Request, @Res() response: Response): Promise<void> {
     await this.authService.closeSession(this.readRefreshCookie(request));
 
     this.clearAccessCookie(response);

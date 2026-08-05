@@ -24,5 +24,4 @@ export abstract class BlRedisStore {
   abstract setWithTtl(key: string, value: string, ttlSeconds: number): Promise<void>;
   /** Atomic read-and-delete, so a record can be consumed exactly once. */
   abstract getAndDelete(key: string): Promise<string | null>;
-  abstract delete(key: string): Promise<void>;
 }

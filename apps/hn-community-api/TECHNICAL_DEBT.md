@@ -91,11 +91,11 @@ called. Verified on a running instance — `/auth/login` cuts off at 10, `/auth/
 `HnSpaceAuthService`, so every community user shares one source IP — hn's server. At 10/min
 that becomes a global ceiling on logins, and since `checkUserCredential` swallows the
 failure into `{ status: 'ERROR' }`, users would have seen "wrong credentials". These two
-routes now carry a flood ceiling (600/min) instead; brute-force protection for those
+routes now carry a flood ceiling (1000/min) instead; brute-force protection for those
 credentials belongs on the caller's own login route, which is keyed on the real client IP.
 
 **Limits now:** 60/min per IP globally, 10/min on the routes that verify a credential
-(`login`, `login-2fa` in both apps), 600/min on `cn`'s two `external/*` routes.
+(`login`, `login-2fa` in both apps), 1000/min on `cn`'s two `external/*` routes.
 
 **Still open — deliberately not done here:** rate limiting at the reverse proxy
 (nginx/CapRover) as the primary protection, with the application-level throttler as defense
@@ -181,7 +181,7 @@ The items below are the v1 shortcuts. Item 8 is the only one that can break in p
 - Clients: 30-day TTL rather than unbounded. Registrations are disposable, so this also bounds what an unauthenticated caller can accumulate.
 - TTL expiry is now the server's job, which closes the retained-codes leak.
 
-Consumers depend on the narrow `BlRedisStore` abstraction (`get` / `setWithTtl` / `getAndDelete` / `delete`), not on the ioredis-backed class, which is what makes the stores unit-testable against `hn-oauth-redis.mock.ts`.
+Consumers depend on the narrow `BlRedisStore` abstraction (`get` / `setWithTtl` / `getAndDelete`), not on the ioredis-backed class, which is what makes the stores unit-testable against `hn-oauth-redis.mock.ts`.
 
 **Cost paid:** the store methods became `async`, which propagated to `HnClientLookup.find`, `hnValidateAuthorizeParams`, and the three OAuth endpoints. No HTTP contract changed.
 
@@ -205,7 +205,7 @@ Isolation is now bidirectional: MCP tokens work only against their resource, ses
 
 **Files:** `src/app/oauth/hn-oauth.controller.ts` (`token()`), `src/app/auth/hn-jwt.config.ts`
 
-**Problem:** MCP access tokens inherit `HN_JWT_CONFIG.tokenDurationInSeconds` (**7 days**). There is no token store, no `/revoke` endpoint, and no refresh token. A leaked token therefore stays valid for up to a week with no way to invalidate it.
+**Problem:** MCP access tokens inherit `HN_JWT_CONFIG.legacyTokenDurationInSeconds` (**7 days**). There is no token store, no `/revoke` endpoint, and no refresh token. A leaked token therefore stays valid for up to a week with no way to invalidate it.
 
 **Suggested fix:** shorten the MCP access-token lifetime (minutes to hours) and introduce refresh tokens to compensate — the two changes go together, since a short lifetime without refresh degrades the user experience. A `/revoke` endpoint (RFC 7009) requires a token store.
 
