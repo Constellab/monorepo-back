@@ -83,15 +83,21 @@ export class HnAuthController {
 
     this.clearAccessCookie(response);
     this.clearRefreshCookie(response);
+    this.clearSessionMarkerCookie(response);
     response.send();
   }
 
-  /** Set both cookies. */
+  /**
+   * Set the three session cookies. Every successful authentication goes through here —
+   * login, 2FA and refresh — which is what keeps the session marker's lifetime aligned
+   * with the refresh token's on every rotation.
+   */
   private sendSession(tokens: HnAuthTokens, response: Response): void {
     const accessDurationInMilliseconds = this.configService.getAccessTokenDurationInSeconds() * 1000;
 
     this.setAccessCookie(tokens.accessToken, response);
     this.setRefreshCookie(tokens.refreshToken, response);
+    this.setSessionMarkerCookie(response);
 
     // `expiresIn` has always been in milliseconds and describes the access token.
     response.send({ status: 'LOGGED_IN', expiresIn: accessDurationInMilliseconds });
@@ -125,9 +131,29 @@ export class HnAuthController {
   }
 
   /**
-   * Cookie attributes shared by both tokens. `httpOnly` keeps them away from JS; the
-   * refresh cookie differs only by its narrower `path`, so it is not sent on every
-   * API call.
+   * Tells the server-side renderer a session exists — see `sessionMarkerCookie`.
+   *
+   * `Path=/` because the renderer must see it whatever page is requested, and the same
+   * lifetime as the refresh token so its absence means the session is really gone.
+   */
+  private setSessionMarkerCookie(response: Response): void {
+    const maxAge: number = this.configService.getRefreshTokenDurationInSeconds() * 1000;
+    response.cookie(
+      HN_JWT_CONFIG.sessionMarkerCookie,
+      HN_JWT_CONFIG.sessionMarkerValue,
+      this.cookieOptions('/', maxAge)
+    );
+  }
+
+  private clearSessionMarkerCookie(response: Response): void {
+    response.cookie(HN_JWT_CONFIG.sessionMarkerCookie, '', this.cookieOptions('/', 0));
+  }
+
+  /**
+   * Attributes shared by all three session cookies. `httpOnly` keeps them away from JS
+   * — including the marker, which only the server-side renderer reads. They differ only
+   * in `path`: the refresh cookie is narrowed to `/auth` so this long-lived credential
+   * is not sent on every API call.
    */
   private cookieOptions(path: string, maxAge: number): CookieOptions {
     const domain: string = this.configService.getDomain();

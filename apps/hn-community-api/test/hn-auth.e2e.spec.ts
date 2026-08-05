@@ -7,6 +7,7 @@ import { HnTestE2EHelper } from './test-e2e-helper.class';
 
 const ACCESS_COOKIE = 'Authorization';
 const REFRESH_COOKIE = 'Refresh_Token';
+const MARKER_COOKIE = 'Session_Active';
 const SEVEN_DAYS_IN_MILLISECONDS = 7 * 24 * 60 * 60 * 1000;
 
 function setCookies(response: supertest.Response): string[] {
@@ -96,6 +97,33 @@ describe('Auth (e2e)', () => {
       expect(refreshEntry).toContain('HttpOnly');
     });
 
+    it('sets the session marker for the server-side renderer, httpOnly and on /', async () => {
+      const response = await helper
+        .post('auth/login', { email: TEST_ADMIN_EMAIL, password: 'anything' })
+        .expect(201)
+        .getResponse();
+
+      const markerEntry = setCookieEntry(response, MARKER_COOKIE) ?? '';
+      expect(setCookieValue(response, MARKER_COOKIE)).toBe('1');
+      // Path=/ so the renderer sees it whatever page is requested.
+      expect(markerEntry).toContain('Path=/');
+      // No browser JS reads it, so it must not be exposed to JS either.
+      expect(markerEntry).toContain('HttpOnly');
+    });
+
+    it('gives the marker the refresh lifetime, not the access one', async () => {
+      const response = await helper
+        .post('auth/login', { email: TEST_ADMIN_EMAIL, password: 'anything' })
+        .expect(201)
+        .getResponse();
+
+      // The whole point: "marker absent" must mean "no session left to resume". A marker
+      // expiring with the access token would log server-rendered pages out after 15 min.
+      const markerMaxAge = /Max-Age=(\d+)/.exec(setCookieEntry(response, MARKER_COOKIE) ?? '')?.[1];
+      const refreshMaxAge = /Max-Age=(\d+)/.exec(setCookieEntry(response, REFRESH_COOKIE) ?? '')?.[1];
+      expect(markerMaxAge).toBe(refreshMaxAge);
+    });
+
     it('reports an access lifetime far shorter than the previous 7 days', async () => {
       const response = await helper
         .post('auth/login', { email: TEST_ADMIN_EMAIL, password: 'anything' })
@@ -131,6 +159,10 @@ describe('Auth (e2e)', () => {
 
       expect(response.body.status).toBe('LOGGED_IN');
       expect(setCookieValue(response, REFRESH_COOKIE)).not.toBe(initial.refresh);
+
+      // Re-set on every rotation, so its lifetime slides with the refresh token's
+      // instead of expiring 30 days after the original login.
+      expect(setCookieValue(response, MARKER_COOKIE)).toBe('1');
       expect(setCookieValue(response, ACCESS_COOKIE)).toBeTruthy();
     });
 
@@ -199,6 +231,17 @@ describe('Auth (e2e)', () => {
 
     it('succeeds with no refresh cookie at all', async () => {
       await supertest(helper.app.getHttpServer()).post('/auth/logout').send({}).expect(201);
+    });
+
+    it('clears all three cookies, the marker included', async () => {
+      const response = await supertest(helper.app.getHttpServer()).post('/auth/logout').send({}).expect(201);
+
+      // Leaving the marker behind would have the server-side renderer draw a logged-in
+      // shell for someone who just explicitly logged out — the most visible failure of
+      // the whole mechanism.
+      for (const name of [ACCESS_COOKIE, REFRESH_COOKIE, MARKER_COOKIE]) {
+        expect(setCookieEntry(response, name)).toContain('Max-Age=0');
+      }
     });
   });
 
