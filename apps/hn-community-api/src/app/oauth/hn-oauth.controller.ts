@@ -1,4 +1,4 @@
-import { BlCookieHelper, BlJwtService, BlPublic } from '@monorepo/back-core-lib';
+import { BlCookieHelper, BlJwtService, BlPublic, BlPublicSecure } from '@monorepo/back-core-lib';
 import {
   Body,
   Controller,
@@ -14,6 +14,7 @@ import {
 import { Request, Response } from 'express';
 
 import { HN_JWT_CONFIG } from '../auth/hn-jwt.config';
+import { HnRefreshTokenService } from '../auth/refresh-token/hn-refresh-token.service';
 import { HnOAuthConfig } from './hn-oauth.config';
 import { HN_OAUTH_LIMITS, HN_OAUTH_PATHS } from './hn-oauth.constants';
 import { HnOAuthException, HnOAuthExceptionFilter } from './hn-oauth.exception';
@@ -41,6 +42,19 @@ interface HnOAuthTokenBody {
   redirect_uri?: string;
   client_id?: string;
   code_verifier?: string;
+  refresh_token?: string;
+  /**
+   * Accepted on the refresh grant only to be *rejected* when it disagrees with the
+   * binding stored at authorization time. It is never the source of the audience —
+   * that is what would let a client widen its own scope on renewal.
+   */
+  resource?: string;
+}
+
+/** RFC 7009 §2.1. `token_type_hint` is advisory and we do not need it. */
+interface HnOAuthRevokeBody {
+  token?: string;
+  client_id?: string;
 }
 
 /** RFC 7591 §3.2.1 response: the registration, plus the capabilities it is fixed to. */
@@ -54,6 +68,7 @@ interface HnOAuthTokenResponse {
   access_token: string;
   token_type: 'Bearer';
   expires_in: number;
+  refresh_token: string;
 }
 
 /**
@@ -87,7 +102,8 @@ export class HnOAuthController {
     private readonly config: HnOAuthConfig,
     private readonly clientStore: HnOAuthClientStore,
     private readonly codeStore: HnOAuthCodeStore,
-    private readonly jwtService: BlJwtService
+    private readonly jwtService: BlJwtService,
+    private readonly refreshTokenService: HnRefreshTokenService
   ) {}
 
   @BlPublic()
@@ -183,22 +199,66 @@ export class HnOAuthController {
     return {
       ...client,
       token_endpoint_auth_method: 'none',
-      grant_types: ['authorization_code'],
+      // Must stay in step with `grant_types_supported` in the discovery document: a
+      // client reading its own registration and finding no `refresh_token` there can
+      // decide not to use the refresh token /token hands it.
+      grant_types: ['authorization_code', 'refresh_token'],
       response_types: ['code'],
     };
   }
 
   /**
-   * Token endpoint (authorization_code grant + PKCE). Exchanges a one-time code for
-   * an access token (JWT) whose `aud` is the resource the code was issued for.
+   * Token endpoint. Two grants, both yielding the same response shape so a client has
+   * one code path: `authorization_code` (+ PKCE) for the initial exchange, and
+   * `refresh_token` for renewals.
+   *
+   * Throttled: unauthenticated, and both grants hit a store.
    */
-  @BlPublic()
+  @BlPublicSecure()
   @Post(HN_OAUTH_PATHS.token)
   @HttpCode(200)
   async token(@Body() body: HnOAuthTokenBody): Promise<HnOAuthTokenResponse> {
-    if (body?.grant_type !== 'authorization_code') {
-      throw new HnOAuthException('unsupported_grant_type', 'only authorization_code is supported');
+    switch (body?.grant_type) {
+      case 'authorization_code':
+        return this.exchangeAuthorizationCode(body);
+      case 'refresh_token':
+        return this.exchangeRefreshToken(body);
+      default:
+        throw new HnOAuthException(
+          'unsupported_grant_type',
+          'only authorization_code and refresh_token are supported'
+        );
     }
+  }
+
+  /**
+   * Revocation endpoint (RFC 7009). Ends the session behind a refresh token.
+   *
+   * Always 200, including for a token that is unknown, already revoked or not ours
+   * (§2.2): telling a caller whether a token exists would turn this into an oracle,
+   * and a client retrying a revocation must not see an error.
+   *
+   * An access token presented here is a no-op — it is a self-contained JWT, validated
+   * by signature alone with nothing to delete, so it stays usable until it expires.
+   * That is why its lifetime is an hour.
+   */
+  @BlPublicSecure()
+  @Post(HN_OAUTH_PATHS.revoke)
+  @HttpCode(200)
+  async revoke(@Body() body: HnOAuthRevokeBody): Promise<void> {
+    const { token, client_id: clientId } = body ?? {};
+    if (!token || !clientId) {
+      // The one case RFC 7009 does let us reject: a malformed request, as opposed to a
+      // well-formed one carrying a token we know nothing about.
+      throw new HnOAuthException('invalid_request', 'token and client_id are required');
+    }
+    // Scoped to the client, so this unauthenticated endpoint cannot be used to end a
+    // browser session or another client's session even if a token leaks into it.
+    await this.refreshTokenService.revokeOAuthToken(token, clientId);
+  }
+
+  /** Exchange a one-time authorization code for the first token pair. */
+  private async exchangeAuthorizationCode(body: HnOAuthTokenBody): Promise<HnOAuthTokenResponse> {
     const { code, redirect_uri: redirectUri, client_id: clientId, code_verifier: codeVerifier } = body;
     if (!code || !redirectUri || !clientId || !codeVerifier) {
       throw new HnOAuthException(
@@ -217,18 +277,73 @@ export class HnOAuthController {
       throw new HnOAuthException('invalid_grant', 'authorization code is invalid, expired or mismatched');
     }
 
-    const accessToken = this.jwtService.generateTokenForAudience(
-      binding.user.id,
-      binding.user.email,
-      binding.resource
-    );
+    // The binding is the only place the resource is ever taken from — here it comes
+    // from the code, and on renewal from the stored row. Never from the request.
+    const refreshToken = await this.refreshTokenService.issue({ id: binding.user.id }, 'oauth', {
+      clientId,
+      resource: binding.resource,
+    });
+
+    return this.tokenResponse(binding.user.id, binding.user.email, binding.resource, refreshToken);
+  }
+
+  /**
+   * Renew an access token from a refresh token, rotating it.
+   *
+   * The audience comes from the stored row, never from the request: reading a
+   * `resource` parameter here would let a client that was granted read access to one
+   * MCP walk it up to another one at renewal time.
+   */
+  private async exchangeRefreshToken(body: HnOAuthTokenBody): Promise<HnOAuthTokenResponse> {
+    const { refresh_token: presentedToken, client_id: clientId } = body;
+    if (!presentedToken || !clientId) {
+      throw new HnOAuthException('invalid_request', 'refresh_token and client_id are required');
+    }
+
+    // `kind: 'oauth'` is what keeps the two surfaces apart: a browser session's refresh
+    // token cannot be turned into an MCP access token here, and vice versa on /auth/refresh.
+    const rotation = await this.refreshTokenService.rotate(presentedToken, 'oauth');
+    if (rotation == null || rotation.resource == null) {
+      throw new HnOAuthException('invalid_grant', 'refresh token is invalid, expired or already used');
+    }
+
+    if (rotation.clientId !== clientId) {
+      // The rotation already burned the token, so the session is unusable anyway; drop
+      // the row rather than leave a chain a mismatched caller has a valid token for.
+      // A client presenting another client's refresh token is not a bug we accommodate.
+      await this.refreshTokenService.revoke(rotation.token);
+      throw new HnOAuthException('invalid_grant', 'refresh token was not issued to this client');
+    }
+
+    // A client MAY repeat `resource` (RFC 8707 §2.2). Honour it only as an assertion:
+    // silently ignoring a mismatch would let it believe it holds an audience it does not.
+    if (body.resource != null && body.resource !== rotation.resource) {
+      throw new HnOAuthException('invalid_target', 'resource does not match the one originally granted');
+    }
+
+    return this.tokenResponse(rotation.user.id, rotation.user.email, rotation.resource, rotation.token);
+  }
+
+  /**
+   * Mint the access token and describe it.
+   *
+   * One duration for both the signature and the `expires_in` the client is told: they
+   * used to agree only because each side happened to read the same constant, and a
+   * client that trusts a longer `expires_in` than the signature stops refreshing in
+   * time and starts failing on 401s it did not expect.
+   */
+  private tokenResponse(
+    userId: string,
+    userEmail: string,
+    resource: string,
+    refreshToken: string
+  ): HnOAuthTokenResponse {
+    const durationInSeconds = this.config.mcpAccessTokenDurationInSeconds;
     return {
-      access_token: accessToken,
+      access_token: this.jwtService.generateTokenForAudience(userId, userEmail, resource, durationInSeconds),
       token_type: 'Bearer',
-      // Still the module-wide lifetime, matching the signature above because neither
-      // passes an override. Shortened to an hour once this endpoint also issues a
-      // refresh token — until then a client would have to re-authorize on expiry.
-      expires_in: HN_JWT_CONFIG.legacyTokenDurationInSeconds,
+      expires_in: durationInSeconds,
+      refresh_token: refreshToken,
     };
   }
 

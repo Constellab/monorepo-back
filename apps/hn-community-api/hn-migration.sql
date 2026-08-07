@@ -797,15 +797,28 @@ ALTER TABLE `story_topics_topic`
 
 CREATE TABLE `refresh_token`
 (
-  `id`           varchar(36)  NOT NULL,
-  `token_hash`   varchar(64)  NOT NULL,
-  `kind`         varchar(16)  NOT NULL COMMENT 'session | oauth',
-  `user_id`      varchar(36)  NOT NULL,
-  `expires_at`   datetime     NOT NULL,
-  `client_id`    varchar(64)  NULL COMMENT 'OAuth clients only',
-  `resource`     varchar(512) NULL COMMENT 'OAuth clients only: token audience',
-  `created_at`   datetime     NOT NULL,
+  `id`                   varchar(36)  NOT NULL,
+  `token_hash`           varchar(64)  NOT NULL,
+  `previous_token_hash`  varchar(64)  NULL COMMENT 'hash consumed by the last rotation; NULL when never rotated',
+  `kind`                 varchar(16)  NOT NULL COMMENT 'session | oauth',
+  `user_id`              varchar(36)  NOT NULL,
+  `expires_at`           datetime     NOT NULL,
+  `client_id`            varchar(64)  NULL COMMENT 'OAuth clients only',
+  `resource`             varchar(512) NULL COMMENT 'OAuth clients only: token audience',
+  `created_at`           datetime     NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `IDX_refresh_token_token_hash` (`token_hash`),
+  -- NOT unique: rotation writes the consumed hash here, and two sessions could in
+  -- principle collide. Indexed because `rotate` matches on either hash column in a
+  -- single query — without it that OR degrades to a table scan on every refresh.
+  INDEX `IDX_refresh_token_previous_token_hash` (`previous_token_hash`),
   CONSTRAINT `FK_refresh_token_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
 );
+
+-- Only for a database that already ran the CREATE TABLE above without
+-- `previous_token_hash` (local and dev, which were used to validate the flow by hand).
+-- Skip on any database created from the statement above — it already has the column.
+--
+-- ALTER TABLE `refresh_token`
+--   ADD COLUMN `previous_token_hash` varchar(64) NULL COMMENT 'hash consumed by the last rotation; NULL when never rotated' AFTER `token_hash`,
+--   ADD INDEX `IDX_refresh_token_previous_token_hash` (`previous_token_hash`);

@@ -201,15 +201,50 @@ Isolation is now bidirectional: MCP tokens work only against their resource, ses
 
 ---
 
-## 10. Long-lived access tokens with no revocation
+## 10. Long-lived access tokens with no revocation — RESOLVED (August 2026)
 
-**Files:** `src/app/oauth/hn-oauth.controller.ts` (`token()`), `src/app/auth/hn-jwt.config.ts`
+**Files:** `src/app/oauth/hn-oauth.controller.ts`, `src/app/oauth/hn-oauth.config.ts`,
+`src/app/oauth/hn-oauth-metadata.builder.ts`, `src/app/auth/refresh-token/`
 
-**Problem:** MCP access tokens inherit `HN_JWT_CONFIG.legacyTokenDurationInSeconds` (**7 days**). There is no token store, no `/revoke` endpoint, and no refresh token. A leaked token therefore stays valid for up to a week with no way to invalidate it.
+**Was:** MCP access tokens inherited `HN_JWT_CONFIG.legacyTokenDurationInSeconds`
+(**7 days**), with no token store, no `/revoke` endpoint and no refresh token. A leaked
+token stayed valid for a week with no way to invalidate it. Shortening the lifetime on
+its own was not an option: with no refresh grant, Claude would have had to re-authorize
+on every expiry.
 
-**Suggested fix:** shorten the MCP access-token lifetime (minutes to hours) and introduce refresh tokens to compensate — the two changes go together, since a short lifetime without refresh degrades the user experience. A `/revoke` endpoint (RFC 7009) requires a token store.
+**Fixed by** the refresh-token table introduced for session auth — not a Redis store as
+originally sketched. It already carried `kind: 'session' | 'oauth'`, `clientId` and
+`resource`, so the OAuth surface reuses the same row, the same atomic rotation and the
+same purge cron:
 
-**Now unblocked:** item 8 is resolved, so `BlRedisStore` is available and a refresh-token store follows the same pattern as `HnOAuthCodeStore` (opaque random value, `SET … EX`, atomic `GETDEL` for rotation, which also gives replay detection for free).
+- MCP access tokens are down to **1 hour** (`MCP_ACCESS_TOKEN_DURATION_SECONDS`,
+  defaulting to `HN_JWT_CONFIG.defaultMcpAccessTokenDurationInSeconds`).
+- `/oauth/token` issues an `oauth`-kind refresh token with the code, bound to
+  `client_id` and `resource`.
+- `grant_type=refresh_token` renews it. **The audience is read from the stored row and
+  never from the request** — that is what prevents a client granted one MCP from
+  widening to another at renewal. A `resource` repeated in the body (RFC 8707 §2.2) is
+  honoured only as an assertion and rejected on mismatch, rather than ignored.
+- `POST /oauth/revoke` (RFC 7009), always 200, scoped to `kind: 'oauth'` **and** the
+  calling `client_id` so this unauthenticated endpoint cannot end a browser session or
+  another client's session.
+- Discovery now advertises `refresh_token` and `revocation_endpoint`; without them a
+  client ignores both capabilities. The DCR response's `grant_types` matches.
+- `/oauth/token` and `/oauth/revoke` moved from `@BlPublic()` to `@BlPublicSecure()`:
+  they were the last unauthenticated routes with no throttler at all.
+
+**One defect fixed in passing:** `expires_in` and the signature lifetime were separate
+expressions that agreed only because both happened to read the same constant. They now
+come from a single getter (`HnOAuthConfig.mcpAccessTokenDurationInSeconds`) — a client
+trusting an `expires_in` longer than the signature stops refreshing in time.
+
+**Remaining, by design:** an access token in flight survives revocation for up to an
+hour. That is inherent to a self-contained JWT and is exactly why the lifetime is short
+(item 12 does not change this either).
+
+**Verification:** 43 unit tests over the token/revoke endpoints and the rotation. Not
+yet exercised end-to-end against a live client — the test that matters is Claude
+connected for more than an hour, refreshing silently.
 
 ---
 

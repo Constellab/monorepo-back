@@ -38,6 +38,17 @@ export class HnOAuthConfig {
     return this.coreConfig.getOAuthAllowedRedirectUris();
   }
 
+  /**
+   * Lifetime of an MCP access token.
+   *
+   * Read through this single getter by both the signature and the `expires_in` the
+   * client is told, so they cannot drift: they used to agree only because each side
+   * happened to reach for the same constant.
+   */
+  get mcpAccessTokenDurationInSeconds(): number {
+    return this.coreConfig.getMcpAccessTokenDurationInSeconds();
+  }
+
   /** Registry of allowed resource URIs (token audiences). */
   get resources(): string[] {
     return [this.resourceUrl(HN_MCP_COMMUNITY_DOC_RESOURCE_PATH)];

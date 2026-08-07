@@ -29,6 +29,28 @@ export class HnRefreshToken extends BlEntityWithId {
   @Column({ length: 64 })
   tokenHash!: string;
 
+  /**
+   * Hash of the token this row replaced, i.e. the one consumed by the last rotation.
+   *
+   * Exists only to attribute a replay to its session. The rotation overwrites
+   * `tokenHash`, so without this a consumed token becomes unrecognizable and the best
+   * we can answer is a blind 401 — whereas OAuth 2.1 §4.14.2 asks us to revoke the
+   * whole session, because two holders of the same chain means one of them is a thief.
+   *
+   * Indexed because `rotate` looks a row up on either column in a single query.
+   * Null on a freshly issued token, which has replaced nothing yet.
+   *
+   * One generation deep, deliberately: a token two rotations old is unrecognizable
+   * again and only gets a plain 401. Detecting the whole chain would mean a row per
+   * rotation — four rows per hour per session at a 15-minute access token — which is
+   * exactly what the one-row-per-session design exists to avoid. The generation that
+   * matters is the last one, because that is the one an attacker actually holds.
+   */
+  @Exclude()
+  @Index()
+  @Column({ type: 'varchar', length: 64, nullable: true })
+  previousTokenHash!: string | null;
+
   @Column({ type: 'varchar', length: 16 })
   kind!: HnRefreshTokenKind;
 

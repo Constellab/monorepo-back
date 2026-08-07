@@ -11,6 +11,7 @@ export const HN_OAUTH_PATHS = {
   authorize: 'oauth/authorize',
   token: 'oauth/token',
   register: 'oauth/register',
+  revoke: 'oauth/revoke',
 } as const;
 
 /**

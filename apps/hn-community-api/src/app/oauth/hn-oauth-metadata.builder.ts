@@ -9,10 +9,12 @@ export interface HnAuthServerMetadata {
   authorization_endpoint: string;
   token_endpoint: string;
   registration_endpoint: string;
+  revocation_endpoint: string;
   response_types_supported: string[];
   grant_types_supported: string[];
   code_challenge_methods_supported: string[];
   token_endpoint_auth_methods_supported: string[];
+  revocation_endpoint_auth_methods_supported: string[];
 }
 
 /**
@@ -41,10 +43,15 @@ export function hnBuildAuthServerMetadata(issuer: string): HnAuthServerMetadata 
     authorization_endpoint: `${base}/${HN_OAUTH_PATHS.authorize}`,
     token_endpoint: `${base}/${HN_OAUTH_PATHS.token}`,
     registration_endpoint: `${base}/${HN_OAUTH_PATHS.register}`,
+    revocation_endpoint: `${base}/${HN_OAUTH_PATHS.revoke}`,
     response_types_supported: ['code'],
-    grant_types_supported: ['authorization_code'],
+    // A client that does not see `refresh_token` here has no reason to keep the one
+    // /token hands it, and will re-run the whole authorization flow on expiry instead.
+    grant_types_supported: ['authorization_code', 'refresh_token'],
     code_challenge_methods_supported: ['S256'],
     token_endpoint_auth_methods_supported: ['none'],
+    // Public clients: /revoke authenticates on the token itself, nothing else.
+    revocation_endpoint_auth_methods_supported: ['none'],
   };
 }
 

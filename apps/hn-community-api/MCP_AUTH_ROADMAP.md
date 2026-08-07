@@ -31,9 +31,47 @@ stores OAuth en mémoire, cloisonnement d'audience incomplet, `redirect_uri` non
 | **9** — cloisonnement d'audience | `BlJwtStrategy` rejette désormais **tout** token portant un `aud`                          | Un token émis pour le MCP pouvait servir de token de session sur l'API entière                                                           |
 | **11** (moitié back)             | `redirect_uri` restreint à l'enregistrement dynamique, + bornes sur la taille des requêtes | Sans écran de consentement, un `redirect_uri` libre laissait n'importe qui récupérer un code d'autorisation pour un utilisateur connecté |
 | **8** — stores en mémoire        | Codes et clients OAuth déplacés en Redis (création de `BlRedisModule`)                     | Une `Map` en mémoire casse dès qu'il y a plus d'une instance : le code créé par l'une est inconnu de l'autre                             |
+| **10** — tokens MCP              | Access token à 1 h, refresh token OAuth rotatif, `POST /oauth/revoke`                      | C'est ici que **les 7 derniers jours disparaissent** : un token MCP volé restait valable une semaine, sans aucun moyen de l'invalider    |
 
 Le cloisonnement d'audience a été fait **sans drapeau d'activation**. Une vérification de
 sécurité optionnelle est désactivée par défaut, donc inutile.
+
+Le point 10 n'a coûté que du câblage, et c'est le résultat d'une décision prise en
+amont : la table `refresh_token`, écrite pour les sessions navigateur, portait déjà
+`kind`, `client_id` et `resource`. Le MCP réutilise donc **la même ligne, la même
+rotation atomique et le même cron de purge** — pas de second store à écrire, et un seul
+endroit où la rotation peut être fausse. Deux invariants portent la sécurité du grant :
+
+- **La `resource` est lue sur la ligne en base, jamais dans la requête.** C'est ce qui
+  empêche un client autorisé sur un MCP de s'élever vers un autre au rafraîchissement.
+  Une `resource` répétée dans le corps (RFC 8707 §2.2) est traitée comme une assertion à
+  vérifier, et refusée si elle diverge — l'ignorer en silence laisserait le client croire
+  qu'il détient une audience qu'il n'a pas.
+- **`kind: 'oauth'` sépare les deux surfaces dans les deux sens.** Un refresh token de
+  session ne devient pas un access token MCP, et réciproquement sur `/auth/refresh`.
+
+Au passage, `expires_in` et la durée de signature étaient deux expressions distinctes qui
+ne concordaient que parce que chacune lisait la même constante. Elles viennent maintenant
+d'un seul getter. Et `/oauth/token` et `/oauth/revoke` sont passées de `@BlPublic()` à
+`@BlPublicSecure()` : c'étaient les dernières routes non authentifiées sans throttler.
+
+### `previous_token_hash`
+
+Une colonne, **aucune requête de plus** : le `findOne` de la rotation devient un OU sur
+les deux colonnes de hash, et le cas normal reste une lecture d'index. Si la
+correspondance tombe sur `previous_token_hash`, le token a déjà été échangé — donc deux
+acteurs détiennent la même chaîne, et **toute la session tombe** (OAuth 2.1 §4.14.2), y
+compris le token en circulation.
+
+Deux bornes assumées :
+
+- **Une seule génération.** Un token vieux de deux rotations redevient non attribuable et
+  ne reçoit qu'un 401. Remonter toute la chaîne demanderait une ligne par rotation, ce
+  que le modèle une-ligne-par-session existe précisément pour éviter. La génération qui
+  compte est la dernière, c'est celle qu'un voleur détient.
+- **La course n'est pas un rejeu.** Deux requêtes simultanées avec le même token valide
+  sont indiscernables d'un double envoi légitime : la seconde perd la course (0 ligne
+  affectée) et reçoit un 401, sans tuer la session.
 
 ### Côté authentification de session
 
@@ -100,37 +138,15 @@ seconde).
 
 ## Ce qui reste
 
-### 1. Point 5 — les tokens MCP (le gros morceau)
+### 1. Le test qui reste à faire sur le point 10
 
-C'est là que **les 7 derniers jours disparaissent**. Aujourd'hui `/oauth/token` n'émet qu'un
-access token, sans moyen de le renouveler : le raccourcir maintenant obligerait Claude à
-redemander une autorisation toutes les heures.
-
-- access token à 1 h, avec `expires_in` issu de la même constante que la signature — les
-  deux ne coïncident aujourd'hui que par accident de constante partagée
-- refresh token `kind: 'oauth'` émis avec le code, portant `client_id` et `resource`
-- branche `grant_type=refresh_token`, avec la **`resource` lue en base et jamais dans la
-  requête** — c'est ce qui empêche l'escalade d'audience au rafraîchissement
-- `POST /oauth/revoke` (RFC 7009)
-- `revocation_endpoint` et `refresh_token` dans les métadonnées de découverte, sinon le
-  client ignore ces capacités
-
+Le code est écrit et couvert en unitaire, mais **jamais éprouvé contre un vrai client**.
 Le test qui compte : laisser Claude connecté plus d'une heure et s'en servir. Il doit
-rafraîchir silencieusement.
+rafraîchir silencieusement. Tant que ça n'est pas fait, considérer le point 10 comme
+« écrit », pas comme « vérifié » — c'est la distinction que le reste de ce chantier a
+appris à faire.
 
-### 2. `previous_token_hash` — débloqué
-
-OAuth 2.1 (§4.14.2) recommande de révoquer **toute la session** quand un refresh token déjà
-consommé est présenté : si deux acteurs détiennent des tokens de la même chaîne, l'un des
-deux est un voleur. Aujourd'hui on répond 401 sans savoir de quelle session venait le token,
-parce que la rotation écrase le hash.
-
-Une colonne, zéro requête de plus. C'était conditionné à la sérialisation côté front — le
-front vient de confirmer qu'il sérialise **et** rejoue, donc c'est ouvert.
-
-À faire avec le point 5, les deux touchant le service de refresh token.
-
-### 3. Point 6 — `cli-auth`, en dernier
+### 2. Point 6 — `cli-auth`, en dernier
 
 La dernière poche de 7 jours. Il n'est pas cassé aujourd'hui : le défaut du module JWT est
 resté à 7 jours exprès, et seuls login / 2FA / MCP passent leur durée courte.
@@ -139,13 +155,13 @@ Direction retenue : le faire **hériter du flux OAuth** plutôt que garder son m
 propre — son flow est déjà un device flow. À noter, son store est encore une `Map` en
 mémoire, donc il souffre du problème multi-instances que l'item 8 vient de corriger ailleurs.
 
-### 4. Item 13 — découverte par ressource
+### 3. Item 13 — découverte par ressource
 
 Le dernier point MCP ouvert : un document de métadonnées par ressource protégée, au lieu
 d'un seul. À grouper avec un `hn-mcp-resource.guard.spec.ts` — ce garde valide signature et
 audience à chaque appel MCP et n'a **aucun test**.
 
-### 5. Différés volontairement
+### 4. Différés volontairement
 
 - **Item 12** — RS256 / JWKS, nécessaire pour sortir les serveurs de ressources de cette app.
   Le choix de ne pas toucher `BlJwtStrategy` laisse cette trajectoire intacte.
@@ -162,6 +178,16 @@ Ce sont des choix, pas des oublis — mais ils se perdent vite, d'où leur place
 - **Un access token en vol survit à un `logout`**, au plus 15 minutes. C'est inhérent à un
   JWT autonome, et c'est précisément ce qui rend la durée courte nécessaire. On est passé de
   7 jours à 15 minutes, soit trois ordres de grandeur.
+- **Idem côté MCP** : un access token en vol survit à `/oauth/revoke`, au plus 1 heure.
+  Même cause, même raison de garder la durée courte. Un access token présenté à
+  `/oauth/revoke` est donc un no-op, et l'endpoint répond quand même 200 (RFC 7009 §2.2
+  l'exige).
+- **Une réponse de rotation perdue déconnecte.** Depuis `previous_token_hash`, un client
+  qui rejoue le token dont il n'a pas reçu le remplaçant ne prend plus un 401 mais perd
+  toute sa session. C'est la recommandation OAuth 2.1 appliquée telle quelle, et le cas
+  n'a rien de malveillant — il est simplement indiscernable du vol. Tolérable parce que le
+  front sérialise ses rafraîchissements, à revoir si des déconnexions inexpliquées
+  apparaissent.
 - **Aucune protection CSRF.** `SameSite=Lax` est la seule défense.
 - **Les compteurs du throttler sont en mémoire**, donc par instance : le plafond réel est
   `limite × nombre de replicas`, et il repart à zéro à chaque redéploiement. Ce sont des
@@ -208,6 +234,11 @@ Ce sont des soupapes pour ajuster une durée sans redéployer, pas des réglages
   le démarrage de l'app : le login en dépend, ce n'est pas derrière une fonctionnalité. Le
   repo n'utilise pas les migrations TypeORM malgré ce qu'affirme `CLAUDE.md` — le schéma
   évolue par SQL écrit à la main dans `hn-migration.sql`, appliqué à la main.
+- **Le `CREATE TABLE` inclut maintenant `previous_token_hash`.** Une base qui a déjà joué
+  l'ancienne version — donc le local et la dev, où le flux a été validé au curl — a besoin
+  de l'`ALTER` laissé en commentaire juste en dessous, index compris : sans l'index, le OU
+  de la rotation devient un scan de table à chaque rafraîchissement. La prod n'a jamais vu
+  la table, elle prend directement le `CREATE TABLE` complet.
 - **Une déconnexion unique** pour les sessions existantes, qui portent un cookie de 7 jours
   sans refresh token. Elle s'étale sur jusqu'à 7 jours après le déploiement, donc pas de
   vague de reconnexions.

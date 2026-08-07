@@ -4,22 +4,26 @@ const ISSUER = 'https://api.example.com';
 const RESOURCE = 'https://api.example.com/mcp/community-doc';
 
 describe('hnBuildAuthServerMetadata', () => {
-  it('exposes the issuer and the three endpoints derived from it', () => {
+  it('exposes the issuer and the four endpoints derived from it', () => {
     const meta = hnBuildAuthServerMetadata(ISSUER);
     expect(meta.issuer).toBe(ISSUER);
     expect(meta.authorization_endpoint).toBe(`${ISSUER}/oauth/authorize`);
     expect(meta.token_endpoint).toBe(`${ISSUER}/oauth/token`);
     expect(meta.registration_endpoint).toBe(`${ISSUER}/oauth/register`);
+    expect(meta.revocation_endpoint).toBe(`${ISSUER}/oauth/revoke`);
   });
 
   it('advertises only the capabilities we actually support', () => {
     const meta = hnBuildAuthServerMetadata(ISSUER);
     expect(meta.response_types_supported).toEqual(['code']);
-    expect(meta.grant_types_supported).toEqual(['authorization_code']);
+    // refresh_token must be listed, or a client discards the refresh token /token
+    // returns and re-authorizes on every expiry
+    expect(meta.grant_types_supported).toEqual(['authorization_code', 'refresh_token']);
     // S256 only — never advertise `plain`
     expect(meta.code_challenge_methods_supported).toEqual(['S256']);
     // public clients (PKCE), no client secret
     expect(meta.token_endpoint_auth_methods_supported).toEqual(['none']);
+    expect(meta.revocation_endpoint_auth_methods_supported).toEqual(['none']);
   });
 
   it('normalizes a trailing slash on the issuer so URLs are not doubled', () => {

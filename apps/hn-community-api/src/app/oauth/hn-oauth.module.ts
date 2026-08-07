@@ -1,5 +1,6 @@
 import { Global, Module } from '@nestjs/common';
 
+import { HnRefreshTokenModule } from '../auth/refresh-token/hn-refresh-token.module';
 import { HnCoreConfigModule } from '../core/modules/core-config/hn-core-config.module';
 import { HnMcpResourceGuard } from './hn-mcp-resource.guard';
 import { HnOAuthConfig } from './hn-oauth.config';
@@ -19,7 +20,9 @@ import { HnOAuthCodeStore } from './hn-oauth-code.store';
  */
 @Global()
 @Module({
-  imports: [HnCoreConfigModule],
+  // HnRefreshTokenModule: /oauth/token now issues and rotates a refresh token, and
+  // /oauth/revoke deletes one. No cycle — that module only reaches for HnCoreModule.
+  imports: [HnCoreConfigModule, HnRefreshTokenModule],
   controllers: [HnOAuthController],
   providers: [HnOAuthConfig, HnMcpResourceGuard, HnOAuthClientStore, HnOAuthCodeStore],
   exports: [HnOAuthConfig, HnMcpResourceGuard, HnOAuthClientStore, HnOAuthCodeStore],
