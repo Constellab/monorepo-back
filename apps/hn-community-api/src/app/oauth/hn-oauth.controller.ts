@@ -1,4 +1,18 @@
-import { BlCookieHelper, BlJwtService, BlPublic, BlPublicSecure } from '@monorepo/back-core-lib';
+import {
+  BL_OAUTH_LIMITS,
+  BL_OAUTH_PATHS,
+  BlAuthServerMetadata,
+  blBuildAuthServerMetadata,
+  blBuildProtectedResourceMetadata,
+  BlCookieHelper,
+  BlJwtService,
+  BlProtectedResourceMetadata,
+  BlPublic,
+  BlPublicSecure,
+  blResourcePathFromMetadataUrl,
+  blValidateRedirectUris,
+  blVerifyPkce,
+} from '@monorepo/back-core-lib';
 import {
   Body,
   Controller,
@@ -17,21 +31,11 @@ import { Request, Response } from 'express';
 import { HN_JWT_CONFIG } from '../auth/hn-jwt.config';
 import { HnRefreshTokenService } from '../auth/refresh-token/hn-refresh-token.service';
 import { HnOAuthConfig } from './hn-oauth.config';
-import { HN_OAUTH_LIMITS, HN_OAUTH_PATHS } from './hn-oauth.constants';
 import { HnOAuthException, HnOAuthExceptionFilter } from './hn-oauth.exception';
 import { HnAuthorizeQueryDto } from './hn-oauth-authorize.dto';
 import { hnValidateAuthorizeParams } from './hn-oauth-authorize.validator';
 import { HnOAuthClient, HnOAuthClientStore } from './hn-oauth-client.store';
 import { HnOAuthCodeStore, HnOAuthCodeUser } from './hn-oauth-code.store';
-import {
-  HnAuthServerMetadata,
-  hnBuildAuthServerMetadata,
-  hnBuildProtectedResourceMetadata,
-  HnProtectedResourceMetadata,
-} from './hn-oauth-metadata.builder';
-import { hnVerifyPkce } from './hn-oauth-pkce.util';
-import { hnValidateRedirectUris } from './hn-oauth-redirect-uri.validator';
-import { hnResourcePathFromMetadataUrl } from './hn-oauth-resource-url.util';
 
 interface HnOAuthRegisterBody {
   redirect_uris?: unknown;
@@ -109,9 +113,9 @@ export class HnOAuthController {
   ) {}
 
   @BlPublic()
-  @Get(HN_OAUTH_PATHS.authorizationServerMetadata)
-  getAuthServerMetadata(): HnAuthServerMetadata {
-    return hnBuildAuthServerMetadata(this.config.issuer);
+  @Get(BL_OAUTH_PATHS.authorizationServerMetadata)
+  getAuthServerMetadata(): BlAuthServerMetadata {
+    return blBuildAuthServerMetadata(this.config.issuer);
   }
 
   /**
@@ -123,9 +127,9 @@ export class HnOAuthController {
    * the whole flow.
    */
   @BlPublic()
-  @Get(HN_OAUTH_PATHS.protectedResourceMetadata)
-  getProtectedResourceMetadata(): HnProtectedResourceMetadata {
-    return hnBuildProtectedResourceMetadata(this.config.resources[0], this.config.issuer);
+  @Get(BL_OAUTH_PATHS.protectedResourceMetadata)
+  getProtectedResourceMetadata(): BlProtectedResourceMetadata {
+    return blBuildProtectedResourceMetadata(this.config.resources[0], this.config.issuer);
   }
 
   /**
@@ -141,15 +145,15 @@ export class HnOAuthController {
    * unknown path is a 404 rather than a document for a resource we do not serve.
    */
   @BlPublic()
-  @Get(`${HN_OAUTH_PATHS.protectedResourceMetadata}/*splat`)
-  getProtectedResourceMetadataForPath(@Req() request: Request): HnProtectedResourceMetadata {
-    const resourcePath = hnResourcePathFromMetadataUrl(request.path);
+  @Get(`${BL_OAUTH_PATHS.protectedResourceMetadata}/*splat`)
+  getProtectedResourceMetadataForPath(@Req() request: Request): BlProtectedResourceMetadata {
+    const resourcePath = blResourcePathFromMetadataUrl(request.path);
     const resource = `${this.config.issuer}${resourcePath ?? ''}`;
 
     if (!resourcePath || !this.config.isKnownResource(resource)) {
       throw new NotFoundException('unknown protected resource');
     }
-    return hnBuildProtectedResourceMetadata(resource, this.config.issuer);
+    return blBuildProtectedResourceMetadata(resource, this.config.issuer);
   }
 
   /**
@@ -160,7 +164,7 @@ export class HnOAuthController {
    * If not → redirects to the front login with a `returnUrl` (front dependency).
    */
   @BlPublic()
-  @Get(HN_OAUTH_PATHS.authorize)
+  @Get(BL_OAUTH_PATHS.authorize)
   async authorize(
     @Query(authorizeQueryPipe) query: HnAuthorizeQueryDto,
     @Req() request: Request,
@@ -209,10 +213,10 @@ export class HnOAuthController {
    * authorization code for a logged-in user.
    */
   @BlPublic()
-  @Post(HN_OAUTH_PATHS.register)
+  @Post(BL_OAUTH_PATHS.register)
   @HttpCode(201)
   async register(@Body() body: HnOAuthRegisterBody): Promise<HnOAuthRegisterResponse> {
-    const validation = hnValidateRedirectUris(body?.redirect_uris, this.config.allowedRedirectUris);
+    const validation = blValidateRedirectUris(body?.redirect_uris, this.config.allowedRedirectUris);
     if (!validation.ok) {
       throw new HnOAuthException('invalid_redirect_uri', validation.errorDescription);
     }
@@ -220,7 +224,7 @@ export class HnOAuthController {
     // Bounded because the store keeps it for the lifetime of the client.
     const clientName =
       typeof body?.client_name === 'string'
-        ? body.client_name.slice(0, HN_OAUTH_LIMITS.maxClientNameLength)
+        ? body.client_name.slice(0, BL_OAUTH_LIMITS.maxClientNameLength)
         : undefined;
 
     const client = await this.clientStore.register({
@@ -247,7 +251,7 @@ export class HnOAuthController {
    * Throttled: unauthenticated, and both grants hit a store.
    */
   @BlPublicSecure()
-  @Post(HN_OAUTH_PATHS.token)
+  @Post(BL_OAUTH_PATHS.token)
   @HttpCode(200)
   async token(@Body() body: HnOAuthTokenBody): Promise<HnOAuthTokenResponse> {
     switch (body?.grant_type) {
@@ -275,7 +279,7 @@ export class HnOAuthController {
    * That is why its lifetime is an hour.
    */
   @BlPublicSecure()
-  @Post(HN_OAUTH_PATHS.revoke)
+  @Post(BL_OAUTH_PATHS.revoke)
   @HttpCode(200)
   async revoke(@Body() body: HnOAuthRevokeBody): Promise<void> {
     const { token, client_id: clientId } = body ?? {};
@@ -304,7 +308,7 @@ export class HnOAuthController {
       !binding ||
       binding.clientId !== clientId ||
       binding.redirectUri !== redirectUri ||
-      !hnVerifyPkce(codeVerifier, binding.codeChallenge)
+      !blVerifyPkce(codeVerifier, binding.codeChallenge)
     ) {
       throw new HnOAuthException('invalid_grant', 'authorization code is invalid, expired or mismatched');
     }

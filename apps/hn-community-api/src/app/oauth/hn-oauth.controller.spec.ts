@@ -23,7 +23,7 @@ const WELL_KNOWN = '/.well-known/oauth-protected-resource';
 const CLIENT_ID = 'client-1';
 const REDIRECT_URI = 'https://claude.ai/api/mcp/auth_callback';
 
-/** Real PKCE pair, so the spec exercises `hnVerifyPkce` rather than a stub of it. */
+/** Real PKCE pair, so the spec exercises `blVerifyPkce` rather than a stub of it. */
 const CODE_VERIFIER = 'a'.repeat(64);
 const CODE_CHALLENGE = createHash('sha256').update(CODE_VERIFIER).digest('base64url');
 

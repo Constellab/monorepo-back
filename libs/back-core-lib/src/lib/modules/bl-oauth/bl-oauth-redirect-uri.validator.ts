@@ -16,7 +16,7 @@
  *   scheme, host, port, path and query. No wildcards, no subdomain matching.
  */
 
-import { HN_OAUTH_LIMITS } from './hn-oauth.constants';
+import { BL_OAUTH_LIMITS } from './bl-oauth.constants';
 
 const LOOPBACK_HOSTNAMES = new Set(['localhost', '127.0.0.1', '[::1]']);
 
@@ -54,7 +54,7 @@ function matchesAllowlistEntry(url: URL, entry: string): boolean {
  * @param redirectUri the URI submitted at registration
  * @param allowlist   accepted non-loopback URIs; loopback needs no entry
  */
-export function hnRedirectUriAllowed(redirectUri: string, allowlist: string[]): boolean {
+export function blRedirectUriAllowed(redirectUri: string, allowlist: string[]): boolean {
   const url = parseUri(redirectUri);
   if (url == null) {
     return false;
@@ -81,7 +81,7 @@ export function hnRedirectUriAllowed(redirectUri: string, allowlist: string[]): 
  * The validator stays free of HTTP concerns and the controller turns a failure
  * into an OAuth error.
  */
-export type HnRedirectUrisValidation =
+export type BlRedirectUrisValidation =
   { ok: true; redirectUris: string[] } | { ok: false; errorDescription: string };
 
 /**
@@ -90,7 +90,7 @@ export type HnRedirectUrisValidation =
  * Bounds come first, so an oversized payload is rejected with a constant-size message
  * rather than one built from attacker-controlled input.
  */
-export function hnValidateRedirectUris(value: unknown, allowlist: string[]): HnRedirectUrisValidation {
+export function blValidateRedirectUris(value: unknown, allowlist: string[]): BlRedirectUrisValidation {
   if (
     !Array.isArray(value) ||
     value.length === 0 ||
@@ -99,7 +99,7 @@ export function hnValidateRedirectUris(value: unknown, allowlist: string[]): HnR
     return { ok: false, errorDescription: 'redirect_uris must be a non-empty array of strings' };
   }
 
-  const { maxRedirectUris, maxRedirectUriLength, maxRejectedUrisReported } = HN_OAUTH_LIMITS;
+  const { maxRedirectUris, maxRedirectUriLength, maxRejectedUrisReported } = BL_OAUTH_LIMITS;
 
   if (value.length > maxRedirectUris) {
     return { ok: false, errorDescription: `redirect_uris must hold at most ${maxRedirectUris} entries` };
@@ -112,7 +112,7 @@ export function hnValidateRedirectUris(value: unknown, allowlist: string[]): HnR
     };
   }
 
-  const rejected = value.filter((uri) => !hnRedirectUriAllowed(uri, allowlist));
+  const rejected = value.filter((uri) => !blRedirectUriAllowed(uri, allowlist));
   if (rejected.length > 0) {
     const reported = rejected.slice(0, maxRejectedUrisReported);
     const hidden = rejected.length - reported.length;

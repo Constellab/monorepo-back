@@ -1,10 +1,8 @@
-import { BlJwtService } from '@monorepo/back-core-lib';
+import { blExtractBearerToken, BlJwtService, blProtectedResourceMetadataUrl } from '@monorepo/back-core-lib';
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Request, Response } from 'express';
 
 import { HnOAuthConfig } from './hn-oauth.config';
-import { hnExtractBearerToken } from './hn-oauth-bearer.util';
-import { hnProtectedResourceMetadataUrl } from './hn-oauth-resource-url.util';
 
 /**
  * Generic OAuth 2.0 Resource Server guard for MCP endpoints.
@@ -31,7 +29,7 @@ export class HnMcpResourceGuard implements CanActivate {
 
     const resourcePath = this.resourcePath(request);
     const expectedResource = `${this.config.issuer}${resourcePath}`;
-    const token = hnExtractBearerToken(request.headers?.authorization);
+    const token = blExtractBearerToken(request.headers?.authorization);
 
     try {
       if (!token || !this.config.isKnownResource(expectedResource)) {
@@ -48,7 +46,7 @@ export class HnMcpResourceGuard implements CanActivate {
       // different one.
       response.setHeader(
         'WWW-Authenticate',
-        `Bearer resource_metadata="${hnProtectedResourceMetadataUrl(this.config.issuer, resourcePath)}"`
+        `Bearer resource_metadata="${blProtectedResourceMetadataUrl(this.config.issuer, resourcePath)}"`
       );
       throw new UnauthorizedException('invalid_token');
     }

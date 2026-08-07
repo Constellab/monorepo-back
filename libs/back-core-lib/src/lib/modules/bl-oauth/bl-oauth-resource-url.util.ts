@@ -1,6 +1,6 @@
-import { HN_OAUTH_PATHS } from './hn-oauth.constants';
+import { BL_OAUTH_PATHS } from './bl-oauth.constants';
 
-const METADATA_PREFIX = `/${HN_OAUTH_PATHS.protectedResourceMetadata}`;
+const METADATA_PREFIX = `/${BL_OAUTH_PATHS.protectedResourceMetadata}`;
 
 /**
  * Strip trailing slashes so `/mcp/community-doc` and `/mcp/community-doc/` resolve to
@@ -21,7 +21,7 @@ function normalizePath(path: string): string {
  *
  * `resourcePath` is the resource's path component, with or without a leading slash.
  */
-export function hnProtectedResourceMetadataUrl(issuer: string, resourcePath: string): string {
+export function blProtectedResourceMetadataUrl(issuer: string, resourcePath: string): string {
   const path = normalizePath(resourcePath);
   const suffix = path.length === 0 || path.startsWith('/') ? path : `/${path}`;
   return `${normalizePath(issuer)}${METADATA_PREFIX}${suffix}`;
@@ -35,7 +35,7 @@ export function hnProtectedResourceMetadataUrl(issuer: string, resourcePath: str
  * which is distinct from null: one means "asking about no particular resource", the
  * other "not this endpoint".
  */
-export function hnResourcePathFromMetadataUrl(requestPath: string): string | null {
+export function blResourcePathFromMetadataUrl(requestPath: string): string | null {
   const path = normalizePath(requestPath);
   if (path === METADATA_PREFIX) {
     return '';

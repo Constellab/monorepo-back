@@ -5,7 +5,7 @@
  * clients can find them; the interactive/token endpoints are namespaced under
  * `oauth/` to avoid clashing with the existing `/auth` and `/cli-auth` routes.
  */
-export const HN_OAUTH_PATHS = {
+export const BL_OAUTH_PATHS = {
   authorizationServerMetadata: '.well-known/oauth-authorization-server',
   protectedResourceMetadata: '.well-known/oauth-protected-resource',
   authorize: 'oauth/authorize',
@@ -23,7 +23,7 @@ export const HN_OAUTH_PATHS = {
  * `maxRejectedUrisReported` keeps the error description useful for diagnosing a real
  * client without turning it into an amplifier.
  */
-export const HN_OAUTH_LIMITS = {
+export const BL_OAUTH_LIMITS = {
   maxRedirectUris: 10,
   maxRedirectUriLength: 2048,
   maxClientNameLength: 200,

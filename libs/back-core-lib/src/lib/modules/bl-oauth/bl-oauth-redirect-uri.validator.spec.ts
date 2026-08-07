@@ -1,17 +1,17 @@
-import { HN_OAUTH_LIMITS } from './hn-oauth.constants';
+import { BL_OAUTH_LIMITS } from './bl-oauth.constants';
 import {
-  hnRedirectUriAllowed,
-  HnRedirectUrisValidation,
-  hnValidateRedirectUris,
-} from './hn-oauth-redirect-uri.validator';
+  blRedirectUriAllowed,
+  BlRedirectUrisValidation,
+  blValidateRedirectUris,
+} from './bl-oauth-redirect-uri.validator';
 
 const allowlist = ['https://claude.ai/api/mcp/auth_callback'];
 
-const allowed = (uri: string, list: string[] = allowlist): boolean => hnRedirectUriAllowed(uri, list);
+const allowed = (uri: string, list: string[] = allowlist): boolean => blRedirectUriAllowed(uri, list);
 
 const loopback = (index: number): string => `http://localhost:9999/callback-${index}`;
 
-describe('hnRedirectUriAllowed', () => {
+describe('blRedirectUriAllowed', () => {
   describe('non-loopback URIs', () => {
     it('accepts an exact allowlist match', () => {
       expect(allowed('https://claude.ai/api/mcp/auth_callback')).toBe(true);
@@ -104,8 +104,8 @@ describe('hnRedirectUriAllowed', () => {
   });
 });
 
-describe('hnValidateRedirectUris', () => {
-  const validate = (value: unknown): HnRedirectUrisValidation => hnValidateRedirectUris(value, allowlist);
+describe('blValidateRedirectUris', () => {
+  const validate = (value: unknown): BlRedirectUrisValidation => blValidateRedirectUris(value, allowlist);
 
   describe('shape', () => {
     it('accepts a valid single-entry list', () => {
@@ -125,26 +125,26 @@ describe('hnValidateRedirectUris', () => {
 
   describe('bounds', () => {
     it('accepts exactly the maximum number of entries', () => {
-      const uris = Array.from({ length: HN_OAUTH_LIMITS.maxRedirectUris }, (_, i) => loopback(i));
+      const uris = Array.from({ length: BL_OAUTH_LIMITS.maxRedirectUris }, (_, i) => loopback(i));
       expect(validate(uris).ok).toBe(true);
     });
 
     it('rejects one entry over the maximum', () => {
-      const uris = Array.from({ length: HN_OAUTH_LIMITS.maxRedirectUris + 1 }, (_, i) => loopback(i));
+      const uris = Array.from({ length: BL_OAUTH_LIMITS.maxRedirectUris + 1 }, (_, i) => loopback(i));
       const result = validate(uris);
       expect(result.ok).toBe(false);
       expect(result).toHaveProperty('errorDescription', expect.stringContaining('at most'));
     });
 
     it('rejects an over-long entry', () => {
-      const long = `http://localhost:9999/${'a'.repeat(HN_OAUTH_LIMITS.maxRedirectUriLength)}`;
+      const long = `http://localhost:9999/${'a'.repeat(BL_OAUTH_LIMITS.maxRedirectUriLength)}`;
       const result = validate([long]);
       expect(result.ok).toBe(false);
       expect(result).toHaveProperty('errorDescription', expect.stringContaining('characters'));
     });
 
     it('reports an over-long entry without echoing it', () => {
-      const long = `http://localhost:9999/${'a'.repeat(HN_OAUTH_LIMITS.maxRedirectUriLength)}`;
+      const long = `http://localhost:9999/${'a'.repeat(BL_OAUTH_LIMITS.maxRedirectUriLength)}`;
       const result = validate([long]);
       const description = result.ok ? '' : result.errorDescription;
       expect(description).not.toContain('aaaa');
@@ -166,7 +166,7 @@ describe('hnValidateRedirectUris', () => {
       const result = validate(rejected);
       const description = result.ok ? '' : result.errorDescription;
       expect(description).toContain('https://evil0.example.com/cb');
-      expect(description).toContain(`and ${8 - HN_OAUTH_LIMITS.maxRejectedUrisReported} more`);
+      expect(description).toContain(`and ${8 - BL_OAUTH_LIMITS.maxRejectedUrisReported} more`);
       expect(description).not.toContain('https://evil7.example.com/cb');
     });
 

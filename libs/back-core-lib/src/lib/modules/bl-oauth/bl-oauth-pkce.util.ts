@@ -9,7 +9,7 @@ const MAX_VERIFIER_LENGTH = 128;
  *
  * Constant-time comparison; `plain` is intentionally not supported.
  */
-export function hnVerifyPkce(codeVerifier: string, codeChallenge: string): boolean {
+export function blVerifyPkce(codeVerifier: string, codeChallenge: string): boolean {
   if (
     !codeVerifier ||
     !codeChallenge ||

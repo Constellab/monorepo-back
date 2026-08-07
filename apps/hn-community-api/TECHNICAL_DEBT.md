@@ -204,7 +204,8 @@ Isolation is now bidirectional: MCP tokens work only against their resource, ses
 ## 10. Long-lived access tokens with no revocation — RESOLVED (August 2026)
 
 **Files:** `src/app/oauth/hn-oauth.controller.ts`, `src/app/oauth/hn-oauth.config.ts`,
-`src/app/oauth/hn-oauth-metadata.builder.ts`, `src/app/auth/refresh-token/`
+`libs/back-core-lib/src/lib/modules/bl-oauth/bl-oauth-metadata.builder.ts`,
+`src/app/auth/refresh-token/`
 
 **Was:** MCP access tokens inherited `HN_JWT_CONFIG.legacyTokenDurationInSeconds`
 (**7 days**), with no token store, no `/revoke` endpoint and no refresh token. A leaked
@@ -250,14 +251,14 @@ connected for more than an hour, refreshing silently.
 
 ## 11. No consent screen (DCR is restricted, registration itself stays open)
 
-**Files:** `src/app/oauth/hn-oauth.controller.ts` (`register()`), `src/app/oauth/hn-oauth-redirect-uri.validator.ts`
+**Files:** `src/app/oauth/hn-oauth.controller.ts` (`register()`), `libs/back-core-lib/src/lib/modules/bl-oauth/bl-oauth-redirect-uri.validator.ts`
 
 **Problem:** `POST /oauth/register` is public and unauthenticated (RFC 7591 allows this), so anyone can register an OAuth client. Combined with the deliberate absence of a consent screen, a third party can initiate an authorization flow against this server; a logged-in user would then be redirected back with a code without ever being asked to approve the client.
 
 **Mitigated by two changes:**
 
 - Item 9 shrank the blast radius: a code obtained this way now yields a token scoped to the MCP resource — documentation read access — not a full API session.
-- The redirect target is now constrained at registration (`hnRedirectUriAllowed`): non-loopback URIs must be `https` and match `OAUTH_ALLOWED_REDIRECT_URIS` exactly (scheme, host, port, path, query — no wildcards, no subdomain matching), while loopback is accepted on any port and path per RFC 8252 §7.3. That removes the remote exfiltration vector: an attacker can still register a client, but cannot have the code delivered to a host they control. DCR stays usable by first-party clients, which need it to connect on their own.
+- The redirect target is now constrained at registration (`blRedirectUriAllowed`): non-loopback URIs must be `https` and match `OAUTH_ALLOWED_REDIRECT_URIS` exactly (scheme, host, port, path, query — no wildcards, no subdomain matching), while loopback is accepted on any port and path per RFC 8252 §7.3. That removes the remote exfiltration vector: an attacker can still register a client, but cannot have the code delivered to a host they control. DCR stays usable by first-party clients, which need it to connect on their own.
 
 **What remains:** no consent screen, so a first-party-looking client can still obtain a code for a logged-in user without an explicit approval step. Acceptable while clients are first-party and trusted (Claude); not acceptable once third-party clients are a real possibility.
 
@@ -283,7 +284,8 @@ connected for more than an hour, refreshing silently.
 
 ## 13. Discovery exposes a single protected resource — RESOLVED (August 2026)
 
-**Files:** `src/app/oauth/hn-oauth.controller.ts`, `src/app/oauth/hn-oauth-resource-url.util.ts`,
+**Files:** `src/app/oauth/hn-oauth.controller.ts`,
+`libs/back-core-lib/src/lib/modules/bl-oauth/bl-oauth-resource-url.util.ts`,
 `src/app/oauth/hn-mcp-resource.guard.ts`
 
 **Was:** `GET /.well-known/oauth-protected-resource` always returned metadata for
@@ -297,7 +299,7 @@ request a community-doc audience.
 `https://host/.well-known/oauth-protected-resource/mcp/community-doc`). An unregistered
 path is a 404, not a document for a resource we do not serve.
 
-The URL convention and its inverse live in `hn-oauth-resource-url.util.ts`, shared with
+The URL convention and its inverse live in `bl-oauth-resource-url.util.ts`, shared with
 the guard and tested on their own — the two directions have to agree, and they are used
 from opposite ends of the flow.
 

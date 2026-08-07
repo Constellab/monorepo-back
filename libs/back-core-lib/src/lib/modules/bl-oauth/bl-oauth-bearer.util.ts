@@ -5,7 +5,7 @@
  * unlike the rest of the Constellab API, which historically accepts a raw token.
  * Returns null when the header is absent, empty, or not a non-empty Bearer token.
  */
-export function hnExtractBearerToken(headerValue: string | undefined | null): string | null {
+export function blExtractBearerToken(headerValue: string | undefined | null): string | null {
   if (!headerValue) {
     return null;
   }
