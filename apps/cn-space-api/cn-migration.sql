@@ -430,3 +430,29 @@ ALTER TABLE `lab_config_brick_version`
 ALTER TABLE `note_scenario`
   CHANGE `noteId` `note_id` varchar(36) NOT NULL,
   CHANGE `scenarioId` `scenario_id` varchar(36) NOT NULL;
+
+-- ############################################################################
+-- MUST RUN BEFORE THE APP STARTS. Session refresh tokens live in this table; if
+-- it is missing, /auth/login and /auth/refresh fail, so nobody can log in or
+-- stay logged in. This is not a degraded feature, it breaks authentication.
+-- ############################################################################
+
+CREATE TABLE `refresh_token`
+(
+  `id`                   varchar(36)  NOT NULL,
+  `token_hash`           varchar(64)  NOT NULL,
+  `previous_token_hash`  varchar(64)  NULL COMMENT 'hash consumed by the last rotation; NULL when never rotated',
+  `kind`                 varchar(16)  NOT NULL COMMENT 'session | oauth',
+  `user_id`              varchar(36)  NOT NULL,
+  `expires_at`           datetime     NOT NULL,
+  `client_id`            varchar(64)  NULL COMMENT 'OAuth clients only',
+  `resource`             varchar(512) NULL COMMENT 'OAuth clients only: token audience',
+  `created_at`           datetime     NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `IDX_refresh_token_token_hash` (`token_hash`),
+  -- NOT unique: rotation writes the consumed hash here, and two sessions could in
+  -- principle collide. Indexed because `rotate` matches on either hash column in a
+  -- single query — without it that OR degrades to a table scan on every refresh.
+  INDEX `IDX_refresh_token_previous_token_hash` (`previous_token_hash`),
+  CONSTRAINT `FK_refresh_token_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
+);

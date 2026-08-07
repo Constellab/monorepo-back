@@ -3,6 +3,7 @@ import { Inject, Injectable, Logger, LogLevel } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { join } from 'path';
 
+import { CN_JWT_CONFIG } from '../../../cn-auth/cn-jwt.config';
 import {
   CN_ENVIRONMENT_PROFILE_KEY,
   CN_ENVIRONMENT_PROFILE_PROD_VALUE,
@@ -54,6 +55,26 @@ export class CnCoreConfigService {
   // return the OTHER JWT key used to encrypt other token (such as password forgotten or mail validation)
   public getOtherJwtSecret(): string {
     return this.getConfigString('OTHER_JWT_SECRET');
+  }
+
+  /**
+   * Lifetimes of the session token pair, in seconds.
+   *
+   * Optional in the environment: the defaults in `CN_JWT_CONFIG` apply when unset, so a
+   * deployment that says nothing gets the values in code rather than no session at all.
+   */
+  public getAccessTokenDurationInSeconds(): number {
+    return this.getConfigNumberOrDefault(
+      'ACCESS_TOKEN_DURATION_SECONDS',
+      CN_JWT_CONFIG.defaultAccessTokenDurationInSeconds
+    );
+  }
+
+  public getRefreshTokenDurationInSeconds(): number {
+    return this.getConfigNumberOrDefault(
+      'REFRESH_TOKEN_DURATION_SECONDS',
+      CN_JWT_CONFIG.defaultRefreshTokenDurationInSeconds
+    );
   }
 
   public getApiUrl(): string {
@@ -155,6 +176,30 @@ export class CnCoreConfigService {
       this.logger.error('Error while parsing config ' + configName + ' to number');
       throw error;
     }
+  }
+
+  /**
+   * Read an optional numeric config value, falling back to `defaultValue` when it is
+   * absent, empty or not a number.
+   *
+   * The counterpart to {@link getConfigNumber} for the values whose absence is a valid
+   * state rather than a misconfiguration — so a caller states which of the two it means
+   * by the method it reaches for.
+   */
+  protected getConfigNumberOrDefault(configName: string, defaultValue: number): number {
+    const raw: string | undefined = this.configService.get(configName);
+    if (raw == null || raw.trim().length === 0) {
+      return defaultValue;
+    }
+    const parsed: number = parseInt(raw, 10);
+    // Non-positive is refused along with NaN: every caller here is a duration, and a zero
+    // or negative one is never what was meant — a token expiring the moment it is minted
+    // puts the front in a renewal loop instead of failing where it was configured.
+    if (Number.isNaN(parsed) || parsed <= 0) {
+      this.logger.warn(`Config '${configName}' is not a positive number ('${raw}'), using ${defaultValue}`);
+      return defaultValue;
+    }
+    return parsed;
   }
 
   protected getConfigBoolean(configName: string): boolean {

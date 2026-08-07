@@ -125,7 +125,10 @@ function configureJwtModule(configService: CnCoreConfigService, userService: CnU
     jwtFromRequest: (request: Request) =>
       BlCookieHelper.getCookieFromHeader(request.headers.cookie ?? '', CN_JWT_CONFIG.authorizationCookie),
     usersService: userService,
-    tokenDurationInSeconds: CN_JWT_CONFIG.tokenDurationInSeconds,
+    // Module-wide fallback, for a caller that mints a token without stating a lifetime.
+    // Login, 2FA and refresh all state their own, so this only ever applies to a future
+    // one — and it is the short access token lifetime, not something longer.
+    tokenDurationInSeconds: configService.getAccessTokenDurationInSeconds(),
   };
 }
 

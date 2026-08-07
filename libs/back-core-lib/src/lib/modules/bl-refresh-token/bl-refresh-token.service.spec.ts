@@ -266,10 +266,17 @@ describe('BlRefreshTokenService', () => {
   });
 
   describe('revoke', () => {
-    it('deletes the row matching the presented token', async () => {
+    it('deletes the row matching the presented token, on either hash column', async () => {
       const { service, remove } = buildService();
       await service.revoke(PRESENTED);
-      expect(remove).toHaveBeenCalledWith({ tokenHash: sha256(PRESENTED) });
+
+      // The second criterion is what makes a logout work for a browser whose last
+      // rotation response was lost: it still holds the consumed token, and without this
+      // the row — whose current token someone else may hold — would outlive the logout.
+      expect(remove).toHaveBeenCalledWith([
+        { tokenHash: sha256(PRESENTED) },
+        { previousTokenHash: sha256(PRESENTED) },
+      ]);
     });
 
     it('stays silent for an unknown token, so a stale logout still succeeds', async () => {

@@ -157,9 +157,16 @@ export class BlRefreshTokenService<TUser extends BlRefreshTokenOwner = BlRefresh
   /**
    * Revoke a session. Silent when the token is unknown — a logout carrying a stale
    * cookie should still succeed.
+   *
+   * Matches `previousTokenHash` too, for the same reason `revokeOAuthToken` does: a
+   * browser whose rotation response was lost still holds the token that rotation
+   * consumed, and a logout carrying it must end the session rather than silently leave
+   * the row behind — the newer token it never received is precisely the one another
+   * holder may have.
    */
   async revoke(presentedToken: string): Promise<void> {
-    await this.repository.delete({ tokenHash: BlRefreshTokenService.hash(presentedToken) });
+    const presentedHash = BlRefreshTokenService.hash(presentedToken);
+    await this.repository.delete([{ tokenHash: presentedHash }, { previousTokenHash: presentedHash }]);
   }
 
   /**

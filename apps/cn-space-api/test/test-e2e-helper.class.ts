@@ -1,3 +1,4 @@
+import { BlThrottlerBehindProxyGuard } from '@monorepo/back-core-lib';
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import supertest, { Agent } from 'supertest';
@@ -9,6 +10,14 @@ import { TestConfigService } from './test-config.service';
 import { TEST_ADMIN_EMAIL, TEST_ADMIN_PASSWORD } from './test-credentials';
 import { TestGetOptions, TestIdOptions } from './test-e2e-helper.config';
 import { TestRequest } from './test-request.class';
+
+export interface CnTestAppOptions {
+  /**
+   * Keep the rate limiter active. Off by default — see {@link CnTestE2EHelper.initAppModule}.
+   * Only a suite whose subject IS the rate limiting should turn it on.
+   */
+  throttling?: boolean;
+}
 
 export class CnTestE2EHelper {
   public app!: INestApplication;
@@ -22,16 +31,29 @@ export class CnTestE2EHelper {
   /**
    * Call this method in the beforeAll method in test to init
    * the nest app
+   *
+   * **The rate limiter is disabled unless `throttling: true`.** `/auth/login` allows 10
+   * requests per minute per IP, every supertest request comes from the same IP, and a
+   * whole suite runs well inside one minute — so a functional suite that logs in more
+   * than ten times fails on a 429 that has nothing to do with what it asserts.
+   *
+   * Disabling it here rather than raising the limit for tests keeps the shipped limit the
+   * one that runs in production. A suite covering the limit itself opts back in.
    */
-  public async initAppModule(): Promise<INestApplication> {
-    const moduleRef = await Test.createTestingModule({
+  public async initAppModule(options: CnTestAppOptions = {}): Promise<INestApplication> {
+    const builder = Test.createTestingModule({
       imports: [CnAppModule],
       providers: [CnTestDbInitializerService],
     })
       // override the config service to set the test database and test profile
       .overrideProvider(CnCoreConfigService)
-      .useClass(TestConfigService)
-      .compile();
+      .useClass(TestConfigService);
+
+    if (!options.throttling) {
+      builder.overrideGuard(BlThrottlerBehindProxyGuard).useValue({ canActivate: () => true });
+    }
+
+    const moduleRef = await builder.compile();
     this.app = moduleRef.createNestApplication();
 
     // Reset + seed the database BEFORE app.init(): some services query the DB in

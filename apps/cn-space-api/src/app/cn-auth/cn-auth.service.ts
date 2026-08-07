@@ -18,13 +18,23 @@ import {
   CnUserAccountEvent,
 } from '../cn-users/cn-user-accounts/cn-user-account.event';
 import { CnUsersService } from '../cn-users/cn-users.service';
+import { CnRefreshTokenService } from './cn-refresh-token/cn-refresh-token.service';
 import { CnUser2FAService } from './cn-user-2-f-a/cn-user-2-f-a.service';
 
-export interface CnAuthResponse {
-  status: 'LOGGED_IN' | '2FA_REQUIRED';
-  token?: string;
-  twoFAUrlCode?: string;
+/**
+ * The pair handed out on every successful authentication.
+ */
+export interface CnAuthTokens {
+  accessToken: string;
+  refreshToken: string;
 }
+
+/**
+ * A union rather than one shape with optional fields, so the controller cannot be handed
+ * a `LOGGED_IN` without tokens and has no impossible branch to guard.
+ */
+export type CnAuthResponse =
+  { status: 'LOGGED_IN'; tokens: CnAuthTokens } | { status: '2FA_REQUIRED'; twoFAUrlCode: string };
 
 export interface CnExternalCheckCredentialResponse {
   status: 'OK' | '2FA_REQUIRED';
@@ -40,7 +50,8 @@ export class CnAuthService {
     private configService: CnCoreConfigService,
     private user2FaService: CnUser2FAService,
     private captchaService: CnCaptchaService,
-    private eventEmitter: EventEmitter2
+    private eventEmitter: EventEmitter2,
+    private refreshTokenService: CnRefreshTokenService
   ) {}
 
   public async login(credentials: BlCredentials): Promise<CnAuthResponse> {
@@ -55,15 +66,62 @@ export class CnAuthService {
     } else {
       return {
         status: 'LOGGED_IN',
-        token: this.jwtService.generateToken(user.id, user.email),
+        tokens: await this.openSession(user),
       };
     }
   }
 
-  public async loginWith2FA(credentials: BlCredentials2Fa): Promise<string> {
+  public async loginWith2FA(credentials: BlCredentials2Fa): Promise<CnAuthTokens> {
     const user = await this.user2FaService.checkIsValidCode(credentials.twoFACode, credentials.twoFAUrlCode);
 
-    return this.jwtService.generateToken(user.id, user.email);
+    return await this.openSession(user);
+  }
+
+  /**
+   * Exchange a refresh token for a new pair.
+   *
+   * Every failure — no token, unknown, expired, already consumed, owner no longer allowed
+   * to log in — is the same 401. The caller learns nothing from which one it was, and a
+   * consumed one additionally ends the session it belonged to; see
+   * `BlRefreshTokenService.rotate`.
+   */
+  public async refreshSession(presentedRefreshToken: string | undefined): Promise<CnAuthTokens> {
+    if (!presentedRefreshToken) {
+      throw new BlUnauthorizedException(CnErrorText.WRONG_TOKEN);
+    }
+
+    const rotation = await this.refreshTokenService.rotate(presentedRefreshToken, 'session');
+    if (rotation == null) {
+      throw new BlUnauthorizedException(CnErrorText.WRONG_TOKEN);
+    }
+
+    // The row surviving is not enough: an account locked by an admin since the session
+    // opened must lose it, and this is the only place that can enforce that. Nothing
+    // downstream re-checks the status — `CnUsersService.findOne`, which the JWT strategy
+    // resolves the user through, does not filter on it — so without this a locked account
+    // would keep renewing indefinitely while being refused at the login page.
+    //
+    // The row goes with the refusal, on the token the rotation just wrote: leaving it
+    // would let the holder retry every fifteen minutes forever.
+    if (rotation.user.status !== BlUserStatus.READY) {
+      await this.refreshTokenService.revoke(rotation.token);
+      throw new BlUnauthorizedException(CnErrorText.WRONG_TOKEN);
+    }
+
+    return {
+      accessToken: this.generateAccessToken(rotation.user),
+      refreshToken: rotation.token,
+    };
+  }
+
+  /**
+   * End a session server-side. Tolerant of a missing or stale token: a logout must not
+   * fail just because the browser no longer holds a usable one.
+   */
+  public async closeSession(presentedRefreshToken: string | undefined): Promise<void> {
+    if (presentedRefreshToken) {
+      await this.refreshTokenService.revoke(presentedRefreshToken);
+    }
   }
 
   public async externalCheckCredentials(
@@ -172,5 +230,25 @@ export class CnAuthService {
     user.lastLoginSuccess = ClDateHelper.getDate();
 
     await this.usersService.update(user);
+  }
+
+  /** Mint the access/refresh pair and persist the row the refresh token stands for. */
+  private async openSession(user: CnUser): Promise<CnAuthTokens> {
+    return {
+      accessToken: this.generateAccessToken(user),
+      refreshToken: await this.refreshTokenService.issue(user, 'session'),
+    };
+  }
+
+  /**
+   * The lifetime is read here rather than at startup, so an environment that changes it
+   * does not need the module re-created for the new value to apply.
+   */
+  private generateAccessToken(user: CnUser): string {
+    return this.jwtService.generateToken(
+      user.id,
+      user.email,
+      this.configService.getAccessTokenDurationInSeconds()
+    );
   }
 }
