@@ -127,3 +127,17 @@ Both applications follow a similar modular structure:
 ## Good practices
 
 - For email, use template in `assets/templates/[lang]` folder. Define the template in sub folder `en` and `fr` for localization. For email subject, define it in `assets/i18n/[lang]/mail-subject.json` for each language. And provide it in the enum file `*-mail-template.class.ts`.
+
+## Agent skills
+
+### Issue tracker
+
+Issues live as GitHub issues in `Constellab/monorepo-back`, managed with the `gh` CLI. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+The five canonical triage roles, each label string equal to its name. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: one `CONTEXT.md` and `docs/adr/` at the repo root. See `docs/agents/domain.md`.
