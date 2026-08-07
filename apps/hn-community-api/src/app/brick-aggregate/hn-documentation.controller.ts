@@ -1,4 +1,11 @@
-import { BlFile, BlParsePipe, BlPublic, BlResponseHelper, BlUploadedFile } from '@monorepo/back-core-lib';
+import {
+  BlFile,
+  BlOptionalAuth,
+  BlParsePipe,
+  BlPublic,
+  BlResponseHelper,
+  BlUploadedFile,
+} from '@monorepo/back-core-lib';
 import {
   TeBlockFigureUploadedResponse,
   TeRichText,
@@ -44,7 +51,7 @@ export class HnDocumentationController extends HnAbstractFileController<HnDocume
     super(fileDocumentationService);
   }
 
-  @BlPublic()
+  @BlOptionalAuth()
   @Get()
   findAll(): Promise<HnDocumentationDTO[]> {
     return this.brickAggregateService.findAllDocs();
@@ -58,13 +65,13 @@ export class HnDocumentationController extends HnAbstractFileController<HnDocume
     return this.brickAggregateService.updateDocContent(id, updateContentDoc);
   }
 
-  @BlPublic()
+  @BlOptionalAuth()
   @Post('complete-path')
   findByCompletePath(@Body() body: any): Promise<HnDocumentationDto> {
     return this.brickAggregateService.findCurrentDoc(body.brickName, body.version, body.completePath);
   }
 
-  @BlPublic()
+  @BlOptionalAuth()
   @Get(':id')
   findById(@Param('id') id: string): Promise<HnDocumentationDto> {
     return this.brickAggregateService.findDocById(id);
@@ -129,7 +136,7 @@ export class HnDocumentationController extends HnAbstractFileController<HnDocume
 
   /////////////////////////////////// DOC FILE //////////////////////////////////////////
 
-  @BlPublic()
+  @BlOptionalAuth()
   @Get('doc-files/:docId')
   async getDocFiles(@Param('docId', new ParseUUIDPipe()) docId: string): Promise<HnAbstractFileEntityDTO[]> {
     return this.brickAggregateService.getDocFiles(docId);

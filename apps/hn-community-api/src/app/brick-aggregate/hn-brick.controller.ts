@@ -1,6 +1,7 @@
 import {
   BlFile,
   BlFileResponse,
+  BlOptionalAuth,
   BlParsePipe,
   BlPublic,
   BlResponseHelper,
@@ -85,25 +86,25 @@ export class HnBrickController {
     BlResponseHelper.setFileResponse(res, zip);
   }
 
-  @BlPublic()
+  @BlOptionalAuth()
   @Get('all-map')
   findAllMap(): Promise<HnSitemapItemBase[]> {
     return this.brickAggregateService.findAllMap();
   }
 
-  @BlPublic()
+  @BlOptionalAuth()
   @Get('name/:name')
   async findOneByName(@Param('name') name: string): Promise<HnBrickDto> {
     return new HnBrickDto(await this.brickAggregateService.findBrickByName(name));
   }
 
-  @BlPublic()
+  @BlOptionalAuth()
   @Get('check-brick-existence/:name')
   async checkBrickExistence(@Param('name') name: string): Promise<boolean> {
     return this.brickAggregateService.checkIfBrickExistence(name);
   }
 
-  @BlPublic()
+  @BlOptionalAuth()
   @Get('docs/:brickId/:version')
   async findDocsNodeByBrick(
     @Param('brickId') brickId: string,
@@ -112,7 +113,7 @@ export class HnBrickController {
     return this.brickAggregateService.findDocsNodeByBrick(brickId, version);
   }
 
-  @BlPublic()
+  @BlOptionalAuth()
   @Get('all-docs/:brickName/:version')
   async findAllDocsByBrick(
     @Param('brickName') brickName: string,
@@ -125,7 +126,7 @@ export class HnBrickController {
     return documentations.map((doc) => new HnDocumentationShortDto(doc));
   }
 
-  @BlPublic()
+  @BlOptionalAuth()
   @Get('all-technical-docs/:brickName/:version')
   async findAllTechnicalDocsByBrick(
     @Param('brickName') brickName: string,
@@ -140,7 +141,7 @@ export class HnBrickController {
     return result;
   }
 
-  @BlPublic()
+  @BlOptionalAuth()
   @Get('root-folder/:brickId/:version')
   async findRootFolderId(
     @Param('brickId') brickId: string,
@@ -151,7 +152,7 @@ export class HnBrickController {
     return this.brickAggregateService.findRootFolderId(brickId, version);
   }
 
-  @BlPublic()
+  @BlOptionalAuth()
   @Post('filters')
   async getBricksByFilter(
     @Body('spacesFilter') spacesFilter: string[],
@@ -177,7 +178,7 @@ export class HnBrickController {
    * @param size
    * @return bricks
    */
-  @BlPublic()
+  @BlOptionalAuth()
   @Get('user/:userId')
   getUserBricks(
     @Param('userId', ParseUUIDPipe) userId: string,
@@ -187,7 +188,7 @@ export class HnBrickController {
     return this.brickAggregateService.findUserBricks(userId, page, size);
   }
 
-  @BlPublic()
+  @BlOptionalAuth()
   @Get('first-doc/:brickName/:version')
   async findFirstDoc(
     @Param('brickName') brickName: string,
@@ -209,7 +210,7 @@ export class HnBrickController {
     return this.brickAggregateService.createTechnicalDoc(content);
   }
 
-  @BlPublic()
+  @BlOptionalAuth()
   @Get('technical-doc/:brickId/:version')
   async findTechnicalDoc(
     @Param('brickId') brickId: string,
@@ -218,7 +219,7 @@ export class HnBrickController {
     return this.brickAggregateService.findTechnicalDoc(brickId, version);
   }
 
-  @BlPublic()
+  @BlOptionalAuth()
   @Post('technical-doc-by-path')
   async findTechDocByPath(
     @Body(new BlParsePipe(HnTechnicalDocInputDTO)) input: HnTechnicalDocInputDTO
@@ -233,13 +234,13 @@ export class HnBrickController {
     return this.brickAggregateService.createVersionFromSettings(settings);
   }
 
-  @BlPublic()
+  @BlOptionalAuth()
   @Get('versions-list/:brickId')
   public getVersionsList(@Param('brickId') brickId: string): Promise<string[]> {
     return this.brickAggregateService.getVersionsList(brickId);
   }
 
-  @BlPublic()
+  @BlOptionalAuth()
   @Get('latest/:brickName')
   public async getLatestBrickVersion(@Param('brickName') brickName: string): Promise<HnBrickVersionDto> {
     return new HnBrickVersionDto(await this.brickAggregateService.getLatestBrickVersion(brickName));
@@ -278,7 +279,7 @@ export class HnBrickController {
     return new HnBrickDto(await this.brickAggregateService.editBrick(editedBrick));
   }
 
-  @BlPublic()
+  @BlOptionalAuth()
   @Post('check-user-rights')
   public checkUserRights(
     @Body('brickId', new ParseUUIDPipe()) brickId: string,
@@ -339,7 +340,7 @@ export class HnBrickController {
     return this.brickAggregateService.deleteCoAuthorInvite(inviteId);
   }
 
-  @BlPublic()
+  @BlOptionalAuth()
   @Get(':id/co-authors')
   async getBrickCoAuthors(@Param('id', new ParseUUIDPipe()) id: string): Promise<HnUserDto[]> {
     return (await this.brickAggregateService.getBrickCoAuthors(id)).map(

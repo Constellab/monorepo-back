@@ -1,3 +1,6 @@
+import { BlCookieHelper } from '@monorepo/back-core-lib';
+import { Request } from 'express';
+
 /**
  * Lifetime kept as the module-wide default for `BlJwtModule`, i.e. the duration a
  * token gets when no explicit override is passed to `BlJwtService.generateToken()`.
@@ -52,3 +55,19 @@ export const HN_JWT_CONFIG = {
   sessionMarkerCookie: 'Session_Active',
   sessionMarkerValue: '1',
 };
+
+/**
+ * Where an access token can come from, in order of precedence.
+ *
+ * Shared by `BlJwtStrategy` — which uses it to validate — and `HnJwtAuthGuard`, which
+ * uses it to answer a different question: "was a token presented at all?". The guard
+ * cannot infer that from a validation failure, since a missing and a rejected token
+ * both surface as the same error. Keep the two in step by keeping them on this
+ * function: a source added here but not there makes the guard blind to it.
+ */
+export function hnExtractJwtFromRequest(request: Request): string | undefined {
+  return (
+    request.headers.authorization ??
+    BlCookieHelper.getCookieFromHeader(request.headers.cookie ?? '', HN_JWT_CONFIG.authorizationCookie)
+  );
+}

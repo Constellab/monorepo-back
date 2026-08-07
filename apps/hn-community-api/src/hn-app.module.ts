@@ -1,6 +1,5 @@
 import {
   blConfigureLogger,
-  BlCookieHelper,
   BlDbBackupModule,
   BlExternalApiModule,
   BlJwtConfig,
@@ -26,7 +25,6 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { Request } from 'express';
 import { WinstonModule, WinstonModuleOptions } from 'nest-winston';
 import { AcceptLanguageResolver, CookieResolver, I18nJsonLoader, I18nModule } from 'nestjs-i18n';
 import { join } from 'path';
@@ -38,7 +36,7 @@ import { HnAgentVersionModule } from './app/agent-aggregate/agent-version/hn-age
 import { HnAgentVersionBrickDependenciesModule } from './app/agent-aggregate/agent-version-brick-dependencies/hn-agent-version-brick-dependencies.module';
 import { HnAgentAggregateModule } from './app/agent-aggregate/hn-agent-aggregate.module';
 import { HnAuthModule } from './app/auth/hn-auth.module';
-import { HN_JWT_CONFIG } from './app/auth/hn-jwt.config';
+import { HN_JWT_CONFIG, hnExtractJwtFromRequest } from './app/auth/hn-jwt.config';
 import { HnRefreshTokenModule } from './app/auth/refresh-token/hn-refresh-token.module';
 import { HnBrickModule } from './app/brick-aggregate/brick/hn-brick.module';
 import { HnBrickMajorVersionModule } from './app/brick-aggregate/brick-major-version/hn-brick-major-version.module';
@@ -161,12 +159,9 @@ function configureLogger(configService: HnCoreConfigService): WinstonModuleOptio
 function configureJwtModule(configService: HnCoreConfigService, userService: HnUserService): BlJwtConfig {
   return {
     jwtSecret: configService.getJwtSecret(),
-    jwtFromRequest: (request: Request) => {
-      return (
-        request.headers.authorization ??
-        BlCookieHelper.getCookieFromHeader(request.headers.cookie ?? '', HN_JWT_CONFIG.authorizationCookie)
-      );
-    },
+    // Shared with `HnJwtAuthGuard`, which needs the same notion of "a token was
+    // presented" to tell a stale session from an anonymous caller.
+    jwtFromRequest: hnExtractJwtFromRequest,
     usersService: userService,
     // Module-wide fallback. Login, 2FA and the OAuth token endpoint pass their own
     // (shorter) lifetime explicitly, so this only applies to `cli-auth`.

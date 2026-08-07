@@ -1,4 +1,4 @@
-import { BlParsePipe, BlPublic } from '@monorepo/back-core-lib';
+import { BlOptionalAuth, BlParsePipe } from '@monorepo/back-core-lib';
 import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
 
 import { HnIsAdminGuard } from '../core/guards/hn-is-admin.guard';
@@ -49,25 +49,25 @@ export class HnFolderController {
     );
   }
 
-  @BlPublic()
+  @BlOptionalAuth()
   @Get()
   findAll(): Promise<HnFolderDto[]> {
     return this.brickAggregateService.findAllFolders();
   }
 
-  @BlPublic()
+  @BlOptionalAuth()
   @Get(':id')
   findById(@Param('id') id: string): Promise<HnFolderDto> {
     return this.brickAggregateService.findFolderById(id);
   }
 
-  @BlPublic()
+  @BlOptionalAuth()
   @Get('folders/:id')
   findFoldersByParentId(@Param('id') id: string): Promise<HnFolderDto[]> {
     return this.brickAggregateService.findFoldersByParentId(id);
   }
 
-  @BlPublic()
+  @BlOptionalAuth()
   @Get('docs/:id')
   findDocsByParentId(@Param('id') id: string): Promise<HnDocumentationDto[]> {
     return this.brickAggregateService.findDocsByParentId(id);

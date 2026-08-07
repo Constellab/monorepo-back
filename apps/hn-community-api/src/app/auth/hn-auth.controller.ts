@@ -107,8 +107,19 @@ export class HnAuthController {
     return BlCookieHelper.getCookieFromHeader(request.headers.cookie ?? '', HN_JWT_CONFIG.refreshCookie);
   }
 
+  /**
+   * The cookie deliberately OUTLIVES the token it carries.
+   *
+   * Its lifetime is the refresh token's, not the access token's 15 minutes. A cookie's
+   * `maxAge` is not a security control — `exp` inside the signature is, and
+   * `BlJwtStrategy` enforces it with `ignoreExpiration: false`. Expiring the cookie
+   * alongside the token protects nothing and destroys the only signal that matters: with
+   * the cookie gone, the server can no longer tell "session gone stale" from "never
+   * logged in", and an `@BlOptionalAuth` route silently serves the anonymous answer
+   * instead of asking the caller to refresh.
+   */
   private setAccessCookie(token: string, response: Response): void {
-    const maxAge = this.configService.getAccessTokenDurationInSeconds() * 1000;
+    const maxAge = this.configService.getRefreshTokenDurationInSeconds() * 1000;
     response.cookie(HN_JWT_CONFIG.authorizationCookie, token, this.cookieOptions('/', maxAge));
   }
 

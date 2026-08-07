@@ -1,4 +1,4 @@
-import { BlPublic } from '@monorepo/back-core-lib';
+import { BlOptionalAuth } from '@monorepo/back-core-lib';
 import { Controller, Get, Param, Req } from '@nestjs/common';
 import { Request } from 'express';
 
@@ -20,7 +20,7 @@ export class HnBrickDeprecatedController {
   /**
    * @deprecated Called by labs using the space API key (X-Api-Key header).
    */
-  @BlPublic()
+  @BlOptionalAuth()
   @Get(['central/name/:name/:version', 'space/name/:name/:version'])
   findOneByNameSpace(
     @Param('name') name: string,
