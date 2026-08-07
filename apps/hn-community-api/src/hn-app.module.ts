@@ -13,6 +13,8 @@ import {
   BlRedisConfig,
   BlRedisModule,
   BlRequestContextMiddleware,
+  BlResourceServerConfig,
+  BlResourceServerModule,
   BlTranslateModule,
   BlTransportModuleConfig,
   blTransportRedisForRoot,
@@ -88,6 +90,7 @@ import { HnLikeBrickModule } from './app/like-aggregate/like-brick/hn-like-brick
 import { HnLikePartnerModule } from './app/like-aggregate/like-partner/hn-like-partner.module';
 import { HnLikeStoryModule } from './app/like-aggregate/like-story/hn-like-story.module';
 import { HnLikeTagModule } from './app/like-aggregate/like-tag/hn-like-tag.module';
+import { HN_MCP_COMMUNITY_DOC_RESOURCE_PATH } from './app/mcp-doc/hn-mcp-doc.constants';
 import { HnMcpDocModule } from './app/mcp-doc/hn-mcp-doc.module';
 import { HnOAuthModule } from './app/oauth/hn-oauth.module';
 import { HnPartnerModule } from './app/partner/hn-partner.module';
@@ -191,6 +194,22 @@ function configureTransportModule(configService: HnCoreConfigService): BlTranspo
 }
 
 /**
+ * What this application protects as a Resource Server, and where a client is sent to get
+ * a token for it.
+ *
+ * The authorization server is this application itself for now, and is named separately
+ * from the base URL because that is the single value that changes when token issuance
+ * moves to the Space API — the Resource identifiers stay this host's.
+ */
+function configureResourceServerModule(configService: HnCoreConfigService): BlResourceServerConfig {
+  return {
+    baseUrl: configService.getApiUrl(),
+    authorizationServerUrl: configService.getApiUrl(),
+    resourcePaths: [HN_MCP_COMMUNITY_DOC_RESOURCE_PATH],
+  };
+}
+
+/**
  * Reuses the queue connection details (BullMQ already needs a Redis instance) and
  * namespaces the keys, so sharing one server with another app stays safe.
  */
@@ -253,6 +272,16 @@ TeRichTextModifications.setBackTimeDifference();
     BlJwtAsymmetricModule.forRootAsync({
       imports: [HnCoreModule],
       useFactory: configureJwtAsymmetricModule,
+      inject: [HnCoreConfigService],
+    }),
+
+    // The Resource Server half of OAuth: the Resources this application serves, the
+    // guard protecting them and their discovery documents. Registered here rather than
+    // inside a feature module because it is global — the guard has to resolve inside
+    // @rekog's dynamically created MCP controllers.
+    BlResourceServerModule.forRootAsync({
+      imports: [HnCoreModule],
+      useFactory: configureResourceServerModule,
       inject: [HnCoreConfigService],
     }),
 

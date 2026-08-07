@@ -2,14 +2,12 @@ import {
   BL_OAUTH_PATHS,
   BlAuthServerMetadata,
   blBuildAuthServerMetadata,
-  blBuildProtectedResourceMetadata,
   BlCookieHelper,
   BlJwtAsymmetricService,
   BlJwtService,
-  BlProtectedResourceMetadata,
   BlPublic,
   BlPublicSecure,
-  blResourcePathFromMetadataUrl,
+  BlResourceRegistry,
   blValidateRedirectUris,
   blVerifyPkce,
 } from '@monorepo/back-core-lib';
@@ -18,7 +16,6 @@ import {
   Controller,
   Get,
   HttpCode,
-  NotFoundException,
   Post,
   Query,
   Req,
@@ -94,8 +91,11 @@ const authorizeQueryPipe = new ValidationPipe({
 
 /**
  * OAuth 2.1 endpoints for the (general) Constellab authorization server.
- * Public (bypass the global JWT/admin guards). The discovery documents MUST resolve
- * at the host root so MCP clients can discover them.
+ * Public (bypass the global JWT/admin guards). The authorization server discovery
+ * document MUST resolve at the host root so MCP clients can discover it.
+ *
+ * The Resource Server half — the per-Resource discovery documents and the guard that
+ * enforces an audience — is mounted from the library and is not here.
  *
  * `@UseFilters(HnOAuthExceptionFilter)` keeps OAuth error bodies intact: the global
  * `HnCoreExceptionHandlerFilter` would otherwise rewrite them to the Constellab
@@ -106,6 +106,12 @@ const authorizeQueryPipe = new ValidationPipe({
 export class HnOAuthController {
   constructor(
     private readonly config: HnOAuthConfig,
+    /**
+     * The Resources a token may be minted for, read from the Resource Server half rather
+     * than kept here: the audience this server writes into a token and the audience a
+     * Resource Server checks it against have to be the same list.
+     */
+    private readonly resources: BlResourceRegistry,
     private readonly clientStore: HnOAuthClientStore,
     private readonly codeStore: HnOAuthCodeStore,
     /** Signs the MCP access tokens this endpoint hands out. Asymmetric — see `tokenResponse`. */
@@ -122,44 +128,6 @@ export class HnOAuthController {
   }
 
   /**
-   * The pathless Protected Resource Metadata document.
-   *
-   * RFC 9728 only defines the per-resource form below, but a client that predates the
-   * split asks for this one, so it keeps answering for the primary resource. Kept
-   * rather than redirected: a discovery document that 404s makes a client give up on
-   * the whole flow.
-   */
-  @BlPublic()
-  @Get(BL_OAUTH_PATHS.protectedResourceMetadata)
-  getProtectedResourceMetadata(): BlProtectedResourceMetadata {
-    return blBuildProtectedResourceMetadata(this.config.resources[0], this.config.issuer);
-  }
-
-  /**
-   * Protected Resource Metadata for one resource (RFC 9728 §3.1), e.g.
-   * `/.well-known/oauth-protected-resource/mcp/community-doc`.
-   *
-   * One document per resource is what makes several MCPs on this host distinguishable
-   * to a client: each `WWW-Authenticate` points at its own document, and each document
-   * names exactly one `resource`. Serving the same document for every path would tell
-   * a client calling the space MCP that it should ask for a community-doc audience.
-   *
-   * The resource comes from the request path, matched against the registry — an
-   * unknown path is a 404 rather than a document for a resource we do not serve.
-   */
-  @BlPublic()
-  @Get(`${BL_OAUTH_PATHS.protectedResourceMetadata}/*splat`)
-  getProtectedResourceMetadataForPath(@Req() request: Request): BlProtectedResourceMetadata {
-    const resourcePath = blResourcePathFromMetadataUrl(request.path);
-    const resource = `${this.config.issuer}${resourcePath ?? ''}`;
-
-    if (!resourcePath || !this.config.isKnownResource(resource)) {
-      throw new NotFoundException('unknown protected resource');
-    }
-    return blBuildProtectedResourceMetadata(resource, this.config.issuer);
-  }
-
-  /**
    * Authorization endpoint (Authorization Code + PKCE).
    *
    * v1 slice: validates the request, then relies on the existing Constellab session
@@ -173,7 +141,7 @@ export class HnOAuthController {
     @Req() request: Request,
     @Res() response: Response
   ): Promise<void> {
-    const validation = await hnValidateAuthorizeParams(query, this.clientStore, this.config);
+    const validation = await hnValidateAuthorizeParams(query, this.clientStore, this.resources);
 
     if (!validation.ok) {
       if (validation.kind === 'pre_redirect') {

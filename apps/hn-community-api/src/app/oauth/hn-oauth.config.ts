@@ -4,13 +4,6 @@ import { Injectable } from '@nestjs/common';
 import { HnCoreConfigService } from '../core/modules/core-config/hn-core-config.service';
 
 /**
- * Path of the community-doc MCP resource, relative to the issuer.
- * Future MCP resources (space, gateway, …) get their own entry here — the OAuth
- * server itself stays resource-agnostic.
- */
-export const HN_MCP_COMMUNITY_DOC_RESOURCE_PATH = 'mcp/community-doc';
-
-/**
  * Longest `client_name` accepted at registration.
  *
  * Ours rather than the shared policy's: the shared redirect URI policy never reads the
@@ -21,8 +14,10 @@ export const HN_MCP_COMMUNITY_DOC_RESOURCE_PATH = 'mcp/community-doc';
 export const HN_OAUTH_MAX_CLIENT_NAME_LENGTH = 200;
 
 /**
- * Configuration surface of the (general) Constellab OAuth 2.1 server: the issuer
- * and the registry of resource identifiers (audiences) it may mint tokens for.
+ * Configuration surface of the (general) Constellab OAuth 2.1 authorization server.
+ *
+ * The Resources it may mint tokens for are not here: they belong to the Resource Server
+ * half, which the library owns — see `BlResourceRegistry`.
  */
 @Injectable()
 export class HnOAuthConfig {
@@ -58,18 +53,5 @@ export class HnOAuthConfig {
    */
   get mcpAccessTokenDurationInSeconds(): number {
     return this.coreConfig.getMcpAccessTokenDurationInSeconds();
-  }
-
-  /** Registry of allowed resource URIs (token audiences). */
-  get resources(): string[] {
-    return [this.resourceUrl(HN_MCP_COMMUNITY_DOC_RESOURCE_PATH)];
-  }
-
-  private resourceUrl(resourcePath: string): string {
-    return `${this.issuer}/${resourcePath}`;
-  }
-
-  isKnownResource(resource: string): boolean {
-    return this.resources.includes(resource);
   }
 }

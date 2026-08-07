@@ -33,6 +33,14 @@ export interface HnClientLookup {
   redirectUriAllowed(client: HnOAuthClient, redirectUri: string): boolean;
 }
 
+/**
+ * What this validator needs of the Resource registry, which the library owns
+ * (`BlResourceRegistry` satisfies it structurally).
+ *
+ * Declared as the one method used rather than taken as the class, so a spec can drive
+ * the validator without standing up a registry, and so this pure function keeps no
+ * dependency on Nest.
+ */
 export interface HnResourceRegistry {
   isKnownResource(resource: string): boolean;
 }

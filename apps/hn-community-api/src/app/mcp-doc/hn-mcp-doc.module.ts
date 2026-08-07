@@ -1,23 +1,23 @@
-import { BlPublic } from '@monorepo/back-core-lib';
+import { BlPublic, BlResourceGuard } from '@monorepo/back-core-lib';
 import { Module } from '@nestjs/common';
 import { McpModule, McpTransportType } from '@rekog/mcp-nest';
 
 import { HnDocumentationModule } from '../brick-aggregate/documentation/hn-documentation.module';
-import { HnMcpResourceGuard } from '../oauth/hn-mcp-resource.guard';
-import { HN_MCP_COMMUNITY_DOC_RESOURCE_PATH } from '../oauth/hn-oauth.config';
+import { HN_MCP_COMMUNITY_DOC_RESOURCE_PATH } from './hn-mcp-doc.constants';
 import { HnMcpDocService } from './hn-mcp-doc.service';
 import { HnMcpDocTool } from './hn-mcp-doc.tool';
 
 /**
  * MCP server exposing the community documentation (read-only) over Streamable HTTP.
  *
- * Endpoint: POST /{@link HN_MCP_COMMUNITY_DOC_RESOURCE_PATH} — the same constant the OAuth
- * config derives this resource's token audience from, so the two cannot drift apart.
+ * Endpoint: POST /{@link HN_MCP_COMMUNITY_DOC_RESOURCE_PATH} — the same constant the
+ * application module registers as a Resource, so the endpoint and its token audience
+ * cannot drift apart.
  *
  * Auth: `BlPublic()` neutralizes the global JWT/admin guards on this route, and the
- * generic {@link HnMcpResourceGuard} enforces an OAuth Bearer token whose `aud`
- * matches this resource — emitting the `WWW-Authenticate` header that triggers the
- * OAuth discovery flow in MCP clients.
+ * generic {@link BlResourceGuard} enforces an OAuth Bearer token whose `aud` matches
+ * this Resource — emitting the `WWW-Authenticate` header that triggers the OAuth
+ * discovery flow in MCP clients.
  */
 @Module({
   imports: [
@@ -34,7 +34,7 @@ import { HnMcpDocTool } from './hn-mcp-doc.tool';
       // Neutralize the global HnJwtAuthGuard/HnIsAdminGuard on this route...
       decorators: [BlPublic()],
       // ...and enforce the OAuth Resource Server check (Bearer token + audience).
-      guards: [HnMcpResourceGuard],
+      guards: [BlResourceGuard],
       // Stateless keeps HTTP consumers (and the future gateway) simple: no session to track.
       streamableHttp: { statelessMode: true, enableJsonResponse: true },
     }),

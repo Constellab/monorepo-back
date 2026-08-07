@@ -211,6 +211,36 @@ describe('OAuth token signing (e2e)', () => {
     });
   });
 
+  describe('the protected resource discovery documents', () => {
+    it('serves one document per resource, naming the authorization server', async () => {
+      const response = await server()
+        .get(`/.well-known/oauth-protected-resource${new URL(resource).pathname}`)
+        .expect(200);
+
+      expect(response.body.resource).toBe(resource);
+      expect(response.body.authorization_servers).toHaveLength(1);
+    });
+
+    it('404s on a path that is not a registered resource', async () => {
+      // Answering here would tell a client calling one surface to request an audience
+      // for a different one.
+      await server().get('/.well-known/oauth-protected-resource/mcp/not-a-resource').expect(404);
+    });
+
+    it('advertises, on refusal, a document that actually resolves', async () => {
+      const refused = await callMcp().expect(401);
+
+      // The `WWW-Authenticate` header is the only thing pointing a client at the
+      // document for the resource it just called; an advertised URL that 404s ends the
+      // flow there.
+      const advertised = /resource_metadata="([^"]+)"/.exec(refused.headers['www-authenticate'] ?? '');
+      expect(advertised).not.toBeNull();
+
+      const document = await server().get(new URL(advertised![1]).pathname).expect(200);
+      expect(document.body.resource).toBe(resource);
+    });
+  });
+
   describe('an MCP access token', () => {
     let flow: TokenPair;
 

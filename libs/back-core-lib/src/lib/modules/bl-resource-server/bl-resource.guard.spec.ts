@@ -1,13 +1,14 @@
-import { BlDecodedToken, BlJwtAsymmetricService } from '@monorepo/back-core-lib';
 import { ExecutionContext, UnauthorizedException } from '@nestjs/common';
 import { Request, Response } from 'express';
 
-import { HnMcpResourceGuard } from './hn-mcp-resource.guard';
-import { HnOAuthConfig } from './hn-oauth.config';
+import { BlDecodedToken } from '../bl-jwt/bl-jwt.class';
+import { BlJwtAsymmetricService } from '../bl-jwt/bl-jwt-asymmetric.service';
+import { BlResourceGuard } from './bl-resource.guard';
+import { BlResourceRegistry } from './bl-resource.registry';
 
-const ISSUER = 'https://api.example.com';
+const BASE_URL = 'https://api.example.com';
 const RESOURCE_PATH = '/mcp/community-doc';
-const RESOURCE = `${ISSUER}${RESOURCE_PATH}`;
+const RESOURCE = `${BASE_URL}${RESOURCE_PATH}`;
 const UNREGISTERED_PATH = '/mcp/not-a-resource';
 
 const TOKEN = 'a.jwt.token';
@@ -26,7 +27,7 @@ const payload = (overrides: Partial<BlDecodedToken> = {}): BlDecodedToken => ({
 });
 
 interface Harness {
-  guard: HnMcpResourceGuard;
+  guard: BlResourceGuard;
   verifyToken: jest.Mock;
   setHeader: jest.Mock;
   context: ExecutionContext;
@@ -47,13 +48,14 @@ function buildHarness(options: { path?: string; authorization?: string } = {}): 
   const request = { path, headers: authorization == null ? {} : { authorization } } as unknown as Request;
   const response = { setHeader } as unknown as Response;
 
-  const config = {
-    issuer: ISSUER,
-    isKnownResource: (resource: string) => resource === RESOURCE,
-  } as unknown as HnOAuthConfig;
+  const registry = new BlResourceRegistry({
+    baseUrl: BASE_URL,
+    authorizationServerUrl: BASE_URL,
+    resourcePaths: [RESOURCE_PATH],
+  });
 
   return {
-    guard: new HnMcpResourceGuard({ verifyToken } as unknown as BlJwtAsymmetricService, config),
+    guard: new BlResourceGuard({ verifyToken } as unknown as BlJwtAsymmetricService, registry),
     verifyToken,
     setHeader,
     context: {
@@ -71,7 +73,7 @@ function advertisedMetadataUrl(setHeader: jest.Mock): string | null {
   return /resource_metadata="([^"]+)"/.exec(call[1] as string)?.[1] ?? null;
 }
 
-describe('HnMcpResourceGuard', () => {
+describe('BlResourceGuard', () => {
   describe('accepts', () => {
     it('a token whose audience is the resource being called', () => {
       const { guard, context, setHeader } = buildHarness({ authorization: `Bearer ${TOKEN}` });
@@ -110,8 +112,8 @@ describe('HnMcpResourceGuard', () => {
 
     it('a session token, which carries no audience at all', () => {
       const harness = buildHarness({ authorization: `Bearer ${TOKEN}` });
-      // This is the direction `HnMcpResourceGuard` has always closed: a full-session
-      // JWT must not reach the MCP. (`BlJwtStrategy` closes the reverse.)
+      // This is the direction the Resource Server guard has always closed: a full-session
+      // JWT must not reach a Resource. (`BlJwtStrategy` closes the reverse.)
       harness.verifyToken.mockReturnValue(payload());
 
       expectRejected(harness);
@@ -119,14 +121,14 @@ describe('HnMcpResourceGuard', () => {
 
     it('a token minted for another resource', () => {
       const harness = buildHarness({ authorization: `Bearer ${TOKEN}` });
-      harness.verifyToken.mockReturnValue(payload({ aud: `${ISSUER}/mcp/space-doc` }));
+      harness.verifyToken.mockReturnValue(payload({ aud: `${BASE_URL}/mcp/space-doc` }));
 
       expectRejected(harness);
     });
 
     it('a token whose audiences all miss the resource', () => {
       const harness = buildHarness({ authorization: `Bearer ${TOKEN}` });
-      harness.verifyToken.mockReturnValue(payload({ aud: ['https://other', `${ISSUER}/mcp/space-doc`] }));
+      harness.verifyToken.mockReturnValue(payload({ aud: ['https://other', `${BASE_URL}/mcp/space-doc`] }));
 
       expectRejected(harness);
     });
@@ -162,9 +164,10 @@ describe('HnMcpResourceGuard', () => {
       expect(() => harness.guard.canActivate(harness.context)).toThrow(UnauthorizedException);
 
       // Per-resource, not a shared document: this header is the only thing telling the
-      // client which audience to request, and every MCP on this host needs a different one.
+      // client which audience to request, and every Resource on this host needs a
+      // different one.
       expect(advertisedMetadataUrl(harness.setHeader)).toBe(
-        `${ISSUER}/.well-known/oauth-protected-resource${RESOURCE_PATH}`
+        `${BASE_URL}/.well-known/oauth-protected-resource${RESOURCE_PATH}`
       );
     });
 
@@ -190,7 +193,7 @@ describe('HnMcpResourceGuard', () => {
       expect(() => harness.guard.canActivate(harness.context)).toThrow(UnauthorizedException);
 
       expect(advertisedMetadataUrl(harness.setHeader)).toBe(
-        `${ISSUER}/.well-known/oauth-protected-resource${UNREGISTERED_PATH}`
+        `${BASE_URL}/.well-known/oauth-protected-resource${UNREGISTERED_PATH}`
       );
     });
   });

@@ -196,7 +196,7 @@ describe('BlJwtAsymmetricService', () => {
 
   describe('verifyToken does not check the audience', () => {
     it('returns the payload for a resource other than the caller is serving', () => {
-      // Deliberate: only the caller knows which resource it is, and `HnMcpResourceGuard`
+      // Deliberate: only the caller knows which resource it is, and `BlResourceGuard`
       // is what compares. A verifier silently accepting any audience is fine; a guard
       // forgetting to compare is not, which is why that lives in one place.
       const service = buildService();

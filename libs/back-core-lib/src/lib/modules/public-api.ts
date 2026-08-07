@@ -8,5 +8,6 @@ export * from './bl-object-storage/public-api';
 export * from './bl-redis/public-api';
 export * from './bl-refresh-token/public-api';
 export * from './bl-request-context/public-api';
+export * from './bl-resource-server/public-api';
 export * from './bl-translate/public-api';
 export * from './bl-transport/public-api';
