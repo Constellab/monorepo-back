@@ -1,3 +1,4 @@
+import { blStripTrailingSlashes } from '@monorepo/back-core-lib';
 import { Injectable } from '@nestjs/common';
 
 import { HnCoreConfigService } from '../core/modules/core-config/hn-core-config.service';
@@ -10,6 +11,16 @@ import { HnCoreConfigService } from '../core/modules/core-config/hn-core-config.
 export const HN_MCP_COMMUNITY_DOC_RESOURCE_PATH = 'mcp/community-doc';
 
 /**
+ * Longest `client_name` accepted at registration.
+ *
+ * Ours rather than the shared policy's: the shared redirect URI policy never reads the
+ * client name, and it is this application's own client store that keeps it for the
+ * lifetime of the client. Bounded so a public endpoint cannot be used to park unbounded
+ * attacker-supplied text there.
+ */
+export const HN_OAUTH_MAX_CLIENT_NAME_LENGTH = 200;
+
+/**
  * Configuration surface of the (general) Constellab OAuth 2.1 server: the issuer
  * and the registry of resource identifiers (audiences) it may mint tokens for.
  */
@@ -19,7 +30,7 @@ export class HnOAuthConfig {
 
   /** Issuer = base URL serving the `.well-known` documents (no trailing slash). */
   get issuer(): string {
-    return this.coreConfig.getApiUrl().replace(/\/+$/, '');
+    return blStripTrailingSlashes(this.coreConfig.getApiUrl());
   }
 
   /**
@@ -28,7 +39,7 @@ export class HnOAuthConfig {
    * after login (cross-repo dependency — see the OAuth plan).
    */
   get frontLoginUrl(): string {
-    return `${this.coreConfig.getFrontBaseUrl().replace(/\/+$/, '')}/login`;
+    return `${blStripTrailingSlashes(this.coreConfig.getFrontBaseUrl())}/login`;
   }
 
   /**

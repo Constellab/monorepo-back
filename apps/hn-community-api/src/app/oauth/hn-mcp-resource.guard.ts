@@ -1,4 +1,9 @@
-import { blExtractBearerToken, BlJwtService, blProtectedResourceMetadataUrl } from '@monorepo/back-core-lib';
+import {
+  blExtractBearerToken,
+  BlJwtService,
+  blProtectedResourceMetadataUrl,
+  blStripTrailingSlashes,
+} from '@monorepo/back-core-lib';
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Request, Response } from 'express';
 
@@ -54,7 +59,7 @@ export class HnMcpResourceGuard implements CanActivate {
 
   /** Path component of the endpoint being called, normalized like a resource identifier. */
   private resourcePath(request: Request): string {
-    return (request.path ?? '').split('?')[0].replace(/\/+$/, '');
+    return blStripTrailingSlashes((request.path ?? '').split('?')[0]);
   }
 
   private audienceMatches(aud: string | string[] | undefined, expected: string): boolean {

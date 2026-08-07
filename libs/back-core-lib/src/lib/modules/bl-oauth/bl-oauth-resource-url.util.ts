@@ -1,15 +1,7 @@
 import { BL_OAUTH_PATHS } from './bl-oauth.constants';
+import { blStripTrailingSlashes } from './bl-oauth-url.util';
 
 const METADATA_PREFIX = `/${BL_OAUTH_PATHS.protectedResourceMetadata}`;
-
-/**
- * Strip trailing slashes so `/mcp/community-doc` and `/mcp/community-doc/` resolve to
- * the same resource. A resource identifier must byte-match the URL the client calls,
- * and a client is free to add or drop the trailing slash.
- */
-function normalizePath(path: string): string {
-  return path.replace(/\/+$/, '');
-}
 
 /**
  * Where a protected resource's metadata document lives (RFC 9728 §3.1).
@@ -22,9 +14,9 @@ function normalizePath(path: string): string {
  * `resourcePath` is the resource's path component, with or without a leading slash.
  */
 export function blProtectedResourceMetadataUrl(issuer: string, resourcePath: string): string {
-  const path = normalizePath(resourcePath);
+  const path = blStripTrailingSlashes(resourcePath);
   const suffix = path.length === 0 || path.startsWith('/') ? path : `/${path}`;
-  return `${normalizePath(issuer)}${METADATA_PREFIX}${suffix}`;
+  return `${blStripTrailingSlashes(issuer)}${METADATA_PREFIX}${suffix}`;
 }
 
 /**
@@ -36,7 +28,7 @@ export function blProtectedResourceMetadataUrl(issuer: string, resourcePath: str
  * other "not this endpoint".
  */
 export function blResourcePathFromMetadataUrl(requestPath: string): string | null {
-  const path = normalizePath(requestPath);
+  const path = blStripTrailingSlashes(requestPath);
   if (path === METADATA_PREFIX) {
     return '';
   }

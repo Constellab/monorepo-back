@@ -1,4 +1,5 @@
 import { BL_OAUTH_PATHS } from './bl-oauth.constants';
+import { blStripTrailingSlashes } from './bl-oauth-url.util';
 
 /**
  * OAuth 2.0 Authorization Server Metadata (RFC 8414).
@@ -28,16 +29,12 @@ export interface BlProtectedResourceMetadata {
   bearer_methods_supported: string[];
 }
 
-function stripTrailingSlash(url: string): string {
-  return url.replace(/\/+$/, '');
-}
-
 /**
  * Build the Authorization Server discovery document. `issuer` must equal the base
  * URL that serves the `.well-known` path (RFC 8414 requires the exact match).
  */
 export function blBuildAuthServerMetadata(issuer: string): BlAuthServerMetadata {
-  const base = stripTrailingSlash(issuer);
+  const base = blStripTrailingSlashes(issuer);
   return {
     issuer: base,
     authorization_endpoint: `${base}/${BL_OAUTH_PATHS.authorize}`,
@@ -65,7 +62,7 @@ export function blBuildProtectedResourceMetadata(
 ): BlProtectedResourceMetadata {
   return {
     resource,
-    authorization_servers: [stripTrailingSlash(issuer)],
+    authorization_servers: [blStripTrailingSlashes(issuer)],
     bearer_methods_supported: ['header'],
   };
 }

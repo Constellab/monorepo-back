@@ -1,5 +1,4 @@
 import {
-  BL_OAUTH_LIMITS,
   BL_OAUTH_PATHS,
   BlAuthServerMetadata,
   blBuildAuthServerMetadata,
@@ -30,7 +29,7 @@ import { Request, Response } from 'express';
 
 import { HN_JWT_CONFIG } from '../auth/hn-jwt.config';
 import { HnRefreshTokenService } from '../auth/refresh-token/hn-refresh-token.service';
-import { HnOAuthConfig } from './hn-oauth.config';
+import { HN_OAUTH_MAX_CLIENT_NAME_LENGTH, HnOAuthConfig } from './hn-oauth.config';
 import { HnOAuthException, HnOAuthExceptionFilter } from './hn-oauth.exception';
 import { HnAuthorizeQueryDto } from './hn-oauth-authorize.dto';
 import { hnValidateAuthorizeParams } from './hn-oauth-authorize.validator';
@@ -224,7 +223,7 @@ export class HnOAuthController {
     // Bounded because the store keeps it for the lifetime of the client.
     const clientName =
       typeof body?.client_name === 'string'
-        ? body.client_name.slice(0, BL_OAUTH_LIMITS.maxClientNameLength)
+        ? body.client_name.slice(0, HN_OAUTH_MAX_CLIENT_NAME_LENGTH)
         : undefined;
 
     const client = await this.clientStore.register({
