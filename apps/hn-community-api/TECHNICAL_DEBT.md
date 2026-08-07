@@ -195,9 +195,11 @@ Consumers depend on the narrow `BlRedisStore` abstraction (`get` / `setWithTtl` 
 
 **Was:** access tokens minted for an MCP resource carry `aud = <resource URI>`, and `HnMcpResourceGuard` requires that `aud` to match the endpoint being called — which blocked one direction (a session JWT, having no `aud`, cannot be used against the MCP). The reverse was open: the global auth path ignored `aud`, so an MCP access token was accepted as a **full session credential on every other API route**, for its whole 7-day lifetime.
 
-**Fixed by:** `BlJwtStrategy.validate()` now refuses any token carrying an `aud` claim, before the user lookup. Unconditional rather than opt-in, so a future application minting resource-scoped tokens is protected by default. Safe because `aud` is only ever set by `BlJwtService.generateTokenForAudience()`, whose sole caller is `/oauth/token`: session tokens, `cli-auth` tokens and `BlTokenHelper.encodeToken()` carry no audience, so no existing flow is affected — including in `cn-space-api`, which mints no `aud` at all. Covered by `bl-jwt.strategy.spec.ts`.
+**Fixed by:** `BlJwtStrategy.validate()` now refuses any token carrying an `aud` claim, before the user lookup. Unconditional rather than opt-in, so a future application minting resource-scoped tokens is protected by default. Safe because `aud` is only ever set when minting an MCP access token, whose sole caller is `/oauth/token`: session tokens, `cli-auth` tokens and `BlTokenHelper.encodeToken()` carry no audience, so no existing flow is affected — including in `cn-space-api`, which mints no `aud` at all. Covered by `bl-jwt.strategy.spec.ts`.
 
 Isolation is now bidirectional: MCP tokens work only against their resource, session tokens only against the rest of the API.
+
+**August 2026 — the mechanism moved, the rule did not.** `BlJwtService.generateTokenForAudience()` (which the paragraph above used to name) is gone: minting an audience-bearing token now belongs to `BlJwtAsymmetricService`, on a different key. The `aud` check here is unchanged and still the only thing closing this direction — but it is no longer the _only_ thing separating the two kinds, since a Session token verifier now also refuses the algorithm an MCP access token is signed with. See item 12.
 
 ---
 
@@ -270,15 +272,51 @@ connected for more than an hour, refreshing silently.
 
 ---
 
-## 12. HS256 signing prevents splitting resource servers out of this app
+## 12. HS256 signing prevents splitting resource servers out of this app — RESOLVED (August 2026)
 
-**File:** `libs/back-core-lib/src/lib/modules/bl-jwt/bl-jwt.module.ts`
+**Files:** `libs/back-core-lib/src/lib/modules/bl-jwt/` (`bl-jwt-asymmetric.*`,
+`bl-jwt-key.*`, `bl-jwks.controller.ts`), `src/app/oauth/hn-oauth.controller.ts`,
+`src/app/oauth/hn-mcp-resource.guard.ts`
 
-**Problem:** JWTs are signed with a **symmetric** secret (HS256). This is fine today because the MCP resource server lives in the same application as the authorization server and can validate tokens with the same secret. But any resource server running in a **different process** (the planned aggregator gateway, or an MCP for another domain) would need to know the signing secret in order to validate tokens — which is exactly what asymmetric signing exists to avoid.
+**Was:** every JWT was signed with a **symmetric** secret (HS256). Tolerable only while
+the MCP Resource Server lived in the same application as the Authorization Server and
+could verify with the same secret. Any Resource Server in a **different process** would
+have needed the signing secret — and because that same secret signs Session tokens,
+sharing it would have let either application mint a Session token for any user in the
+other.
 
-**Suggested fix:** migrate to RS256 (or ES256) and expose a JWKS endpoint (`/.well-known/jwks.json`), so resource servers validate with the public key only. This touches the existing login and `cli-auth` flows too, so it is a prerequisite task for the federation rather than a local change.
+**Fixed by** splitting the two token kinds onto two keys, per ADR-0001:
 
-**Triggered by:** the first MCP resource server or gateway deployed outside this application.
+- MCP access tokens are signed **RS256** by `BlJwtAsymmetricService`, from a private key
+  supplied as configuration (`MCP_JWT_PRIVATE_KEY_BASE64`, base64 because PEM is
+  multi-line and environment variables lose the newlines).
+- The public half is published at `/.well-known/jwks.json` and advertised as `jwks_uri`
+  in the authorization server metadata, so a verifier needs the document and nothing else.
+- Tokens carry a `kid` — an RFC 7638 thumbprint of the key itself, so it cannot be
+  configured wrong — and the key set publishes a current and an optional previous key, so
+  a rotation is two deployments rather than a flag day.
+- A missing or malformed key throws while Nest builds the injector, so the process does
+  not start. The alternative failure mode is every MCP call being rejected at runtime,
+  which looks like a client problem.
+
+**Session tokens were not touched.** They stay symmetric on each application's own
+`JWT_SECRET`, because they never leave the application that mints them — which also means
+this did **not** touch login or `cli-auth`, contrary to what the original note predicted.
+
+**Every verification path now pins exactly one algorithm** (`BL_JWT_SESSION_ALGORITHM` /
+`BL_JWT_ASYMMETRIC_ALGORITHM`): `BlJwtStrategy`, `BlJwtService.verifyToken`,
+`BlTokenHelper`, the ragflow socket, and the asymmetric verifier. This is not tidiness —
+a verifier accepting both can be defeated by signing a token with the **published public
+key** as an HMAC secret, so publishing keys at all is what makes the pin load-bearing.
+
+**Verification:** unit specs for key loading, thumbprints, the key store and the
+asymmetric service, plus `test/hn-oauth-signing.e2e.spec.ts`, which drives the whole flow
+over HTTP and asserts the forged-HS256 token is refused, that an MCP access token is not
+usable as a browser credential, and that browser login is unaffected.
+
+**Still ahead (not this item):** the Community is still the Authorization Server. Making
+it a Resource Server that fetches this document from the Space API is #74/#77; what
+remains there is key _distribution_, not signing.
 
 ---
 

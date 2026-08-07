@@ -11,6 +11,7 @@ export interface BlAuthServerMetadata {
   token_endpoint: string;
   registration_endpoint: string;
   revocation_endpoint: string;
+  jwks_uri: string;
   response_types_supported: string[];
   grant_types_supported: string[];
   code_challenge_methods_supported: string[];
@@ -41,6 +42,11 @@ export function blBuildAuthServerMetadata(issuer: string): BlAuthServerMetadata 
     token_endpoint: `${base}/${BL_OAUTH_PATHS.token}`,
     registration_endpoint: `${base}/${BL_OAUTH_PATHS.register}`,
     revocation_endpoint: `${base}/${BL_OAUTH_PATHS.revoke}`,
+    // Where the keys that sign MCP access tokens are published. Advertised even though
+    // the clients driving this flow never verify a token themselves: the Resource Servers
+    // that do resolve this URL from the `issuer` above, and RFC 8414 has no other place
+    // to say it. The `alg` a verifier must pin is on each key in that document, not here.
+    jwks_uri: `${base}/${BL_OAUTH_PATHS.jwks}`,
     response_types_supported: ['code'],
     // A client that does not see `refresh_token` here has no reason to keep the one
     // /token hands it, and will re-run the whole authorization flow on expiry instead.

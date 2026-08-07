@@ -4,13 +4,20 @@ const ISSUER = 'https://api.example.com';
 const RESOURCE = 'https://api.example.com/mcp/community-doc';
 
 describe('blBuildAuthServerMetadata', () => {
-  it('exposes the issuer and the four endpoints derived from it', () => {
+  it('exposes the issuer and the endpoints derived from it', () => {
     const meta = blBuildAuthServerMetadata(ISSUER);
     expect(meta.issuer).toBe(ISSUER);
     expect(meta.authorization_endpoint).toBe(`${ISSUER}/oauth/authorize`);
     expect(meta.token_endpoint).toBe(`${ISSUER}/oauth/token`);
     expect(meta.registration_endpoint).toBe(`${ISSUER}/oauth/register`);
     expect(meta.revocation_endpoint).toBe(`${ISSUER}/oauth/revoke`);
+  });
+
+  it('advertises where the signing keys are published', () => {
+    const meta = blBuildAuthServerMetadata(ISSUER);
+    // A Resource Server in another application resolves this from the issuer and has no
+    // other way to learn it, so it must be present and must match the route served.
+    expect(meta.jwks_uri).toBe(`${ISSUER}/.well-known/jwks.json`);
   });
 
   it('advertises only the capabilities we actually support', () => {

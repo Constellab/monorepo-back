@@ -13,6 +13,12 @@
 export const BL_OAUTH_PATHS = {
   authorizationServerMetadata: '.well-known/oauth-authorization-server',
   protectedResourceMetadata: '.well-known/oauth-protected-resource',
+  /**
+   * The published signing key set. At the host root like the other two, and listed here
+   * for the same reason: it is advertised as `jwks_uri` in the metadata document, so the
+   * route served and the URL advertised must agree byte-for-byte.
+   */
+  jwks: '.well-known/jwks.json',
   authorize: 'oauth/authorize',
   token: 'oauth/token',
   register: 'oauth/register',

@@ -1,4 +1,4 @@
-import { BlCookieHelper } from '@monorepo/back-core-lib';
+import { BL_JWT_SESSION_ALGORITHM, BlCookieHelper } from '@monorepo/back-core-lib';
 import { Logger } from '@nestjs/common';
 import {
   ConnectedSocket,
@@ -247,8 +247,13 @@ export class HnRagflowChatbotGateway implements OnGatewayInit, OnGatewayConnecti
         return null;
       }
 
+      // A Session token, so exactly one algorithm — the same pin every other
+      // verification path applies. Left open, this socket would also accept HS384/HS512
+      // on the same secret, and it is a verification path like any other.
       const secret = this.coreConfigService.getJwtSecret();
-      const payload = jwt.verify(token, secret) as jwt.JwtPayload;
+      const payload = jwt.verify(token, secret, {
+        algorithms: [BL_JWT_SESSION_ALGORITHM],
+      }) as jwt.JwtPayload;
 
       if (!payload?.sub) {
         return null;

@@ -191,8 +191,12 @@ mémoire, donc il souffre du problème multi-instances que l'item 8 vient de cor
 
 ### 3. Différés volontairement
 
-- **Item 12** — RS256 / JWKS, nécessaire pour sortir les serveurs de ressources de cette app.
-  Le choix de ne pas toucher `BlJwtStrategy` laisse cette trajectoire intacte.
+- ~~**Item 12** — RS256 / JWKS~~ → **traité (août 2026).** Les access tokens MCP sont signés
+  en RS256, la moitié publique est publiée sur `/.well-known/jwks.json` et annoncée en
+  `jwks_uri`. Les tokens de session restent symétriques sur `JWT_SECRET` : ils ne quittent
+  jamais l'app qui les émet, donc login et `cli-auth` n'ont pas bougé — contrairement à ce
+  que l'item d'origine annonçait. Ce qui reste pour sortir les serveurs de ressources de
+  cette app (#74/#77) est la **distribution** des clés, plus la signature.
 - **Item 14** — la recherche MCP matche le JSON brut du rich-text.
 - **Le rate limiting au reverse proxy** (nginx / CapRover), qui devrait être la protection
   principale, le throttler applicatif n'étant que de la défense en profondeur.
@@ -230,7 +234,7 @@ Ce sont des choix, pas des oublis — mais ils se perdent vite, d'où leur place
 
 ## Les pièges au déploiement
 
-### ⚠️ Une variable d'environnement est obligatoire
+### ⚠️ Deux variables d'environnement sont obligatoires
 
 **`OAUTH_ALLOWED_REDIRECT_URIS` doit être définie dans CapRover, en pré-prod comme en prod.**
 
@@ -248,6 +252,30 @@ démarre normalement et rejette silencieusement l'enregistrement du client MCP a
 `hn-dev.env` ne contient que le callback `claude.ai`, `hn-test.env` liste `claude.ai` **et**
 `claude.com`. À vérifier contre ce que le client Claude utilise réellement avant de
 renseigner la prod.
+
+**`MCP_JWT_PRIVATE_KEY_BASE64` doit être définie dans CapRover, en pré-prod comme en prod.**
+
+C'est la clé privée RSA qui signe les access tokens MCP, en PEM encodé base64 (le PEM est
+multi-lignes et les variables d'environnement perdent les retours à la ligne). En générer
+une par environnement, jamais celle du repo :
+
+```bash
+openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:2048 | base64 -w0
+```
+
+Même classe de blocage que ci-dessus : absente, `getConfigString` lève et **l'app ne démarre
+pas** ; présente mais illisible, `BlJwtKeyStore` lève à la construction de l'injecteur et
+l'app ne démarre pas non plus. C'est voulu — l'alternative serait de découvrir le problème
+plus tard sous forme d'appels MCP rejetés en silence, ce qui ressemble à un bug côté client.
+
+Ce n'est **pas** `JWT_SECRET`, et les deux ne doivent pas partager de matière : `JWT_SECRET`
+signe les tokens de session et ne quitte jamais l'app, alors que la moitié publique de
+celle-ci est publiée (ADR-0001).
+
+`MCP_JWT_PREVIOUS_PRIVATE_KEY_BASE64` est **optionnelle** et ne sert qu'à une rotation : la
+clé sortante y reste publiée et acceptée le temps que les tokens en vol expirent, puis on la
+retire au déploiement suivant. Y remettre la clé courante fait échouer le démarrage — ce
+serait croire une rotation en cours alors que rien n'a tourné.
 
 Les trois durées de token (`ACCESS_TOKEN_DURATION_SECONDS`,
 `REFRESH_TOKEN_DURATION_SECONDS`, `MCP_ACCESS_TOKEN_DURATION_SECONDS`) sont à l'inverse

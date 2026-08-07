@@ -4,7 +4,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtModuleOptions } from '@nestjs/jwt/dist/interfaces/jwt-module-options.interface';
 import { PassportModule } from '@nestjs/passport';
 
-import { BL_JWT_CONFIG_PROVIDER, BlJwtConfig } from './bl-jwt.class';
+import { BL_JWT_CONFIG_PROVIDER, BL_JWT_SESSION_ALGORITHM, BlJwtConfig } from './bl-jwt.class';
 import { BlJwtService } from './bl-jwt.service';
 import { BlJwtStrategy } from './bl-jwt.strategy';
 
@@ -18,7 +18,13 @@ export interface BlJwtModuleAsyncOptions extends Pick<ModuleMetadata, 'imports'>
 async function configureJwtModule(blJwtConfig: BlJwtConfig): Promise<JwtModuleOptions> {
   return {
     secret: blJwtConfig.jwtSecret,
-    signOptions: { expiresIn: blJwtConfig.tokenDurationInSeconds },
+    // Algorithm named here rather than left to the library default, so it is stated in
+    // the same place as the secret it goes with. Callers pass their own `expiresIn`; none
+    // of them passes an algorithm, and this is what they inherit.
+    signOptions: {
+      algorithm: BL_JWT_SESSION_ALGORITHM,
+      expiresIn: blJwtConfig.tokenDurationInSeconds,
+    },
   };
 }
 

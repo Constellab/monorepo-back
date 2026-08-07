@@ -1,6 +1,6 @@
 import {
   blExtractBearerToken,
-  BlJwtService,
+  BlJwtAsymmetricService,
   blProtectedResourceMetadataUrl,
   blStripTrailingSlashes,
 } from '@monorepo/back-core-lib';
@@ -19,11 +19,17 @@ import { HnOAuthConfig } from './hn-oauth.config';
  * On any failure it emits `WWW-Authenticate: Bearer resource_metadata="…"` before
  * returning 401 — that header is what makes an MCP client (Claude) start the OAuth
  * discovery flow.
+ *
+ * Verifies through `BlJwtAsymmetricService`, which accepts RS256 and nothing else. The
+ * Session token verifier is a different service accepting HS256 and nothing else, and
+ * neither can be reached from here: that is the point. Once the Authorization Server moves
+ * out of this application, the only thing this guard needs is the published public key —
+ * it holds no ability to mint what it accepts.
  */
 @Injectable()
 export class HnMcpResourceGuard implements CanActivate {
   constructor(
-    private readonly jwtService: BlJwtService,
+    private readonly mcpJwtService: BlJwtAsymmetricService,
     private readonly config: HnOAuthConfig
   ) {}
 
@@ -40,7 +46,7 @@ export class HnMcpResourceGuard implements CanActivate {
       if (!token || !this.config.isKnownResource(expectedResource)) {
         throw new UnauthorizedException();
       }
-      const payload = this.jwtService.verifyToken(token);
+      const payload = this.mcpJwtService.verifyToken(token);
       if (!this.audienceMatches(payload.aud, expectedResource)) {
         throw new UnauthorizedException();
       }

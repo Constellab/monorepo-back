@@ -4,6 +4,7 @@ import {
   blBuildAuthServerMetadata,
   blBuildProtectedResourceMetadata,
   BlCookieHelper,
+  BlJwtAsymmetricService,
   BlJwtService,
   BlProtectedResourceMetadata,
   BlPublic,
@@ -107,7 +108,10 @@ export class HnOAuthController {
     private readonly config: HnOAuthConfig,
     private readonly clientStore: HnOAuthClientStore,
     private readonly codeStore: HnOAuthCodeStore,
-    private readonly jwtService: BlJwtService,
+    /** Signs the MCP access tokens this endpoint hands out. Asymmetric — see `tokenResponse`. */
+    private readonly mcpJwtService: BlJwtAsymmetricService,
+    /** Reads the browser's own Session token on /authorize, and nothing else. */
+    private readonly sessionJwtService: BlJwtService,
     private readonly refreshTokenService: HnRefreshTokenService
   ) {}
 
@@ -366,6 +370,11 @@ export class HnOAuthController {
    * used to agree only because each side happened to read the same constant, and a
    * client that trusts a longer `expires_in` than the signature stops refreshing in
    * time and starts failing on 401s it did not expect.
+   *
+   * Signed asymmetrically, unlike this application's Session tokens. This is the token
+   * that deliberately crosses an application boundary, so verifying it must not require
+   * holding the ability to mint it — per ADR-0001. Nothing about the flow above changes
+   * with it: only which key signs.
    */
   private tokenResponse(
     userId: string,
@@ -375,14 +384,25 @@ export class HnOAuthController {
   ): HnOAuthTokenResponse {
     const durationInSeconds = this.config.mcpAccessTokenDurationInSeconds;
     return {
-      access_token: this.jwtService.generateTokenForAudience(userId, userEmail, resource, durationInSeconds),
+      access_token: this.mcpJwtService.generateTokenForAudience(
+        userId,
+        userEmail,
+        resource,
+        durationInSeconds
+      ),
       token_type: 'Bearer',
       expires_in: durationInSeconds,
       refresh_token: refreshToken,
     };
   }
 
-  /** Resolve the logged-in user from the Constellab session cookie, or null. */
+  /**
+   * Resolve the logged-in user from the Constellab session cookie, or null.
+   *
+   * The one place here that reads a Session token, and it goes through the symmetric
+   * verifier — a browser cookie is this application's own credential and has nothing to
+   * do with the key that signs MCP access tokens.
+   */
   private currentUserFromCookie(request: Request): HnOAuthCodeUser | null {
     const token = BlCookieHelper.getCookieFromHeader(
       request.headers.cookie ?? '',
@@ -392,7 +412,7 @@ export class HnOAuthController {
       return null;
     }
     try {
-      const payload = this.jwtService.verifyToken(token);
+      const payload = this.sessionJwtService.verifyToken(token);
       return { id: payload.sub, email: payload.email };
     } catch {
       return null;

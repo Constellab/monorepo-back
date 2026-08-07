@@ -1,4 +1,4 @@
-import { BlJwtService, BlRefreshTokenRotation } from '@monorepo/back-core-lib';
+import { BlJwtAsymmetricService, BlJwtService, BlRefreshTokenRotation } from '@monorepo/back-core-lib';
 import { NotFoundException } from '@nestjs/common';
 import { createHash } from 'crypto';
 import { Request } from 'express';
@@ -58,7 +58,10 @@ function buildController(): Mocks {
       config,
       {} as unknown as HnOAuthClientStore,
       { consume } as unknown as HnOAuthCodeStore,
-      { generateTokenForAudience } as unknown as BlJwtService,
+      // Access tokens are minted asymmetrically; the symmetric service is only reached
+      // for the browser's own session cookie on /authorize, which this spec never drives.
+      { generateTokenForAudience } as unknown as BlJwtAsymmetricService,
+      {} as unknown as BlJwtService,
       { issue, rotate, revoke, revokeOAuthToken } as unknown as HnRefreshTokenService
     ),
     consume,

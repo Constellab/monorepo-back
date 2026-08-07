@@ -2,6 +2,8 @@ import {
   blConfigureLogger,
   BlDbBackupModule,
   BlExternalApiModule,
+  BlJwtAsymmetricConfig,
+  BlJwtAsymmetricModule,
   BlJwtConfig,
   BlJwtModule,
   BlLoggerConfig,
@@ -169,6 +171,21 @@ function configureJwtModule(configService: HnCoreConfigService, userService: HnU
   };
 }
 
+/**
+ * Key material for MCP access tokens, which are the only tokens here signed
+ * asymmetrically — they are the only ones another application has to verify.
+ *
+ * Reading `MCP_JWT_PRIVATE_KEY_BASE64` throws when it is absent, and `BlJwtKeyStore`
+ * throws when it is present but unusable. Both happen while Nest builds the injector, so
+ * a bad key stops the process rather than turning into every MCP call being rejected.
+ */
+function configureJwtAsymmetricModule(configService: HnCoreConfigService): BlJwtAsymmetricConfig {
+  return {
+    privateKeyBase64: configService.getMcpJwtPrivateKeyBase64(),
+    previousPrivateKeyBase64: configService.getMcpJwtPreviousPrivateKeyBase64(),
+  };
+}
+
 function configureTransportModule(configService: HnCoreConfigService): BlTransportModuleConfig {
   return configService.getTransportModuleConfig();
 }
@@ -229,6 +246,14 @@ TeRichTextModifications.setBackTimeDifference();
       imports: [HnCoreModule, HnUserModule],
       useFactory: configureJwtModule,
       inject: [HnCoreConfigService, HnUserService],
+    }),
+
+    // The asymmetric path, alongside the symmetric one rather than inside it: session
+    // tokens and MCP access tokens deliberately do not share a key.
+    BlJwtAsymmetricModule.forRootAsync({
+      imports: [HnCoreModule],
+      useFactory: configureJwtAsymmetricModule,
+      inject: [HnCoreConfigService],
     }),
 
     BullModule.forRootAsync(

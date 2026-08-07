@@ -1,14 +1,15 @@
 import { JwtService } from '@nestjs/jwt';
 
+import { BL_JWT_SESSION_ALGORITHM } from './bl-jwt.class';
 import { BlJwtService } from './bl-jwt.service';
 
-function buildService(): { service: BlJwtService; sign: jest.Mock } {
+function buildService(): { service: BlJwtService; sign: jest.Mock; verify: jest.Mock } {
   const sign = jest.fn().mockReturnValue('signed-token');
-  return { service: new BlJwtService({ sign } as unknown as JwtService), sign };
+  const verify = jest.fn().mockReturnValue({ sub: 'user-1', email: 'user@example.com' });
+  return { service: new BlJwtService({ sign, verify } as unknown as JwtService), sign, verify };
 }
 
 const payload = { sub: 'user-1', email: 'user@example.com' };
-const resource = 'https://api.example.com/mcp/community-doc';
 
 describe('BlJwtService', () => {
   describe('generateToken', () => {
@@ -31,17 +32,23 @@ describe('BlJwtService', () => {
     });
   });
 
-  describe('generateTokenForAudience', () => {
-    it('sets the audience and omits expiresIn when no override is given', () => {
-      const { service, sign } = buildService();
-      service.generateTokenForAudience('user-1', 'user@example.com', resource);
-      expect(sign).toHaveBeenCalledWith(payload, { audience: resource });
+  describe('verifyToken', () => {
+    it('accepts exactly one algorithm, the symmetric one', () => {
+      // Without this, the same secret would also verify a token signed with the
+      // *published* public key as an HMAC secret — the algorithm-confusion attack that
+      // publishing keys at all makes possible. See BL_JWT_SESSION_ALGORITHM.
+      const { service, verify } = buildService();
+
+      service.verifyToken('a.jwt.token');
+
+      expect(verify).toHaveBeenCalledWith('a.jwt.token', {
+        algorithms: [BL_JWT_SESSION_ALGORITHM],
+      });
     });
 
-    it('keeps the audience alongside the override', () => {
-      const { service, sign } = buildService();
-      service.generateTokenForAudience('user-1', 'user@example.com', resource, 3600);
-      expect(sign).toHaveBeenCalledWith(payload, { audience: resource, expiresIn: 3600 });
+    it('returns the decoded payload', () => {
+      const { service } = buildService();
+      expect(service.verifyToken('a.jwt.token')).toEqual(payload);
     });
   });
 });

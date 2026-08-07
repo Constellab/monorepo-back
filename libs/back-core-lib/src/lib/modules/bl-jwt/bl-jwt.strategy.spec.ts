@@ -25,7 +25,7 @@ function buildStrategy(overrides: Partial<BlJwtConfig> = {}): {
 }
 
 describe('BlJwtStrategy.validate', () => {
-  it('returns the user for a session token (no aud)', async () => {
+  it('returns the user for a Session token (no aud)', async () => {
     const { strategy, findOne } = buildStrategy();
     await expect(strategy.validate(sessionPayload)).resolves.toBe(user);
     expect(findOne).toHaveBeenCalledWith('user-1');

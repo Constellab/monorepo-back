@@ -1,4 +1,4 @@
-import { BlDecodedToken, BlJwtService } from '@monorepo/back-core-lib';
+import { BlDecodedToken, BlJwtAsymmetricService } from '@monorepo/back-core-lib';
 import { ExecutionContext, UnauthorizedException } from '@nestjs/common';
 import { Request, Response } from 'express';
 
@@ -13,7 +13,7 @@ const UNREGISTERED_PATH = '/mcp/not-a-resource';
 const TOKEN = 'a.jwt.token';
 
 /**
- * A decoded payload as `BlJwtService.verifyToken` would return it.
+ * A decoded payload as `BlJwtAsymmetricService.verifyToken` would return it.
  *
  * Typed rather than cast: `jest.Mock.mockReturnValue` accepts anything, so an assertion
  * here would check nothing and a payload that drifts from `BlDecodedToken` would pass
@@ -35,7 +35,8 @@ interface Harness {
 /**
  * A guard wired to one registered resource, called on `path` with `authorization`.
  * `verifyToken` is a mock: this spec is about the audience decision, not about JWT
- * cryptography, which `BlJwtService` owns and `bl-jwt.strategy.spec.ts` covers.
+ * cryptography, which `BlJwtAsymmetricService` owns and
+ * `bl-jwt-asymmetric.service.spec.ts` covers — including the algorithm pinning.
  */
 function buildHarness(options: { path?: string; authorization?: string } = {}): Harness {
   const { path = RESOURCE_PATH, authorization } = options;
@@ -52,7 +53,7 @@ function buildHarness(options: { path?: string; authorization?: string } = {}): 
   } as unknown as HnOAuthConfig;
 
   return {
-    guard: new HnMcpResourceGuard({ verifyToken } as unknown as BlJwtService, config),
+    guard: new HnMcpResourceGuard({ verifyToken } as unknown as BlJwtAsymmetricService, config),
     verifyToken,
     setHeader,
     context: {

@@ -77,6 +77,29 @@ export class HnCoreConfigService {
   }
 
   /**
+   * Base64-encoded PEM private key that signs MCP access tokens.
+   *
+   * Required: an application that mints MCP access tokens without it would sign nothing
+   * anyone can verify, so it must not start. Base64 because PEM is multi-line and
+   * environment variables reliably lose the newlines.
+   *
+   * Not the Session token secret. Session tokens stay on `JWT_SECRET`, which never
+   * leaves this application; this key's public half is published, and the two must not
+   * be the same material — see ADR-0001.
+   */
+  public getMcpJwtPrivateKeyBase64(): string {
+    return this.getConfigString('MCP_JWT_PRIVATE_KEY_BASE64');
+  }
+
+  /**
+   * Base64-encoded PEM private key of the key being rotated out, published and accepted
+   * but never signing again. Absent outside a rotation.
+   */
+  public getMcpJwtPreviousPrivateKeyBase64(): string | undefined {
+    return this.getOptionalConfigString('MCP_JWT_PREVIOUS_PRIVATE_KEY_BASE64');
+  }
+
+  /**
    * Non-loopback redirect URIs an OAuth client may register, as a comma-separated
    * list. Loopback URIs are always accepted (RFC 8252), so this only needs to carry
    * the remote callbacks. An empty value means loopback-only.
@@ -262,6 +285,18 @@ export class HnCoreConfigService {
       throw Error(`Missing config value for '${configName}'`);
     }
     return value;
+  }
+
+  /**
+   * Read a config value that is genuinely optional, treating a blank one as absent.
+   *
+   * The counterpart to {@link getConfigString} for the handful of values whose absence is
+   * a valid state rather than a misconfiguration — so a caller states that by which
+   * method it reaches for, instead of going around both.
+   */
+  protected getOptionalConfigString(configName: string): string | undefined {
+    const value: string | undefined = this.configService.get(configName);
+    return value == null || value.trim().length === 0 ? undefined : value;
   }
 
   /**
