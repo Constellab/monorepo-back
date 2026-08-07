@@ -1,7 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
 
 import { blStripTrailingSlashes } from '../bl-oauth/bl-oauth-url.util';
-import { BL_RESOURCE_SERVER_CONFIG_PROVIDER, BlResourceServerConfig } from './bl-resource-server.class';
+import {
+  BL_RESOURCE_SERVER_CONFIG_PROVIDER,
+  BlResourceLookup,
+  BlResourceServerConfig,
+} from './bl-resource-server.class';
 
 /**
  * The Resources this application serves, as absolute URLs.
@@ -15,7 +19,7 @@ import { BL_RESOURCE_SERVER_CONFIG_PROVIDER, BlResourceServerConfig } from './bl
  * entry, which is what lets the CLI work register APIs without reworking this.
  */
 @Injectable()
-export class BlResourceRegistry {
+export class BlResourceRegistry implements BlResourceLookup {
   constructor(@Inject(BL_RESOURCE_SERVER_CONFIG_PROVIDER) private readonly config: BlResourceServerConfig) {}
 
   /** Public base URL of this application (no trailing slash). */

@@ -23,17 +23,25 @@ export class BlProtectedResourceMetadataController {
   constructor(private readonly registry: BlResourceRegistry) {}
 
   /**
-   * The pathless document.
+   * The pathless document, which answers for two different reasons.
    *
-   * RFC 9728 only defines the per-resource form below, but a client that predates the
-   * split asks for this one, so it keeps answering for the primary Resource. Kept rather
-   * than redirected: a discovery document that 404s makes a client give up on the whole
-   * flow.
+   * It is where RFC 9728 puts the document of the Resource that is the application
+   * itself — the empty path, which an application registering its whole API uses — so
+   * when that Resource is registered this is its own document and names nothing else.
+   *
+   * Otherwise it stays a compatibility answer for the primary Resource: RFC 9728 only
+   * defines the per-resource form below, but a client that predates the split asks for
+   * this one, and a discovery document that 404s makes such a client give up on the
+   * whole flow.
    */
   @BlPublic()
   @Get(BL_OAUTH_PATHS.protectedResourceMetadata)
   getProtectedResourceMetadata(): BlProtectedResourceMetadata {
-    const resource = this.registry.primaryResource;
+    const applicationItself = this.registry.resourceUrl('');
+    const resource = this.registry.isKnownResource(applicationItself)
+      ? applicationItself
+      : this.registry.primaryResource;
+
     if (resource == null) {
       throw new NotFoundException('unknown protected resource');
     }
@@ -56,7 +64,7 @@ export class BlProtectedResourceMetadataController {
   @Get(`${BL_OAUTH_PATHS.protectedResourceMetadata}/*splat`)
   getProtectedResourceMetadataForPath(@Req() request: Request): BlProtectedResourceMetadata {
     const resourcePath = blResourcePathFromMetadataUrl(request.path);
-    const resource = `${this.registry.baseUrl}${resourcePath ?? ''}`;
+    const resource = this.registry.resourceUrl(resourcePath ?? '');
 
     if (!resourcePath || !this.registry.isKnownResource(resource)) {
       throw new NotFoundException('unknown protected resource');

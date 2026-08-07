@@ -1,9 +1,9 @@
 import { DynamicModule, Global, Module } from '@nestjs/common';
 import { ModuleMetadata } from '@nestjs/common/interfaces';
 
+import { BlProtectedResourceMetadataController } from './bl-protected-resource-metadata.controller';
 import { BlResourceGuard } from './bl-resource.guard';
 import { BlResourceRegistry } from './bl-resource.registry';
-import { BlProtectedResourceMetadataController } from './bl-resource-metadata.controller';
 import { BL_RESOURCE_SERVER_CONFIG_PROVIDER, BlResourceServerConfig } from './bl-resource-server.class';
 
 export interface BlResourceServerModuleAsyncOptions extends Pick<ModuleMetadata, 'imports'> {

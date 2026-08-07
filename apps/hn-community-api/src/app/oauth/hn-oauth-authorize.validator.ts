@@ -1,3 +1,5 @@
+import { BlResourceLookup } from '@monorepo/back-core-lib';
+
 import { HnAuthorizeQueryDto } from './hn-oauth-authorize.dto';
 import { HnOAuthClient } from './hn-oauth-client.store';
 
@@ -34,18 +36,6 @@ export interface HnClientLookup {
 }
 
 /**
- * What this validator needs of the Resource registry, which the library owns
- * (`BlResourceRegistry` satisfies it structurally).
- *
- * Declared as the one method used rather than taken as the class, so a spec can drive
- * the validator without standing up a registry, and so this pure function keeps no
- * dependency on Nest.
- */
-export interface HnResourceRegistry {
-  isKnownResource(resource: string): boolean;
-}
-
-/**
  * Validate an authorization request (Authorization Code + PKCE, RFC 6749 / 7636 /
  * 8707). Pure: no session check, no code creation — that is the controller's job.
  *
@@ -55,7 +45,9 @@ export interface HnResourceRegistry {
 export async function hnValidateAuthorizeParams(
   query: HnAuthorizeQueryDto,
   clients: HnClientLookup,
-  registry: HnResourceRegistry
+  // The library's contract, not a restatement of it: this application serves the
+  // Resources it mints tokens for, so one list answers both questions.
+  registry: BlResourceLookup
 ): Promise<HnAuthorizeValidation> {
   // 1. client_id + redirect_uri must be trusted before we can redirect anything.
   const client = query.client_id ? await clients.find(query.client_id) : null;

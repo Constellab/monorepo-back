@@ -1,4 +1,17 @@
-export const BL_RESOURCE_SERVER_CONFIG_PROVIDER = Symbol();
+export const BL_RESOURCE_SERVER_CONFIG_PROVIDER = Symbol('BL_RESOURCE_SERVER_CONFIG');
+
+/**
+ * The one question asked of the Resource registry from outside the Resource Server half
+ * — in particular by an Authorization Server checking the `resource` a client asks a
+ * token for against what is actually served.
+ *
+ * Declared as the question rather than the class so such a caller stays a pure function
+ * with no Nest provider to stand up, and so the contract lives here, next to the registry
+ * that answers it, rather than being restated by each application.
+ */
+export interface BlResourceLookup {
+  isKnownResource(resource: string): boolean;
+}
 
 /**
  * What an application supplies to become a Resource Server.

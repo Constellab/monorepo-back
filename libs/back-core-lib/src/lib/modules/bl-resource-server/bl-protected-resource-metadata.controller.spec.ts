@@ -1,8 +1,8 @@
 import { NotFoundException } from '@nestjs/common';
 import { Request } from 'express';
 
+import { BlProtectedResourceMetadataController } from './bl-protected-resource-metadata.controller';
 import { BlResourceRegistry } from './bl-resource.registry';
-import { BlProtectedResourceMetadataController } from './bl-resource-metadata.controller';
 import { BlResourceServerConfig } from './bl-resource-server.class';
 
 const BASE_URL = 'https://community.example.com';
@@ -73,6 +73,16 @@ describe('BlProtectedResourceMetadataController', () => {
       // A discovery document that 404s makes a client abandon the whole flow, so this
       // form stays even though RFC 9728 only defines the per-resource one.
       expect(buildController().getProtectedResourceMetadata().resource).toBe(RESOURCE);
+    });
+
+    it('answers for the application itself when that is a registered resource', () => {
+      // This URL is where RFC 9728 puts the document of the empty-path Resource, so once
+      // an application registers its whole API this is its document — not a compatibility
+      // answer naming some other Resource. That is the same rule as everywhere else: the
+      // document a refusal points at names the Resource actually called.
+      const controller = buildController({ resourcePaths: [RESOURCE_PATH, ''] });
+
+      expect(controller.getProtectedResourceMetadata().resource).toBe(BASE_URL);
     });
 
     it('404s when the application registers no resource', () => {

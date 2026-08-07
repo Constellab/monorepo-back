@@ -37,7 +37,9 @@ export class BlResourceGuard implements CanActivate {
     const response = http.getResponse<Response>();
 
     const resourcePath = this.resourcePath(request);
-    const expectedResource = `${this.registry.baseUrl}${resourcePath}`;
+    // Through the registry, so the identifier compared here is assembled exactly as the
+    // one it is compared against.
+    const expectedResource = this.registry.resourceUrl(resourcePath);
     const token = blExtractBearerToken(request.headers?.authorization);
 
     try {
