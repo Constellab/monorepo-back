@@ -271,9 +271,34 @@ Ce sont des soupapes pour ajuster une durée sans redéployer, pas des réglages
   sans refresh token. Elle s'étale sur jusqu'à 7 jours après le déploiement, donc pas de
   vague de reconnexions.
 
-## Le trou dans la vérification
+## Le trou dans la vérification — comblé
 
-Les **18 assertions e2e** de `hn-auth.e2e.spec.ts` sont écrites et n'ont **jamais été
-exécutées** : le conteneur `community-test-db` (port 3312) que `TESTING.md` documente
-n'existe pas sur la machine de dev. C'est le seul endroit où le contrat est testé de bout en
-bout, harnais HTTP compris. À lever avant tout déploiement.
+Les e2e ont tourné. **19 assertions au vert sur 2 suites**, et le passage de « écrites »
+à « exécutées » a coûté trois corrections que la relecture n'avait pas vues :
+
+- **Deux dépendances déclarées mais absentes de `node_modules`** (`@rekog/mcp-nest`,
+  `zod`). Le e2e boote `HnAppModule` en entier, donc il ne démarrait pas du tout. Un
+  `bun install --frozen-lockfile` a suffi — le lockfile les épinglait déjà.
+- **La suite était structurellement incompatible avec le rate limiting livré à côté
+  d'elle.** `/auth/login` est plafonnée à 10/min par IP, la suite s'y connecte 11 fois
+  en une vingtaine de secondes depuis la même IP : le 11ᵉ login prenait un 429. Le
+  throttler fonctionnait donc exactement comme documenté — c'est la suite qui ne
+  pouvait pas passer. Résolu en désactivant le throttler par défaut dans le harnais
+  (`overrideGuard`), avec réactivation explicite là où c'est le sujet.
+- **Deux suites e2e en parallèle droppent la même base.** `maxWorkers: 1` posé avant
+  que ça morde.
+
+Au passage, le rate limiting a enfin une couverture automatisée
+(`hn-throttle.e2e.spec.ts`) : le plafond de 10 sur `/auth/login`, le fait qu'il **reste**
+fermé une fois déclenché (`blockDuration` retombe sur `ttl`), et le fait que
+`/auth/refresh` soit bien sur le plafond global et non sur celui des identifiants. C'est
+le défaut du facteur 1000 qui rendait ça nécessaire : il était dans le _sens_ d'une
+valeur de configuration, donc aucun test unitaire ne pouvait le voir — un mock aurait
+porté le même contresens.
+
+La leçon vaut d'être gardée : **écrit n'est pas exécuté.** Trois défauts réels dormaient
+derrière une suite relue et jamais lancée, dont un qui empêchait le harnais de démarrer.
+C'est le même écart que celui qu'on a documenté partout ailleurs entre une vérification
+contre des mocks et une vérification contre l'infrastructure — et c'est pourquoi les
+points 10 et 13 restent marqués « écrits, pas vérifiés » jusqu'au test avec un vrai
+client Claude.

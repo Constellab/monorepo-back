@@ -80,6 +80,24 @@ the repository. It refuses to run against a database whose name doesn't contain
 > Note: hn local login is **email-only** — `HnUser` has no password column, so
 > login succeeds for any known email. An unknown email returns `2FA_REQUIRED`.
 
+**Suites run serially** (`maxWorkers: 1`). Every suite drops and re-synchronizes the
+same database in `beforeAll`, so two in parallel would tear down each other's schema
+mid-test. Adding an E2E file therefore costs wall-clock time, not correctness.
+
+**The rate limiter is disabled by default**, via `overrideGuard` in
+`HnTestE2EHelper.initAppModule`. `/auth/login` allows 10 requests per minute per IP,
+every supertest request comes from the same IP, and a suite runs well inside one
+minute — so a functional suite that logs in more than ten times fails on a 429 that
+has nothing to do with what it asserts. Opt back in with
+`initAppModule({ throttling: true })`, which only
+[`hn-throttle.e2e.spec.ts`](test/hn-throttle.e2e.spec.ts) does, since the limit is
+what it tests. Disabling rather than raising the limit for tests keeps the shipped
+value the one that runs in production.
+
+> The E2E app is built by `Test.createTestingModule` + `app.init()`, so **`hn-main.ts`
+> never runs**: global pipes, CORS and `trust proxy` are not applied. E2E covers the
+> module graph and the HTTP contract, not the bootstrap configuration.
+
 ## Conventions
 
 - **Unit**: `*.spec.ts` beside the source. Instantiate directly or use

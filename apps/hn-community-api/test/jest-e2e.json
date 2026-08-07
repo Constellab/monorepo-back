@@ -3,6 +3,8 @@
   "rootDir": ".",
   "testEnvironment": "node",
   "testRegex": ".e2e.spec.ts$",
+  "//": "Serial: every suite drops and re-synchronizes the SAME test database in beforeAll, so two running in parallel would tear down each other's schema mid-test.",
+  "maxWorkers": 1,
   "transform": {
     "^.+\\.(t|j)s$": [
       "ts-jest",
