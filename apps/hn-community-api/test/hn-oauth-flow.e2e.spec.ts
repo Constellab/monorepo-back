@@ -1,26 +1,17 @@
-import { createHash } from 'node:crypto';
-
 // Namespace import, matching test-e2e-helper.class.ts: `esModuleInterop` is off, so a
 // default import would compile but be undefined at runtime.
 import * as supertest from 'supertest';
 
-import { TEST_ADMIN_EMAIL } from './test-credentials';
+import {
+  OAUTH_TEST_ACCESS_COOKIE,
+  OAUTH_TEST_CODE_VERIFIER,
+  OAUTH_TEST_REDIRECT_URI,
+  OAuthTestClient,
+} from './oauth-client.helper';
 import { HnTestE2EHelper } from './test-e2e-helper.class';
 
-const ACCESS_COOKIE = 'Authorization';
-
-/** One of `OAUTH_ALLOWED_REDIRECT_URIS` in hn-test.env. */
-const REDIRECT_URI = 'https://claude.ai/api/mcp/auth_callback';
-
-/** Real PKCE pair, so the exchange goes through the same check a client faces. */
-const CODE_VERIFIER = 'f'.repeat(64);
-const CODE_CHALLENGE = createHash('sha256').update(CODE_VERIFIER).digest('base64url');
-
-interface TokenPair {
-  clientId: string;
-  accessToken: string;
-  refreshToken: string;
-}
+/** Allowlisted, but never the URI a client registers here — so it is refused as unregistered. */
+const OTHER_ALLOWLISTED_URI = 'https://claude.com/api/mcp/auth_callback';
 
 /**
  * The OAuth flow itself, end to end and over HTTP only: registration and its redirect
@@ -44,6 +35,9 @@ describe('OAuth flow (e2e)', () => {
 
   let resource: string;
 
+  const server = (): supertest.Agent => supertest(helper.app.getHttpServer());
+  const client = new OAuthTestClient(server, () => resource);
+
   beforeAll(async () => {
     await helper.initAppModule();
     const response = await server().get('/.well-known/oauth-protected-resource').expect(200);
@@ -53,85 +47,6 @@ describe('OAuth flow (e2e)', () => {
   afterAll(async () => {
     await helper.close();
   });
-
-  const server = (): supertest.Agent => supertest(helper.app.getHttpServer());
-
-  /** The session cookie of a logged-in browser. */
-  async function sessionToken(): Promise<string> {
-    const response = await server()
-      .post('/auth/login')
-      .send({ email: TEST_ADMIN_EMAIL, password: 'anything' })
-      .expect(201);
-
-    const cookies = response.headers['set-cookie'] as unknown as string[];
-    const entry = cookies.find((cookie) => cookie.startsWith(`${ACCESS_COOKIE}=`)) ?? '';
-    return entry.split(';')[0].substring(`${ACCESS_COOKIE}=`.length);
-  }
-
-  /** Register a public client, as an MCP client does on first connection. */
-  async function registerClient(): Promise<string> {
-    const response = await server()
-      .post('/oauth/register')
-      .send({ redirect_uris: [REDIRECT_URI], client_name: 'e2e client' })
-      .expect(201);
-    return response.body.client_id as string;
-  }
-
-  function authorizeQuery(clientId: string): Record<string, string> {
-    return {
-      client_id: clientId,
-      redirect_uri: REDIRECT_URI,
-      response_type: 'code',
-      code_challenge: CODE_CHALLENGE,
-      code_challenge_method: 'S256',
-      resource,
-      state: 'the-state',
-    };
-  }
-
-  /** Drive `/authorize` as a logged-in browser and return the code it redirects with. */
-  async function authorizationCode(clientId: string): Promise<string> {
-    const redirect = await server()
-      .get('/oauth/authorize')
-      .query(authorizeQuery(clientId))
-      .set('Cookie', [`${ACCESS_COOKIE}=${await sessionToken()}`])
-      .expect(302);
-
-    const code = new URL(redirect.headers.location).searchParams.get('code');
-    expect(code).toBeTruthy();
-    return code!;
-  }
-
-  /** The whole flow a client runs: register, authorize, exchange. */
-  async function completeAuthorizationFlow(): Promise<TokenPair> {
-    const clientId = await registerClient();
-    const code = await authorizationCode(clientId);
-
-    const token = await server()
-      .post('/oauth/token')
-      .send({
-        grant_type: 'authorization_code',
-        code,
-        redirect_uri: REDIRECT_URI,
-        client_id: clientId,
-        code_verifier: CODE_VERIFIER,
-      })
-      .expect(200);
-
-    return {
-      clientId,
-      accessToken: token.body.access_token as string,
-      refreshToken: token.body.refresh_token as string,
-    };
-  }
-
-  function refresh(pair: { clientId: string; refreshToken: string }): supertest.Test {
-    return server().post('/oauth/token').send({
-      grant_type: 'refresh_token',
-      refresh_token: pair.refreshToken,
-      client_id: pair.clientId,
-    });
-  }
 
   describe('the authorization server discovery document', () => {
     it('names endpoints that all resolve on this host', async () => {
@@ -174,11 +89,11 @@ describe('OAuth flow (e2e)', () => {
     it('registers a client against an allowlisted redirect target', async () => {
       const response = await server()
         .post('/oauth/register')
-        .send({ redirect_uris: [REDIRECT_URI] })
+        .send({ redirect_uris: [OAUTH_TEST_REDIRECT_URI] })
         .expect(201);
 
       expect(response.body.client_id).toBeTruthy();
-      expect(response.body.redirect_uris).toEqual([REDIRECT_URI]);
+      expect(response.body.redirect_uris).toEqual([OAUTH_TEST_REDIRECT_URI]);
       expect(response.body.token_endpoint_auth_method).toBe('none');
       // A client that does not see `refresh_token` here re-runs the whole flow on expiry.
       expect(response.body.grant_types).toContain('refresh_token');
@@ -205,9 +120,12 @@ describe('OAuth flow (e2e)', () => {
 
   describe('the authorization endpoint', () => {
     it('sends a logged-out user to the front login carrying the request to return to', async () => {
-      const clientId = await registerClient();
+      const clientId = await client.registerClient();
 
-      const redirect = await server().get('/oauth/authorize').query(authorizeQuery(clientId)).expect(302);
+      const redirect = await server()
+        .get('/oauth/authorize')
+        .query(client.authorizeQuery(clientId))
+        .expect(302);
 
       const location = new URL(redirect.headers.location);
       expect(location.pathname).toBe('/login');
@@ -219,16 +137,16 @@ describe('OAuth flow (e2e)', () => {
     });
 
     it('redirects a logged-in user back to the client with a code and the state', async () => {
-      const clientId = await registerClient();
+      const clientId = await client.registerClient();
 
       const redirect = await server()
         .get('/oauth/authorize')
-        .query(authorizeQuery(clientId))
-        .set('Cookie', [`${ACCESS_COOKIE}=${await sessionToken()}`])
+        .query(client.authorizeQuery(clientId))
+        .set('Cookie', [`${OAUTH_TEST_ACCESS_COOKIE}=${await client.sessionToken()}`])
         .expect(302);
 
       const location = new URL(redirect.headers.location);
-      expect(`${location.origin}${location.pathname}`).toBe(REDIRECT_URI);
+      expect(`${location.origin}${location.pathname}`).toBe(OAUTH_TEST_REDIRECT_URI);
       expect(location.searchParams.get('code')).toBeTruthy();
       expect(location.searchParams.get('state')).toBe('the-state');
     });
@@ -236,7 +154,7 @@ describe('OAuth flow (e2e)', () => {
     it('refuses an unknown client_id without redirecting anywhere', async () => {
       const response = await server()
         .get('/oauth/authorize')
-        .query({ ...authorizeQuery('not-a-registered-client') })
+        .query(client.authorizeQuery('not-a-registered-client'))
         .expect(400);
 
       // Redirecting here would be an open redirect: neither the client nor the target has
@@ -246,24 +164,26 @@ describe('OAuth flow (e2e)', () => {
     });
 
     it('refuses a redirect_uri the client did not register, without redirecting', async () => {
-      const clientId = await registerClient();
+      const clientId = await client.registerClient();
 
       const response = await server()
         .get('/oauth/authorize')
-        .query({ ...authorizeQuery(clientId), redirect_uri: 'https://claude.com/api/mcp/auth_callback' })
+        .query({ ...client.authorizeQuery(clientId), redirect_uri: OTHER_ALLOWLISTED_URI })
         .expect(400);
 
+      // Allowlisted globally is not the same as registered by THIS client — the code is
+      // delivered to the client's own target, not to any target the server tolerates.
       expect(response.body.error).toBe('invalid_request');
       expect(response.headers.location).toBeUndefined();
     });
 
     it('reports a bad parameter by redirecting back to the client, with the state', async () => {
-      const clientId = await registerClient();
+      const clientId = await client.registerClient();
 
       const redirect = await server()
         .get('/oauth/authorize')
-        .query({ ...authorizeQuery(clientId), resource: `${resource}-not-served` })
-        .set('Cookie', [`${ACCESS_COOKIE}=${await sessionToken()}`])
+        .query({ ...client.authorizeQuery(clientId), resource: `${resource}-not-served` })
+        .set('Cookie', [`${OAUTH_TEST_ACCESS_COOKIE}=${await client.sessionToken()}`])
         .expect(302);
 
       // Once the redirect target is trusted, the error belongs at the client — that is
@@ -277,22 +197,22 @@ describe('OAuth flow (e2e)', () => {
 
   describe('the code exchange', () => {
     it('yields an access token and a refresh token', async () => {
-      const pair = await completeAuthorizationFlow();
+      const pair = await client.completeAuthorizationFlow();
 
       expect(pair.accessToken).toBeTruthy();
       expect(pair.refreshToken).toBeTruthy();
     });
 
     it('refuses a verifier that does not match the challenge', async () => {
-      const clientId = await registerClient();
-      const code = await authorizationCode(clientId);
+      const clientId = await client.registerClient();
+      const code = await client.authorizationCode(clientId);
 
       const response = await server()
         .post('/oauth/token')
         .send({
           grant_type: 'authorization_code',
           code,
-          redirect_uri: REDIRECT_URI,
+          redirect_uri: OAUTH_TEST_REDIRECT_URI,
           client_id: clientId,
           code_verifier: 'g'.repeat(64),
         })
@@ -302,8 +222,8 @@ describe('OAuth flow (e2e)', () => {
     });
 
     it('refuses a code presented with a different redirect target', async () => {
-      const clientId = await registerClient();
-      const code = await authorizationCode(clientId);
+      const clientId = await client.registerClient();
+      const code = await client.authorizationCode(clientId);
 
       // The code is bound to the target it was issued for, so intercepting one buys
       // nothing without also controlling that target.
@@ -312,23 +232,23 @@ describe('OAuth flow (e2e)', () => {
         .send({
           grant_type: 'authorization_code',
           code,
-          redirect_uri: 'https://claude.com/api/mcp/auth_callback',
+          redirect_uri: OTHER_ALLOWLISTED_URI,
           client_id: clientId,
-          code_verifier: CODE_VERIFIER,
+          code_verifier: OAUTH_TEST_CODE_VERIFIER,
         })
         .expect(400);
     });
 
     it('spends the code, so a second exchange fails', async () => {
-      const clientId = await registerClient();
-      const code = await authorizationCode(clientId);
+      const clientId = await client.registerClient();
+      const code = await client.authorizationCode(clientId);
       const exchange = (): supertest.Test =>
         server().post('/oauth/token').send({
           grant_type: 'authorization_code',
           code,
-          redirect_uri: REDIRECT_URI,
+          redirect_uri: OAUTH_TEST_REDIRECT_URI,
           client_id: clientId,
-          code_verifier: CODE_VERIFIER,
+          code_verifier: OAUTH_TEST_CODE_VERIFIER,
         });
 
       await exchange().expect(200);
@@ -347,9 +267,9 @@ describe('OAuth flow (e2e)', () => {
 
   describe('the refresh grant', () => {
     it('rotates: the presented token is spent and a new one is returned', async () => {
-      const pair = await completeAuthorizationFlow();
+      const pair = await client.completeAuthorizationFlow();
 
-      const renewed = await refresh(pair).expect(200);
+      const renewed = await client.refresh(pair).expect(200);
 
       expect(renewed.body.refresh_token).toBeTruthy();
       expect(renewed.body.refresh_token).not.toBe(pair.refreshToken);
@@ -357,30 +277,32 @@ describe('OAuth flow (e2e)', () => {
     });
 
     it('destroys the whole grant when a spent token is replayed', async () => {
-      const pair = await completeAuthorizationFlow();
-      const renewed = await refresh(pair).expect(200);
+      const pair = await client.completeAuthorizationFlow();
+      const renewed = await client.refresh(pair).expect(200);
       const current = { clientId: pair.clientId, refreshToken: renewed.body.refresh_token as string };
 
       // Replay: two holders exist and we cannot tell which is the thief, so the session
       // goes — including the token the legitimate holder is still using.
-      await refresh(pair).expect(400);
-      await refresh(current).expect(400);
+      await client.refresh(pair).expect(400);
+      await client.refresh(current).expect(400);
     });
 
     it('refuses a token presented by a client it was not issued to', async () => {
-      const pair = await completeAuthorizationFlow();
-      const otherClient = await registerClient();
+      const pair = await client.completeAuthorizationFlow();
+      const otherClient = await client.registerClient();
 
-      const response = await refresh({ clientId: otherClient, refreshToken: pair.refreshToken }).expect(400);
+      const response = await client
+        .refresh({ clientId: otherClient, refreshToken: pair.refreshToken })
+        .expect(400);
       expect(response.body.error).toBe('invalid_grant');
 
       // The rotation already burned the token, so the grant must be gone rather than left
       // as a live chain the mismatched caller holds a valid token for.
-      await refresh(pair).expect(400);
+      await client.refresh(pair).expect(400);
     });
 
     it('refuses a request to widen the audience on renewal', async () => {
-      const pair = await completeAuthorizationFlow();
+      const pair = await client.completeAuthorizationFlow();
 
       const response = await server()
         .post('/oauth/token')
@@ -400,19 +322,19 @@ describe('OAuth flow (e2e)', () => {
 
   describe('revocation', () => {
     it('ends the grant, so renewal stops working', async () => {
-      const pair = await completeAuthorizationFlow();
+      const pair = await client.completeAuthorizationFlow();
 
       await server()
         .post('/oauth/revoke')
         .send({ token: pair.refreshToken, client_id: pair.clientId })
         .expect(200);
 
-      await refresh(pair).expect(400);
+      await client.refresh(pair).expect(400);
     });
 
     it("is scoped to the client, so one client cannot end another one's grant", async () => {
-      const pair = await completeAuthorizationFlow();
-      const otherClient = await registerClient();
+      const pair = await client.completeAuthorizationFlow();
+      const otherClient = await client.registerClient();
 
       await server()
         .post('/oauth/revoke')
@@ -421,7 +343,7 @@ describe('OAuth flow (e2e)', () => {
 
       // This endpoint is unauthenticated: if it were not scoped, it would be a denial of
       // service against any grant whose token leaked into it.
-      await refresh(pair).expect(200);
+      await client.refresh(pair).expect(200);
     });
 
     it('answers 200 for a token that means nothing to us (RFC 7009 §2.2)', async () => {

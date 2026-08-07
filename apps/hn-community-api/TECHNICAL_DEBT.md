@@ -165,6 +165,8 @@ The design is deliberately **resource-agnostic**: the long-term goal is a federa
 
 The items below are the v1 shortcuts. Item 8 is the only one that can break in production in a surprising way.
 
+**August 2026 — the whole server moved, the trade-offs did not.** `src/app/oauth/` no longer holds any of this (#72): discovery, dynamic client registration, `/oauth/authorize`, `/oauth/token`, `/oauth/revoke` and both stores are now `libs/back-core-lib/src/lib/modules/bl-oauth-server/`, and the Resource Server guard is `bl-resource-server/` (#71). What the Community still supplies is configuration and `hn-oauth-current-user.resolver.ts`. The **Files** lines on the RESOLVED items in this section are left as they were written — they record where each piece of work happened, not where the code is today.
+
 ---
 
 ## 8. In-memory OAuth stores break under multiple replicas — RESOLVED
@@ -254,9 +256,6 @@ connected for more than an hour, refreshing silently.
 ## 11. No consent screen (DCR is restricted, registration itself stays open)
 
 **Files:** `libs/back-core-lib/src/lib/modules/bl-oauth-server/bl-oauth-server.controller.ts` (`register()`), `libs/back-core-lib/src/lib/modules/bl-oauth/bl-oauth-redirect-uri.validator.ts`
-
-> The endpoint moved into the library in August 2026 (#72). The paths on the RESOLVED items
-> below are left as they were when each was written — they record where the work happened.
 
 **Problem:** `POST /oauth/register` is public and unauthenticated (RFC 7591 allows this), so anyone can register an OAuth client. Combined with the deliberate absence of a consent screen, a third party can initiate an authorization flow against this server; a logged-in user would then be redirected back with a code without ever being asked to approve the client.
 

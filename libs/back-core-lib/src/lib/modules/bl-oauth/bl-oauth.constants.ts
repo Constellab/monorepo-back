@@ -26,7 +26,7 @@ export const BL_OAUTH_PATHS = {
 } as const;
 
 /**
- * Bounds enforced on a registration request.
+ * Bounds the redirect URI policy enforces on a registration request.
  *
  * `/oauth/register` is public and request bodies are large, so without these an
  * attacker could register a client carrying megabytes of loopback URIs (which always
@@ -35,17 +35,13 @@ export const BL_OAUTH_PATHS = {
  *
  * `maxRejectedUrisReported` keeps the error description useful for diagnosing a real
  * client without turning it into an amplifier.
+ *
+ * Scoped to what the shared policy itself applies. A bound on a field that is merely
+ * *stored* rather than validated — a client name, say — belongs with the store that keeps
+ * it, not here.
  */
 export const BL_OAUTH_LIMITS = {
   maxRedirectUris: 10,
   maxRedirectUriLength: 2048,
   maxRejectedUrisReported: 3,
-  /**
-   * Longest `client_name` accepted at registration.
-   *
-   * Here rather than with the mounting application, unlike when the client store was an
-   * application's own: it is `BlOAuthClientStore` that keeps this string for the lifetime
-   * of the client, so the bound belongs next to the code that stores it.
-   */
-  maxClientNameLength: 200,
 } as const;

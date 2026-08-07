@@ -1,20 +1,16 @@
 import { createHash } from 'crypto';
-import { Request, Response } from 'express';
 
 import { BlJwtAsymmetricService } from '../bl-jwt/bl-jwt-asymmetric.service';
 import { BlRefreshTokenRotation, BlRefreshTokenService } from '../bl-refresh-token/bl-refresh-token.service';
 import { BlResourceRegistry } from '../bl-resource-server/bl-resource.registry';
-import { BlOAuthAuthorizeQueryDto } from './bl-oauth-authorize.dto';
 import { BlOAuthClientStore } from './bl-oauth-client.store';
 import { BlOAuthCodeBinding, BlOAuthCodeStore } from './bl-oauth-code.store';
-import { BlOAuthRedisMock } from './bl-oauth-redis.mock';
-import { BlOAuthServerConfig, BlOAuthUser } from './bl-oauth-server.class';
+import { BlOAuthCurrentUserResolver, BlOAuthServerConfig, BlOAuthUser } from './bl-oauth-server.class';
 import { BlOAuthServerController } from './bl-oauth-server.controller';
 import { BlOAuthException } from './bl-oauth-server.exception';
 
 const MCP_TOKEN_TTL_SECONDS = 60 * 60;
 const ISSUER = 'https://api.example.com';
-const FRONT_LOGIN_URL = 'https://example.com/login';
 const RESOURCE_PATH = '/mcp/community-doc';
 const RESOURCE = `${ISSUER}${RESOURCE_PATH}`;
 const OTHER_RESOURCE = `${ISSUER}/mcp/space-doc`;
@@ -30,29 +26,34 @@ const user: BlOAuthUser = { id: 'user-1', email: 'user@example.com' };
 interface Mocks {
   controller: BlOAuthServerController;
   consume: jest.Mock;
-  create: jest.Mock;
   issue: jest.Mock;
   rotate: jest.Mock;
   revoke: jest.Mock;
   revokeOAuthToken: jest.Mock;
   generateTokenForAudience: jest.Mock;
-  resolveCurrentUser: jest.Mock;
-  clientStore: BlOAuthClientStore;
 }
 
+/**
+ * The token and revocation grants, which are the part of this controller that decides rather
+ * than delegates: which grant runs, whether a code or a rotation is acceptable, and where the
+ * audience comes from.
+ *
+ * `/authorize` and `/register` are deliberately not here. Everything they do is observable to
+ * a client — a redirect, a status, a code that does or does not work — and is asserted over
+ * HTTP in `hn-oauth-flow.e2e.spec.ts`. Restating them against these doubles would be
+ * asserting on intermediate state, which is what breaks when internals move.
+ */
 function buildController(): Mocks {
   const consume = jest.fn().mockResolvedValue(null);
-  const create = jest.fn().mockResolvedValue('the-code');
   const issue = jest.fn().mockResolvedValue('issued-refresh-token');
   const rotate = jest.fn().mockResolvedValue(null);
   const revoke = jest.fn().mockResolvedValue(undefined);
   const revokeOAuthToken = jest.fn().mockResolvedValue(undefined);
   const generateTokenForAudience = jest.fn().mockReturnValue('access-token');
-  const resolveCurrentUser = jest.fn().mockResolvedValue(null);
 
   const config: BlOAuthServerConfig = {
     issuer: ISSUER,
-    frontLoginUrl: FRONT_LOGIN_URL,
+    frontLoginUrl: 'https://example.com/login',
     allowedRedirectUris: [REDIRECT_URI],
     mcpAccessTokenDurationInSeconds: MCP_TOKEN_TTL_SECONDS,
   };
@@ -65,31 +66,26 @@ function buildController(): Mocks {
     resourcePaths: [RESOURCE_PATH],
   });
 
-  // The real store over an in-memory Redis, so `/authorize` goes through the same client
-  // and redirect-URI lookups a request faces rather than a stub agreeing with itself.
-  const clientStore = new BlOAuthClientStore(new BlOAuthRedisMock());
-
   return {
     controller: new BlOAuthServerController(
       config,
       resources,
-      clientStore,
-      { consume, create } as unknown as BlOAuthCodeStore,
-      // Access tokens are minted asymmetrically; nothing here reads a Session token — that
-      // is the resolver's job, and it is a mock below.
+      // Neither the client store nor the current-user resolver is reached by the grants
+      // below: they belong to `/authorize` and `/register`.
+      {} as unknown as BlOAuthClientStore,
+      { consume } as unknown as BlOAuthCodeStore,
+      // Access tokens are minted asymmetrically; nothing here reads a Session token — that is
+      // the resolver's job.
       { generateTokenForAudience } as unknown as BlJwtAsymmetricService,
       { issue, rotate, revoke, revokeOAuthToken } as unknown as BlRefreshTokenService<BlOAuthUser>,
-      { resolveCurrentUser }
+      {} as unknown as BlOAuthCurrentUserResolver
     ),
     consume,
-    create,
     issue,
     rotate,
     revoke,
     revokeOAuthToken,
     generateTokenForAudience,
-    resolveCurrentUser,
-    clientStore,
   };
 }
 
@@ -129,135 +125,6 @@ async function rejectedErrorCode(promise: Promise<unknown>): Promise<string | nu
 }
 
 describe('BlOAuthServerController', () => {
-  describe('authorize — the current-user seam', () => {
-    /** A request carrying nothing the controller reads itself; the resolver decides. */
-    const request = { originalUrl: '/oauth/authorize?client_id=x' } as Request;
-
-    function captureRedirect(): { response: Response; redirectedTo: () => string } {
-      let location = '';
-      const response = {
-        redirect: (url: string) => {
-          location = url;
-        },
-      } as Response;
-      return { response, redirectedTo: () => location };
-    }
-
-    async function authorizeQuery(clientStore: BlOAuthClientStore): Promise<{ client_id: string }> {
-      const client = await clientStore.register({ redirect_uris: [REDIRECT_URI] });
-      return { client_id: client.client_id };
-    }
-
-    function validQuery(clientId: string): BlOAuthAuthorizeQueryDto {
-      return {
-        client_id: clientId,
-        redirect_uri: REDIRECT_URI,
-        response_type: 'code',
-        code_challenge: CODE_CHALLENGE,
-        code_challenge_method: 'S256',
-        resource: RESOURCE,
-        state: 'xyz',
-      };
-    }
-
-    it('sends a logged-out user to the login page carrying the request to return to', async () => {
-      const { controller, clientStore, resolveCurrentUser, create } = buildController();
-      resolveCurrentUser.mockResolvedValue(null);
-      const { client_id: clientId } = await authorizeQuery(clientStore);
-      const { response, redirectedTo } = captureRedirect();
-
-      await controller.authorize(validQuery(clientId), request, response);
-
-      // The returnUrl is the whole point of the redirect: without it the user logs in and
-      // lands somewhere unrelated, and the client never receives a code.
-      const redirect = new URL(redirectedTo());
-      expect(`${redirect.origin}${redirect.pathname}`).toBe(FRONT_LOGIN_URL);
-      expect(redirect.searchParams.get('returnUrl')).toBe(`${ISSUER}${request.originalUrl}`);
-      expect(create).not.toHaveBeenCalled();
-    });
-
-    it('issues a code bound to the user the application resolved', async () => {
-      const { controller, clientStore, resolveCurrentUser, create } = buildController();
-      resolveCurrentUser.mockResolvedValue(user);
-      const { client_id: clientId } = await authorizeQuery(clientStore);
-      const { response, redirectedTo } = captureRedirect();
-
-      await controller.authorize(validQuery(clientId), request, response);
-
-      // The user reaches the code store only through the seam — this is the whole of what
-      // the mounting application contributes to the flow.
-      expect(create).toHaveBeenCalledWith({
-        clientId,
-        redirectUri: REDIRECT_URI,
-        codeChallenge: CODE_CHALLENGE,
-        resource: RESOURCE,
-        user,
-      });
-
-      const redirect = new URL(redirectedTo());
-      expect(redirect.searchParams.get('code')).toBe('the-code');
-      expect(redirect.searchParams.get('state')).toBe('xyz');
-    });
-
-    it('accepts a resolver that answers synchronously', async () => {
-      const { controller, clientStore, resolveCurrentUser, create } = buildController();
-      // Reading a cookie needs no I/O, so an application must not be forced into a promise.
-      resolveCurrentUser.mockReturnValue(user);
-      const { client_id: clientId } = await authorizeQuery(clientStore);
-      const { response } = captureRedirect();
-
-      await controller.authorize(validQuery(clientId), request, response);
-
-      expect(create).toHaveBeenCalled();
-    });
-
-    it('never redirects on an untrusted client_id, and never asks who is logged in', async () => {
-      const { controller, resolveCurrentUser } = buildController();
-      const { response, redirectedTo } = captureRedirect();
-
-      await expect(
-        rejectedErrorCode(controller.authorize(validQuery('not-registered'), request, response))
-      ).resolves.toBe('invalid_client');
-
-      // Redirecting an unvalidated redirect_uri is the open-redirect hazard; and the
-      // session must not be touched for a request that is rejected outright.
-      expect(redirectedTo()).toBe('');
-      expect(resolveCurrentUser).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('register', () => {
-    it('bounds the client name it stores for the lifetime of the client', async () => {
-      const { controller } = buildController();
-
-      const registration = await controller.register({
-        redirect_uris: [REDIRECT_URI],
-        client_name: 'x'.repeat(500),
-      });
-
-      // Public endpoint: an unbounded name would let a caller park arbitrary text in the
-      // store for 30 days.
-      expect(registration.client_name).toHaveLength(200);
-    });
-
-    it('rejects a redirect target outside the policy', async () => {
-      const { controller } = buildController();
-
-      await expect(
-        rejectedErrorCode(controller.register({ redirect_uris: ['https://evil.example/cb'] }))
-      ).resolves.toBe('invalid_redirect_uri');
-    });
-
-    it('accepts loopback on any port, which is what the CLI will use', async () => {
-      const { controller } = buildController();
-
-      const registration = await controller.register({ redirect_uris: ['http://127.0.0.1:54321/cb'] });
-
-      expect(registration.redirect_uris).toEqual(['http://127.0.0.1:54321/cb']);
-      expect(registration.token_endpoint_auth_method).toBe('none');
-    });
-  });
-
   describe('token — grant dispatch', () => {
     it('rejects a grant it does not implement', async () => {
       const { controller } = buildController();

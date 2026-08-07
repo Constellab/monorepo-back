@@ -1,25 +1,13 @@
-import { createHash, createPublicKey, generateKeyPairSync } from 'node:crypto';
+import { createPublicKey, generateKeyPairSync } from 'node:crypto';
 
 import * as jwt from 'jsonwebtoken';
 // Namespace import, matching test-e2e-helper.class.ts: `esModuleInterop` is off, so a
 // default import would compile but be undefined at runtime.
 import * as supertest from 'supertest';
 
+import { OAUTH_TEST_ACCESS_COOKIE, OAuthTestClient, OAuthTestTokenPair } from './oauth-client.helper';
 import { TEST_ADMIN_EMAIL } from './test-credentials';
 import { HnTestE2EHelper } from './test-e2e-helper.class';
-
-const ACCESS_COOKIE = 'Authorization';
-const REDIRECT_URI = 'https://claude.ai/api/mcp/auth_callback';
-
-/** Real PKCE pair, so the exchange goes through the same check a client faces. */
-const CODE_VERIFIER = 'v'.repeat(64);
-const CODE_CHALLENGE = createHash('sha256').update(CODE_VERIFIER).digest('base64url');
-
-interface TokenPair {
-  clientId: string;
-  accessToken: string;
-  refreshToken: string;
-}
 
 /** One published key, as it arrives over HTTP. */
 interface PublishedJwk {
@@ -53,6 +41,15 @@ describe('OAuth token signing (e2e)', () => {
 
   let resource: string;
 
+  const server = (): supertest.Agent => supertest(helper.app.getHttpServer());
+
+  /**
+   * Drives the flow. Shared with `hn-oauth-flow.e2e.spec.ts` rather than copied — the two
+   * suites approach the same endpoints from different angles, and a copy that drifts is a
+   * suite quietly testing a flow no client runs.
+   */
+  const client = new OAuthTestClient(server, () => resource);
+
   beforeAll(async () => {
     await helper.initAppModule();
     resource = await registeredResource();
@@ -61,8 +58,6 @@ describe('OAuth token signing (e2e)', () => {
   afterAll(async () => {
     await helper.close();
   });
-
-  const server = (): supertest.Agent => supertest(helper.app.getHttpServer());
 
   /**
    * The resource identifier this application serves, read from its own discovery
@@ -104,69 +99,6 @@ describe('OAuth token signing (e2e)', () => {
       throw new Error('token is not a JWT');
     }
     return decoded.header;
-  }
-
-  /** The session cookie of a logged-in browser. */
-  async function sessionToken(): Promise<string> {
-    const response = await server()
-      .post('/auth/login')
-      .send({ email: TEST_ADMIN_EMAIL, password: 'anything' })
-      .expect(201);
-
-    const cookies = response.headers['set-cookie'] as unknown as string[];
-    const entry = cookies.find((cookie) => cookie.startsWith(`${ACCESS_COOKIE}=`)) ?? '';
-    return entry.split(';')[0].substring(`${ACCESS_COOKIE}=`.length);
-  }
-
-  /** Register a public client, as an MCP client does on first connection. */
-  async function registerClient(): Promise<string> {
-    const response = await server()
-      .post('/oauth/register')
-      .send({ redirect_uris: [REDIRECT_URI], client_name: 'e2e client' })
-      .expect(201);
-    return response.body.client_id as string;
-  }
-
-  /**
-   * The whole flow a client runs: register, authorize as a logged-in user, exchange the
-   * code. Returns the pair, so the tests below assert on what a client actually receives.
-   */
-  async function completeAuthorizationFlow(): Promise<TokenPair> {
-    const clientId = await registerClient();
-    const session = await sessionToken();
-
-    const redirect = await server()
-      .get('/oauth/authorize')
-      .query({
-        client_id: clientId,
-        redirect_uri: REDIRECT_URI,
-        response_type: 'code',
-        code_challenge: CODE_CHALLENGE,
-        code_challenge_method: 'S256',
-        resource,
-      })
-      .set('Cookie', [`${ACCESS_COOKIE}=${session}`])
-      .expect(302);
-
-    const code = new URL(redirect.headers.location).searchParams.get('code');
-    expect(code).toBeTruthy();
-
-    const token = await server()
-      .post('/oauth/token')
-      .send({
-        grant_type: 'authorization_code',
-        code,
-        redirect_uri: REDIRECT_URI,
-        client_id: clientId,
-        code_verifier: CODE_VERIFIER,
-      })
-      .expect(200);
-
-    return {
-      clientId,
-      accessToken: token.body.access_token as string,
-      refreshToken: token.body.refresh_token as string,
-    };
   }
 
   /**
@@ -242,10 +174,10 @@ describe('OAuth token signing (e2e)', () => {
   });
 
   describe('an MCP access token', () => {
-    let flow: TokenPair;
+    let flow: OAuthTestTokenPair;
 
     beforeAll(async () => {
-      flow = await completeAuthorizationFlow();
+      flow = await client.completeAuthorizationFlow();
     });
 
     it('is signed asymmetrically and names the key that signed it', async () => {
@@ -276,7 +208,7 @@ describe('OAuth token signing (e2e)', () => {
 
   describe('the refresh grant', () => {
     it('renews an access token that still verifies against the published key', async () => {
-      const flow = await completeAuthorizationFlow();
+      const flow = await client.completeAuthorizationFlow();
 
       const renewed = await server()
         .post('/oauth/token')
@@ -349,30 +281,30 @@ describe('OAuth token signing (e2e)', () => {
   describe('the two token kinds stay apart', () => {
     it('refuses a Session token on the MCP', async () => {
       // It carries no `aud`, and it is signed with the wrong algorithm for this surface.
-      await callMcp(await sessionToken()).expect(401);
+      await callMcp(await client.sessionToken()).expect(401);
     });
 
     it('refuses an MCP access token as a browser credential', async () => {
-      const { accessToken } = await completeAuthorizationFlow();
+      const { accessToken } = await client.completeAuthorizationFlow();
 
       // The reverse direction, and the one the pinned session algorithm closes: this
       // token is RS256 and the session verifier accepts HS256 only.
       await server()
         .get('/user')
-        .set('Cookie', [`${ACCESS_COOKIE}=${accessToken}`])
+        .set('Cookie', [`${OAUTH_TEST_ACCESS_COOKIE}=${accessToken}`])
         .expect(401);
     });
   });
 
   describe('browser login is unaffected', () => {
     it('still mints a symmetric Session token', async () => {
-      expect(headerOf(await sessionToken()).alg).toBe('HS256');
+      expect(headerOf(await client.sessionToken()).alg).toBe('HS256');
     });
 
     it('still reaches a protected route', async () => {
       const response = await server()
         .get('/user')
-        .set('Cookie', [`${ACCESS_COOKIE}=${await sessionToken()}`])
+        .set('Cookie', [`${OAUTH_TEST_ACCESS_COOKIE}=${await client.sessionToken()}`])
         .expect(200);
 
       expect(response.body.email).toBe(TEST_ADMIN_EMAIL);

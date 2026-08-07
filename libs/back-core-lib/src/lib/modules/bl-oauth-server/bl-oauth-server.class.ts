@@ -64,6 +64,11 @@ export interface BlOAuthServerConfig {
    * The front must honour a `returnUrl` parameter and come back to it after login —
    * a cross-repository dependency, and the reason a logged-out authorization request works
    * at all.
+   *
+   * Used verbatim, with only `?returnUrl=` appended. Unlike {@link issuer} this is a full
+   * page URL rather than a base, so nothing here normalizes it: a trailing slash names a
+   * different page, and silently removing one would send users somewhere the front does not
+   * serve.
    */
   frontLoginUrl: string;
 

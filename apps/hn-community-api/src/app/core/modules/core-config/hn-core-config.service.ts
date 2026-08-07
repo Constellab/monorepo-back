@@ -231,11 +231,14 @@ export class HnCoreConfigService {
       case 'preprod':
         res = 'https://community-pre-prod.gencovery.com';
         break;
-      // Grouped like `isLocal()` groups them: the test profile runs against the same local
-      // front. Needed because the OAuth server module reads this at startup — the value is
-      // what a logged-out `/authorize` redirects to, and a deployment missing it should fail
-      // on boot rather than on the first authorization request.
+      // Every local profile, exactly as `isLocal()` groups them — they all run against the
+      // same local front. `test` and `docker` fell through to the throw before, which was
+      // survivable only while this was read lazily: the OAuth server module now reads it
+      // while the injector is built, so an unhandled profile stops the process instead of
+      // failing the first logged-out `/authorize`. That is the behaviour we want for a value
+      // a deployment must state, but it means the list has to be complete.
       case 'dev':
+      case 'docker':
       case 'test':
         res = 'http://localhost:4200';
         break;

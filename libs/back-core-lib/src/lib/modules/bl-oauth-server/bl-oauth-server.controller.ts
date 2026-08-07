@@ -15,7 +15,7 @@ import { Request, Response } from 'express';
 
 import { BlPublic, BlPublicSecure } from '../../decorators/bl-public.decorator';
 import { BlJwtAsymmetricService } from '../bl-jwt/bl-jwt-asymmetric.service';
-import { BL_OAUTH_LIMITS, BL_OAUTH_PATHS } from '../bl-oauth/bl-oauth.constants';
+import { BL_OAUTH_PATHS } from '../bl-oauth/bl-oauth.constants';
 import { BlAuthServerMetadata, blBuildAuthServerMetadata } from '../bl-oauth/bl-oauth-metadata.builder';
 import { blVerifyPkce } from '../bl-oauth/bl-oauth-pkce.util';
 import { blValidateRedirectUris } from '../bl-oauth/bl-oauth-redirect-uri.validator';
@@ -133,7 +133,7 @@ export class BlOAuthServerController {
      * Session token can turn one into a user.
      */
     @Inject(BL_OAUTH_CURRENT_USER_RESOLVER)
-    private readonly currentUser: BlOAuthCurrentUserResolver
+    private readonly currentUserResolver: BlOAuthCurrentUserResolver
   ) {}
 
   @BlPublic()
@@ -174,7 +174,7 @@ export class BlOAuthServerController {
     }
 
     const { params } = validation;
-    const user = await this.currentUser.resolveCurrentUser(request);
+    const user = await this.currentUserResolver.resolveCurrentUser(request);
     if (!user) {
       const returnUrl = `${this.issuer}${request.originalUrl}`;
       response.redirect(`${this.config.frontLoginUrl}?returnUrl=${encodeURIComponent(returnUrl)}`);
@@ -207,15 +207,11 @@ export class BlOAuthServerController {
       throw new BlOAuthException('invalid_redirect_uri', validation.errorDescription);
     }
 
-    // Bounded because the store keeps it for the lifetime of the client.
-    const clientName =
-      typeof body?.client_name === 'string'
-        ? body.client_name.slice(0, BL_OAUTH_LIMITS.maxClientNameLength)
-        : undefined;
-
     const client = await this.clientStore.register({
       redirect_uris: validation.redirectUris,
-      client_name: clientName,
+      // Anything else is dropped rather than coerced; the store bounds the length, since it
+      // is the store that keeps it.
+      client_name: typeof body?.client_name === 'string' ? body.client_name : undefined,
     });
 
     return {

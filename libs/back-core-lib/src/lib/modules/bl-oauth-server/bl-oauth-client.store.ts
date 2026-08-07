@@ -24,6 +24,15 @@ const KEY_PREFIX = 'oauth:client:';
 const TTL_SECONDS = 30 * 24 * 60 * 60;
 
 /**
+ * Longest `client_name` kept.
+ *
+ * Enforced here rather than at the endpoint because this is what persists the string, for
+ * the lifetime of the client, from a public and unauthenticated request. A bound applied by
+ * a caller is a bound the next caller can forget.
+ */
+const MAX_CLIENT_NAME_LENGTH = 200;
+
+/**
  * Redis-backed registry of OAuth clients (RFC 7591 Dynamic Client Registration).
  *
  * Public clients only (PKCE, no secret). Redis rather than a process-local Map so a
@@ -40,7 +49,7 @@ export class BlOAuthClientStore {
     const client: BlOAuthClient = {
       client_id: randomBytes(16).toString('hex'),
       redirect_uris: registration.redirect_uris,
-      client_name: registration.client_name,
+      client_name: registration.client_name?.slice(0, MAX_CLIENT_NAME_LENGTH),
     };
     await this.redis.setWithTtl(`${KEY_PREFIX}${client.client_id}`, JSON.stringify(client), TTL_SECONDS);
     return client;

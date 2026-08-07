@@ -30,6 +30,18 @@ describe('BlOAuthClientStore', () => {
     await expect(store.find('does-not-exist')).resolves.toBeNull();
   });
 
+  it('bounds the client name it keeps', async () => {
+    const client = await store.register({
+      redirect_uris: [callbackUri],
+      client_name: 'x'.repeat(500),
+    });
+
+    // Registration is public and unauthenticated, and this string is kept for 30 days —
+    // unbounded, it is somewhere to park arbitrary attacker-supplied text.
+    expect(client.client_name).toHaveLength(200);
+    await expect(store.find(client.client_id)).resolves.toEqual(client);
+  });
+
   it('allows only exactly-registered redirect uris', async () => {
     const client = await store.register({ redirect_uris: [callbackUri] });
     expect(store.redirectUriAllowed(client, callbackUri)).toBe(true);
