@@ -1,21 +1,9 @@
 import {
-  BL_OAUTH_PATHS,
-  BlAuthServerMetadata,
-  blBuildAuthServerMetadata,
-  BlCookieHelper,
-  BlJwtAsymmetricService,
-  BlJwtService,
-  BlPublic,
-  BlPublicSecure,
-  BlResourceRegistry,
-  blValidateRedirectUris,
-  blVerifyPkce,
-} from '@monorepo/back-core-lib';
-import {
   Body,
   Controller,
   Get,
   HttpCode,
+  Inject,
   Post,
   Query,
   Req,
@@ -25,21 +13,35 @@ import {
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 
-import { HN_JWT_CONFIG } from '../auth/hn-jwt.config';
-import { HnRefreshTokenService } from '../auth/refresh-token/hn-refresh-token.service';
-import { HN_OAUTH_MAX_CLIENT_NAME_LENGTH, HnOAuthConfig } from './hn-oauth.config';
-import { HnOAuthException, HnOAuthExceptionFilter } from './hn-oauth.exception';
-import { HnAuthorizeQueryDto } from './hn-oauth-authorize.dto';
-import { hnValidateAuthorizeParams } from './hn-oauth-authorize.validator';
-import { HnOAuthClient, HnOAuthClientStore } from './hn-oauth-client.store';
-import { HnOAuthCodeStore, HnOAuthCodeUser } from './hn-oauth-code.store';
+import { BlPublic, BlPublicSecure } from '../../decorators/bl-public.decorator';
+import { BlJwtAsymmetricService } from '../bl-jwt/bl-jwt-asymmetric.service';
+import { BL_OAUTH_LIMITS, BL_OAUTH_PATHS } from '../bl-oauth/bl-oauth.constants';
+import { BlAuthServerMetadata, blBuildAuthServerMetadata } from '../bl-oauth/bl-oauth-metadata.builder';
+import { blVerifyPkce } from '../bl-oauth/bl-oauth-pkce.util';
+import { blValidateRedirectUris } from '../bl-oauth/bl-oauth-redirect-uri.validator';
+import { blStripTrailingSlashes } from '../bl-oauth/bl-oauth-url.util';
+import { BL_REFRESH_TOKEN_SERVICE_PROVIDER } from '../bl-refresh-token/bl-refresh-token.class';
+import { BlRefreshTokenService } from '../bl-refresh-token/bl-refresh-token.service';
+import { BlResourceRegistry } from '../bl-resource-server/bl-resource.registry';
+import { BlOAuthAuthorizeQueryDto } from './bl-oauth-authorize.dto';
+import { blValidateAuthorizeParams } from './bl-oauth-authorize.validator';
+import { BlOAuthClient, BlOAuthClientStore } from './bl-oauth-client.store';
+import { BlOAuthCodeStore } from './bl-oauth-code.store';
+import {
+  BL_OAUTH_CURRENT_USER_RESOLVER,
+  BL_OAUTH_SERVER_CONFIG_PROVIDER,
+  BlOAuthCurrentUserResolver,
+  BlOAuthServerConfig,
+  BlOAuthUser,
+} from './bl-oauth-server.class';
+import { BlOAuthException, BlOAuthExceptionFilter } from './bl-oauth-server.exception';
 
-interface HnOAuthRegisterBody {
+interface BlOAuthRegisterBody {
   redirect_uris?: unknown;
   client_name?: unknown;
 }
 
-interface HnOAuthTokenBody {
+interface BlOAuthTokenBody {
   grant_type?: string;
   code?: string;
   redirect_uri?: string;
@@ -55,19 +57,19 @@ interface HnOAuthTokenBody {
 }
 
 /** RFC 7009 §2.1. `token_type_hint` is advisory and we do not need it. */
-interface HnOAuthRevokeBody {
+interface BlOAuthRevokeBody {
   token?: string;
   client_id?: string;
 }
 
 /** RFC 7591 §3.2.1 response: the registration, plus the capabilities it is fixed to. */
-interface HnOAuthRegisterResponse extends HnOAuthClient {
+interface BlOAuthRegisterResponse extends BlOAuthClient {
   token_endpoint_auth_method: 'none';
   grant_types: string[];
   response_types: string[];
 }
 
-interface HnOAuthTokenResponse {
+interface BlOAuthTokenResponse {
   access_token: string;
   token_type: 'Bearer';
   expires_in: number;
@@ -85,68 +87,81 @@ const authorizeQueryPipe = new ValidationPipe({
       .map((error) => Object.values(error.constraints ?? {}).join(', '))
       .filter((message) => message.length > 0)
       .join('; ');
-    return new HnOAuthException('invalid_request', detail || 'invalid authorization request');
+    return new BlOAuthException('invalid_request', detail || 'invalid authorization request');
   },
 });
 
 /**
- * OAuth 2.1 endpoints for the (general) Constellab authorization server.
- * Public (bypass the global JWT/admin guards). The authorization server discovery
- * document MUST resolve at the host root so MCP clients can discover it.
+ * The Constellab OAuth 2.1 Authorization Server: the authorization server discovery
+ * document, dynamic client registration, /authorize, /token and /revoke.
+ *
+ * Public (bypasses the mounting application's global guards). The discovery document MUST
+ * resolve at the host root so MCP clients can find it.
  *
  * The Resource Server half — the per-Resource discovery documents and the guard that
- * enforces an audience — is mounted from the library and is not here.
+ * enforces an audience — is `BlResourceServerModule` and is not here. This half is the one
+ * that mints, and exactly one application mounts it.
  *
- * `@UseFilters(HnOAuthExceptionFilter)` keeps OAuth error bodies intact: the global
- * `HnCoreExceptionHandlerFilter` would otherwise rewrite them to the Constellab
+ * `@UseFilters(BlOAuthExceptionFilter)` keeps OAuth error bodies intact: the mounting
+ * application's global exception filter would otherwise rewrite them to the Constellab
  * `BlApiError` shape and drop the `error` code that OAuth clients parse.
  */
 @Controller()
-@UseFilters(HnOAuthExceptionFilter)
-export class HnOAuthController {
+@UseFilters(BlOAuthExceptionFilter)
+export class BlOAuthServerController {
   constructor(
-    private readonly config: HnOAuthConfig,
+    @Inject(BL_OAUTH_SERVER_CONFIG_PROVIDER) private readonly config: BlOAuthServerConfig,
     /**
      * The Resources a token may be minted for, read from the Resource Server half rather
      * than kept here: the audience this server writes into a token and the audience a
      * Resource Server checks it against have to be the same list.
      */
     private readonly resources: BlResourceRegistry,
-    private readonly clientStore: HnOAuthClientStore,
-    private readonly codeStore: HnOAuthCodeStore,
+    private readonly clientStore: BlOAuthClientStore,
+    private readonly codeStore: BlOAuthCodeStore,
     /** Signs the MCP access tokens this endpoint hands out. Asymmetric — see `tokenResponse`. */
     private readonly mcpJwtService: BlJwtAsymmetricService,
-    /** Reads the browser's own Session token on /authorize, and nothing else. */
-    private readonly sessionJwtService: BlJwtService,
-    private readonly refreshTokenService: HnRefreshTokenService
+    /**
+     * The mounting application's own refresh token service, reached through the shared
+     * alias: each application binds its own subclass over its own table, so there is no
+     * class token this could depend on.
+     */
+    @Inject(BL_REFRESH_TOKEN_SERVICE_PROVIDER)
+    private readonly refreshTokenService: BlRefreshTokenService<BlOAuthUser>,
+    /**
+     * The one application-shaped seam of this half: only the application that minted a
+     * Session token can turn one into a user.
+     */
+    @Inject(BL_OAUTH_CURRENT_USER_RESOLVER)
+    private readonly currentUser: BlOAuthCurrentUserResolver
   ) {}
 
   @BlPublic()
   @Get(BL_OAUTH_PATHS.authorizationServerMetadata)
   getAuthServerMetadata(): BlAuthServerMetadata {
-    return blBuildAuthServerMetadata(this.config.issuer);
+    return blBuildAuthServerMetadata(this.issuer);
   }
 
   /**
    * Authorization endpoint (Authorization Code + PKCE).
    *
-   * v1 slice: validates the request, then relies on the existing Constellab session
-   * cookie. If logged in → issues a one-time code and redirects back to the client.
-   * If not → redirects to the front login with a `returnUrl` (front dependency).
+   * Validates the request, then asks the mounting application who is logged in. If logged
+   * in → issues a one-time code and redirects back to the client. If not → redirects to the
+   * front login with a `returnUrl` (front dependency).
    */
   @BlPublic()
   @Get(BL_OAUTH_PATHS.authorize)
   async authorize(
-    @Query(authorizeQueryPipe) query: HnAuthorizeQueryDto,
+    @Query(authorizeQueryPipe) query: BlOAuthAuthorizeQueryDto,
     @Req() request: Request,
     @Res() response: Response
   ): Promise<void> {
-    const validation = await hnValidateAuthorizeParams(query, this.clientStore, this.resources);
+    const validation = await blValidateAuthorizeParams(query, this.clientStore, this.resources);
 
     if (!validation.ok) {
       if (validation.kind === 'pre_redirect') {
         // client_id / redirect_uri untrusted → never redirect (open-redirect defense)
-        throw new HnOAuthException(validation.error, validation.errorDescription);
+        throw new BlOAuthException(validation.error, validation.errorDescription);
       }
       response.redirect(
         this.buildRedirectUrl(validation.redirectUri, {
@@ -159,9 +174,9 @@ export class HnOAuthController {
     }
 
     const { params } = validation;
-    const user = this.currentUserFromCookie(request);
+    const user = await this.currentUser.resolveCurrentUser(request);
     if (!user) {
-      const returnUrl = `${this.config.issuer}${request.originalUrl}`;
+      const returnUrl = `${this.issuer}${request.originalUrl}`;
       response.redirect(`${this.config.frontLoginUrl}?returnUrl=${encodeURIComponent(returnUrl)}`);
       return;
     }
@@ -186,16 +201,16 @@ export class HnOAuthController {
   @BlPublic()
   @Post(BL_OAUTH_PATHS.register)
   @HttpCode(201)
-  async register(@Body() body: HnOAuthRegisterBody): Promise<HnOAuthRegisterResponse> {
+  async register(@Body() body: BlOAuthRegisterBody): Promise<BlOAuthRegisterResponse> {
     const validation = blValidateRedirectUris(body?.redirect_uris, this.config.allowedRedirectUris);
     if (!validation.ok) {
-      throw new HnOAuthException('invalid_redirect_uri', validation.errorDescription);
+      throw new BlOAuthException('invalid_redirect_uri', validation.errorDescription);
     }
 
     // Bounded because the store keeps it for the lifetime of the client.
     const clientName =
       typeof body?.client_name === 'string'
-        ? body.client_name.slice(0, HN_OAUTH_MAX_CLIENT_NAME_LENGTH)
+        ? body.client_name.slice(0, BL_OAUTH_LIMITS.maxClientNameLength)
         : undefined;
 
     const client = await this.clientStore.register({
@@ -224,14 +239,14 @@ export class HnOAuthController {
   @BlPublicSecure()
   @Post(BL_OAUTH_PATHS.token)
   @HttpCode(200)
-  async token(@Body() body: HnOAuthTokenBody): Promise<HnOAuthTokenResponse> {
+  async token(@Body() body: BlOAuthTokenBody): Promise<BlOAuthTokenResponse> {
     switch (body?.grant_type) {
       case 'authorization_code':
         return this.exchangeAuthorizationCode(body);
       case 'refresh_token':
         return this.exchangeRefreshToken(body);
       default:
-        throw new HnOAuthException(
+        throw new BlOAuthException(
           'unsupported_grant_type',
           'only authorization_code and refresh_token are supported'
         );
@@ -252,12 +267,12 @@ export class HnOAuthController {
   @BlPublicSecure()
   @Post(BL_OAUTH_PATHS.revoke)
   @HttpCode(200)
-  async revoke(@Body() body: HnOAuthRevokeBody): Promise<void> {
+  async revoke(@Body() body: BlOAuthRevokeBody): Promise<void> {
     const { token, client_id: clientId } = body ?? {};
     if (!token || !clientId) {
       // The one case RFC 7009 does let us reject: a malformed request, as opposed to a
       // well-formed one carrying a token we know nothing about.
-      throw new HnOAuthException('invalid_request', 'token and client_id are required');
+      throw new BlOAuthException('invalid_request', 'token and client_id are required');
     }
     // Scoped to the client, so this unauthenticated endpoint cannot be used to end a
     // browser session or another client's session even if a token leaks into it.
@@ -265,10 +280,10 @@ export class HnOAuthController {
   }
 
   /** Exchange a one-time authorization code for the first token pair. */
-  private async exchangeAuthorizationCode(body: HnOAuthTokenBody): Promise<HnOAuthTokenResponse> {
+  private async exchangeAuthorizationCode(body: BlOAuthTokenBody): Promise<BlOAuthTokenResponse> {
     const { code, redirect_uri: redirectUri, client_id: clientId, code_verifier: codeVerifier } = body;
     if (!code || !redirectUri || !clientId || !codeVerifier) {
-      throw new HnOAuthException(
+      throw new BlOAuthException(
         'invalid_request',
         'code, redirect_uri, client_id and code_verifier are required'
       );
@@ -281,7 +296,7 @@ export class HnOAuthController {
       binding.redirectUri !== redirectUri ||
       !blVerifyPkce(codeVerifier, binding.codeChallenge)
     ) {
-      throw new HnOAuthException('invalid_grant', 'authorization code is invalid, expired or mismatched');
+      throw new BlOAuthException('invalid_grant', 'authorization code is invalid, expired or mismatched');
     }
 
     // The binding is the only place the resource is ever taken from — here it comes
@@ -301,17 +316,17 @@ export class HnOAuthController {
    * `resource` parameter here would let a client that was granted read access to one
    * MCP walk it up to another one at renewal time.
    */
-  private async exchangeRefreshToken(body: HnOAuthTokenBody): Promise<HnOAuthTokenResponse> {
+  private async exchangeRefreshToken(body: BlOAuthTokenBody): Promise<BlOAuthTokenResponse> {
     const { refresh_token: presentedToken, client_id: clientId } = body;
     if (!presentedToken || !clientId) {
-      throw new HnOAuthException('invalid_request', 'refresh_token and client_id are required');
+      throw new BlOAuthException('invalid_request', 'refresh_token and client_id are required');
     }
 
     // `kind: 'oauth'` is what keeps the two surfaces apart: a browser session's refresh
     // token cannot be turned into an MCP access token here, and vice versa on /auth/refresh.
     const rotation = await this.refreshTokenService.rotate(presentedToken, 'oauth');
     if (rotation == null || rotation.resource == null) {
-      throw new HnOAuthException('invalid_grant', 'refresh token is invalid, expired or already used');
+      throw new BlOAuthException('invalid_grant', 'refresh token is invalid, expired or already used');
     }
 
     if (rotation.clientId !== clientId) {
@@ -319,13 +334,13 @@ export class HnOAuthController {
       // the row rather than leave a chain a mismatched caller has a valid token for.
       // A client presenting another client's refresh token is not a bug we accommodate.
       await this.refreshTokenService.revoke(rotation.token);
-      throw new HnOAuthException('invalid_grant', 'refresh token was not issued to this client');
+      throw new BlOAuthException('invalid_grant', 'refresh token was not issued to this client');
     }
 
     // A client MAY repeat `resource` (RFC 8707 §2.2). Honour it only as an assertion:
     // silently ignoring a mismatch would let it believe it holds an audience it does not.
     if (body.resource != null && body.resource !== rotation.resource) {
-      throw new HnOAuthException('invalid_target', 'resource does not match the one originally granted');
+      throw new BlOAuthException('invalid_target', 'resource does not match the one originally granted');
     }
 
     return this.tokenResponse(rotation.user.id, rotation.user.email, rotation.resource, rotation.token);
@@ -339,17 +354,17 @@ export class HnOAuthController {
    * client that trusts a longer `expires_in` than the signature stops refreshing in
    * time and starts failing on 401s it did not expect.
    *
-   * Signed asymmetrically, unlike this application's Session tokens. This is the token
-   * that deliberately crosses an application boundary, so verifying it must not require
-   * holding the ability to mint it — per ADR-0001. Nothing about the flow above changes
-   * with it: only which key signs.
+   * Signed asymmetrically, unlike a Session token. This is the token that deliberately
+   * crosses an application boundary, so verifying it must not require holding the ability
+   * to mint it — per ADR-0001. Nothing about the flow above changes with it: only which
+   * key signs.
    */
   private tokenResponse(
     userId: string,
     userEmail: string,
     resource: string,
     refreshToken: string
-  ): HnOAuthTokenResponse {
+  ): BlOAuthTokenResponse {
     const durationInSeconds = this.config.mcpAccessTokenDurationInSeconds;
     return {
       access_token: this.mcpJwtService.generateTokenForAudience(
@@ -365,26 +380,14 @@ export class HnOAuthController {
   }
 
   /**
-   * Resolve the logged-in user from the Constellab session cookie, or null.
+   * The configured issuer, normalized here rather than by each caller.
    *
-   * The one place here that reads a Session token, and it goes through the symmetric
-   * verifier — a browser cookie is this application's own credential and has nothing to
-   * do with the key that signs MCP access tokens.
+   * A trailing slash on the configured value is the difference between a `returnUrl` of
+   * `https://api//oauth/authorize` and a working one, and configuration is where a stray
+   * slash comes from.
    */
-  private currentUserFromCookie(request: Request): HnOAuthCodeUser | null {
-    const token = BlCookieHelper.getCookieFromHeader(
-      request.headers.cookie ?? '',
-      HN_JWT_CONFIG.authorizationCookie
-    );
-    if (!token) {
-      return null;
-    }
-    try {
-      const payload = this.sessionJwtService.verifyToken(token);
-      return { id: payload.sub, email: payload.email };
-    } catch {
-      return null;
-    }
+  private get issuer(): string {
+    return blStripTrailingSlashes(this.config.issuer);
   }
 
   /** Append query params to a (validated) redirect URI. */

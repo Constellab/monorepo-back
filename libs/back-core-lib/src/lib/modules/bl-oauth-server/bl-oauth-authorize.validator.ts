@@ -1,10 +1,9 @@
-import { BlResourceLookup } from '@monorepo/back-core-lib';
+import { BlResourceLookup } from '../bl-resource-server/bl-resource-server.class';
+import { BlOAuthAuthorizeQueryDto } from './bl-oauth-authorize.dto';
+import { BlOAuthClient } from './bl-oauth-client.store';
 
-import { HnAuthorizeQueryDto } from './hn-oauth-authorize.dto';
-import { HnOAuthClient } from './hn-oauth-client.store';
-
-export interface HnAuthorizeParams {
-  client: HnOAuthClient;
+export interface BlOAuthAuthorizeParams {
+  client: BlOAuthClient;
   redirectUri: string;
   codeChallenge: string;
   resource: string;
@@ -18,8 +17,8 @@ export interface HnAuthorizeParams {
  * - `post_redirect`: redirect_uri is validated → the caller redirects the error back
  *   to it with `error` + `state`.
  */
-export type HnAuthorizeValidation =
-  | { ok: true; params: HnAuthorizeParams }
+export type BlOAuthAuthorizeValidation =
+  | { ok: true; params: BlOAuthAuthorizeParams }
   | { ok: false; kind: 'pre_redirect'; error: string; errorDescription: string }
   | {
       ok: false;
@@ -30,25 +29,30 @@ export type HnAuthorizeValidation =
       errorDescription: string;
     };
 
-export interface HnClientLookup {
-  find(clientId: string): Promise<HnOAuthClient | null>;
-  redirectUriAllowed(client: HnOAuthClient, redirectUri: string): boolean;
+/**
+ * The two questions this asks of the client store, declared as the questions rather than
+ * the store, so the validation stays a pure function with no Nest provider to stand up.
+ */
+export interface BlOAuthClientLookup {
+  find(clientId: string): Promise<BlOAuthClient | null>;
+  redirectUriAllowed(client: BlOAuthClient, redirectUri: string): boolean;
 }
 
 /**
  * Validate an authorization request (Authorization Code + PKCE, RFC 6749 / 7636 /
  * 8707). Pure: no session check, no code creation — that is the controller's job.
  *
- * Parameter types are guaranteed by the `ValidationPipe` + {@link HnAuthorizeQueryDto};
+ * Parameter types are guaranteed by the `ValidationPipe` + {@link BlOAuthAuthorizeQueryDto};
  * empty strings are still treated as absent.
  */
-export async function hnValidateAuthorizeParams(
-  query: HnAuthorizeQueryDto,
-  clients: HnClientLookup,
-  // The library's contract, not a restatement of it: this application serves the
-  // Resources it mints tokens for, so one list answers both questions.
+export async function blValidateAuthorizeParams(
+  query: BlOAuthAuthorizeQueryDto,
+  clients: BlOAuthClientLookup,
+  // The Resource Server half's contract, not a restatement of it: the audience this server
+  // writes into a token and the audience a Resource Server checks it against have to come
+  // from one list.
   registry: BlResourceLookup
-): Promise<HnAuthorizeValidation> {
+): Promise<BlOAuthAuthorizeValidation> {
   // 1. client_id + redirect_uri must be trusted before we can redirect anything.
   const client = query.client_id ? await clients.find(query.client_id) : null;
   if (!client) {
@@ -71,7 +75,7 @@ export async function hnValidateAuthorizeParams(
   }
 
   const state = query.state || undefined;
-  const fail = (error: string, errorDescription: string): HnAuthorizeValidation => ({
+  const fail = (error: string, errorDescription: string): BlOAuthAuthorizeValidation => ({
     ok: false,
     kind: 'post_redirect',
     redirectUri,

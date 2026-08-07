@@ -15,6 +15,9 @@ import { HnRefreshTokenService } from './hn-refresh-token.service';
     BlRefreshTokenCron,
     { provide: BL_REFRESH_TOKEN_SERVICE_PROVIDER, useExisting: HnRefreshTokenService },
   ],
-  exports: [TypeOrmModule, HnRefreshTokenService],
+  // The alias is exported alongside the service itself: the Authorization Server in
+  // `bl-oauth-server` issues and rotates these tokens too, and it can only reach them
+  // through the alias.
+  exports: [TypeOrmModule, HnRefreshTokenService, BL_REFRESH_TOKEN_SERVICE_PROVIDER],
 })
 export class HnRefreshTokenModule {}

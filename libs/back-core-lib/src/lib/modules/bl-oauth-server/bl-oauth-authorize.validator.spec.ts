@@ -1,7 +1,7 @@
-import { HnAuthorizeQueryDto } from './hn-oauth-authorize.dto';
-import { hnValidateAuthorizeParams } from './hn-oauth-authorize.validator';
-import { HnOAuthClientStore } from './hn-oauth-client.store';
-import { HnOAuthRedisMock } from './hn-oauth-redis.mock';
+import { BlOAuthAuthorizeQueryDto } from './bl-oauth-authorize.dto';
+import { blValidateAuthorizeParams } from './bl-oauth-authorize.validator';
+import { BlOAuthClientStore } from './bl-oauth-client.store';
+import { BlOAuthRedisMock } from './bl-oauth-redis.mock';
 
 const RESOURCE = 'http://localhost:3333/mcp/community-doc';
 const REDIRECT = 'http://localhost:8080/callback';
@@ -9,13 +9,13 @@ const CHALLENGE = 'E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM';
 
 const registry = { isKnownResource: (r: string) => r === RESOURCE };
 
-async function setup(): Promise<{ clients: HnOAuthClientStore; clientId: string }> {
-  const clients = new HnOAuthClientStore(new HnOAuthRedisMock());
+async function setup(): Promise<{ clients: BlOAuthClientStore; clientId: string }> {
+  const clients = new BlOAuthClientStore(new BlOAuthRedisMock());
   const client = await clients.register({ redirect_uris: [REDIRECT] });
   return { clients, clientId: client.client_id };
 }
 
-function validQuery(clientId: string): HnAuthorizeQueryDto {
+function validQuery(clientId: string): BlOAuthAuthorizeQueryDto {
   return {
     response_type: 'code',
     client_id: clientId,
@@ -27,10 +27,10 @@ function validQuery(clientId: string): HnAuthorizeQueryDto {
   };
 }
 
-describe('hnValidateAuthorizeParams', () => {
+describe('blValidateAuthorizeParams', () => {
   it('accepts a well-formed request', async () => {
     const { clients, clientId } = await setup();
-    const result = await hnValidateAuthorizeParams(validQuery(clientId), clients, registry);
+    const result = await blValidateAuthorizeParams(validQuery(clientId), clients, registry);
     expect(result.ok).toBe(true);
     if (result.ok) {
       expect(result.params.redirectUri).toBe(REDIRECT);
@@ -42,7 +42,7 @@ describe('hnValidateAuthorizeParams', () => {
 
   it('rejects an unknown client BEFORE redirect (no open redirect)', async () => {
     const { clients } = await setup();
-    const result = await hnValidateAuthorizeParams(
+    const result = await blValidateAuthorizeParams(
       { ...validQuery('nope'), client_id: 'nope' },
       clients,
       registry
@@ -52,7 +52,7 @@ describe('hnValidateAuthorizeParams', () => {
 
   it('rejects an unregistered redirect_uri BEFORE redirect', async () => {
     const { clients, clientId } = await setup();
-    const result = await hnValidateAuthorizeParams(
+    const result = await blValidateAuthorizeParams(
       { ...validQuery(clientId), redirect_uri: 'http://evil.example/cb' },
       clients,
       registry
@@ -62,7 +62,7 @@ describe('hnValidateAuthorizeParams', () => {
 
   it('reports a bad response_type by redirect (post_redirect) with state', async () => {
     const { clients, clientId } = await setup();
-    const result = await hnValidateAuthorizeParams(
+    const result = await blValidateAuthorizeParams(
       { ...validQuery(clientId), response_type: 'token' },
       clients,
       registry
@@ -78,14 +78,14 @@ describe('hnValidateAuthorizeParams', () => {
 
   it('requires a PKCE S256 challenge', async () => {
     const { clients, clientId } = await setup();
-    const noChallenge = await hnValidateAuthorizeParams(
+    const noChallenge = await blValidateAuthorizeParams(
       { ...validQuery(clientId), code_challenge: undefined },
       clients,
       registry
     );
     expect(noChallenge).toMatchObject({ kind: 'post_redirect', error: 'invalid_request' });
 
-    const plain = await hnValidateAuthorizeParams(
+    const plain = await blValidateAuthorizeParams(
       { ...validQuery(clientId), code_challenge_method: 'plain' },
       clients,
       registry
@@ -95,7 +95,7 @@ describe('hnValidateAuthorizeParams', () => {
 
   it('requires a known resource (audience)', async () => {
     const { clients, clientId } = await setup();
-    const result = await hnValidateAuthorizeParams(
+    const result = await blValidateAuthorizeParams(
       { ...validQuery(clientId), resource: 'http://localhost:3333/mcp/unknown' },
       clients,
       registry

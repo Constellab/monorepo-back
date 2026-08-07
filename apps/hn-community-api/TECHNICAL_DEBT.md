@@ -253,7 +253,10 @@ connected for more than an hour, refreshing silently.
 
 ## 11. No consent screen (DCR is restricted, registration itself stays open)
 
-**Files:** `src/app/oauth/hn-oauth.controller.ts` (`register()`), `libs/back-core-lib/src/lib/modules/bl-oauth/bl-oauth-redirect-uri.validator.ts`
+**Files:** `libs/back-core-lib/src/lib/modules/bl-oauth-server/bl-oauth-server.controller.ts` (`register()`), `libs/back-core-lib/src/lib/modules/bl-oauth/bl-oauth-redirect-uri.validator.ts`
+
+> The endpoint moved into the library in August 2026 (#72). The paths on the RESOLVED items
+> below are left as they were when each was written — they record where the work happened.
 
 **Problem:** `POST /oauth/register` is public and unauthenticated (RFC 7591 allows this), so anyone can register an OAuth client. Combined with the deliberate absence of a consent screen, a third party can initiate an authorization flow against this server; a logged-in user would then be redirected back with a code without ever being asked to approve the client.
 

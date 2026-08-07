@@ -1,14 +1,14 @@
-import { HnOAuthClientStore } from './hn-oauth-client.store';
-import { HnOAuthRedisMock } from './hn-oauth-redis.mock';
+import { BlOAuthClientStore } from './bl-oauth-client.store';
+import { BlOAuthRedisMock } from './bl-oauth-redis.mock';
 
-describe('HnOAuthClientStore', () => {
-  let store: HnOAuthClientStore;
-  let redis: HnOAuthRedisMock;
+describe('BlOAuthClientStore', () => {
+  let store: BlOAuthClientStore;
+  let redis: BlOAuthRedisMock;
   const callbackUri = 'http://example.com/callback';
 
   beforeEach(() => {
-    redis = new HnOAuthRedisMock();
-    store = new HnOAuthClientStore(redis);
+    redis = new BlOAuthRedisMock();
+    store = new BlOAuthClientStore(redis);
   });
 
   it('registers a client and finds it back by id', async () => {

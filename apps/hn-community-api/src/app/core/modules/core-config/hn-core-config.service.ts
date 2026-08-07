@@ -231,7 +231,12 @@ export class HnCoreConfigService {
       case 'preprod':
         res = 'https://community-pre-prod.gencovery.com';
         break;
+      // Grouped like `isLocal()` groups them: the test profile runs against the same local
+      // front. Needed because the OAuth server module reads this at startup — the value is
+      // what a logged-out `/authorize` redirects to, and a deployment missing it should fail
+      // on boot rather than on the first authorization request.
       case 'dev':
+      case 'test':
         res = 'http://localhost:4200';
         break;
       default:

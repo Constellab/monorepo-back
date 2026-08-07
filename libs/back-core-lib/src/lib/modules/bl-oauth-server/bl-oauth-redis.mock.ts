@@ -1,4 +1,4 @@
-import { BlRedisStore } from '@monorepo/back-core-lib';
+import { BlRedisStore } from '../bl-redis/bl-redis.class';
 
 /**
  * In-memory {@link BlRedisStore} for unit tests: no server, no `ioredis`.
@@ -7,10 +7,10 @@ import { BlRedisStore } from '@monorepo/back-core-lib';
  * `jest.useFakeTimers()` + `jest.advanceTimersByTime()`. `getAndDelete` deletes
  * before returning, mirroring the atomicity `GETDEL` gives in production.
  *
- * Excluded from the application build by the `**\/*.mock.ts` pattern in
- * `tsconfig.app.json` / `tsconfig.app-nest.json`.
+ * Not exported from the public API — a test double, reached by relative import from the
+ * specs next to it, like `bl-jwt-key.mock.ts`.
  */
-export class HnOAuthRedisMock extends BlRedisStore {
+export class BlOAuthRedisMock extends BlRedisStore {
   private readonly entries = new Map<string, { value: string; expiresAt: number }>();
 
   // eslint-disable-next-line @typescript-eslint/require-await

@@ -1,14 +1,15 @@
-import { BlRedisStore } from '@monorepo/back-core-lib';
 import { Injectable, Logger } from '@nestjs/common';
 import { randomBytes } from 'crypto';
 
-export interface HnOAuthClient {
+import { BlRedisStore } from '../bl-redis/bl-redis.class';
+
+export interface BlOAuthClient {
   client_id: string;
   redirect_uris: string[];
   client_name?: string;
 }
 
-export interface HnOAuthClientRegistration {
+export interface BlOAuthClientRegistration {
   redirect_uris: string[];
   client_name?: string;
 }
@@ -30,13 +31,13 @@ const TTL_SECONDS = 30 * 24 * 60 * 60;
  * otherwise `/authorize` fails with an intermittent `invalid_client`.
  */
 @Injectable()
-export class HnOAuthClientStore {
-  private readonly logger = new Logger(HnOAuthClientStore.name);
+export class BlOAuthClientStore {
+  private readonly logger = new Logger(BlOAuthClientStore.name);
 
   constructor(private readonly redis: BlRedisStore) {}
 
-  async register(registration: HnOAuthClientRegistration): Promise<HnOAuthClient> {
-    const client: HnOAuthClient = {
+  async register(registration: BlOAuthClientRegistration): Promise<BlOAuthClient> {
+    const client: BlOAuthClient = {
       client_id: randomBytes(16).toString('hex'),
       redirect_uris: registration.redirect_uris,
       client_name: registration.client_name,
@@ -45,13 +46,13 @@ export class HnOAuthClientStore {
     return client;
   }
 
-  async find(clientId: string): Promise<HnOAuthClient | null> {
+  async find(clientId: string): Promise<BlOAuthClient | null> {
     const raw = await this.redis.get(`${KEY_PREFIX}${clientId}`);
     if (raw == null) {
       return null;
     }
     try {
-      return JSON.parse(raw) as HnOAuthClient;
+      return JSON.parse(raw) as BlOAuthClient;
     } catch {
       // Corrupt entry: treat as unknown, the client will simply re-register.
       this.logger.warn(`Discarded an unparsable client entry for '${clientId}'`);
@@ -60,7 +61,7 @@ export class HnOAuthClientStore {
   }
 
   /** Exact-match check against the client's registered redirect URIs (anti open-redirect). */
-  redirectUriAllowed(client: HnOAuthClient, redirectUri: string): boolean {
+  redirectUriAllowed(client: BlOAuthClient, redirectUri: string): boolean {
     return client.redirect_uris.includes(redirectUri);
   }
 }

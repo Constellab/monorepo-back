@@ -9,12 +9,15 @@ import {
   BlLoggerConfig,
   BlMailModule,
   BlNamingStrategy,
+  BlOAuthServerConfig,
+  BlOAuthServerModule,
   BlObjectStorageModule,
   BlRedisConfig,
   BlRedisModule,
   BlRequestContextMiddleware,
   BlResourceServerConfig,
   BlResourceServerModule,
+  blStripTrailingSlashes,
   BlTranslateModule,
   BlTransportModuleConfig,
   blTransportRedisForRoot,
@@ -210,6 +213,26 @@ function configureResourceServerModule(configService: HnCoreConfigService): BlRe
 }
 
 /**
+ * What this application states as the Authorization Server it hosts.
+ *
+ * Configuration is the whole of it, plus the current-user resolver `HnOAuthModule` supplies:
+ * the endpoints, the stores and the grant logic are `bl-oauth-server`'s, so relocating the
+ * Authorization Server to the Space API is this function and that module moving, not a
+ * rewrite.
+ *
+ * The issuer is the API's own base URL because RFC 8414 requires it to equal the URL serving
+ * the discovery document.
+ */
+function configureOAuthServerModule(configService: HnCoreConfigService): BlOAuthServerConfig {
+  return {
+    issuer: configService.getApiUrl(),
+    frontLoginUrl: `${blStripTrailingSlashes(configService.getFrontBaseUrl())}/login`,
+    allowedRedirectUris: configService.getOAuthAllowedRedirectUris(),
+    mcpAccessTokenDurationInSeconds: configService.getMcpAccessTokenDurationInSeconds(),
+  };
+}
+
+/**
  * Reuses the queue connection details (BullMQ already needs a Redis instance) and
  * namespaces the keys, so sharing one server with another app stays safe.
  */
@@ -282,6 +305,16 @@ TeRichTextModifications.setBackTimeDifference();
     BlResourceServerModule.forRootAsync({
       imports: [HnCoreModule],
       useFactory: configureResourceServerModule,
+      inject: [HnCoreConfigService],
+    }),
+
+    // The Authorization Server half: registration, /authorize, /token, /revoke and the
+    // authorization server discovery document. `HnOAuthModule` is imported for the two
+    // tokens the library cannot resolve itself — the current-user resolver and this
+    // application's refresh token service.
+    BlOAuthServerModule.forRootAsync({
+      imports: [HnCoreModule, HnOAuthModule],
+      useFactory: configureOAuthServerModule,
       inject: [HnCoreConfigService],
     }),
 
@@ -412,7 +445,6 @@ TeRichTextModifications.setBackTimeDifference();
     HnRagflowChatbotModule,
 
     HnMcpDocModule,
-    HnOAuthModule,
   ],
   controllers: [HnHealthController],
   providers: [

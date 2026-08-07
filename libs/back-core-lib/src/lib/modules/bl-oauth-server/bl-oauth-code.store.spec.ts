@@ -1,7 +1,7 @@
-import { HnOAuthCodeBinding, HnOAuthCodeStore } from './hn-oauth-code.store';
-import { HnOAuthRedisMock } from './hn-oauth-redis.mock';
+import { BlOAuthCodeBinding, BlOAuthCodeStore } from './bl-oauth-code.store';
+import { BlOAuthRedisMock } from './bl-oauth-redis.mock';
 
-const binding: HnOAuthCodeBinding = {
+const binding: BlOAuthCodeBinding = {
   clientId: 'client-1',
   redirectUri: 'http://localhost:8080/callback',
   codeChallenge: 'E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM',
@@ -9,12 +9,12 @@ const binding: HnOAuthCodeBinding = {
   user: { id: 'user-1', email: 'user@example.com' },
 };
 
-function buildStore(): { store: HnOAuthCodeStore; redis: HnOAuthRedisMock } {
-  const redis = new HnOAuthRedisMock();
-  return { store: new HnOAuthCodeStore(redis), redis };
+function buildStore(): { store: BlOAuthCodeStore; redis: BlOAuthRedisMock } {
+  const redis = new BlOAuthRedisMock();
+  return { store: new BlOAuthCodeStore(redis), redis };
 }
 
-describe('HnOAuthCodeStore', () => {
+describe('BlOAuthCodeStore', () => {
   it('consumes a code once and returns its binding', async () => {
     const { store } = buildStore();
     const code = await store.create(binding);
