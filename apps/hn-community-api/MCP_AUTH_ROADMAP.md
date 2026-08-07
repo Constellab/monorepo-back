@@ -26,12 +26,13 @@ stores OAuth en mémoire, cloisonnement d'audience incomplet, `redirect_uri` non
 
 ### Côté MCP / OAuth
 
-| Item                             | Ce qui a changé                                                                            | Pourquoi ça comptait                                                                                                                     |
-| -------------------------------- | ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| **9** — cloisonnement d'audience | `BlJwtStrategy` rejette désormais **tout** token portant un `aud`                          | Un token émis pour le MCP pouvait servir de token de session sur l'API entière                                                           |
-| **11** (moitié back)             | `redirect_uri` restreint à l'enregistrement dynamique, + bornes sur la taille des requêtes | Sans écran de consentement, un `redirect_uri` libre laissait n'importe qui récupérer un code d'autorisation pour un utilisateur connecté |
-| **8** — stores en mémoire        | Codes et clients OAuth déplacés en Redis (création de `BlRedisModule`)                     | Une `Map` en mémoire casse dès qu'il y a plus d'une instance : le code créé par l'une est inconnu de l'autre                             |
-| **10** — tokens MCP              | Access token à 1 h, refresh token OAuth rotatif, `POST /oauth/revoke`                      | C'est ici que **les 7 derniers jours disparaissent** : un token MCP volé restait valable une semaine, sans aucun moyen de l'invalider    |
+| Item                              | Ce qui a changé                                                                            | Pourquoi ça comptait                                                                                                                     |
+| --------------------------------- | ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| **9** — cloisonnement d'audience  | `BlJwtStrategy` rejette désormais **tout** token portant un `aud`                          | Un token émis pour le MCP pouvait servir de token de session sur l'API entière                                                           |
+| **11** (moitié back)              | `redirect_uri` restreint à l'enregistrement dynamique, + bornes sur la taille des requêtes | Sans écran de consentement, un `redirect_uri` libre laissait n'importe qui récupérer un code d'autorisation pour un utilisateur connecté |
+| **8** — stores en mémoire         | Codes et clients OAuth déplacés en Redis (création de `BlRedisModule`)                     | Une `Map` en mémoire casse dès qu'il y a plus d'une instance : le code créé par l'une est inconnu de l'autre                             |
+| **10** — tokens MCP               | Access token à 1 h, refresh token OAuth rotatif, `POST /oauth/revoke`                      | C'est ici que **les 7 derniers jours disparaissent** : un token MCP volé restait valable une semaine, sans aucun moyen de l'invalider    |
+| **13** — découverte par ressource | Un document de métadonnées par ressource protégée (RFC 9728 §3.1)                          | Avec deux MCP, un client appelant l'un se faisait dire de demander l'audience de l'autre                                                 |
 
 Le cloisonnement d'audience a été fait **sans drapeau d'activation**. Une vérification de
 sécurité optionnelle est désactivée par défaut, donc inutile.
@@ -72,6 +73,28 @@ Deux bornes assumées :
 - **La course n'est pas un rejeu.** Deux requêtes simultanées avec le même token valide
   sont indiscernables d'un double envoi légitime : la seconde perd la course (0 ligne
   affectée) et reçoit un 401, sans tuer la session.
+
+### Découverte par ressource (item 13)
+
+RFC 9728 §3.1 insère le segment `.well-known` **entre l'hôte et le chemin de la
+ressource** : le document de `https://hôte/mcp/community-doc` vit à
+`https://hôte/.well-known/oauth-protected-resource/mcp/community-doc`. C'est cette
+insertion — et pas une concaténation — qui permet à un hôte de servir un document par
+ressource.
+
+La note d'origine dans `TECHNICAL_DEBT.md` affirmait que `HnMcpResourceGuard` n'avait
+besoin d'aucun changement. **C'était faux** : il annonçait une URL `resource_metadata`
+fixe, donc tous les MCP pointaient vers le même document et la découverte par ressource
+n'avait aucun point d'entrée. Le garde annonce maintenant le document de la ressource
+réellement appelée.
+
+Deux choses conservées volontairement : le document **sans chemin**, qui répond pour la
+ressource principale (les clients antérieurs au découpage le demandent, et un document de
+découverte qui renvoie 404 fait abandonner tout le flux), et le document du serveur
+d'autorisation, qui reste global — il n'y a qu'un serveur d'autorisation.
+
+Le garde avait par ailleurs **zéro test** alors qu'il valide signature et audience à
+chaque appel MCP. C'est réparé.
 
 ### Côté authentification de session
 
@@ -138,13 +161,24 @@ seconde).
 
 ## Ce qui reste
 
-### 1. Le test qui reste à faire sur le point 10
+Tous les items MCP numérotés sont traités, sauf les deux différés (12 et 14). Ce qui
+suit est donc de la vérification et un chantier de fond.
+
+### 1. La vérification des points 10 et 13
 
 Le code est écrit et couvert en unitaire, mais **jamais éprouvé contre un vrai client**.
 Le test qui compte : laisser Claude connecté plus d'une heure et s'en servir. Il doit
-rafraîchir silencieusement. Tant que ça n'est pas fait, considérer le point 10 comme
-« écrit », pas comme « vérifié » — c'est la distinction que le reste de ce chantier a
+rafraîchir silencieusement. Tant que ça n'est pas fait, considérer ces deux points comme
+« écrits », pas comme « vérifiés » — c'est la distinction que le reste de ce chantier a
 appris à faire.
+
+Deux choses à regarder en particulier, parce qu'un test unitaire ne peut pas les voir :
+
+- **la route joker** `.well-known/oauth-protected-resource/*splat` est une syntaxe
+  Express 5 ; un motif mal formé ne casse pas à la compilation, il casse au démarrage.
+  Le motif a été validé contre `path-to-regexp` directement, pas seulement relu.
+- **quel document Claude demande réellement** — le sans-chemin, le par-ressource, ou les
+  deux. C'est ce qui dira si la forme sans chemin peut disparaître un jour.
 
 ### 2. Point 6 — `cli-auth`, en dernier
 
@@ -155,13 +189,7 @@ Direction retenue : le faire **hériter du flux OAuth** plutôt que garder son m
 propre — son flow est déjà un device flow. À noter, son store est encore une `Map` en
 mémoire, donc il souffre du problème multi-instances que l'item 8 vient de corriger ailleurs.
 
-### 3. Item 13 — découverte par ressource
-
-Le dernier point MCP ouvert : un document de métadonnées par ressource protégée, au lieu
-d'un seul. À grouper avec un `hn-mcp-resource.guard.spec.ts` — ce garde valide signature et
-audience à chaque appel MCP et n'a **aucun test**.
-
-### 4. Différés volontairement
+### 3. Différés volontairement
 
 - **Item 12** — RS256 / JWKS, nécessaire pour sortir les serveurs de ressources de cette app.
   Le choix de ne pas toucher `BlJwtStrategy` laisse cette trajectoire intacte.

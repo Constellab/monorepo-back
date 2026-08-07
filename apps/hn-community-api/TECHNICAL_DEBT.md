@@ -281,17 +281,39 @@ connected for more than an hour, refreshing silently.
 
 ---
 
-## 13. Discovery exposes a single protected resource
+## 13. Discovery exposes a single protected resource — RESOLVED (August 2026)
 
-**File:** `src/app/oauth/hn-oauth.controller.ts` (`getProtectedResourceMetadata()`)
+**Files:** `src/app/oauth/hn-oauth.controller.ts`, `src/app/oauth/hn-oauth-resource-url.util.ts`,
+`src/app/oauth/hn-mcp-resource.guard.ts`
 
-**Problem:** `GET /.well-known/oauth-protected-resource` always returns metadata for `config.resources[0]`. With one MCP resource this is correct; with two or more it becomes wrong, since RFC 9728 expects one metadata document **per resource**.
+**Was:** `GET /.well-known/oauth-protected-resource` always returned metadata for
+`config.resources[0]`. Correct with one MCP resource, wrong with two: RFC 9728 expects one
+document **per resource**, and a client calling the space MCP would have been told to
+request a community-doc audience.
 
-**Suggested fix:** serve per-resource documents (RFC 9728 forms the URL by inserting `/.well-known/oauth-protected-resource` before the resource path, e.g. `/.well-known/oauth-protected-resource/mcp/community-doc`) and have each MCP's `WWW-Authenticate` header point at its own document. `HnMcpResourceGuard` already derives the audience from the request path, so it needs no change.
+**Fixed by** serving the per-resource form (RFC 9728 §3.1 inserts the well-known segment
+**between the host and the resource path**, so the document for
+`https://host/mcp/community-doc` lives at
+`https://host/.well-known/oauth-protected-resource/mcp/community-doc`). An unregistered
+path is a 404, not a document for a resource we do not serve.
 
-**Note:** the authorization server document (`/.well-known/oauth-authorization-server`) is global and stays as is — there is only one authorization server.
+The URL convention and its inverse live in `hn-oauth-resource-url.util.ts`, shared with
+the guard and tested on their own — the two directions have to agree, and they are used
+from opposite ends of the flow.
 
-**Triggered by:** adding a second MCP resource.
+**One change the original note got wrong:** it claimed `HnMcpResourceGuard` needed no
+change. It did. The guard emitted a fixed `resource_metadata` URL, so every MCP pointed
+at the same document and per-resource discovery had no entry point. It now advertises the
+document of the resource actually being called.
+
+**Note:** the authorization server document (`/.well-known/oauth-authorization-server`) is
+global and stays as is — there is only one authorization server. The pathless protected
+resource document also stays, answering for the primary resource: clients that predate the
+split ask for it, and a discovery document that 404s makes a client abandon the flow.
+
+**Verification:** 26 unit tests — the URL util (both directions, round-trip), the two
+controller routes, and `hn-mcp-resource.guard.spec.ts`, which the guard had been missing
+entirely despite validating signature and audience on every MCP call.
 
 ---
 

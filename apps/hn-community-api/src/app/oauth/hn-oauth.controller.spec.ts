@@ -1,5 +1,7 @@
 import { BlJwtService } from '@monorepo/back-core-lib';
+import { NotFoundException } from '@nestjs/common';
 import { createHash } from 'crypto';
+import { Request } from 'express';
 
 import {
   HnRefreshTokenRotation,
@@ -13,8 +15,11 @@ import { HnOAuthClientStore } from './hn-oauth-client.store';
 import { HnOAuthCodeBinding, HnOAuthCodeStore } from './hn-oauth-code.store';
 
 const MCP_TOKEN_TTL_SECONDS = 60 * 60;
-const RESOURCE = 'https://api.example.com/mcp/community-doc';
-const OTHER_RESOURCE = 'https://api.example.com/mcp/space-doc';
+const ISSUER = 'https://api.example.com';
+const RESOURCE_PATH = '/mcp/community-doc';
+const RESOURCE = `${ISSUER}${RESOURCE_PATH}`;
+const OTHER_RESOURCE = `${ISSUER}/mcp/space-doc`;
+const WELL_KNOWN = '/.well-known/oauth-protected-resource';
 const CLIENT_ID = 'client-1';
 const REDIRECT_URI = 'https://claude.ai/api/mcp/auth_callback';
 
@@ -42,8 +47,13 @@ function buildController(): Mocks {
   const revokeOAuthToken = jest.fn().mockResolvedValue(undefined);
   const generateTokenForAudience = jest.fn().mockReturnValue('access-token');
 
+  // One registered resource, as in production today. `resources[0]` is what the
+  // pathless discovery document answers with.
   const config = {
     mcpAccessTokenDurationInSeconds: MCP_TOKEN_TTL_SECONDS,
+    issuer: ISSUER,
+    resources: [RESOURCE],
+    isKnownResource: (resource: string) => resource === RESOURCE,
   } as unknown as HnOAuthConfig;
 
   return {
@@ -97,6 +107,48 @@ async function rejectedErrorCode(promise: Promise<unknown>): Promise<string | nu
 }
 
 describe('HnOAuthController', () => {
+  describe('protected resource metadata', () => {
+    /** A GET on a `.well-known` path, as Express hands it to the controller. */
+    const requestFor = (path: string): Request => ({ path }) as unknown as Request;
+
+    it('serves the document for the resource named in the path', () => {
+      const { controller } = buildController();
+
+      const metadata = controller.getProtectedResourceMetadataForPath(
+        requestFor(`${WELL_KNOWN}${RESOURCE_PATH}`)
+      );
+
+      expect(metadata.resource).toBe(RESOURCE);
+      expect(metadata.authorization_servers).toEqual([ISSUER]);
+    });
+
+    it('404s on a path that is not a registered resource', () => {
+      const { controller } = buildController();
+
+      // Answering with the primary resource here would tell a client calling one MCP
+      // to request an audience for a different one.
+      expect(() =>
+        controller.getProtectedResourceMetadataForPath(requestFor(`${WELL_KNOWN}/mcp/space-doc`))
+      ).toThrow(NotFoundException);
+    });
+
+    it('404s rather than treating a non-metadata path as a resource', () => {
+      const { controller } = buildController();
+
+      expect(() => controller.getProtectedResourceMetadataForPath(requestFor(RESOURCE_PATH))).toThrow(
+        NotFoundException
+      );
+    });
+
+    it('keeps answering the pathless document, which older clients ask for', () => {
+      const { controller } = buildController();
+
+      // A discovery document that 404s makes a client abandon the whole flow, so this
+      // form stays even though RFC 9728 only defines the per-resource one.
+      expect(controller.getProtectedResourceMetadata().resource).toBe(RESOURCE);
+    });
+  });
+
   describe('token — grant dispatch', () => {
     it('rejects a grant it does not implement', async () => {
       const { controller } = buildController();

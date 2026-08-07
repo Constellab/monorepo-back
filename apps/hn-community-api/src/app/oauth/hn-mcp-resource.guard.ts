@@ -3,8 +3,8 @@ import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from
 import { Request, Response } from 'express';
 
 import { HnOAuthConfig } from './hn-oauth.config';
-import { HN_OAUTH_PATHS } from './hn-oauth.constants';
 import { hnExtractBearerToken } from './hn-oauth-bearer.util';
+import { hnProtectedResourceMetadataUrl } from './hn-oauth-resource-url.util';
 
 /**
  * Generic OAuth 2.0 Resource Server guard for MCP endpoints.
@@ -29,7 +29,8 @@ export class HnMcpResourceGuard implements CanActivate {
     const request = http.getRequest<Request>();
     const response = http.getResponse<Response>();
 
-    const expectedResource = this.expectedResource(request);
+    const resourcePath = this.resourcePath(request);
+    const expectedResource = `${this.config.issuer}${resourcePath}`;
     const token = hnExtractBearerToken(request.headers?.authorization);
 
     try {
@@ -42,18 +43,20 @@ export class HnMcpResourceGuard implements CanActivate {
       }
       return true;
     } catch {
+      // The document for THIS resource, not a shared one: it is the only thing telling
+      // the client which audience to ask for, and every MCP on this host needs a
+      // different one.
       response.setHeader(
         'WWW-Authenticate',
-        `Bearer resource_metadata="${this.config.issuer}/${HN_OAUTH_PATHS.protectedResourceMetadata}"`
+        `Bearer resource_metadata="${hnProtectedResourceMetadataUrl(this.config.issuer, resourcePath)}"`
       );
       throw new UnauthorizedException('invalid_token');
     }
   }
 
-  /** Canonical resource identifier for the endpoint being called: `issuer + path`. */
-  private expectedResource(request: Request): string {
-    const path = (request.path ?? '').split('?')[0].replace(/\/+$/, '');
-    return `${this.config.issuer}${path}`;
+  /** Path component of the endpoint being called, normalized like a resource identifier. */
+  private resourcePath(request: Request): string {
+    return (request.path ?? '').split('?')[0].replace(/\/+$/, '');
   }
 
   private audienceMatches(aud: string | string[] | undefined, expected: string): boolean {

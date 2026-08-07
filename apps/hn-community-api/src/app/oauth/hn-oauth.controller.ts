@@ -4,6 +4,7 @@ import {
   Controller,
   Get,
   HttpCode,
+  NotFoundException,
   Post,
   Query,
   Req,
@@ -30,6 +31,7 @@ import {
 } from './hn-oauth-metadata.builder';
 import { hnVerifyPkce } from './hn-oauth-pkce.util';
 import { hnValidateRedirectUris } from './hn-oauth-redirect-uri.validator';
+import { hnResourcePathFromMetadataUrl } from './hn-oauth-resource-url.util';
 
 interface HnOAuthRegisterBody {
   redirect_uris?: unknown;
@@ -112,12 +114,42 @@ export class HnOAuthController {
     return hnBuildAuthServerMetadata(this.config.issuer);
   }
 
+  /**
+   * The pathless Protected Resource Metadata document.
+   *
+   * RFC 9728 only defines the per-resource form below, but a client that predates the
+   * split asks for this one, so it keeps answering for the primary resource. Kept
+   * rather than redirected: a discovery document that 404s makes a client give up on
+   * the whole flow.
+   */
   @BlPublic()
   @Get(HN_OAUTH_PATHS.protectedResourceMetadata)
   getProtectedResourceMetadata(): HnProtectedResourceMetadata {
-    // v1: a single primary resource (community-doc). Per-resource PRM documents
-    // will be added when a second MCP resource exists.
     return hnBuildProtectedResourceMetadata(this.config.resources[0], this.config.issuer);
+  }
+
+  /**
+   * Protected Resource Metadata for one resource (RFC 9728 §3.1), e.g.
+   * `/.well-known/oauth-protected-resource/mcp/community-doc`.
+   *
+   * One document per resource is what makes several MCPs on this host distinguishable
+   * to a client: each `WWW-Authenticate` points at its own document, and each document
+   * names exactly one `resource`. Serving the same document for every path would tell
+   * a client calling the space MCP that it should ask for a community-doc audience.
+   *
+   * The resource comes from the request path, matched against the registry — an
+   * unknown path is a 404 rather than a document for a resource we do not serve.
+   */
+  @BlPublic()
+  @Get(`${HN_OAUTH_PATHS.protectedResourceMetadata}/*splat`)
+  getProtectedResourceMetadataForPath(@Req() request: Request): HnProtectedResourceMetadata {
+    const resourcePath = hnResourcePathFromMetadataUrl(request.path);
+    const resource = `${this.config.issuer}${resourcePath ?? ''}`;
+
+    if (!resourcePath || !this.config.isKnownResource(resource)) {
+      throw new NotFoundException('unknown protected resource');
+    }
+    return hnBuildProtectedResourceMetadata(resource, this.config.issuer);
   }
 
   /**
