@@ -205,7 +205,7 @@ Isolation is now bidirectional: MCP tokens work only against their resource, ses
 
 **Files:** `src/app/oauth/hn-oauth.controller.ts`, `src/app/oauth/hn-oauth.config.ts`,
 `libs/back-core-lib/src/lib/modules/bl-oauth/bl-oauth-metadata.builder.ts`,
-`src/app/auth/refresh-token/`
+`libs/back-core-lib/src/lib/modules/bl-refresh-token/`, `src/app/auth/refresh-token/`
 
 **Was:** MCP access tokens inherited `HN_JWT_CONFIG.legacyTokenDurationInSeconds`
 (**7 days**), with no token store, no `/revoke` endpoint and no refresh token. A leaked

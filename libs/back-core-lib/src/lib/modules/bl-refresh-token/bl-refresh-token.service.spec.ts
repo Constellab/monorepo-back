@@ -2,12 +2,24 @@ import { ClDateHelper } from '@monorepo/core-lib';
 import { createHash } from 'crypto';
 import { Repository } from 'typeorm';
 
-import { HnCoreConfigService } from '../../core/modules/core-config/hn-core-config.service';
-import { HnUser } from '../../users/hn-user.entity';
-import { HnRefreshToken } from './hn-refresh-token.entity';
-import { HnRefreshTokenService } from './hn-refresh-token.service';
+import { BlRefreshTokenEntity } from './bl-refresh-token.entity';
+import { BlRefreshTokenService } from './bl-refresh-token.service';
 
-const user = { id: 'user-1', email: 'user@example.com' } as HnUser;
+/**
+ * Stands in for an application's user entity.
+ *
+ * Deliberately not one of the real ones: the service only ever carries the owner
+ * through, so a spec that needed a real user model would be proving something the
+ * shared code does not do.
+ */
+interface TestUser {
+  id: string;
+  email: string;
+}
+
+type TestRefreshToken = BlRefreshTokenEntity<TestUser>;
+
+const user: TestUser = { id: 'user-1', email: 'user@example.com' };
 
 const REFRESH_TTL_SECONDS = 60 * 60 * 24 * 30;
 
@@ -17,7 +29,7 @@ const PRESENTED = 'presented';
 const sha256 = (value: string): string => createHash('sha256').update(value).digest('hex');
 
 interface Mocks {
-  service: HnRefreshTokenService;
+  service: BlRefreshTokenService<TestUser>;
   create: jest.Mock;
   save: jest.Mock;
   findOne: jest.Mock;
@@ -38,13 +50,10 @@ function buildService(): Mocks {
     findOne,
     update,
     delete: remove,
-  } as unknown as Repository<HnRefreshToken>;
-  const configService = {
-    getRefreshTokenDurationInSeconds: () => REFRESH_TTL_SECONDS,
-  } as unknown as HnCoreConfigService;
+  } as unknown as Repository<TestRefreshToken>;
 
   return {
-    service: new HnRefreshTokenService(repository, configService),
+    service: new BlRefreshTokenService<TestUser>(repository, () => REFRESH_TTL_SECONDS),
     create,
     save,
     findOne,
@@ -60,7 +69,7 @@ function buildService(): Mocks {
  * its chain — which is what makes the rotation path the default. A test that wants a
  * replay overrides it with something else.
  */
-function storedRow(overrides: Partial<HnRefreshToken> = {}): HnRefreshToken {
+function storedRow(overrides: Partial<TestRefreshToken> = {}): TestRefreshToken {
   return {
     id: 'row-1',
     tokenHash: sha256(PRESENTED),
@@ -75,14 +84,14 @@ function storedRow(overrides: Partial<HnRefreshToken> = {}): HnRefreshToken {
   };
 }
 
-describe('HnRefreshTokenService', () => {
+describe('BlRefreshTokenService', () => {
   describe('issue', () => {
     it('returns the token in clear and never stores it', async () => {
       const { service, create } = buildService();
       const token = await service.issue(user, 'session');
 
       expect(token).toMatch(/^[0-9a-f]{64}$/);
-      const stored = create.mock.calls[0][0] as HnRefreshToken;
+      const stored = create.mock.calls[0][0] as TestRefreshToken;
       expect(stored.tokenHash).toBe(sha256(token));
       expect(stored.tokenHash).not.toBe(token);
       expect(JSON.stringify(stored)).not.toContain(token);
@@ -98,10 +107,19 @@ describe('HnRefreshTokenService', () => {
       const { service, create } = buildService();
       await service.issue(user, 'session');
 
-      const stored = create.mock.calls[0][0] as HnRefreshToken;
+      const stored = create.mock.calls[0][0] as TestRefreshToken;
       const seconds = stored.expiresAt.diff(ClDateHelper.getDate(), 'seconds').seconds;
       expect(seconds).toBeGreaterThan(REFRESH_TTL_SECONDS - 60);
       expect(seconds).toBeLessThanOrEqual(REFRESH_TTL_SECONDS);
+    });
+
+    it('binds the row to the owner it was issued to', async () => {
+      const { service, create } = buildService();
+      await service.issue(user, 'session');
+
+      // The shared code writes the relation and never reads inside it — the owner it
+      // was handed is the owner the foreign key ends up pointing at.
+      expect(create.mock.calls[0][0]).toMatchObject({ user });
     });
 
     it('records the OAuth binding when given, and leaves it null otherwise', async () => {
@@ -208,7 +226,7 @@ describe('HnRefreshTokenService', () => {
 
     describe('replay of an already-consumed token', () => {
       /** A row whose chain has moved on: the presented hash is the one it consumed. */
-      const rotatedAwayRow = (overrides: Partial<HnRefreshToken> = {}): HnRefreshToken =>
+      const rotatedAwayRow = (overrides: Partial<TestRefreshToken> = {}): TestRefreshToken =>
         storedRow({
           tokenHash: sha256('the-token-that-replaced-it'),
           previousTokenHash: sha256(PRESENTED),

@@ -1,12 +1,9 @@
-import { BlJwtService } from '@monorepo/back-core-lib';
+import { BlJwtService, BlRefreshTokenRotation } from '@monorepo/back-core-lib';
 import { NotFoundException } from '@nestjs/common';
 import { createHash } from 'crypto';
 import { Request } from 'express';
 
-import {
-  HnRefreshTokenRotation,
-  HnRefreshTokenService,
-} from '../auth/refresh-token/hn-refresh-token.service';
+import { HnRefreshTokenService } from '../auth/refresh-token/hn-refresh-token.service';
 import { HnUser } from '../users/hn-user.entity';
 import { HnOAuthConfig } from './hn-oauth.config';
 import { HnOAuthController } from './hn-oauth.controller';
@@ -85,7 +82,7 @@ function codeBinding(overrides: Partial<HnOAuthCodeBinding> = {}): HnOAuthCodeBi
   };
 }
 
-function rotation(overrides: Partial<HnRefreshTokenRotation> = {}): HnRefreshTokenRotation {
+function rotation(overrides: Partial<BlRefreshTokenRotation<HnUser>> = {}): BlRefreshTokenRotation<HnUser> {
   return {
     token: 'rotated-refresh-token',
     user,

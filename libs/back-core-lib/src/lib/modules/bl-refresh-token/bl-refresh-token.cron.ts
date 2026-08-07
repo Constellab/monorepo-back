@@ -1,13 +1,16 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 
-import { HnRefreshTokenService } from './hn-refresh-token.service';
+import { BL_REFRESH_TOKEN_SERVICE_PROVIDER } from './bl-refresh-token.class';
+import { BlRefreshTokenService } from './bl-refresh-token.service';
 
 @Injectable()
-export class HnRefreshTokenCron {
-  private readonly logger = new Logger(HnRefreshTokenCron.name);
+export class BlRefreshTokenCron {
+  private readonly logger = new Logger(BlRefreshTokenCron.name);
 
-  constructor(private refreshTokenService: HnRefreshTokenService) {}
+  constructor(
+    @Inject(BL_REFRESH_TOKEN_SERVICE_PROVIDER) private refreshTokenService: BlRefreshTokenService
+  ) {}
 
   /**
    * Clears rows whose refresh token has expired.
