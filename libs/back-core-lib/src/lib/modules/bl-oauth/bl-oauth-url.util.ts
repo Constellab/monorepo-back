@@ -12,3 +12,28 @@
 export function blStripTrailingSlashes(value: string): string {
   return value.replace(/\/+$/, '');
 }
+
+/**
+ * Append query parameters to an already-validated URL.
+ *
+ * Shared because every hop of the authorization flow that leaves the server ends here —
+ * the code going back to the client, the refusal going back to the client, the browser
+ * going to the login page and to the consent page — and each of them has to keep whatever
+ * query string the base URL already carried. `URL` is what guarantees that; hand-built
+ * `?a=b` concatenation is what silently drops it.
+ *
+ * A `null` or `undefined` value is omitted rather than serialized as the string "null":
+ * an OAuth request without `state` must come back without one, not with `state=undefined`.
+ */
+export function blBuildUrlWithParams(
+  base: string,
+  params: Record<string, string | undefined | null>
+): string {
+  const url = new URL(base);
+  for (const [key, value] of Object.entries(params)) {
+    if (value != null) {
+      url.searchParams.set(key, value);
+    }
+  }
+  return url.toString();
+}

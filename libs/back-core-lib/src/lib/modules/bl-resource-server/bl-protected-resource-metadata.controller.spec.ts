@@ -17,7 +17,7 @@ function buildController(
   const registry = new BlResourceRegistry({
     baseUrl: BASE_URL,
     authorizationServerUrl: AUTH_SERVER_URL,
-    resourcePaths: [RESOURCE_PATH],
+    resources: [{ path: RESOURCE_PATH, name: 'The documentation' }],
     ...overrides,
   });
   return new BlProtectedResourceMetadataController(registry);
@@ -62,7 +62,7 @@ describe('BlProtectedResourceMetadataController', () => {
   it('serves a resource that is not an MCP endpoint', () => {
     // ADR-0002: a Resource is any protected surface identified by its URL.
     const metadata = buildController({
-      resourcePaths: ['/v1/documents'],
+      resources: [{ path: '/v1/documents', name: 'The documents API' }],
     }).getProtectedResourceMetadataForPath(requestFor(`${WELL_KNOWN}/v1/documents`));
 
     expect(metadata.resource).toBe(`${BASE_URL}/v1/documents`);
@@ -80,13 +80,18 @@ describe('BlProtectedResourceMetadataController', () => {
       // an application registers its whole API this is its document — not a compatibility
       // answer naming some other Resource. That is the same rule as everywhere else: the
       // document a refusal points at names the Resource actually called.
-      const controller = buildController({ resourcePaths: [RESOURCE_PATH, ''] });
+      const controller = buildController({
+        resources: [
+          { path: RESOURCE_PATH, name: 'The documentation' },
+          { path: '', name: 'The whole API' },
+        ],
+      });
 
       expect(controller.getProtectedResourceMetadata().resource).toBe(BASE_URL);
     });
 
     it('404s when the application registers no resource', () => {
-      expect(() => buildController({ resourcePaths: [] }).getProtectedResourceMetadata()).toThrow(
+      expect(() => buildController({ resources: [] }).getProtectedResourceMetadata()).toThrow(
         NotFoundException
       );
     });

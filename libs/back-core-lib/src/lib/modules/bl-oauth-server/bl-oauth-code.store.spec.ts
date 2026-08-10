@@ -5,7 +5,7 @@ const binding: BlOAuthCodeBinding = {
   clientId: 'client-1',
   redirectUri: 'http://localhost:8080/callback',
   codeChallenge: 'E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM',
-  resource: 'http://localhost:3333/mcp/community-doc',
+  resources: ['http://localhost:3333/mcp/community-doc'],
   user: { id: 'user-1', email: 'user@example.com' },
 };
 

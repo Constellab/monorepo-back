@@ -9,7 +9,14 @@ export interface BlOAuthCodeBinding {
   clientId: string;
   redirectUri: string;
   codeChallenge: string;
-  resource: string;
+  /**
+   * The Resources the user approved in the pass this code came out of.
+   *
+   * A list, while the token minted from it names exactly one: the code carries what was
+   * approved, and `/token` picks one of those and no others. That is what keeps "several
+   * Resources, one prompt" from becoming "one token for several audiences".
+   */
+  resources: string[];
   user: BlOAuthUser;
 }
 

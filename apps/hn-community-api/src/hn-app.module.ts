@@ -208,7 +208,15 @@ function configureResourceServerModule(configService: HnCoreConfigService): BlRe
   return {
     baseUrl: configService.getApiUrl(),
     authorizationServerUrl: configService.getApiUrl(),
-    resourcePaths: [HN_MCP_COMMUNITY_DOC_RESOURCE_PATH],
+    resources: [
+      {
+        path: HN_MCP_COMMUNITY_DOC_RESOURCE_PATH,
+        // The words a user sees when asked to approve a client for this Resource. Public
+        // documentation, so what is being handed over is narrow — and saying so is the point.
+        name: 'The Constellab documentation',
+        description: 'Search and read the public documentation',
+      },
+    ],
   };
 }
 
@@ -222,11 +230,22 @@ function configureResourceServerModule(configService: HnCoreConfigService): BlRe
  *
  * The issuer is the API's own base URL because RFC 8414 requires it to equal the URL serving
  * the discovery document.
+ *
+ * `frontConsentUrl` points at a page the community front-end does not serve yet, and that is
+ * deliberate: approval before a Grant exists is not optional, so the shared Authorization
+ * Server has no path that issues a code without one. This application's browser flow is
+ * therefore incomplete until it stops being an Authorization Server altogether — the very
+ * next step of the parent work, after which this whole function goes away. Nothing here is
+ * in production, so there is no live flow to break; its HTTP surface stays covered by
+ * `hn-oauth-flow.e2e.spec.ts`, which drives the consent endpoints as the page would.
  */
 function configureOAuthServerModule(configService: HnCoreConfigService): BlOAuthServerConfig {
+  const frontBaseUrl: string = blStripTrailingSlashes(configService.getFrontBaseUrl());
   return {
     issuer: configService.getApiUrl(),
-    frontLoginUrl: `${blStripTrailingSlashes(configService.getFrontBaseUrl())}/login`,
+    frontLoginUrl: `${frontBaseUrl}/login`,
+    frontConsentUrl: `${frontBaseUrl}/oauth/consent`,
+    consentWarning: 'This will let it search and read the documentation as you.',
     allowedRedirectUris: configService.getOAuthAllowedRedirectUris(),
     mcpAccessTokenDurationInSeconds: configService.getMcpAccessTokenDurationInSeconds(),
   };

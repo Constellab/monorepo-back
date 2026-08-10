@@ -3,6 +3,7 @@ import supertest from 'supertest';
 import {
   OAUTH_TEST_ACCESS_COOKIE,
   OAUTH_TEST_CODE_VERIFIER,
+  OAUTH_TEST_CONSENT_PATH,
   OAUTH_TEST_REDIRECT_URI,
   OAuthTestClient,
 } from './oauth-client.helper';
@@ -18,8 +19,9 @@ const OTHER_ALLOWLISTED_URI = 'https://claude.com/api/mcp/auth_callback';
  * replay and revocation.
  *
  * This application is the single Authorization Server (ADR-0001), and this suite is what
- * says a client can complete a flow against it. The complement is
- * `cn-oauth-signing.e2e.spec.ts`, which covers what the token is signed with.
+ * says a client can complete a flow against it. Its complements are
+ * `cn-oauth-signing.e2e.spec.ts`, which covers what the token is signed with, and
+ * `cn-oauth-consent.e2e.spec.ts`, which covers the approval the flow now goes through.
  *
  * Nothing reaches into a store or a service. That is not incidental — the codes, the
  * registrations and the refresh token rows are all internals of `bl-oauth-server`, and a
@@ -135,15 +137,26 @@ describe('OAuth flow (e2e)', () => {
       expect(returnUrl).toContain(`client_id=${clientId}`);
     });
 
-    it('redirects a logged-in user back to the client with a code and the state', async () => {
+    it('sends a logged-in user to the consent screen rather than handing out a code', async () => {
       const clientId = await client.registerClient();
 
-      const redirect = await server()
-        .get('/oauth/authorize')
-        .query(client.authorizeQuery(clientId))
-        .set('Cookie', [`${OAUTH_TEST_ACCESS_COOKIE}=${await client.sessionToken()}`])
-        .expect(302);
+      const redirect = await client.authorize(clientId, await client.sessionToken());
 
+      // An active session is not an approval. What happens from here is
+      // `cn-oauth-consent.e2e.spec.ts`.
+      const location = new URL(redirect.headers.location);
+      expect(location.pathname).toBe(OAUTH_TEST_CONSENT_PATH);
+      expect(location.searchParams.get('consent_id')).toBeTruthy();
+      expect(location.searchParams.get('code')).toBeNull();
+    });
+
+    it('redirects back to the client with a code and the state once approved', async () => {
+      const clientId = await client.registerClient();
+      const session = await client.sessionToken();
+
+      const redirect = await client.decide(await client.consentId(clientId, session), 'allow', session);
+
+      expect(redirect.status).toBe(302);
       const location = new URL(redirect.headers.location);
       expect(`${location.origin}${location.pathname}`).toBe(OAUTH_TEST_REDIRECT_URI);
       expect(location.searchParams.get('code')).toBeTruthy();

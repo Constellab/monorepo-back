@@ -822,3 +822,30 @@ CREATE TABLE `refresh_token`
 -- ALTER TABLE `refresh_token`
 --   ADD COLUMN `previous_token_hash` varchar(64) NULL COMMENT 'hash consumed by the last rotation; NULL when never rotated' AFTER `token_hash`,
 --   ADD INDEX `IDX_refresh_token_previous_token_hash` (`previous_token_hash`);
+
+-- ############################################################################
+-- MUST RUN BEFORE THE APP STARTS. A Grant is a user's standing approval of one
+-- machine client for one Resource, and it is what the consent screen creates. If
+-- this table is missing, every authorization request fails at the decision step,
+-- so no client can be approved at all.
+--
+-- Deliberately identical to the Space API's: two databases, one implementation.
+-- ############################################################################
+
+CREATE TABLE `oauth_grant`
+(
+  `id`          varchar(36)  NOT NULL,
+  -- SHA-256 of user + client + Resource. One hashed column rather than a unique
+  -- index over the three below: `resource` is a 512-character URL, and hashing is
+  -- also what keeps re-approval a single indexed lookup. This index is the
+  -- "one Grant per user, client and Resource" rule — approving twice updates the
+  -- row it finds instead of accumulating a second one.
+  `grant_key`   varchar(64)  NOT NULL,
+  `client_id`   varchar(64)  NOT NULL,
+  `resource`    varchar(512) NOT NULL COMMENT 'the one Resource this Grant covers, as its URL',
+  `user_id`     varchar(36)  NOT NULL,
+  `approved_at` datetime     NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `IDX_oauth_grant_grant_key` (`grant_key`),
+  CONSTRAINT `FK_oauth_grant_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
+);

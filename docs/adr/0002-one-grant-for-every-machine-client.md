@@ -36,5 +36,14 @@ lands.
 
 A client needing several Resources holds several Grants, because a refresh token row binds to
 exactly one `resource` and that is what stops a renewal from widening scope. One pass through
-the consent screen may create several such rows, so the user approves once even though several
+the consent screen may cover several Resources, so the user approves once even though several
 Grants result.
+
+**Amendment, with the consent screen.** A Grant is its own row (`oauth_grant`), not the refresh
+token row: a refresh token is one live _session_ of a Grant, rotates on every renewal and is
+gone as soon as the client stops renewing, whereas the approval is the thing the user gave and
+only the user takes back. Both carry exactly one `resource`, so the rule above is unchanged —
+a renewal still reads its audience from the row it rotates. What the separate row adds is that
+approving twice refreshes one Grant instead of accumulating two, that an authorization request
+for an already-approved client and Resource needs no second prompt, and that revoking a token
+can end the approval as well as the session.

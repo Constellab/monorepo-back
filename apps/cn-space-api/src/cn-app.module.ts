@@ -174,7 +174,16 @@ function configureResourceServerModule(configService: CnCoreConfigService): BlRe
   return {
     baseUrl: configService.getApiUrl(),
     authorizationServerUrl: configService.getApiUrl(),
-    resourcePaths: [''],
+    resources: [
+      {
+        path: '',
+        // Shown to whoever is asked to approve a client for it, and the reason it is not
+        // just a path: per ADR-0003 a Grant here spans every Space the user belongs to, so
+        // the words have to say that rather than name an endpoint.
+        name: 'Your Constellab account',
+        description: 'Read and change anything you can reach, in every Space you belong to',
+      },
+    ],
   };
 }
 
@@ -188,13 +197,22 @@ function configureResourceServerModule(configService: CnCoreConfigService): BlRe
  * serving the discovery document — and because a client records it at registration, so it
  * cannot be changed without invalidating what every client holds.
  *
- * `frontLoginUrl` is the shared login page, without a Space subdomain: a machine client
- * approving a Grant is not in a Space, and per ADR-0003 the Grant spans all of them.
+ * `frontLoginUrl` and `frontConsentUrl` are on the shared front-end host, without a Space
+ * subdomain: a machine client approving a Grant is not in a Space, and per ADR-0003 the
+ * Grant spans all of them.
  */
 function configureOAuthServerModule(configService: CnCoreConfigService): BlOAuthServerConfig {
+  const frontBaseUrl: string = blStripTrailingSlashes(configService.getFrontBaseUrl());
   return {
     issuer: configService.getApiUrl(),
-    frontLoginUrl: `${blStripTrailingSlashes(configService.getFrontBaseUrl())}/login`,
+    frontLoginUrl: `${frontBaseUrl}/login`,
+    frontConsentUrl: `${frontBaseUrl}/oauth/consent`,
+    // What a user most needs to know before approving, and the reason it is stated here
+    // rather than in the library: it is a fact about this deployment (ADR-0003), not about
+    // the protocol. English only for now, like the rest of this configuration — the consent
+    // page renders it as given, so translating it is a change on this side alone.
+    consentWarning:
+      'This will let it act as you: read and change anything you can reach, in every Space you belong to.',
     allowedRedirectUris: configService.getOAuthAllowedRedirectUris(),
     mcpAccessTokenDurationInSeconds: configService.getMcpAccessTokenDurationInSeconds(),
   };

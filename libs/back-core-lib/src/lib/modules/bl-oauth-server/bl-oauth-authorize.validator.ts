@@ -6,7 +6,13 @@ export interface BlOAuthAuthorizeParams {
   client: BlOAuthClient;
   redirectUri: string;
   codeChallenge: string;
-  resource: string;
+  /**
+   * Every Resource asked for, deduplicated, each one served here. Never empty.
+   *
+   * A list because one pass through the consent screen may cover a whole connection; one
+   * Grant per entry results, and a token is only ever minted for one of them at a time.
+   */
+  resources: string[];
   state?: string;
 }
 
@@ -94,13 +100,23 @@ export async function blValidateAuthorizeParams(
     return fail('invalid_request', 'PKCE code_challenge with S256 is required');
   }
 
-  const resource = query.resource;
-  if (!resource || !registry.isKnownResource(resource)) {
+  // Deduplicated before anything is checked or shown: a request naming the same Resource
+  // twice asks for one thing, and would otherwise be listed twice on the consent screen and
+  // approved twice into the same Grant.
+  const resources = [...new Set(query.resource ?? [])];
+  if (resources.length === 0) {
+    return fail('invalid_target', 'missing or unknown resource');
+  }
+
+  // Every entry, not just the first: a request pairing a served Resource with an unserved
+  // one would otherwise be approved as a whole and mint a token for an audience no
+  // discovery document advertises.
+  if (resources.some((resource) => !registry.isKnownResource(resource))) {
     return fail('invalid_target', 'missing or unknown resource');
   }
 
   return {
     ok: true,
-    params: { client, redirectUri, codeChallenge, resource, state },
+    params: { client, redirectUri, codeChallenge, resources, state },
   };
 }

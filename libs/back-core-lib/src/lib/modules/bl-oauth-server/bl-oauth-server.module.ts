@@ -3,6 +3,7 @@ import { ModuleMetadata } from '@nestjs/common/interfaces';
 
 import { BlOAuthClientStore } from './bl-oauth-client.store';
 import { BlOAuthCodeStore } from './bl-oauth-code.store';
+import { BlOAuthConsentStore } from './bl-oauth-consent.store';
 import { BL_OAUTH_SERVER_CONFIG_PROVIDER, BlOAuthServerConfig } from './bl-oauth-server.class';
 import { BlOAuthServerController } from './bl-oauth-server.controller';
 
@@ -22,10 +23,11 @@ export interface BlOAuthServerModuleAsyncOptions extends Pick<ModuleMetadata, 'i
  * Not `@Global()`, unlike the Resource Server half — nothing outside resolves what is in
  * here, and the routes must be registered once.
  *
- * `imports` must make two tokens resolvable, both of which are the mounting application's
- * own and neither of which can be a class the library depends on:
+ * `imports` must make three tokens resolvable, all of which are the mounting application's
+ * own and none of which can be a class the library depends on:
  * - `BL_OAUTH_CURRENT_USER_RESOLVER`, a {@link BlOAuthCurrentUserResolver}
  * - `BL_REFRESH_TOKEN_SERVICE_PROVIDER`, the application's `BlRefreshTokenService` subclass
+ * - `BL_OAUTH_GRANT_SERVICE_PROVIDER`, the application's `BlOAuthGrantService` subclass
  *
  * Everything else it needs — `BlResourceRegistry`, `BlJwtAsymmetricService`, `BlRedisStore` —
  * comes from modules the application module already registers globally.
@@ -45,6 +47,7 @@ export class BlOAuthServerModule {
         },
         BlOAuthClientStore,
         BlOAuthCodeStore,
+        BlOAuthConsentStore,
       ],
     };
   }

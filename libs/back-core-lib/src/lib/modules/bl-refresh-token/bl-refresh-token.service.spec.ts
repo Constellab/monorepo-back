@@ -287,6 +287,10 @@ describe('BlRefreshTokenService', () => {
   });
 
   describe('revokeOAuthToken', () => {
+    /** The row a revocation finds: an OAuth session of one client, for one Resource. */
+    const grantRow = (overrides: Partial<TestRefreshToken> = {}): TestRefreshToken =>
+      storedRow({ kind: 'oauth', clientId: 'client-1', resource: 'https://api/mcp/doc', ...overrides });
+
     it('scopes the delete to the OAuth surface and the owning client', async () => {
       const { service, remove } = buildService();
       await service.revokeOAuthToken(PRESENTED, 'client-1');
@@ -299,10 +303,59 @@ describe('BlRefreshTokenService', () => {
       ]);
     });
 
+    it('reports which Grant the session belonged to', async () => {
+      const { service, findOne } = buildService();
+      findOne.mockResolvedValue(grantRow());
+
+      // The row is the only thing that knows: the endpoint carries a token and a client id,
+      // and the caller needs the user and the Resource to end the approval as well.
+      await expect(service.revokeOAuthToken(PRESENTED, 'client-1')).resolves.toEqual({
+        userId: user.id,
+        clientId: 'client-1',
+        resource: 'https://api/mcp/doc',
+      });
+    });
+
+    it('reads the row before deleting it, or there would be nothing left to report', async () => {
+      const { service, findOne, remove } = buildService();
+      findOne.mockResolvedValue(grantRow());
+
+      await service.revokeOAuthToken(PRESENTED, 'client-1');
+
+      expect(findOne.mock.invocationCallOrder[0]).toBeLessThan(remove.mock.invocationCallOrder[0]);
+    });
+
+    it('deletes on either hash column, like a logout does', async () => {
+      const { service, findOne } = buildService();
+      findOne.mockResolvedValue(grantRow());
+
+      await service.revokeOAuthToken(PRESENTED, 'client-1');
+
+      // A client that kept the token its last rotation consumed — because the response was
+      // lost — still ends its session rather than getting a silent no-op.
+      expect(findOne).toHaveBeenCalledWith({
+        where: [
+          { tokenHash: sha256(PRESENTED), kind: 'oauth', clientId: 'client-1' },
+          { previousTokenHash: sha256(PRESENTED), kind: 'oauth', clientId: 'client-1' },
+        ],
+        relations: { user: true },
+      });
+    });
+
+    it('reports no Grant for a row that carries no resource', async () => {
+      const { service, findOne, remove } = buildService();
+      findOne.mockResolvedValue(grantRow({ resource: null }));
+
+      // There is no approval to end, and inventing one would delete a Grant chosen at random.
+      await expect(service.revokeOAuthToken(PRESENTED, 'client-1')).resolves.toBeNull();
+      expect(remove).toHaveBeenCalled();
+    });
+
     it('stays silent for a token that is not ours, as RFC 7009 §2.2 requires', async () => {
-      const { service, remove } = buildService();
+      const { service, findOne, remove } = buildService();
+      findOne.mockResolvedValue(null);
       remove.mockResolvedValue({ affected: 0 });
-      await expect(service.revokeOAuthToken('nope', 'client-1')).resolves.toBeUndefined();
+      await expect(service.revokeOAuthToken('nope', 'client-1')).resolves.toBeNull();
     });
   });
 

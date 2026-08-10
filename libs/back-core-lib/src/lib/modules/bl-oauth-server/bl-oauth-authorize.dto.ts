@@ -1,4 +1,5 @@
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsArray, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 /**
  * Query parameters of `GET /oauth/authorize`.
@@ -34,9 +35,25 @@ export class BlOAuthAuthorizeQueryDto {
   @IsOptional()
   code_challenge_method?: string;
 
-  @IsString()
+  /**
+   * The Resources a token is being asked for (RFC 8707 §2). Repeatable: `?resource=a&resource=b`
+   * is one pass through consent asking for both, which is what spares the user a second
+   * prompt for a single connection.
+   *
+   * Normalized to an array here so nothing downstream has to handle both shapes — a
+   * `resource` that is sometimes a string and sometimes an array is how a check ends up
+   * running on the first entry only.
+   */
   @IsOptional()
-  resource?: string;
+  @Transform(({ value }) => {
+    if (value == null) {
+      return undefined;
+    }
+    return Array.isArray(value) ? value : [value];
+  })
+  @IsArray()
+  @IsString({ each: true })
+  resource?: string[];
 
   @IsString()
   @IsOptional()

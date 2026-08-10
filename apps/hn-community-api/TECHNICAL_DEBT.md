@@ -264,9 +264,11 @@ connected for more than an hour, refreshing silently.
 - Item 9 shrank the blast radius: a code obtained this way now yields a token scoped to the MCP resource — documentation read access — not a full API session.
 - The redirect target is now constrained at registration (`blRedirectUriAllowed`): non-loopback URIs must be `https` and match `OAUTH_ALLOWED_REDIRECT_URIS` exactly (scheme, host, port, path, query — no wildcards, no subdomain matching), while loopback is accepted on any port and path per RFC 8252 §7.3. That removes the remote exfiltration vector: an attacker can still register a client, but cannot have the code delivered to a host they control. DCR stays usable by first-party clients, which need it to connect on their own.
 
-**What remains:** no consent screen, so a first-party-looking client can still obtain a code for a logged-in user without an explicit approval step. Acceptable while clients are first-party and trusted (Claude); not acceptable once third-party clients are a real possibility.
+**Resolved on the back end.** `BlOAuthServerModule` no longer has a path that issues an authorization code without an approval: `/authorize` parks the request and sends the browser to a consent page, which describes it and posts the answer back, and approving records one Grant per Resource in `oauth_grant`. A client already holding a Grant for everything it asks for skips the screen, so the user is asked once per client and Resource.
 
-**Remaining fix:** add a consent screen — front-end work, note `lab-front` already has an `/oauth-consent` page using a `?redirect_uri=` convention, with no back-end counterpart in this repo yet. Optionally also require an initial access token on `/oauth/register`.
+**What remains, for this application only:** the consent page itself is in the platform front-end (`ca-space-front`), so `frontConsentUrl` here points at a route the community front-end does not serve, and this application's browser flow cannot complete. Deliberate, and unreleased: the Community stops being an Authorization Server in the next step of the parent work, which deletes these endpoints along with this item. Its HTTP surface stays covered by `hn-oauth-flow.e2e.spec.ts`, which drives the consent endpoints as the page would.
+
+**Optional hardening still open:** require an initial access token on `/oauth/register`.
 
 **Deployment note:** `OAUTH_ALLOWED_REDIRECT_URIS` is a required config value. It is set in `hn-dev.env` / `hn-test.env`; **it must be added to the CapRover environment for pre-prod and prod**, otherwise `/oauth/register` fails on the missing-config error. An empty value is valid and means loopback-only.
 

@@ -73,6 +73,30 @@ export interface BlOAuthServerConfig {
   frontLoginUrl: string;
 
   /**
+   * Front-end consent page `/authorize` sends the user to before anything is granted.
+   *
+   * The front must read a `consent_id` parameter, describe the request through the consent
+   * endpoints, and navigate back to the decision endpoint with the user's answer — a
+   * cross-repository dependency, and the reason an authorization request results in
+   * anything at all.
+   *
+   * Used verbatim, with only `?consent_id=` appended, for the same reason
+   * {@link frontLoginUrl} is: it is a full page URL rather than a base, and a trailing
+   * slash names a different page.
+   */
+  frontConsentUrl: string;
+
+  /**
+   * The single most important sentence on the consent screen, or absent for no warning.
+   *
+   * Configuration rather than a constant in the library because it states what a Grant
+   * reaches in *this* deployment: today, per ADR-0003, everything the user can reach in
+   * every Space they belong to. A library sentence would be a claim about an application it
+   * cannot see.
+   */
+  consentWarning?: string;
+
+  /**
    * Non-loopback redirect URIs a client may register, matched exactly.
    *
    * Loopback is always allowed on any port and is not listed here; see

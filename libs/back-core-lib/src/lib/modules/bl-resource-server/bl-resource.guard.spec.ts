@@ -51,7 +51,7 @@ function buildHarness(options: { path?: string; authorization?: string } = {}): 
   const registry = new BlResourceRegistry({
     baseUrl: BASE_URL,
     authorizationServerUrl: BASE_URL,
-    resourcePaths: [RESOURCE_PATH],
+    resources: [{ path: RESOURCE_PATH, name: 'The documentation' }],
   });
 
   return {

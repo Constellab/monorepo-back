@@ -3,6 +3,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { blStripTrailingSlashes } from '../bl-oauth/bl-oauth-url.util';
 import {
   BL_RESOURCE_SERVER_CONFIG_PROVIDER,
+  BlResourceDescription,
   BlResourceLookup,
   BlResourceServerConfig,
 } from './bl-resource-server.class';
@@ -34,7 +35,7 @@ export class BlResourceRegistry implements BlResourceLookup {
 
   /** Every registered Resource identifier. */
   get resources(): string[] {
-    return this.config.resourcePaths.map((path) => this.resourceUrl(path));
+    return this.config.resources.map((resource) => this.resourceUrl(resource.path));
   }
 
   /**
@@ -71,5 +72,26 @@ export class BlResourceRegistry implements BlResourceLookup {
    */
   isKnownResource(resource: string): boolean {
     return this.resources.includes(resource);
+  }
+
+  /**
+   * How to describe a Resource to a user being asked to approve access to it, or null
+   * when the URL names no Resource served here.
+   *
+   * Matched with {@link isKnownResource} rather than with its own comparison, so the set
+   * of Resources a token can be minted for and the set that can be described to a user
+   * cannot come apart — a Resource that cannot be described is one the consent screen
+   * would have to ask a blind approval for.
+   */
+  describeResource(resource: string): BlResourceDescription | null {
+    const definition = this.config.resources.find((entry) => this.resourceUrl(entry.path) === resource);
+    if (definition == null) {
+      return null;
+    }
+    return {
+      url: resource,
+      name: definition.name,
+      description: definition.description,
+    };
   }
 }

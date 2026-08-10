@@ -23,6 +23,20 @@ export interface BlRefreshTokenOwner {
   id: string;
 }
 
+/**
+ * The Grant a revoked OAuth session belonged to.
+ *
+ * Reported back because the caller has no other way to learn it: `/oauth/revoke` is
+ * unauthenticated and carries a token and a client id, so the row is the only thing that
+ * knows *whose* Grant just ended — and ending the Grant is what stops the same client from
+ * walking straight back in without being approved again.
+ */
+export interface BlRefreshTokenRevokedGrant {
+  userId: string;
+  clientId: string;
+  resource: string;
+}
+
 /** What a successful rotation yields: the new token, plus everything needed to mint an access token. */
 export interface BlRefreshTokenRotation<TUser> {
   token: string;
@@ -180,13 +194,35 @@ export class BlRefreshTokenService<TUser extends BlRefreshTokenOwner = BlRefresh
    * Also matches on `previousTokenHash`, so a client that revokes the token it last
    * exchanged — because it kept the older copy, or because the rotation response was
    * lost — still ends its session instead of getting a silent no-op.
+   *
+   * @returns which Grant the session belonged to, or null when the token meant nothing to
+   * us. Read before the delete because the row is the only thing that knows, and the
+   * caller needs it to end the approval as well as the session.
    */
-  async revokeOAuthToken(presentedToken: string, clientId: string): Promise<void> {
+  async revokeOAuthToken(
+    presentedToken: string,
+    clientId: string
+  ): Promise<BlRefreshTokenRevokedGrant | null> {
     const presentedHash = BlRefreshTokenService.hash(presentedToken);
-    await this.repository.delete([
-      { tokenHash: presentedHash, kind: 'oauth', clientId },
-      { previousTokenHash: presentedHash, kind: 'oauth', clientId },
-    ]);
+    const criteria = [
+      { tokenHash: presentedHash, kind: 'oauth' as BlRefreshTokenKind, clientId },
+      { previousTokenHash: presentedHash, kind: 'oauth' as BlRefreshTokenKind, clientId },
+    ];
+
+    const existing = await this.repository.findOne({
+      where: criteria,
+      // Asserted for the same reason `rotate` asserts it: `user` is a type parameter here,
+      // and TypeORM's relation type is a conditional that stays unresolved on one.
+      relations: { user: true } as FindOptionsRelations<BlRefreshTokenEntity<TUser>>,
+    });
+
+    await this.repository.delete(criteria);
+
+    // A row carrying no resource is not a Grant — there is no approval to end.
+    if (existing?.resource == null) {
+      return null;
+    }
+    return { userId: existing.user.id, clientId, resource: existing.resource };
   }
 
   /** Drop expired rows. Used by the cron job. */

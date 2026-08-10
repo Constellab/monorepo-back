@@ -136,15 +136,26 @@ describe('OAuth flow (e2e)', () => {
       expect(returnUrl).toContain(`client_id=${clientId}`);
     });
 
-    it('redirects a logged-in user back to the client with a code and the state', async () => {
+    it('sends a logged-in user to the consent screen rather than handing out a code', async () => {
       const clientId = await client.registerClient();
 
-      const redirect = await server()
-        .get('/oauth/authorize')
-        .query(client.authorizeQuery(clientId))
-        .set('Cookie', [`${OAUTH_TEST_ACCESS_COOKIE}=${await client.sessionToken()}`])
-        .expect(302);
+      const redirect = await client.authorize(clientId, await client.sessionToken());
 
+      // An active session is not an approval. The consent step is asserted in full against
+      // the Space API, which is the application that owns the consent page.
+      const location = new URL(redirect.headers.location);
+      expect(location.pathname).toBe('/oauth/consent');
+      expect(location.searchParams.get('consent_id')).toBeTruthy();
+      expect(location.searchParams.get('code')).toBeNull();
+    });
+
+    it('redirects back to the client with a code and the state once approved', async () => {
+      const clientId = await client.registerClient();
+      const session = await client.sessionToken();
+
+      const redirect = await client.decide(await client.consentId(clientId, session), 'allow', session);
+
+      expect(redirect.status).toBe(302);
       const location = new URL(redirect.headers.location);
       expect(`${location.origin}${location.pathname}`).toBe(OAUTH_TEST_REDIRECT_URI);
       expect(location.searchParams.get('code')).toBeTruthy();

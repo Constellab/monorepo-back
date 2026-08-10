@@ -20,6 +20,21 @@ export const BL_OAUTH_PATHS = {
    */
   jwks: '.well-known/jwks.json',
   authorize: 'oauth/authorize',
+  /**
+   * The consent step, every route of it under `authorize` on purpose.
+   *
+   * The front-end login page honours a return URL only when it points at the authorization
+   * endpoint or below it — which is what keeps that page from being an open redirect — so a
+   * consent route served anywhere else could not be returned to after a login, and a session
+   * that expired mid-flow would abandon a client that is still waiting.
+   *
+   * `consent` itself re-enters the flow after such a login; the three below are what the
+   * consent page calls.
+   */
+  consent: 'oauth/authorize/consent',
+  consentDetails: 'oauth/authorize/consent/details',
+  consentToken: 'oauth/authorize/consent/token',
+  consentDecision: 'oauth/authorize/consent/decision',
   token: 'oauth/token',
   register: 'oauth/register',
   revoke: 'oauth/revoke',
