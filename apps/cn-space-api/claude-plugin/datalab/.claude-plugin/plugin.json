@@ -1,0 +1,27 @@
+{
+  "name": "datalab",
+  "displayName": "Constellab data lab diagnosis",
+  "version": "0.1.0",
+  "description": "Diagnose a Constellab cloud data lab that fails to start, over the Space API's MCP tools",
+  "author": {
+    "name": "Gencovery",
+    "email": "support@gencovery.com"
+  },
+  "repository": "https://github.com/Constellab/agent-plugins",
+  "keywords": ["constellab", "datalab", "diagnostics", "mcp"],
+  "userConfig": {
+    "space_api_url": {
+      "type": "string",
+      "title": "Space API URL",
+      "description": "Base URL of your Constellab Space API, without a trailing slash. Keep the default unless you use a dedicated or on-premise instance.",
+      "default": "https://REPLACE-WITH-PROD-SPACE-API-URL",
+      "required": true
+    }
+  },
+  "mcpServers": {
+    "constellab": {
+      "type": "http",
+      "url": "${user_config.space_api_url}/mcp/space-api"
+    }
+  }
+}

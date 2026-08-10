@@ -1,0 +1,15 @@
+{
+  "name": "constellab-dev",
+  "description": "The Constellab plugins as they exist in this checkout — for developing them. Published copies live in the 'constellab' marketplace.",
+  "owner": {
+    "name": "Gencovery",
+    "email": "support@gencovery.com"
+  },
+  "plugins": [
+    {
+      "name": "datalab",
+      "source": "./apps/cn-space-api/claude-plugin/datalab",
+      "description": "Diagnose a Constellab cloud data lab that fails to start"
+    }
+  ]
+}

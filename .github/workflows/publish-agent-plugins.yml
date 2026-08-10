@@ -1,0 +1,107 @@
+name: Publish agent plugins
+
+# Publishes the Claude Code plugins under apps/cn-space-api/claude-plugin/ into the public
+# Constellab/agent-plugins repository.
+#
+# Triggered by the `cn_*` tags that deploy the Space API, never by a merge to master: the
+# skills describe MCP tools, so publishing them before the API that serves those tools is
+# deployed hands clients a skill naming tools that do not answer.
+on:
+  push:
+    tags:
+      - 'cn_*'
+  pull_request:
+    paths:
+      - 'apps/cn-space-api/claude-plugin/**'
+      - '.claude-plugin/**'
+      - '.github/workflows/publish-agent-plugins.yml'
+  workflow_dispatch:
+
+env:
+  PLUGIN_DIR: apps/cn-space-api/claude-plugin/datalab
+  PLUGIN_NAME: datalab
+  PUBLIC_REPO: Constellab/agent-plugins
+
+jobs:
+  # Runs on pull requests too: a manifest that fails to load is only visible to whoever
+  # installs it, so it has to be caught before the tag, not at publish time.
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+
+      # --strict turns manifest warnings into errors, which is what catches a misspelled
+      # field name that would otherwise be ignored at runtime.
+      - name: Validate the plugin manifest
+        run: bunx @anthropic-ai/claude-code plugin validate "$PLUGIN_DIR" --strict
+
+  publish:
+    needs: validate
+    if: startsWith(github.ref, 'refs/tags/cn_') || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check out the public plugins repository
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.PUBLIC_REPO }}
+          token: ${{ secrets.AGENT_PLUGINS_TOKEN }}
+          path: public
+
+      # `version` in plugin.json is the only signal a client uses to refresh its cached copy.
+      # Content that moved without a bump would publish and reach nobody, which is worse than
+      # not publishing: the repository says one thing and every install says another.
+      - name: Refuse a change that did not bump the version
+        run: |
+          set -euo pipefail
+          dest="public/plugins/$PLUGIN_NAME"
+          new_version=$(jq -r .version "$PLUGIN_DIR/.claude-plugin/plugin.json")
+          if [ -d "$dest" ] && ! diff -r -q "$PLUGIN_DIR" "$dest" > /dev/null; then
+            old_version=$(jq -r .version "$dest/.claude-plugin/plugin.json")
+            if [ "$new_version" = "$old_version" ]; then
+              echo "::error::$PLUGIN_NAME changed but its version is still $new_version." \
+                   "Bump version in $PLUGIN_DIR/.claude-plugin/plugin.json — without it," \
+                   "installed clients keep the cached copy."
+              exit 1
+            fi
+          fi
+          echo "Publishing $PLUGIN_NAME $new_version"
+          echo "PLUGIN_VERSION=$new_version" >> "$GITHUB_ENV"
+
+      - name: Copy the plugin as reviewed
+        run: |
+          set -euo pipefail
+          rm -rf "public/plugins/$PLUGIN_NAME"
+          mkdir -p public/plugins
+          cp -r "$PLUGIN_DIR" "public/plugins/$PLUGIN_NAME"
+
+      # `git add` is scoped to this plugin's folder, not `-A`: another application publishes
+      # its own plugin into the same repository, and a wide add would sweep its in-flight
+      # commit into this one. The rebase retry is for the same reason — two releases on the
+      # same day collide on the default branch.
+      - name: Commit and push
+        working-directory: public
+        run: |
+          set -euo pipefail
+          git config user.name "constellab-bot"
+          git config user.email "support@gencovery.com"
+          git add "plugins/$PLUGIN_NAME"
+          if git diff --quiet --cached; then
+            echo "Nothing changed in $PLUGIN_NAME — already published."
+            exit 0
+          fi
+          git commit -m "$PLUGIN_NAME $PLUGIN_VERSION"
+          for attempt in 1 2 3; do
+            if git pull --rebase && git push; then
+              exit 0
+            fi
+            echo "Push attempt $attempt failed, retrying"
+            sleep 5
+          done
+          echo "::error::Could not push to $PUBLIC_REPO after 3 attempts"
+          exit 1
