@@ -127,10 +127,22 @@ export class CnCoreConfigService {
    * that collects an authorization code for a logged-in user.
    */
   public getOAuthAllowedRedirectUris(): string[] {
-    return this.getConfigString('OAUTH_ALLOWED_REDIRECT_URIS')
+    const uris: string[] = this.getConfigString('OAUTH_ALLOWED_REDIRECT_URIS')
       .split(',')
       .map((uri) => uri.trim())
       .filter((uri) => uri.length > 0);
+
+    if (uris.length === 0) {
+      // An unset variable throws above, but a variable left blank does not, and the two
+      // are indistinguishable once the value is read: a CLI-only deployment states the
+      // same thing a blanked-out field does. Said out loud at startup so the second case
+      // is not diagnosed later as "registration mysteriously rejects every browser client".
+      this.logger.warn(
+        'OAUTH_ALLOWED_REDIRECT_URIS is empty: only loopback redirect URIs can be registered. ' +
+          'That is a valid CLI-only deployment, and it is also what a blanked-out value looks like.'
+      );
+    }
+    return uris;
   }
 
   public getRobotUserMail(): string {

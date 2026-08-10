@@ -76,7 +76,7 @@ so point it at a throwaway DB, never a real one. Defaults (override with
 **Local Redis** — the OAuth client and authorization-code stores are Redis-backed, so the
 OAuth suites need one running at `QUEUE_SERVICE_HOST:QUEUE_SERVICE_PORT` (`localhost:6379`
 by default). Keys are namespaced with a `cn:` prefix, so sharing one server with the
-Community is safe.
+Community API is safe.
 
 `CnTestDbInitializerService` (`test/cn-test.module.ts`) drops the DB,
 `synchronize()`s the schema from the entities, and seeds a single admin user via

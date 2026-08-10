@@ -150,6 +150,19 @@ describe('OAuth flow (e2e)', () => {
       expect(location.searchParams.get('state')).toBe('the-state');
     });
 
+    it('is reachable with the session cookie a login actually sets', async () => {
+      const login = await server()
+        .post('/auth/login')
+        .send({ email: TEST_ADMIN_EMAIL, password: TEST_ADMIN_PASSWORD })
+        .expect(201);
+
+      // A machine client sends the browser here from its own origin, so the request
+      // arrives cross-site. `SameSite=Strict` withholds the cookie on exactly that hop,
+      // and every logged-in user would be bounced to the login page — the test above
+      // cannot see it, because it sets the cookie by hand.
+      expect(setCookieEntry(login, OAUTH_TEST_ACCESS_COOKIE)).toContain('SameSite=Lax');
+    });
+
     it('treats an expired or forged Session token as no session at all', async () => {
       const clientId = await client.registerClient();
 
@@ -417,11 +430,15 @@ describe('OAuth flow (e2e)', () => {
     });
   });
 
-  /** The browser session refresh token a login handed out. */
-  function refreshCookieValue(response: supertest.Response): string {
+  /** Full `Set-Cookie` entry for a cookie name, attributes included. */
+  function setCookieEntry(response: supertest.Response, name: string): string {
     const raw = response.headers['set-cookie'];
     const cookies: string[] = Array.isArray(raw) ? raw : raw ? [raw] : [];
-    const entry = cookies.find((cookie) => cookie.startsWith('Refresh_Token=')) ?? '';
-    return entry.split(';')[0].substring('Refresh_Token='.length);
+    return cookies.find((cookie) => cookie.startsWith(`${name}=`)) ?? '';
+  }
+
+  /** The browser session refresh token a login handed out. */
+  function refreshCookieValue(response: supertest.Response): string {
+    return setCookieEntry(response, 'Refresh_Token').split(';')[0].substring('Refresh_Token='.length);
   }
 });

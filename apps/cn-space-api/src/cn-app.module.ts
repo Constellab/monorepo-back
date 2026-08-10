@@ -164,11 +164,11 @@ function configureJwtAsymmetricModule(configService: CnCoreConfigService): BlJwt
  * One Resource, the empty path, which names the API's own base URL: this application is a
  * Resource Server for its own endpoints, and that is the Resource the CLI asks a token
  * for. An MCP endpoint here is a Resource of its own and registers its own path — see
- * `HN_MCP_COMMUNITY_DOC_RESOURCE_PATH` in the Community for the shape.
+ * `HN_MCP_COMMUNITY_DOC_RESOURCE_PATH` in the Community API for the shape.
  *
  * `authorizationServerUrl` is this host because this application is now the Authorization
  * Server (ADR-0001). It is still named separately from `baseUrl`: the two answer different
- * questions, and the Community sets the same field to this host without being it.
+ * questions, and the Community API sets the same field to this host without being it.
  */
 function configureResourceServerModule(configService: CnCoreConfigService): BlResourceServerConfig {
   return {
@@ -206,7 +206,7 @@ function configureTransportModule(configService: CnCoreConfigService): BlTranspo
 
 /**
  * Reuses the queue connection details (BullMQ already needs a Redis instance) and
- * namespaces the keys, so sharing one server with the Community stays safe.
+ * namespaces the keys, so sharing one server with the Community API stays safe.
  */
 function configureRedisModule(configService: CnCoreConfigService): BlRedisConfig {
   return { ...configService.getTransportModuleConfig(), keyPrefix: 'cn:' };
@@ -287,10 +287,11 @@ TeRichTextModifications.setBackTimeDifference();
     }),
 
     // The Authorization Server half: registration, /authorize, /token, /revoke and the
-    // authorization server discovery document. There is exactly one of these across the
-    // two applications and it is this one (ADR-0001). `CnOAuthModule` is imported for the
-    // two tokens the library cannot resolve itself — the current-user resolver and this
-    // application's refresh token service.
+    // authorization server discovery document. ADR-0001 puts the single Authorization
+    // Server here; the Community API still mounts its own until the cutover, so until then
+    // there are two issuers and this is the one that will remain. `CnOAuthModule` is
+    // imported for the two tokens the library cannot resolve itself — the current-user
+    // resolver and this application's refresh token service.
     BlOAuthServerModule.forRootAsync({
       imports: [CnOAuthModule],
       useFactory: configureOAuthServerModule,

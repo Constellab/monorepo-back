@@ -144,11 +144,30 @@ export class CnAuthController {
    */
   private setAccessCookie(token: string, response: Response): void {
     const maxAge: number = this.configService.getRefreshTokenDurationInSeconds() * 1000;
-    response.cookie(CN_JWT_CONFIG.authorizationCookie, token, this.cookieOptions('/', maxAge));
+    response.cookie(CN_JWT_CONFIG.authorizationCookie, token, this.accessCookieOptions(maxAge));
   }
 
   private clearAccessCookie(response: Response): void {
-    response.cookie(CN_JWT_CONFIG.authorizationCookie, '', this.cookieOptions('/', 0));
+    response.cookie(CN_JWT_CONFIG.authorizationCookie, '', this.accessCookieOptions(0));
+  }
+
+  /**
+   * The access cookie, which is the one that has to survive a cross-site top-level
+   * navigation.
+   *
+   * `/oauth/authorize` is reached by a machine client sending the browser here, so the
+   * request arrives cross-site — and `sameSite: 'strict'` withholds the cookie on exactly
+   * that hop. With it, a user who is already logged in resolves as anonymous and is
+   * bounced to the login page on every authorization request, which is the whole logged-in
+   * path of the Authorization Server.
+   *
+   * `'lax'` is still withheld on cross-site POSTs and on subresource loads, which is where
+   * the CSRF exposure of a session credential actually lives. The refresh cookie stays
+   * `'strict'`: it is only ever presented on this application's own POSTs, and nothing on
+   * the authorization path reads it.
+   */
+  private accessCookieOptions(maxAge: number): CookieOptions {
+    return { ...this.cookieOptions('/', maxAge), sameSite: 'lax' };
   }
 
   private setRefreshCookie(token: string, response: Response): void {
@@ -167,18 +186,14 @@ export class CnAuthController {
 
   /**
    * Attributes shared by both session cookies. `httpOnly` keeps them away from JS. They
-   * differ only in `path`: the refresh cookie is narrowed to `/auth` so this long-lived
-   * credential is not sent on every API call.
+   * differ in `path` — the refresh cookie is narrowed to `/auth` so this long-lived
+   * credential is not sent on every API call — and in `sameSite`, see
+   * {@link accessCookieOptions}.
    */
   private cookieOptions(path: string, maxAge: number): CookieOptions {
     return {
       path,
       maxAge,
-      // Unchanged from what the Authorization cookie already carried: in each deployment
-      // the front and the API sit under one registrable domain, so 'strict' still lets the
-      // app's own XHR carry them. It will need revisiting when the Authorization Server
-      // lands here (#74) — 'strict' withholds the cookie on a top-level navigation
-      // arriving from a machine client, which is how /oauth/authorize is reached.
       sameSite: 'strict',
       httpOnly: true,
       secure: !this.configService.isLocal(),
