@@ -1,0 +1,28 @@
+name: Publish the space plugin
+
+# Publishes apps/cn-space-api/claude-plugin/datalab into Constellab/agent-plugins.
+#
+# `cn_*` is the Space API's release tag: the plugin's skill names MCP tools served by that
+# API, so it publishes when the API carrying them is released, never on a merge to master.
+
+on:
+  push:
+    tags:
+      - 'cn_*'
+  pull_request:
+    paths:
+      - 'apps/cn-space-api/claude-plugin/**'
+      - '.claude-plugin/**'
+      - '.github/workflows/publish-space-plugin.yml'
+      - '.github/workflows/publish_agent_plugin.yml'
+  workflow_dispatch:
+
+jobs:
+  publish:
+    uses: ./.github/workflows/publish_agent_plugin.yml
+    with:
+      plugin_dir: apps/cn-space-api/claude-plugin/datalab
+      plugin_name: datalab
+      tag_prefix: cn_
+    secrets:
+      agent_plugins_token: ${{ secrets.AGENT_PLUGINS_TOKEN }}

@@ -1,0 +1,30 @@
+name: Publish the community plugin
+
+# Publishes apps/hn-community-api/claude-plugin/community into Constellab/agent-plugins.
+#
+# `hn_*` is the Community API's release tag — the same one build-community-api.yml builds the
+# image from. Separate from the space plugin's workflow on purpose: the two applications are
+# released independently, and an `hn_` tag must not republish a datalab plugin built from
+# whatever master happened to hold.
+
+on:
+  push:
+    tags:
+      - 'hn_*'
+  pull_request:
+    paths:
+      - 'apps/hn-community-api/claude-plugin/**'
+      - '.claude-plugin/**'
+      - '.github/workflows/publish-community-plugin.yml'
+      - '.github/workflows/publish_agent_plugin.yml'
+  workflow_dispatch:
+
+jobs:
+  publish:
+    uses: ./.github/workflows/publish_agent_plugin.yml
+    with:
+      plugin_dir: apps/hn-community-api/claude-plugin/community
+      plugin_name: community
+      tag_prefix: hn_
+    secrets:
+      agent_plugins_token: ${{ secrets.AGENT_PLUGINS_TOKEN }}

@@ -46,10 +46,11 @@ same MCP server, so you would connect twice and see every tool duplicated.
 
 ## Publishing
 
-`.github/workflows/publish-agent-plugins.yml` copies each plugin folder into
+`.github/workflows/publish-space-plugin.yml` publishes this folder into
 `Constellab/agent-plugins` on a `cn_*` tag — that is, when the API carrying the tools is
 actually deployed. Publishing off `master` would hand clients a skill describing tools the
-prod API does not expose yet.
+prod API does not expose yet. The shared machinery is in `publish_agent_plugin.yml`; the
+community application calls it from its own workflow, on its own tag.
 
 `version` in `plugin.json` is the update signal: without a bump, clients keep their cached
 copy whatever changed in the files. Bump it in the pull request that changes the plugin. CI

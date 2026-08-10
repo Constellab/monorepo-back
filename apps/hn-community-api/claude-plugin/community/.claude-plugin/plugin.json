@@ -1,0 +1,27 @@
+{
+  "name": "community",
+  "displayName": "Constellab community documentation",
+  "version": "0.1.0",
+  "description": "Search and read the Constellab community documentation, over the Community API's MCP tools",
+  "author": {
+    "name": "Gencovery",
+    "email": "support@gencovery.com"
+  },
+  "repository": "https://github.com/Constellab/agent-plugins",
+  "keywords": ["constellab", "community", "documentation", "search", "mcp"],
+  "userConfig": {
+    "community_api_url": {
+      "type": "string",
+      "title": "Community API URL",
+      "description": "Base URL of your Constellab Community API, without a trailing slash. Keep the default unless you use a dedicated or on-premise instance.",
+      "default": "https://api.constellab.community",
+      "required": true
+    }
+  },
+  "mcpServers": {
+    "constellab": {
+      "type": "http",
+      "url": "${user_config.community_api_url}/mcp/community-doc"
+    }
+  }
+}

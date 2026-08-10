@@ -14,7 +14,7 @@
       "type": "string",
       "title": "Space API URL",
       "description": "Base URL of your Constellab Space API, without a trailing slash. Keep the default unless you use a dedicated or on-premise instance.",
-      "default": "https://REPLACE-WITH-PROD-SPACE-API-URL",
+      "default": "https://api.constellab.space",
       "required": true
     }
   },
