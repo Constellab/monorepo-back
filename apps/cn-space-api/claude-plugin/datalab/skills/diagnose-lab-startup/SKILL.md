@@ -88,11 +88,22 @@ When the fix is an action — clearing a stuck task, restarting a container, res
 reconfiguring the server, reinitialising the lab manager — name that action for the user to
 perform in Constellab, and say which one it is.
 
-## Answer in three parts
+## Answer: headline, then detail
 
-1. The layer it is blocked at, with the reason string the verdict returned.
-2. The evidence you read: a log line, a container status, a timeline entry.
-3. One next action, and who can perform it.
+Open with the **headline**: two or three sentences in the user's own domain terms naming what
+broke and whether it clears on its own — "the lab asks for `gws_core` 0.23.9, that tag does
+not exist in the repository, so brick installation fails on every retry". A layer number is
+not a headline; the headline earns the right to name the layer once it has said what happened.
 
-**Done when** every claim in the answer traces to a field you read, or is labelled a
-hypothesis.
+Then the detail, in this order:
+
+1. **The layer table** — a row per layer with its verdict and reason, so the healthy ones read
+   as ruled out rather than unmentioned.
+2. **The evidence** — the log line quoted, the container status, the timeline entry, and any
+   window you hold on a log (`truncated`, `totalLines`, `filteredLocally`).
+3. **One next action, and who can perform it** — with the reads you chose not to run, and why.
+
+A hypothesis stays labelled as one wherever it appears, the headline included.
+
+**Done when** the first thing the user reads names the cause, and every claim below it traces
+to a field you read or is labelled a hypothesis.
