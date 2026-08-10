@@ -91,11 +91,7 @@ export class CnFrontService {
    * Get the base url of the website (without the url of the space)
    */
   public getBaseWebsiteURL(): string {
-    if (this.configService.isLocal()) {
-      return 'http://' + this.configService.getFrontDomain();
-    } else {
-      return 'https://' + this.configService.getFrontDomain();
-    }
+    return this.configService.getFrontBaseUrl();
   }
 
   /**

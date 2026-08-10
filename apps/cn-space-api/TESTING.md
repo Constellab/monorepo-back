@@ -53,7 +53,7 @@ npx jest --config ./apps/cn-space-api/jest.config.ts --testPathPatterns "cn-spac
 `jest.config.ts` ignores `test/` (the E2E suites) and stubs `jsdom` (eagerly
 imported by `te-text-editor`) so app-loading specs run under the node environment.
 
-### E2E tests (require a local MySQL database)
+### E2E tests (require a local MySQL database and Redis)
 
 ```bash
 npm run cn-space-api:test-e2e
@@ -72,6 +72,11 @@ so point it at a throwaway DB, never a real one. Defaults (override with
 | `DATABASE_USER`     | `gencoveryUser` |
 | `DATABASE_PASSWORD` | `gencovery`     |
 | `DATABASE`          | `testDb`        |
+
+**Local Redis** — the OAuth client and authorization-code stores are Redis-backed, so the
+OAuth suites need one running at `QUEUE_SERVICE_HOST:QUEUE_SERVICE_PORT` (`localhost:6379`
+by default). Keys are namespaced with a `cn:` prefix, so sharing one server with the
+Community is safe.
 
 `CnTestDbInitializerService` (`test/cn-test.module.ts`) drops the DB,
 `synchronize()`s the schema from the entities, and seeds a single admin user via

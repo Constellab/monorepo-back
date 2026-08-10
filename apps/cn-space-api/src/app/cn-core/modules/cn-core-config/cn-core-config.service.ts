@@ -77,8 +77,60 @@ export class CnCoreConfigService {
     );
   }
 
+  public getMcpAccessTokenDurationInSeconds(): number {
+    return this.getConfigNumberOrDefault(
+      'MCP_ACCESS_TOKEN_DURATION_SECONDS',
+      CN_JWT_CONFIG.defaultMcpAccessTokenDurationInSeconds
+    );
+  }
+
   public getApiUrl(): string {
     return this.getConfigString('API_URL');
+  }
+
+  /////////////////////////// OAUTH 2.1 / MCP ///////////////////////////
+  //
+  // Every value below is read while Nest builds the injector — the Authorization Server
+  // is registered with `forRootAsync` — so a missing one stops the process at startup
+  // instead of turning into registrations or authorization requests being refused later
+  // for no visible reason.
+
+  /**
+   * Base64-encoded PEM private key that signs MCP access tokens.
+   *
+   * Required: this application is the Authorization Server (ADR-0001), and one minting
+   * tokens nobody can verify must not start. Base64 because PEM is multi-line and
+   * environment variables reliably lose the newlines.
+   *
+   * Not the Session token secret. Session tokens stay on `JWT_SECRET`, which never leaves
+   * this application; this key's public half is published at `/.well-known/jwks.json` so
+   * the Community API can verify a token without being able to mint one.
+   */
+  public getMcpJwtPrivateKeyBase64(): string {
+    return this.getConfigString('MCP_JWT_PRIVATE_KEY_BASE64');
+  }
+
+  /**
+   * Base64-encoded PEM private key of the key being rotated out, published and accepted
+   * but never signing again. Absent outside a rotation.
+   */
+  public getMcpJwtPreviousPrivateKeyBase64(): string | undefined {
+    return this.getOptionalConfigString('MCP_JWT_PREVIOUS_PRIVATE_KEY_BASE64');
+  }
+
+  /**
+   * Non-loopback redirect URIs an OAuth client may register, as a comma-separated list.
+   * Loopback URIs are always accepted (RFC 8252), so this only needs to carry the remote
+   * callbacks. An empty value means loopback-only.
+   *
+   * Registration is open, so this allowlist is what stops anyone from registering a client
+   * that collects an authorization code for a logged-in user.
+   */
+  public getOAuthAllowedRedirectUris(): string[] {
+    return this.getConfigString('OAUTH_ALLOWED_REDIRECT_URIS')
+      .split(',')
+      .map((uri) => uri.trim())
+      .filter((uri) => uri.length > 0);
   }
 
   public getRobotUserMail(): string {
@@ -149,6 +201,19 @@ export class CnCoreConfigService {
     return this.getConfigString('FRONT_DOMAIN');
   }
 
+  /**
+   * Base URL of the front, without any Space subdomain — the host that serves the pages
+   * every user shares, the login page among them.
+   *
+   * Here rather than only in `CnFrontService` because the Authorization Server needs it
+   * while the injector is built, to know where to send a logged-out `/authorize`, and
+   * reaching a service that depends on the database from a module factory is not that.
+   * `CnFrontService` delegates to it, so the two cannot name different hosts.
+   */
+  public getFrontBaseUrl(): string {
+    return `${this.isLocal() ? 'http' : 'https'}://${this.getFrontDomain()}`;
+  }
+
   public getCommunityFrontUrl(): string {
     return this.getConfigString('COMMUNITY_FRONT_URL');
   }
@@ -167,6 +232,16 @@ export class CnCoreConfigService {
       throw Error(`Missing config value for '${configName}'`);
     }
     return value;
+  }
+
+  /**
+   * Read a config value whose absence is a valid state, as opposed to
+   * {@link getConfigString} which treats it as a misconfiguration. An empty value reads
+   * as absent — that is what a commented-out line left as `KEY=` means.
+   */
+  protected getOptionalConfigString(configName: string): string | undefined {
+    const value: string | undefined = this.configService.get(configName);
+    return value == null || value.trim().length === 0 ? undefined : value;
   }
 
   protected getConfigNumber(configName: string): number {

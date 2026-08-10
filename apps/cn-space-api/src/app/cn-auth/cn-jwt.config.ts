@@ -12,9 +12,20 @@
 const defaultAccessTokenDurationInSeconds: number = 60 * 15; // 15 minutes
 const defaultRefreshTokenDurationInSeconds: number = 60 * 60 * 24 * 30; // 30 days
 
+/**
+ * Lifetime of an MCP access token, which is a machine client's credential rather than a
+ * browser's.
+ *
+ * Longer than a Session token because nothing can revoke one in flight either way, and a
+ * machine client renews without a user present: `/oauth/revoke` ends the Grant behind it,
+ * so this value is how long a revoked client keeps working, not how long it keeps access.
+ */
+const defaultMcpAccessTokenDurationInSeconds: number = 60 * 60; // 1 hour
+
 export const CN_JWT_CONFIG = {
   defaultAccessTokenDurationInSeconds,
   defaultRefreshTokenDurationInSeconds,
+  defaultMcpAccessTokenDurationInSeconds,
   authorizationCookie: 'Authorization', // name of the authorization cookie
   refreshCookie: 'Refresh_Token', // name of the refresh token cookie
   /**

@@ -2,13 +2,22 @@ import {
   blConfigureLogger,
   BlCookieHelper,
   BlDbBackupModule,
+  BlJwtAsymmetricConfig,
+  BlJwtAsymmetricModule,
   BlJwtConfig,
   BlJwtModule,
   BlLoggerConfig,
   BlMailModule,
   BlNamingStrategy,
+  BlOAuthServerConfig,
+  BlOAuthServerModule,
   BlObjectStorageModule,
+  BlRedisConfig,
+  BlRedisModule,
   BlRequestContextMiddleware,
+  BlResourceServerConfig,
+  BlResourceServerModule,
+  blStripTrailingSlashes,
   BlTimeoutInterceptor,
   BlTranslateModule,
   BlTransportModuleConfig,
@@ -68,6 +77,7 @@ import { CnGroupsModule } from './app/cn-groups/cn-groups.module';
 import { CnLabConfigsModule } from './app/cn-lab-configs/cn-lab-configs.module';
 import { CnLabsModule } from './app/cn-labs/cn-labs.module';
 import { CnNotificationModule } from './app/cn-notification/cn-notification.module';
+import { CnOAuthModule } from './app/cn-oauth/cn-oauth.module';
 import { CnServerAggregateModule } from './app/cn-servers-info/cn-server-aggregate.module';
 import { CnSettingsModule } from './app/cn-settings/cn-settings.module';
 import { CnSpacesModule } from './app/cn-spaces/cn-spaces.module';
@@ -132,8 +142,74 @@ function configureJwtModule(configService: CnCoreConfigService, userService: CnU
   };
 }
 
+/**
+ * Key material for MCP access tokens, which are the only tokens here signed
+ * asymmetrically — they are the only ones another application has to verify.
+ *
+ * Reading `MCP_JWT_PRIVATE_KEY_BASE64` throws when it is absent, and `BlJwtKeyStore`
+ * throws when it is present but unusable. Both happen while Nest builds the injector, so
+ * a bad key stops the process rather than turning into every MCP call being rejected.
+ */
+function configureJwtAsymmetricModule(configService: CnCoreConfigService): BlJwtAsymmetricConfig {
+  return {
+    privateKeyBase64: configService.getMcpJwtPrivateKeyBase64(),
+    previousPrivateKeyBase64: configService.getMcpJwtPreviousPrivateKeyBase64(),
+  };
+}
+
+/**
+ * What this application protects as a Resource Server, and where a client is sent to get
+ * a token for it.
+ *
+ * One Resource, the empty path, which names the API's own base URL: this application is a
+ * Resource Server for its own endpoints, and that is the Resource the CLI asks a token
+ * for. An MCP endpoint here is a Resource of its own and registers its own path — see
+ * `HN_MCP_COMMUNITY_DOC_RESOURCE_PATH` in the Community for the shape.
+ *
+ * `authorizationServerUrl` is this host because this application is now the Authorization
+ * Server (ADR-0001). It is still named separately from `baseUrl`: the two answer different
+ * questions, and the Community sets the same field to this host without being it.
+ */
+function configureResourceServerModule(configService: CnCoreConfigService): BlResourceServerConfig {
+  return {
+    baseUrl: configService.getApiUrl(),
+    authorizationServerUrl: configService.getApiUrl(),
+    resourcePaths: [''],
+  };
+}
+
+/**
+ * What this application states as the Authorization Server it hosts.
+ *
+ * Configuration is the whole of it, plus the current-user resolver `CnOAuthModule`
+ * supplies: the endpoints, the stores and the grant logic are `bl-oauth-server`'s.
+ *
+ * The issuer is the API's own base URL because RFC 8414 requires it to equal the URL
+ * serving the discovery document — and because a client records it at registration, so it
+ * cannot be changed without invalidating what every client holds.
+ *
+ * `frontLoginUrl` is the shared login page, without a Space subdomain: a machine client
+ * approving a Grant is not in a Space, and per ADR-0003 the Grant spans all of them.
+ */
+function configureOAuthServerModule(configService: CnCoreConfigService): BlOAuthServerConfig {
+  return {
+    issuer: configService.getApiUrl(),
+    frontLoginUrl: `${blStripTrailingSlashes(configService.getFrontBaseUrl())}/login`,
+    allowedRedirectUris: configService.getOAuthAllowedRedirectUris(),
+    mcpAccessTokenDurationInSeconds: configService.getMcpAccessTokenDurationInSeconds(),
+  };
+}
+
 function configureTransportModule(configService: CnCoreConfigService): BlTransportModuleConfig {
   return configService.getTransportModuleConfig();
+}
+
+/**
+ * Reuses the queue connection details (BullMQ already needs a Redis instance) and
+ * namespaces the keys, so sharing one server with the Community stays safe.
+ */
+function configureRedisModule(configService: CnCoreConfigService): BlRedisConfig {
+  return { ...configService.getTransportModuleConfig(), keyPrefix: 'cn:' };
 }
 
 // configure the text editor
@@ -192,6 +268,40 @@ TeRichTextModifications.setBackTimeDifference();
       imports: [CnCoreModule, CnUsersModule],
       useFactory: configureJwtModule,
       inject: [CnCoreConfigService, CnUsersService],
+    }),
+
+    // The asymmetric path, alongside the symmetric one rather than inside it: Session
+    // tokens and MCP access tokens deliberately do not share a key.
+    BlJwtAsymmetricModule.forRootAsync({
+      useFactory: configureJwtAsymmetricModule,
+      inject: [CnCoreConfigService],
+    }),
+
+    // The Resource Server half of OAuth: the Resources this application serves and their
+    // discovery documents. Registered here rather than inside a feature module because it
+    // is global — the Authorization Server reads the same registry, so the audience
+    // written into a token and the audience checked against it come from one list.
+    BlResourceServerModule.forRootAsync({
+      useFactory: configureResourceServerModule,
+      inject: [CnCoreConfigService],
+    }),
+
+    // The Authorization Server half: registration, /authorize, /token, /revoke and the
+    // authorization server discovery document. There is exactly one of these across the
+    // two applications and it is this one (ADR-0001). `CnOAuthModule` is imported for the
+    // two tokens the library cannot resolve itself — the current-user resolver and this
+    // application's refresh token service.
+    BlOAuthServerModule.forRootAsync({
+      imports: [CnOAuthModule],
+      useFactory: configureOAuthServerModule,
+      inject: [CnCoreConfigService],
+    }),
+
+    // The client and code stores are Redis-backed, so a registration made against one
+    // replica resolves from every other.
+    BlRedisModule.forRootAsync({
+      useFactory: configureRedisModule,
+      inject: [CnCoreConfigService],
     }),
 
     BullModule.forRootAsync(

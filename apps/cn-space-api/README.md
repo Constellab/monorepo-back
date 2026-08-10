@@ -21,6 +21,28 @@ To build the api in a local docker :
 - build the docker image : `cn-space-api:build-image-dev`
 - to run the image use the cn-space-api repository and run the command : `docker compose -f docker-compose-dev.yml up -d cn-space-api` (the maria db image must be running)
 
+## Authorization Server configuration
+
+This application is the single OAuth Authorization Server for machine clients
+([ADR-0001](../../docs/adr/0001-space-api-is-the-single-authorization-server.md)): it mounts
+`BlOAuthServerModule`, publishes its discovery document at
+`/.well-known/oauth-authorization-server` and its signing keys at `/.well-known/jwks.json`.
+
+Its configuration is read while Nest builds the injector, so **a missing required value
+stops the process at startup** rather than turning into registrations or authorization
+requests being refused later for no visible reason. The full commentary for each value is in
+[`src/environments/cn-dev.env`](src/environments/cn-dev.env).
+
+| Variable                              | Required | Purpose                                                                                       |
+| ------------------------------------- | -------- | --------------------------------------------------------------------------------------------- |
+| `MCP_JWT_PRIVATE_KEY_BASE64`          | yes      | Base64 PEM RSA key signing MCP access tokens. Its public half is published; not `JWT_SECRET`. |
+| `OAUTH_ALLOWED_REDIRECT_URIS`         | yes      | Comma-separated non-loopback redirect URIs a client may register. Loopback is always allowed. |
+| `API_URL`                             | yes      | The issuer, and the base of every advertised endpoint. Clients record it at registration.     |
+| `FRONT_DOMAIN`                        | yes      | Where `/authorize` sends a logged-out user (`<front>/login?returnUrl=…`).                     |
+| `QUEUE_SERVICE_{HOST,PORT,PASSWORD}`  | yes      | Redis, which backs the client and authorization-code stores.                                  |
+| `MCP_ACCESS_TOKEN_DURATION_SECONDS`   | no       | Access token lifetime; defaults to the value in `cn-jwt.config.ts` (1 h).                     |
+| `MCP_JWT_PREVIOUS_PRIVATE_KEY_BASE64` | no       | During a key rotation only: the retired key, still published and accepted, never signing.     |
+
 ## Initialize the database
 
 - Open the `cn-app.module.ts` file and set `synchronize: true` in the TypeOrmModule configuration (only for dev environment)
