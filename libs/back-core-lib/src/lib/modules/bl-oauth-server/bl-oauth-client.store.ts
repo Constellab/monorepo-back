@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { randomBytes } from 'crypto';
 
 import { BlRedisStore } from '../bl-redis/bl-redis.class';
+import { blParseStoredJson } from '../bl-redis/bl-redis-json.util';
 
 export interface BlOAuthClient {
   client_id: string;
@@ -56,17 +57,12 @@ export class BlOAuthClientStore {
   }
 
   async find(clientId: string): Promise<BlOAuthClient | null> {
-    const raw = await this.redis.get(`${KEY_PREFIX}${clientId}`);
-    if (raw == null) {
-      return null;
-    }
-    try {
-      return JSON.parse(raw) as BlOAuthClient;
-    } catch {
-      // Corrupt entry: treat as unknown, the client will simply re-register.
-      this.logger.warn(`Discarded an unparsable client entry for '${clientId}'`);
-      return null;
-    }
+    // A corrupt entry reads as unknown; the client simply re-registers.
+    return blParseStoredJson<BlOAuthClient>(
+      await this.redis.get(`${KEY_PREFIX}${clientId}`),
+      this.logger,
+      `client entry for '${clientId}'`
+    );
   }
 
   /** Exact-match check against the client's registered redirect URIs (anti open-redirect). */

@@ -210,6 +210,20 @@ function buildResponse(): { response: Response; redirect: jest.Mock } {
   return { response: { redirect } as unknown as Response, redirect };
 }
 
+/**
+ * The browser went back to the consent page for this request.
+ *
+ * The answer to every way a decision can fail short of "no session", because the page is the
+ * only thing in the flow that can explain itself to a person — and because a decision is a
+ * navigation, so an error body would be what they end up reading.
+ */
+function expectRedirectToConsentPage(redirect: jest.Mock): void {
+  const location = new URL(redirect.mock.calls[0][0] as string);
+
+  expect(`${location.origin}${location.pathname}`).toBe(FRONT_CONSENT_URL);
+  expect(location.searchParams.get('consent_id')).toBe(CONSENT_ID);
+}
+
 /** The OAuth `error` code of a rejected call, or null if it resolved. */
 async function rejectedErrorCode(promise: Promise<unknown>): Promise<string | null> {
   return promise.then(
@@ -651,51 +665,62 @@ describe('BlOAuthServerController', () => {
       mocks.consumePending.mockResolvedValue(pendingAuthorization());
       const { response, redirect } = buildResponse();
 
-      await expect(
-        rejectedErrorCode(mocks.controller.decideConsent(decisionQuery(), httpRequest, response))
-      ).resolves.toBe('invalid_request');
+      await mocks.controller.decideConsent(decisionQuery(), httpRequest, response);
 
       // Without this check a page on another origin could make a logged-in visitor's browser
       // approve a pending authorization it started itself, with its own redirect target.
       expect(mocks.approve).not.toHaveBeenCalled();
-      expect(redirect).not.toHaveBeenCalled();
-      // And the user's own pending request survives, so they can still answer it themselves.
+      expect(mocks.createCode).not.toHaveBeenCalled();
+      // And the user's own pending request survives, so they can still answer it themselves —
+      // which is what the browser is sent back to the page to do.
       expect(mocks.consumePending).not.toHaveBeenCalled();
+      expectRedirectToConsentPage(redirect);
     });
 
     it('grants nothing when the token was minted for another pending request', async () => {
       const mocks = buildController();
       mocks.consumeDecisionToken.mockResolvedValue({ consentId: 'another-pending', userId: user.id });
-      const { response } = buildResponse();
+      const { response, redirect } = buildResponse();
 
-      await expect(
-        rejectedErrorCode(mocks.controller.decideConsent(decisionQuery(), httpRequest, response))
-      ).resolves.toBe('invalid_request');
+      await mocks.controller.decideConsent(decisionQuery(), httpRequest, response);
+
       expect(mocks.approve).not.toHaveBeenCalled();
       expect(mocks.consumePending).not.toHaveBeenCalled();
+      expectRedirectToConsentPage(redirect);
     });
 
     it('grants nothing when the token was minted for another user', async () => {
       const mocks = buildController();
       mocks.consumeDecisionToken.mockResolvedValue({ consentId: CONSENT_ID, userId: otherUser.id });
-      const { response } = buildResponse();
+      const { response, redirect } = buildResponse();
 
-      await expect(
-        rejectedErrorCode(mocks.controller.decideConsent(decisionQuery(), httpRequest, response))
-      ).resolves.toBe('invalid_request');
+      await mocks.controller.decideConsent(decisionQuery(), httpRequest, response);
+
       expect(mocks.approve).not.toHaveBeenCalled();
+      expectRedirectToConsentPage(redirect);
     });
 
-    it('grants nothing without a session', async () => {
+    it('sends a user whose session died back through login, carrying this step', async () => {
       const mocks = buildDecided();
       mocks.resolveCurrentUser.mockReturnValue(null);
-      const { response } = buildResponse();
+      const { response, redirect } = buildResponse();
 
-      await expect(
-        rejectedStatus(mocks.controller.decideConsent(decisionQuery(), httpRequest, response))
-      ).resolves.toBe(HttpStatus.UNAUTHORIZED);
+      await mocks.controller.decideConsent(decisionQuery(), httpRequest, response);
+
       expect(mocks.consumeDecisionToken).not.toHaveBeenCalled();
       expect(mocks.approve).not.toHaveBeenCalled();
+
+      // The ordinary case: the screen sat open past the Session token's lifetime, and the page
+      // cannot renew one for a navigation it does not make. An error body here would dead-end
+      // a person on JSON with the client still waiting.
+      const location = new URL(redirect.mock.calls[0][0] as string);
+      expect(`${location.origin}${location.pathname}`).toBe('https://example.com/login');
+      // Back to the consent step rather than to this URL: the decision token is spent on
+      // arrival, so replaying this navigation could never work — the user has to be handed the
+      // screen again. And the front honours a return URL only under the authorize path.
+      const returnUrl = new URL(location.searchParams.get('returnUrl') ?? '');
+      expect(returnUrl.pathname).toBe('/oauth/authorize/consent');
+      expect(returnUrl.searchParams.get('consent_id')).toBe(CONSENT_ID);
     });
 
     it('grants nothing when the pending request expired under the user', async () => {
@@ -704,13 +729,12 @@ describe('BlOAuthServerController', () => {
       mocks.consumePending.mockResolvedValue(null);
       const { response, redirect } = buildResponse();
 
-      await expect(
-        rejectedStatus(mocks.controller.decideConsent(decisionQuery(), httpRequest, response))
-      ).resolves.toBe(HttpStatus.NOT_FOUND);
+      await mocks.controller.decideConsent(decisionQuery(), httpRequest, response);
+
       expect(mocks.approve).not.toHaveBeenCalled();
-      // Nowhere to redirect to: the redirect target was part of the request that is gone,
-      // and the browser must not be sent anywhere on an unvalidated one.
-      expect(redirect).not.toHaveBeenCalled();
+      // Not to the client: its redirect target was part of the request that is gone, and an
+      // unvalidated one must never be redirected to. The page reports it instead.
+      expectRedirectToConsentPage(redirect);
     });
   });
 

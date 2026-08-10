@@ -167,9 +167,9 @@ export class OAuthTestClient {
     const session = sessionToken ?? (await this.sessionToken());
     const authorized = new URL((await this.authorize(clientId, session)).headers.location);
 
-    const withoutConsent = authorized.searchParams.get('code');
-    if (withoutConsent) {
-      return withoutConsent;
+    const codeWithoutConsent = authorized.searchParams.get('code');
+    if (codeWithoutConsent) {
+      return codeWithoutConsent;
     }
 
     const consentId = authorized.searchParams.get('consent_id');

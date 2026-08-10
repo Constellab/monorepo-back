@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { randomBytes } from 'crypto';
 
 import { BlRedisStore } from '../bl-redis/bl-redis.class';
+import { blParseStoredJson } from '../bl-redis/bl-redis-json.util';
 import { BlOAuthUser } from './bl-oauth-server.class';
 
 /** Everything an authorization code is bound to, checked again at /token. */
@@ -45,16 +46,12 @@ export class BlOAuthCodeStore {
    * expired, which Redis makes indistinguishable — both are `invalid_grant` anyway.
    */
   async consume(code: string): Promise<BlOAuthCodeBinding | null> {
-    const raw = await this.redis.getAndDelete(`${KEY_PREFIX}${code}`);
-    if (raw == null) {
-      return null;
-    }
-    try {
-      return JSON.parse(raw) as BlOAuthCodeBinding;
-    } catch {
-      // Corrupt entry: treat as absent rather than failing the request.
-      this.logger.warn('Discarded an unparsable authorization code entry');
-      return null;
-    }
+    // A corrupt entry reads as absent rather than failing the request — both are
+    // `invalid_grant` to the client either way.
+    return blParseStoredJson<BlOAuthCodeBinding>(
+      await this.redis.getAndDelete(`${KEY_PREFIX}${code}`),
+      this.logger,
+      'authorization code entry'
+    );
   }
 }

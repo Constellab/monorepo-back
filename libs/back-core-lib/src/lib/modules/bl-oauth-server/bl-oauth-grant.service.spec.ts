@@ -33,7 +33,7 @@ interface Mocks {
   remove: jest.Mock;
 }
 
-/** By default the row is already there — `update` affecting one row is re-approval. */
+/** By default nothing is on file: `countBy` answering 0 is a first approval. */
 function buildService(): Mocks {
   const create = jest.fn().mockImplementation((partial: unknown) => partial);
   const save = jest.fn().mockImplementation((entity: unknown) => Promise.resolve(entity));
@@ -52,10 +52,10 @@ function buildService(): Mocks {
   return { service: new BlOAuthGrantService<TestUser>(repository), create, save, update, countBy, remove };
 }
 
-/** A first approval: nothing to update, so the insert runs. */
-function buildServiceWithNoExistingGrant(): Mocks {
+/** A Grant already on file, so an approval refreshes it instead of inserting. */
+function buildServiceWithExistingGrant(): Mocks {
   const mocks = buildService();
-  mocks.update.mockResolvedValue({ affected: 0 });
+  mocks.countBy.mockResolvedValue(1);
   return mocks;
 }
 
@@ -90,7 +90,7 @@ describe('BlOAuthGrantEntity.buildGrantKey', () => {
 describe('BlOAuthGrantService', () => {
   describe('approve', () => {
     it('records one Grant per Resource, each bound to exactly one', async () => {
-      const { service, create, save } = buildServiceWithNoExistingGrant();
+      const { service, create, save } = buildService();
 
       await service.approve(user, CLIENT_ID, [RESOURCE, SECOND_RESOURCE]);
 
@@ -107,7 +107,7 @@ describe('BlOAuthGrantService', () => {
     });
 
     it('binds the row to the approving user, the client and the key of the three', async () => {
-      const { service, create } = buildServiceWithNoExistingGrant();
+      const { service, create } = buildService();
 
       await service.approve(user, CLIENT_ID, [RESOURCE]);
 
@@ -120,7 +120,7 @@ describe('BlOAuthGrantService', () => {
     });
 
     it('refreshes the Grant already on file instead of adding a second one', async () => {
-      const { service, update, save } = buildService();
+      const { service, update, save } = buildServiceWithExistingGrant();
 
       await service.approve(user, CLIENT_ID, [RESOURCE]);
 
@@ -133,17 +133,33 @@ describe('BlOAuthGrantService', () => {
       expect(save).not.toHaveBeenCalled();
     });
 
-    it('keeps the row that won a concurrent approval of the same Grant', async () => {
-      const { service, save } = buildServiceWithNoExistingGrant();
+    it('refreshes it even when the row was written this very second', async () => {
+      const { service, save, update } = buildServiceWithExistingGrant();
+      // MySQL reports rows *changed*, not rows matched, so writing the same `approvedAt`
+      // affects nothing. Inferring "no such row" from that would send an ordinary
+      // re-approval down the insert path and log a concurrency warning nobody caused.
+      update.mockResolvedValue({ affected: 0 });
+
+      await service.approve(user, CLIENT_ID, [RESOURCE]);
+
+      expect(save).not.toHaveBeenCalled();
+    });
+
+    it('refreshes the row that won a concurrent approval of the same Grant', async () => {
+      const { service, save, update } = buildService();
       save.mockRejectedValue({ code: 'ER_DUP_ENTRY' });
 
-      // The unique index rejected the insert, which means the row exists and says exactly
-      // what this one would have said. The desired state holds.
+      // The unique index rejected the insert, so the winner's row is on file and this caller
+      // has nothing to add — only the approval time to bring forward.
       await expect(service.approve(user, CLIENT_ID, [RESOURCE])).resolves.toBeUndefined();
+      expect(update).toHaveBeenCalledWith(
+        { grantKey: grantKey(user.id, CLIENT_ID, RESOURCE) },
+        expect.objectContaining({ approvedAt: expect.anything() })
+      );
     });
 
     it('does not swallow a failure that is not a duplicate', async () => {
-      const { service, save } = buildServiceWithNoExistingGrant();
+      const { service, save } = buildService();
       save.mockRejectedValue(new Error('the database is on fire'));
 
       // Reporting success here would hand out an authorization code for an approval that
@@ -152,7 +168,7 @@ describe('BlOAuthGrantService', () => {
     });
 
     it('records nothing for an empty list', async () => {
-      const { service, save, update } = buildServiceWithNoExistingGrant();
+      const { service, save, update } = buildService();
 
       await service.approve(user, CLIENT_ID, []);
 
@@ -181,7 +197,7 @@ describe('BlOAuthGrantService', () => {
   describe('areAllGranted', () => {
     it('is true only when every requested Resource is approved', async () => {
       const { service, countBy } = buildService();
-      countBy.mockResolvedValue(1);
+      countBy.mockResolvedValue(2);
 
       await expect(service.areAllGranted(user.id, CLIENT_ID, [RESOURCE, SECOND_RESOURCE])).resolves.toBe(
         true
@@ -190,15 +206,31 @@ describe('BlOAuthGrantService', () => {
 
     it('is false when one of them is not', async () => {
       const { service, countBy } = buildService();
-      countBy.mockImplementation((where: { grantKey: string }) =>
-        Promise.resolve(where.grantKey === grantKey(user.id, CLIENT_ID, RESOURCE) ? 1 : 0)
-      );
+      countBy.mockResolvedValue(1);
 
       // Every, not any: a request pairing an approved Resource with a new one is a request
       // for something the user has not seen, so it must reach the consent screen.
       await expect(service.areAllGranted(user.id, CLIENT_ID, [RESOURCE, SECOND_RESOURCE])).resolves.toBe(
         false
       );
+    });
+
+    it('asks once for the whole list', async () => {
+      const { service, countBy } = buildService();
+      countBy.mockResolvedValue(2);
+
+      await service.areAllGranted(user.id, CLIENT_ID, [RESOURCE, SECOND_RESOURCE]);
+
+      // This runs on every authorization request; a round trip per Resource would put the
+      // database in the path once per Resource for a question that is one lookup.
+      expect(countBy).toHaveBeenCalledTimes(1);
+    });
+
+    it('counts a Resource named twice once, so a repeat cannot pass for two approvals', async () => {
+      const { service, countBy } = buildService();
+      countBy.mockResolvedValue(1);
+
+      await expect(service.areAllGranted(user.id, CLIENT_ID, [RESOURCE, RESOURCE])).resolves.toBe(true);
     });
 
     it('is false for an empty list rather than vacuously true', async () => {

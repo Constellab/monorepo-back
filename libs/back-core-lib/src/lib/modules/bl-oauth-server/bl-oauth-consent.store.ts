@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { randomBytes } from 'crypto';
 
 import { BlRedisStore } from '../bl-redis/bl-redis.class';
+import { blParseStoredJson } from '../bl-redis/bl-redis-json.util';
 import { BlOAuthUser } from './bl-oauth-server.class';
 
 /**
@@ -132,29 +133,18 @@ export class BlOAuthConsentStore {
    * which mean the same thing to the caller: this decision does not count.
    */
   async consumeDecisionToken(token: string): Promise<BlOAuthConsentDecisionBinding | null> {
-    const raw = await this.redis.getAndDelete(`${DECISION_TOKEN_KEY_PREFIX}${token}`);
-    if (raw == null) {
-      return null;
-    }
-    try {
-      return JSON.parse(raw) as BlOAuthConsentDecisionBinding;
-    } catch {
-      this.logger.warn('Discarded an unparsable consent decision token');
-      return null;
-    }
+    return blParseStoredJson<BlOAuthConsentDecisionBinding>(
+      await this.redis.getAndDelete(`${DECISION_TOKEN_KEY_PREFIX}${token}`),
+      this.logger,
+      'consent decision token'
+    );
   }
 
+  /**
+   * A corrupt entry reads as absent, the same recovery an expired one gets: the client re-runs
+   * the flow, and the user is asked again.
+   */
   private parsePending(raw: string | null): BlOAuthPendingAuthorization | null {
-    if (raw == null) {
-      return null;
-    }
-    try {
-      return JSON.parse(raw) as BlOAuthPendingAuthorization;
-    } catch {
-      // Corrupt entry: treat as absent. The client re-runs the flow, which is the same
-      // recovery an expired one gets.
-      this.logger.warn('Discarded an unparsable pending authorization entry');
-      return null;
-    }
+    return blParseStoredJson<BlOAuthPendingAuthorization>(raw, this.logger, 'pending authorization entry');
   }
 }

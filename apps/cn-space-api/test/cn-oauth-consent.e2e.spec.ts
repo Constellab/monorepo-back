@@ -63,19 +63,22 @@ describe('OAuth consent (e2e)', () => {
   }
 
   /**
-   * Answer for the user, asserting what the API did with the answer.
+   * Answer for the user, and assert that the browser was sent somewhere.
    *
-   * The status is asserted here rather than chained onto the request: minting the decision
-   * token is itself a call, so what comes back is a finished response.
+   * Always a redirect: a decision is a full page navigation, so every way it can end has to be
+   * somewhere a person can act — the client on an answer, the page or login otherwise. Where
+   * exactly is each test's own assertion.
+   *
+   * The status is checked here rather than chained onto the request: minting the decision token
+   * is itself a call, so what comes back is a finished response.
    */
   async function decide(
     consentId: string,
     decision: 'allow' | 'deny',
-    sessionToken: string,
-    expectedStatus = 302
+    sessionToken: string
   ): Promise<supertest.Response> {
     const response = await client.decide(consentId, decision, sessionToken);
-    expect(response.status).toBe(expectedStatus);
+    expect(response.status).toBe(302);
     return response;
   }
 
@@ -201,11 +204,15 @@ describe('OAuth consent (e2e)', () => {
       const consentId = await client.consentId(clientId, session);
       const consentToken = await client.consentToken(consentId, session);
 
-      await client.decideWithToken(consentId, 'allow', consentToken, session).expect(302);
+      const first = await client.decideWithToken(consentId, 'allow', consentToken, session).expect(302);
+      expect(new URL(first.headers.location).searchParams.get('code')).toBeTruthy();
 
-      // A reload of the decision URL, or a replayed history entry, must not produce a
-      // second code — the token is spent and the request is decided.
-      await client.decideWithToken(consentId, 'allow', consentToken, session).expect(400);
+      // A reload of the decision URL, or a replayed history entry, must not produce a second
+      // code — the token is spent and the request is decided, so it goes to the page instead.
+      const replayed = await client.decideWithToken(consentId, 'allow', consentToken, session).expect(302);
+      const location = new URL(replayed.headers.location);
+      expect(location.pathname).toBe(OAUTH_TEST_CONSENT_PATH);
+      expect(location.searchParams.get('code')).toBeNull();
     });
 
     it('is not asked again for the same client and Resource', async () => {
@@ -290,8 +297,9 @@ describe('OAuth consent (e2e)', () => {
       await decide(consentId, 'deny', session);
 
       // A refusal spends the request exactly as an approval does, so a second navigation
-      // cannot turn "no" into "yes".
-      await decide(consentId, 'allow', session, 404);
+      // cannot turn "no" into "yes": it goes back to the page, which reports it as gone.
+      const retried = await decide(consentId, 'allow', session);
+      expect(new URL(retried.headers.location).pathname).toBe(OAUTH_TEST_CONSENT_PATH);
     });
   });
 
@@ -310,16 +318,20 @@ describe('OAuth consent (e2e)', () => {
   });
 
   describe('the decision cannot be forged', () => {
-    it('refuses a decision carrying no minted token', async () => {
+    it('grants nothing on a decision carrying no minted token', async () => {
       const clientId = await client.registerClient();
       const session = await client.sessionToken();
       const consentId = await client.consentId(clientId, session);
 
-      await server()
+      const answered = await server()
         .get('/oauth/authorize/consent/decision')
         .query({ consent_id: consentId, decision: 'allow' })
         .set('Cookie', client.sessionCookie(session))
         .expect(400);
+
+      // A missing parameter is the one failure the validation catches before the flow starts,
+      // so it is the one that still answers with an error body rather than a redirect.
+      expect(answered.body.error).toBe('invalid_request');
 
       // Without the token, a page on another origin could make a logged-in visitor's browser
       // approve a pending authorization it started itself, with its own redirect target.
@@ -327,18 +339,25 @@ describe('OAuth consent (e2e)', () => {
       expect(location.pathname).toBe(OAUTH_TEST_CONSENT_PATH);
     });
 
-    it('refuses a made-up token, and leaves the request answerable', async () => {
+    it('grants nothing on a made-up token, and leaves the request answerable', async () => {
       const clientId = await client.registerClient();
       const session = await client.sessionToken();
       const consentId = await client.consentId(clientId, session);
 
-      await client.decideWithToken(consentId, 'allow', 'not-a-minted-token', session).expect(400);
+      const forged = await client
+        .decideWithToken(consentId, 'allow', 'not-a-minted-token', session)
+        .expect(302);
+
+      // Back to the page rather than to the client: nothing was approved, and the victim of a
+      // forged navigation lands on a real screen instead of an error body.
+      expect(new URL(forged.headers.location).pathname).toBe(OAUTH_TEST_CONSENT_PATH);
 
       // The user's own request survives a forged attempt, so they can still answer it.
-      await decide(consentId, 'allow', session);
+      const allowed = await decide(consentId, 'allow', session);
+      expect(new URL(allowed.headers.location).searchParams.get('code')).toBeTruthy();
     });
 
-    it('refuses a token minted for another pending request', async () => {
+    it('grants nothing on a token minted for another pending request', async () => {
       const clientId = await client.registerClient();
       const session = await client.sessionToken();
       const target = await client.consentId(clientId, session);
@@ -346,19 +365,33 @@ describe('OAuth consent (e2e)', () => {
 
       const otherToken = await client.consentToken(other, session);
 
-      await client.decideWithToken(target, 'allow', otherToken, session).expect(400);
+      const answered = await client.decideWithToken(target, 'allow', otherToken, session).expect(302);
+      expect(new URL(answered.headers.location).pathname).toBe(OAUTH_TEST_CONSENT_PATH);
+
+      // Neither request was spent, so the user can still answer the one they were shown.
+      const allowed = await decide(target, 'allow', session);
+      expect(new URL(allowed.headers.location).searchParams.get('code')).toBeTruthy();
     });
 
-    it('refuses a decision with no session at all', async () => {
+    it('sends a decision with no session back through login, carrying this step', async () => {
       const clientId = await client.registerClient();
       const session = await client.sessionToken();
       const consentId = await client.consentId(clientId, session);
       const consentToken = await client.consentToken(consentId, session);
 
-      await server()
+      const redirect = await server()
         .get('/oauth/authorize/consent/decision')
         .query({ consent_id: consentId, decision: 'allow', consent_token: consentToken })
-        .expect(401);
+        .expect(302);
+
+      // The ordinary case: the screen sat open past the Session token's lifetime. An error body
+      // would dead-end a person on JSON with the client still waiting, so they go back through
+      // login and are handed the screen again.
+      const location = new URL(redirect.headers.location);
+      expect(location.pathname).toBe('/login');
+      const returnUrl = new URL(location.searchParams.get('returnUrl') ?? '');
+      expect(returnUrl.pathname).toBe('/oauth/authorize/consent');
+      expect(returnUrl.searchParams.get('consent_id')).toBe(consentId);
     });
 
     it('refuses a decision it cannot read', async () => {

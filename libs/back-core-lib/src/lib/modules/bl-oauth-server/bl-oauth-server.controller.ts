@@ -233,8 +233,7 @@ export class BlOAuthServerController {
 
     // Nothing is granted here — a pending authorization is a question, not an answer, and
     // abandoning the screen leaves only a record that expires.
-    const consentId = await this.consentStore.createPending(pending);
-    response.redirect(blBuildUrlWithParams(this.config.frontConsentUrl, { consent_id: consentId }));
+    this.redirectToConsentPage(response, await this.consentStore.createPending(pending));
   }
 
   /**
@@ -267,9 +266,7 @@ export class BlOAuthServerController {
       return;
     }
 
-    // The id is carried through opaquely and the target comes from configuration, so nothing
-    // a caller writes here decides where the browser goes.
-    response.redirect(blBuildUrlWithParams(this.config.frontConsentUrl, { consent_id: query.consent_id }));
+    this.redirectToConsentPage(response, query.consent_id);
   }
 
   /**
@@ -354,6 +351,14 @@ export class BlOAuthServerController {
    * The pending authorization is spent before anything is acted on, so a reload, a back
    * button or a replayed history entry cannot produce a second code — and a refusal is as
    * final as an approval.
+   *
+   * Nothing here answers with an error body. This is a navigation, so every answer it gives
+   * is something a person looks at, and the two ways it can fail both have somewhere better
+   * to send them: no session goes back through login carrying this step, and anything else
+   * goes back to the page, which is the only thing in the flow that can explain itself in
+   * words. A session expiring while the screen sat open is the ordinary case — the page has
+   * no way to renew a token for a navigation it does not make — and it must not dead-end on
+   * a JSON error with the client still waiting.
    */
   @BlPublic()
   @Get(BL_OAUTH_PATHS.consentDecision)
@@ -362,7 +367,14 @@ export class BlOAuthServerController {
     @Req() request: Request,
     @Res() response: Response
   ): Promise<void> {
-    const user = await this.requireCurrentUser(request);
+    const user = await this.currentUserResolver.resolveCurrentUser(request);
+    if (!user) {
+      // Back through login, returning to this step rather than to this URL: the decision
+      // token is spent on arrival, so replaying this navigation could never work — the user
+      // has to be handed the screen again, and press the button again.
+      this.redirectToLogin(response, this.resumeConsentUrl(query.consent_id));
+      return;
+    }
 
     // Spent first, before the pending authorization is touched: a request arriving without
     // a valid token must leave the pending one exactly as it found it, so the user can
@@ -373,12 +385,19 @@ export class BlOAuthServerController {
       decisionToken.consentId !== query.consent_id ||
       decisionToken.userId !== user.id
     ) {
-      throw new BlOAuthException('invalid_request', 'the consent token is unknown, spent or not yours');
+      // Unknown, already spent, or minted for something else — including a forged decision,
+      // which this is the defence against. Back to the page: if the request is still there
+      // the user can answer it themselves, and if it is not, the page says so.
+      this.redirectToConsentPage(response, query.consent_id);
+      return;
     }
 
     const pending = await this.consentStore.consumePending(query.consent_id);
     if (pending == null || pending.user.id !== user.id) {
-      throw this.unknownConsentRequest();
+      // Nowhere else to go: the redirect target was part of the request that is gone, and an
+      // unvalidated one must never be redirected to. The page reports it instead.
+      this.redirectToConsentPage(response, query.consent_id);
+      return;
     }
 
     if (query.decision === 'deny') {
@@ -724,6 +743,30 @@ export class BlOAuthServerController {
    */
   private redirectToLogin(response: Response, returnUrl: string): void {
     response.redirect(blBuildUrlWithParams(this.config.frontLoginUrl, { returnUrl }));
+  }
+
+  /**
+   * Send the browser to the consent page for a pending authorization.
+   *
+   * The id is carried through opaquely and the target comes from configuration, so nothing a
+   * caller writes decides where the browser goes. Reached both when there is a question to
+   * ask and when there is nothing left to ask about — the page tells the two apart by asking
+   * for the description, which is also what makes it the one place able to say so in words.
+   */
+  private redirectToConsentPage(response: Response, consentId: string): void {
+    response.redirect(blBuildUrlWithParams(this.config.frontConsentUrl, { consent_id: consentId }));
+  }
+
+  /**
+   * The URL that re-enters the flow at its consent step — the only one this server ever hands
+   * to the login page for it.
+   *
+   * Under `/oauth/authorize/`, because that is the only path the front's return-URL check
+   * trusts; anywhere else it would be dropped and the user would land in the application with
+   * a client still waiting.
+   */
+  private resumeConsentUrl(consentId: string): string {
+    return blBuildUrlWithParams(`${this.issuer}/${BL_OAUTH_PATHS.consent}`, { consent_id: consentId });
   }
 
   /**

@@ -1,6 +1,6 @@
 import { ClDateHelper } from '@monorepo/core-lib';
 import { Logger } from '@nestjs/common';
-import { DeepPartial, Repository } from 'typeorm';
+import { DeepPartial, In, Repository } from 'typeorm';
 
 import { BlOAuthGrantEntity } from './bl-oauth-grant.entity';
 
@@ -60,12 +60,14 @@ export class BlOAuthGrantService<TUser extends BlOAuthGrantOwner = BlOAuthGrantO
     if (resources.length === 0) {
       return false;
     }
-    for (const resource of resources) {
-      if (!(await this.isGranted(userId, clientId, resource))) {
-        return false;
-      }
-    }
-    return true;
+
+    // One query for the whole list, and counted against the *deduplicated* keys: this runs on
+    // every authorization request, and a per-Resource round trip would put the database in the
+    // path once per Resource for a question that is one lookup.
+    const grantKeys = new Set(
+      resources.map((resource) => BlOAuthGrantEntity.buildGrantKey(userId, clientId, resource))
+    );
+    return (await this.repository.countBy({ grantKey: In([...grantKeys]) })) === grantKeys.size;
   }
 
   /** Whether this user has approved this client for this one Resource. */
@@ -89,17 +91,23 @@ export class BlOAuthGrantService<TUser extends BlOAuthGrantOwner = BlOAuthGrantO
   /**
    * Record one approval, or refresh the one already there.
    *
-   * Update first, insert second: re-approving is the common case and costs one query, and
-   * the unique index on `grantKey` is what makes the insert safe — two approvals racing
-   * cannot both create a row, and the loser has nothing to do because the row that won
-   * says exactly what its own would have said.
+   * Whether the row exists is asked outright rather than inferred from how many rows an
+   * `UPDATE` touched: MySQL reports rows *changed*, not rows matched, so approving twice
+   * within the same second writes the same `approvedAt` and reports nothing affected — which
+   * is indistinguishable from "no such row" and would send an ordinary re-approval down the
+   * insert path.
+   *
+   * The insert is still guarded, because asking and writing cannot be one statement: the
+   * unique index on `grantKey` is what stops two approvals racing from both creating a row,
+   * and the loser refreshes the winner's instead. There is only ever one row per triple, so
+   * the two of them are agreeing rather than competing.
    */
   private async approveOne(user: BlOAuthGrantOwner, clientId: string, resource: string): Promise<void> {
     const grantKey = BlOAuthGrantEntity.buildGrantKey(user.id, clientId, resource);
     const approvedAt = ClDateHelper.getDate();
 
-    const updated = await this.repository.update({ grantKey }, { approvedAt });
-    if (updated.affected === 1) {
+    if ((await this.repository.countBy({ grantKey })) > 0) {
+      await this.repository.update({ grantKey }, { approvedAt });
       return;
     }
 
@@ -120,7 +128,10 @@ export class BlOAuthGrantService<TUser extends BlOAuthGrantOwner = BlOAuthGrantO
       if ((error as { code?: string })?.code !== 'ER_DUP_ENTRY') {
         throw error;
       }
-      this.logger.warn(`Concurrent approval of the same Grant for client '${clientId}'; kept the first`);
+      // A concurrent approval of the same triple got there first. Genuinely concurrent, now
+      // that a same-second re-approval no longer reaches this path.
+      this.logger.warn(`Concurrent approval of the same Grant for client '${clientId}'; refreshing it`);
+      await this.repository.update({ grantKey }, { approvedAt });
     }
   }
 }

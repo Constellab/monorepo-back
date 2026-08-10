@@ -50,8 +50,25 @@ _Avoid_: scope, service, audience (except as the JWT claim `aud`), MCP server.
 **Grant**:
 A user's standing authorization for one client to reach one **Resource**. It is pinned when
 the user approves it and is never widened afterwards — in particular, the **Resource** is read
-from stored state, never from the renewing request.
+from stored state, never from the renewing request. It is a record of its own, outliving every
+**Refresh token** issued under it: a refresh token is one live session of a Grant, while the
+Grant is the approval itself, which only the user takes back. There is at most one per user,
+client and **Resource**, so approving a second time refreshes it rather than adding another.
 _Avoid_: permission, authorization, consent (which is the act of approving, not the result).
+
+**Consent**:
+The act of a user being shown what a client is asking for and approving or refusing it. It
+happens once per client and **Resource**, may cover several **Resources** in one pass, and
+produces one **Grant** each. Refusing produces nothing, and so does walking away.
+_Avoid_: authorization (the flow is the thing being authorized, not this step), permission
+prompt, opt-in.
+
+**Pending authorization**:
+An authorization request that has been validated and is waiting for the user to answer,
+identified by a `consent_id`. It is a question, not an answer: it holds everything the request
+established — client, redirect target, verifier challenge, **Resources** — so that nothing is
+re-read from the browser once the user decides, and it expires on its own if they never do.
+_Avoid_: pending grant (nothing is granted yet), consent request, session.
 
 ### Tokens
 
