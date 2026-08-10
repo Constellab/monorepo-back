@@ -31,8 +31,13 @@ export class BlRequestContextHelper {
     requestContext.additionalData = Object.assign(requestContext.additionalData, { [key]: value });
   }
 
-  protected static getHeaderFromContext(headerName: string): string {
-    return this.getCurrentRequest().headers[headerName] as string;
+  /**
+   * Returns undefined when called outside a request scope (queue job, cron, or a
+   * request whose context was never set). Callers such as the exception filter run
+   * in both worlds, so this must never throw.
+   */
+  protected static getHeaderFromContext(headerName: string): string | undefined {
+    return this.getCurrentContext()?.req?.headers[headerName] as string | undefined;
   }
 
   protected static setAuthContent(content: any): void {
@@ -51,13 +56,15 @@ export class BlRequestContextHelper {
   }
 
   private static getCookieFromContext(cookieName: string): string | undefined {
-    return BlCookieHelper.getCookieFromHeader(this.getCurrentRequest().cookies, cookieName);
+    const cookies = this.getCurrentContext()?.req?.cookies;
+    if (cookies == null) return undefined;
+    return BlCookieHelper.getCookieFromHeader(cookies, cookieName);
   }
 
   public static getLangHeader(): ClSupportedLanguage {
-    const lang: string = this.getHeaderFromContext(CL_LANG_COOKIE);
-    // check that the lang exists
-    if (!clLangIsSupported(lang)) {
+    const lang: string | undefined = this.getHeaderFromContext(CL_LANG_COOKIE);
+    // check that the lang exists (it is undefined outside a request scope)
+    if (lang == null || !clLangIsSupported(lang)) {
       return CL_DEFAULT_LANG;
     }
     return lang as ClSupportedLanguage;
