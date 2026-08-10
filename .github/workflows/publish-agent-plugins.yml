@@ -3,9 +3,12 @@ name: Publish agent plugins
 # Publishes the Claude Code plugins under apps/cn-space-api/claude-plugin/ into the public
 # Constellab/agent-plugins repository.
 #
-# Triggered by the `cn_*` tags that deploy the Space API, never by a merge to master: the
-# skills describe MCP tools, so publishing them before the API that serves those tools is
-# deployed hands clients a skill naming tools that do not answer.
+# Triggered by the `cn_*` release tags, never by a merge to master: the skills describe MCP
+# tools, so publishing from master would hand clients a skill naming tools that no deployed
+# API answers.
+#
+# A tag builds and pushes the image; the CapRover deploy is a separate manual step. So a
+# plugin can reach clients shortly before the API that serves its tools does.
 on:
   push:
     tags:
@@ -28,9 +31,9 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6.0.2
 
-      - uses: oven-sh/setup-bun@v2
+      - uses: oven-sh/setup-bun@v2.2.0
         with:
           bun-version: 1.3.14
 
@@ -44,10 +47,10 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/cn_') || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6.0.2
 
       - name: Check out the public plugins repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.2
         with:
           repository: ${{ env.PUBLIC_REPO }}
           token: ${{ secrets.AGENT_PLUGINS_TOKEN }}
