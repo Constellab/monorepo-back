@@ -1,11 +1,34 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Request, Response } from 'express';
 
+import { BlDecodedToken } from '../bl-jwt/bl-jwt.class';
 import { BlJwtAsymmetricService } from '../bl-jwt/bl-jwt-asymmetric.service';
 import { blExtractBearerToken } from '../bl-oauth/bl-oauth-bearer.util';
 import { blProtectedResourceMetadataUrl } from '../bl-oauth/bl-oauth-resource-url.util';
 import { blStripTrailingSlashes } from '../bl-oauth/bl-oauth-url.util';
 import { BlResourceRegistry } from './bl-resource.registry';
+
+/**
+ * A request that has passed {@link BlResourceGuard}, carrying the payload it accepted.
+ *
+ * The guard is the only place a token is verified, so whoever needs to know *who* is
+ * calling reads what the guard already established rather than parsing the header again —
+ * a second parse is a second chance to accept something the guard would have refused.
+ */
+export interface BlResourceRequest extends Request {
+  blResourceToken?: BlDecodedToken;
+}
+
+/**
+ * The token payload {@link BlResourceGuard} accepted for this request, or null when the
+ * request never went through it.
+ *
+ * Null is not "anonymous but fine": it means the caller is reading a request the guard
+ * never cleared, which every caller has to refuse rather than default around.
+ */
+export function blResourceTokenOf(request: Request): BlDecodedToken | null {
+  return (request as BlResourceRequest).blResourceToken ?? null;
+}
 
 /**
  * OAuth 2.0 Resource Server guard.
@@ -50,6 +73,9 @@ export class BlResourceGuard implements CanActivate {
       if (!this.audienceMatches(payload.aud, expectedResource)) {
         throw new UnauthorizedException();
       }
+      // Published only once every check has passed, so nothing downstream can read a
+      // payload this guard was about to refuse.
+      (request as BlResourceRequest).blResourceToken = payload;
       return true;
     } catch {
       // The document for THIS resource, not a shared one: it is the only thing telling

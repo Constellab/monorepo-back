@@ -76,6 +76,8 @@ import { CnFrontErrorsModule } from './app/cn-front-errors/cn-front-errors.modul
 import { CnGroupsModule } from './app/cn-groups/cn-groups.module';
 import { CnLabConfigsModule } from './app/cn-lab-configs/cn-lab-configs.module';
 import { CnLabsModule } from './app/cn-labs/cn-labs.module';
+import { CN_MCP_SPACE_API_RESOURCE_PATH } from './app/cn-mcp/cn-mcp.constants';
+import { CnMcpModule } from './app/cn-mcp/cn-mcp.module';
 import { CnNotificationModule } from './app/cn-notification/cn-notification.module';
 import { CnOAuthModule } from './app/cn-oauth/cn-oauth.module';
 import { CnServerAggregateModule } from './app/cn-servers-info/cn-server-aggregate.module';
@@ -161,10 +163,14 @@ function configureJwtAsymmetricModule(configService: CnCoreConfigService): BlJwt
  * What this application protects as a Resource Server, and where a client is sent to get
  * a token for it.
  *
- * One Resource, the empty path, which names the API's own base URL: this application is a
+ * Two Resources. The empty path names the API's own base URL: this application is a
  * Resource Server for its own endpoints, and that is the Resource the CLI asks a token
- * for. An MCP endpoint here is a Resource of its own and registers its own path — see
- * `HN_MCP_COMMUNITY_DOC_RESOURCE_PATH` in the Community API for the shape.
+ * for. The MCP endpoint is a Resource of its own, so a client that only needs the tools
+ * gets a token that reaches nothing else — a narrower audience, not a second server.
+ *
+ * Neither entry mentions a Space, and there is one MCP entry however many Spaces a caller
+ * can reach: per ADR-0003 the Space is a tool parameter, so making it part of a Resource
+ * identity would turn this static list into a dynamic one.
  *
  * `authorizationServerUrl` is this host because this application is now the Authorization
  * Server (ADR-0001). It is still named separately from `baseUrl`: the two answer different
@@ -182,6 +188,11 @@ function configureResourceServerModule(configService: CnCoreConfigService): BlRe
         // the words have to say that rather than name an endpoint.
         name: 'Your Constellab account',
         description: 'Read and change anything you can reach, in every Space you belong to',
+      },
+      {
+        path: CN_MCP_SPACE_API_RESOURCE_PATH,
+        name: 'Constellab, read-only',
+        description: 'Read your Spaces and their labs, in every Space you belong to',
       },
     ],
   };
@@ -211,8 +222,14 @@ function configureOAuthServerModule(configService: CnCoreConfigService): BlOAuth
     // rather than in the library: it is a fact about this deployment (ADR-0003), not about
     // the protocol. English only for now, like the rest of this configuration — the consent
     // page renders it as given, so translating it is a change on this side alone.
+    //
+    // Says what is true of every Resource and nothing more. One warning is shown whatever
+    // is being approved, while each Resource is listed under it with its own words: since
+    // this application serves a narrow read-only Resource alongside its whole API, a
+    // warning naming what one of them allows would misdescribe the other.
     consentWarning:
-      'This will let it act as you: read and change anything you can reach, in every Space you belong to.',
+      'This will let it act as you, without asking again, on everything listed below — ' +
+      'in every Space you belong to.',
     allowedRedirectUris: configService.getOAuthAllowedRedirectUris(),
     mcpAccessTokenDurationInSeconds: configService.getMcpAccessTokenDurationInSeconds(),
   };
@@ -385,6 +402,9 @@ TeRichTextModifications.setBackTimeDifference();
     CnActivityModule,
     CnSettingsModule,
     CnCommunityModule,
+    // After the feature modules whose services it exposes: the MCP endpoint is a second
+    // way into them, not a domain of its own.
+    CnMcpModule,
     // TODO to see if we can remove this
     CnHierarchyObjectTokenModule,
   ],

@@ -169,7 +169,12 @@ export class CnCurrentUserHelper extends BlRequestContextHelper {
       authContext.type === 'user' ||
       authContext.type === 'labProd' ||
       authContext.type === 'labDev' ||
-      authContext.type === 'labManager'
+      authContext.type === 'labManager' ||
+      // A machine call that has already been authorized in the Space it named. Absent
+      // from this list, every Space-scoped check would refuse the MCP — the failure mode
+      // of an allowlist, and the reason adding a context type here is deliberate rather
+      // than a formality.
+      authContext.type === 'mcp'
     )
       return authContext.userInfo;
 

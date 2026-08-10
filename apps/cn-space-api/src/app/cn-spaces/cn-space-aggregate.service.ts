@@ -264,6 +264,18 @@ export class CnSpaceAggregateService {
     return this.getCurrentSpaceStorage();
   }
 
+  /**
+   * The Space the current user would land in with nothing else said — the same one
+   * {@link getCurrentInfo} falls back to, and so the one the browser opens after login.
+   *
+   * Public so the MCP can answer "which Space would you use if I do not name one" from
+   * the field the application already maintains, rather than from a second notion of a
+   * default that could disagree with where the browser goes.
+   */
+  public async findCurrentUserDefaultSpace(): Promise<CnSpace> {
+    return this.getUserDefaultSpaceAndCheck(CnCurrentUserHelper.getAndCheckCurrentUser());
+  }
+
   public async findCurrentUserSpaces(): Promise<CnSpace[]> {
     return await this.spaceUserService.getSpacesOfUser(CnCurrentUserHelper.getAndCheckCurrentUser().id);
   }
