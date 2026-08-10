@@ -9,38 +9,9 @@ import { CnLab } from '../cn-labs/cn-lab.entity';
 import { CnLabAggregateService } from '../cn-labs/cn-lab-aggregate.service';
 import { CnSpace } from '../cn-spaces/cn-space.entity';
 import { CnSpaceAggregateService } from '../cn-spaces/cn-space-aggregate.service';
-import {
-  CN_MCP_SPACE_REQUIRED_MESSAGE,
-  CN_MCP_TOOL_GET_DEFAULT_SPACE,
-  CN_MCP_TOOL_LIST_SPACES,
-} from './cn-mcp.constants';
+import { CN_MCP_TOOL_GET_DEFAULT_SPACE, CN_MCP_TOOL_LIST_SPACES } from './cn-mcp.constants';
 import { CnMcpSession } from './cn-mcp-session.service';
-
-/** The shape @rekog/mcp-nest expects a tool handler to return. */
-type CnMcpToolResponse = {
-  content: {
-    type: 'text';
-    text: string;
-  }[];
-  isError?: boolean;
-};
-
-/**
- * The Space parameter every Space-scoped tool takes.
- *
- * Required rather than defaulted, per ADR-0003: a silent default would let a model operate
- * on a Space the user never confirmed, with nothing in the conversation revealing which
- * one. The validation message is the same sentence the runtime refusal uses, so a client
- * that omits the argument and a client that sends a blank one both learn which tool to
- * call next.
- */
-const spaceIdParameter = z
-  .string({ error: CN_MCP_SPACE_REQUIRED_MESSAGE })
-  .min(1, { error: CN_MCP_SPACE_REQUIRED_MESSAGE })
-  .describe(
-    `Id of the Space to act in. Required — this server has no current Space. Obtain it from ` +
-      `${CN_MCP_TOOL_GET_DEFAULT_SPACE} or ${CN_MCP_TOOL_LIST_SPACES}; never invent one.`
-  );
+import { CN_MCP_SPACE_ID_PARAMETER, cnMcpJson, CnMcpToolResponse } from './cn-mcp-tool.helper';
 
 /**
  * The read-only tool set the Space API exposes over MCP.
@@ -82,7 +53,7 @@ export class CnMcpTool {
   async getDefaultSpace(_args: unknown, _context: unknown, request: CnRequest): Promise<CnMcpToolResponse> {
     return this.session.asCaller(request, async () => {
       const space = await this.spaceAggregateService.findCurrentUserDefaultSpace();
-      return this.asJson({ defaultSpace: this.toSpace(space) });
+      return cnMcpJson({ defaultSpace: this.toSpace(space) });
     });
   }
 
@@ -98,7 +69,7 @@ export class CnMcpTool {
   async listSpaces(_args: unknown, _context: unknown, request: CnRequest): Promise<CnMcpToolResponse> {
     return this.session.asCaller(request, async () => {
       const spaces = await this.spaceAggregateService.findCurrentUserSpaces();
-      return this.asJson({ count: spaces.length, spaces: spaces.map((space) => this.toSpace(space)) });
+      return cnMcpJson({ count: spaces.length, spaces: spaces.map((space) => this.toSpace(space)) });
     });
   }
 
@@ -109,7 +80,7 @@ export class CnMcpTool {
       'Returns each lab id, name, type and current status. Use constellab_get_lab for one ' +
       "lab's details.",
     parameters: z.object({
-      spaceId: spaceIdParameter,
+      spaceId: CN_MCP_SPACE_ID_PARAMETER,
       page: z.number().int().min(0).default(0).describe('Zero-based page number.'),
       size: z.number().int().min(1).max(100).default(20).describe('Labs per page.'),
     }),
@@ -122,7 +93,7 @@ export class CnMcpTool {
   ): Promise<CnMcpToolResponse> {
     return this.session.inSpace(request, spaceId, async (userInfo) => {
       const labs = await this.labAggregateService.getCurrentLabs(page, size);
-      return this.asJson({
+      return cnMcpJson({
         space: this.toSpace(userInfo.space),
         page: labs.currentPage,
         totalElements: labs.totalElements,
@@ -137,7 +108,7 @@ export class CnMcpTool {
       'Read one lab in one Space, including the role this account holds on it. Fails if ' +
       'the lab belongs to another Space, or if the account has no access to it.',
     parameters: z.object({
-      spaceId: spaceIdParameter,
+      spaceId: CN_MCP_SPACE_ID_PARAMETER,
       labId: z.string().min(1).describe('Id of the lab, as returned by constellab_list_labs.'),
     }),
     annotations: { readOnlyHint: true },
@@ -151,7 +122,7 @@ export class CnMcpTool {
       // Goes through the same aggregate the browser calls, so the Space of the lab and the
       // account's role on it are checked by the code that already owns those rules.
       const found = await this.labAggregateService.findByIdAndCheck(labId);
-      return this.asJson({
+      return cnMcpJson({
         space: this.toSpace(userInfo.space),
         lab: {
           id: found.lab.id,
@@ -180,12 +151,6 @@ export class CnMcpTool {
       frontUrl: lab.frontUrl,
       isFreeLab: lab.isFreeLab,
       lastModifiedAt: lab.lastModifiedAt?.toISO() ?? null,
-    };
-  }
-
-  private asJson(payload: unknown): CnMcpToolResponse {
-    return {
-      content: [{ type: 'text' as const, text: JSON.stringify(payload, null, 2) }],
     };
   }
 }

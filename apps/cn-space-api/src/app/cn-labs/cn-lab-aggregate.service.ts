@@ -35,9 +35,11 @@ import {
   CnLabManagerDockerComposeUniqueId,
   CnLabManagerDockerInspect,
   CnLabManagerDockerLogs,
+  CnLabManagerDockerLogSearch,
   CnLabManagerDockerPsFull,
   CnLabManagerErrorLogs,
   CnLabManagerInitConfig,
+  CnLabManagerLogSearchQuery,
   CnLabManagerRestoreBackupConfigDTO,
   CnManagerLabComposeRestartOptions,
   CnMcpConfigDTO,
@@ -59,6 +61,7 @@ import {
   CnLabCloudCreateDTO,
   CnLabCodelabDTO,
   CnLabConfigDTO,
+  CnLabContainerListDTO,
   CnLabCreateAdminDTO,
   CnLabCreateDesktopDTO,
   CnLabFindOneDto,
@@ -66,6 +69,7 @@ import {
   CnLabServerInfoDTO,
   CnLabStartDTO,
   CnLabStatusDTO,
+  CnLabStatusTimelineDTO,
   CnLabUpdateAdminDTO,
   CnRequestLab,
   CnStopLabRequestDTO,
@@ -84,6 +88,9 @@ import { CnLabsSecurity } from './cn-labs.security';
 import { CnLabsService } from './cn-labs.service';
 import { CnLabDesktopGenerateConfig } from './desktop/cn-lab-desktop.class';
 import { CnLabDesktopService } from './desktop/cn-lab-desktop.service';
+import { CnLabNotCloudException } from './diagnosis/cn-lab-not-cloud.exception';
+import { CnLabStartDiagnosis } from './diagnosis/cn-lab-start-diagnosis.dto';
+import { CnLabStartDiagnosisService } from './diagnosis/cn-lab-start-diagnosis.service';
 import { CnLabGreenOptionFormDto } from './green-option/cn-lab-green-option.dto';
 import { CnLabGreenOption } from './green-option/cn-lab-green-option.entity';
 import { CnLabGreenOptionService } from './green-option/cn-lab-green-option.service';
@@ -134,6 +141,7 @@ export class CnLabAggregateService {
     private labStatusHistoryService: CnLabStatusHistoryService,
     private labStatsAggregateService: CnLabStatsAggregateService,
     private labDesktopService: CnLabDesktopService,
+    private labStartDiagnosisService: CnLabStartDiagnosisService,
     private translateService: BlTranslateService
   ) {}
 
@@ -387,6 +395,53 @@ export class CnLabAggregateService {
       page,
       size
     );
+  }
+
+  /**
+   * Search the labs of the current Space the caller can actually reach.
+   *
+   * Two audiences, one method, because the browser already treats them differently: a Space
+   * admin's lab list is every lab of the Space, and a plain member's is the labs they were
+   * added to. Restricting an admin to their own labs would hide labs the browser shows them;
+   * widening a member's to the whole Space would show labs the browser does not.
+   */
+  public async searchReachableInCurrentSpace(
+    searchParams: BlSearchParams,
+    page: number,
+    size: number
+  ): Promise<ClPage<CnLabFull>> {
+    const userInfo = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
+
+    return this.labsService.searchInSpace(
+      userInfo.spaceId,
+      searchParams,
+      page,
+      size,
+      userInfo.isSpaceAdmin() ? undefined : userInfo.userId
+    );
+  }
+
+  /**
+   * Of these labs, the ids the caller holds OWNER on.
+   *
+   * What a lab list needs to say which rows the OWNER-gated operations will accept. Answered
+   * in one query rather than one per row: the alternative is a lab list whose cost grows with
+   * the page size.
+   */
+  public async filterLabIdsManageableByCurrentUser(labIds: string[]): Promise<string[]> {
+    if (labIds.length === 0) {
+      return [];
+    }
+
+    const userInfo = CnCurrentUserHelper.getAndCheckUserSpaceInfo();
+    // Same shortcut as `CnLabsSecurity.checkAuthorizationToManageLab`: a Space admin is the
+    // owner of every lab in the Space, so no membership row needs to exist.
+    if (userInfo.isSpaceAdmin()) {
+      return labIds;
+    }
+
+    const labUsers = await this.labUserService.findByLabIdsAndUserId(labIds, userInfo.userId);
+    return labUsers.filter((labUser) => labUser.role === CnLabUserRole.OWNER).map((labUser) => labUser.labId);
   }
 
   public async getConfig(id: string): Promise<CnLabConfig> {
@@ -734,6 +789,136 @@ export class CnLabAggregateService {
 
     // otherwise the server is started but not configured
     return await this.labsService.markInstanceAsServerRunning(labId);
+  }
+
+  /////////////////////////////////// START DIAGNOSIS //////////////////////////////////
+
+  /**
+   * Where a cloud lab's start is stuck, across all six layers it crosses.
+   *
+   * Requires the lab OWNER role, because reading it reaches the cloud provider, the server
+   * over ssh and the lab manager — the same operations the browser gates on OWNER. Read-only
+   * throughout: it deliberately does not go through {@link getLabStatus}, which force-refreshes
+   * a lab marked stopped while glab answers, and a refresh can start bricks.
+   */
+  public async diagnoseLabStart(labId: string): Promise<CnLabStartDiagnosis> {
+    const lab = await this.getAndCheckAuthorizationToManageLab(labId);
+    this.checkLabIsCloud(lab);
+
+    return this.labStartDiagnosisService.diagnose(lab);
+  }
+
+  /**
+   * Reconcile a lab's status against its server, then report the layers.
+   *
+   * Not a read: {@link checkAndRefreshStatus} writes a status, and a status change to
+   * `SERVER_CONFIGURED` makes `CnLabListener` configure and start the lab's bricks. That is
+   * usually the fix, which is why the method exists — but it is why the tool built on it
+   * carries no read-only hint.
+   *
+   * Requires only the lab member role, exactly as the browser's refresh does, so the layers it
+   * reports are the ones derivable from the refreshed status; the provider and ssh probes stay
+   * behind {@link diagnoseLabStart}.
+   */
+  public async refreshAndDescribeLabStart(labId: string): Promise<CnLabStartDiagnosis> {
+    // The type is checked before the refresh, not after: refusing a lab whose layers cannot be
+    // reported honestly should not first change its status. On a lab with no cloud DNS record
+    // the `dnsConfigured` flag is false by definition, and a verdict built on it would blame
+    // DNS on every on-premise lab.
+    const lab = await this.getAndCheckAuthorizationToFindById(labId);
+    this.checkLabIsCloud(lab);
+
+    const status = await this.checkAndRefreshStatus(labId);
+    return this.labStartDiagnosisService.describeFromStatus(status);
+  }
+
+  /**
+   * The lab's whole status timeline, and whether it ever reached a running state.
+   *
+   * Requires the lab member role, as the browser's status history does.
+   */
+  public async getLabStatusTimeline(labId: string, limit: number): Promise<CnLabStatusTimelineDTO> {
+    const lab = await this.getAndCheckAuthorizationToFindById(labId);
+
+    const [history, everStarted] = await Promise.all([
+      this.labStatusHistoryService.getStatusHistoryPaginated(0, limit, labId, new BlSearchParams()),
+      this.labStatusHistoryService.hasEverHadStatus(labId, CnLabStatus.LAB_RUNNING),
+    ]);
+
+    return {
+      everStarted,
+      history: history.objects,
+      serverTaskStatus: lab.serverTaskStatus,
+      serverTaskText: lab.serverTaskText,
+      serverTaskDatetime: lab.serverTaskDatetime,
+    };
+  }
+
+  /**
+   * Every container of the lab, across every compose the lab manager knows.
+   *
+   * Requires the lab OWNER role, as each of the two lab manager calls it makes does. The
+   * composes are read in parallel and a compose that cannot be read is reported rather than
+   * dropped — see {@link CnLabContainerListDTO}.
+   */
+  public async getAllLabContainers(labId: string): Promise<CnLabContainerListDTO> {
+    const lab = await this.getAndCheckAuthorizationToManageLab(labId);
+    const composeList = await this.labManagerService.getAllComposes(lab);
+
+    const result: CnLabContainerListDTO = { containers: [], unreadableComposes: [] };
+
+    await Promise.all(
+      composeList.composes.map(async (compose) => {
+        try {
+          const services = await this.labManagerService.listServices(lab, compose);
+          for (const service of services) {
+            result.containers.push({
+              brickName: compose.brickName,
+              uniqueName: compose.uniqueName,
+              env: compose.env,
+              containerName: service.names,
+              status: service.status,
+              exitCode: service.exitCode,
+              image: service.image,
+              startedAt: service.startedAt,
+            });
+          }
+        } catch (error) {
+          this.logger.warn(
+            `Could not list the services of compose ${compose.brickName}/${compose.uniqueName}/` +
+              `${compose.env} on lab ${labId}: ${error instanceof Error ? error.message : String(error)}`
+          );
+          result.unreadableComposes.push({
+            brickName: compose.brickName,
+            uniqueName: compose.uniqueName,
+            env: compose.env,
+            error: error instanceof Error ? error.message : String(error),
+          });
+        }
+      })
+    );
+
+    return result;
+  }
+
+  /**
+   * A container's logs, filtered on the lab manager where it supports it.
+   *
+   * Requires the lab OWNER role, as the unfiltered log read does.
+   */
+  public async searchContainerLogs(
+    labId: string,
+    containerName: string,
+    query: CnLabManagerLogSearchQuery
+  ): Promise<CnLabManagerDockerLogSearch> {
+    const lab = await this.getAndCheckAuthorizationToManageLab(labId);
+    return this.labManagerService.searchLogs(lab, containerName, query);
+  }
+
+  private checkLabIsCloud(lab: CnLab): void {
+    if (!lab.isCloud()) {
+      throw new CnLabNotCloudException(lab.type);
+    }
   }
 
   /////////////////////////////////////// VOLUME //////////////////////////////////

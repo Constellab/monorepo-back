@@ -166,6 +166,48 @@ export interface CnLabManagerDockerLogs {
   logs: string;
 }
 
+/** How `pattern` is matched against a log line by the lab manager. */
+export type CnLabManagerLogPatternMode = 'substring' | 'regex';
+
+/**
+ * Filters sent to the lab manager's `logs/search` route.
+ *
+ * The canonical contract is Constellab/lab-manager#11 — this mirrors the consumer side of
+ * it, see `docs/specs/lab-manager-log-filtering.md`. The order of operations matters and
+ * belongs to the lab manager: `pattern` is applied *before* `tail`, so `tail` means "the
+ * last N lines that match" and not "the pattern within the last N lines". A container that
+ * has been looping on an error for an hour returns nothing under the second reading.
+ */
+export interface CnLabManagerLogSearchQuery {
+  tail?: number;
+  since?: string;
+  until?: string;
+  pattern?: string;
+  patternMode?: CnLabManagerLogPatternMode;
+  caseSensitive?: boolean;
+  contextLines?: number;
+  errorsOnly?: boolean;
+  maxBytes?: number;
+}
+
+/**
+ * The `logs/search` response, plus the one field the space API adds itself.
+ *
+ * `filteredLocally` is not sent by the lab manager: it records that the route answered 404
+ * and the space API fell back to tailing the blob from `logs`. A caller reading it knows
+ * `pattern`, `since` and `contextLines` were not applied — silently ignoring them would let
+ * an empty result read as "nothing matched".
+ */
+export interface CnLabManagerDockerLogSearch extends CnLabManagerDockerLogs {
+  totalLines: number;
+  matchedLines: number;
+  returnedLines: number;
+  truncated: boolean;
+  truncatedBy?: string | null;
+  window?: { from?: string | null; until?: string | null } | null;
+  filteredLocally: boolean;
+}
+
 ////////////////////////// BACKUP //////////////////////////
 export interface CnLabManagerBackupInfoDTO {
   version: number;

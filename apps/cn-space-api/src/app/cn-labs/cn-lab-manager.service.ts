@@ -16,9 +16,11 @@ import {
   CnLabManagerDockerComposeUniqueId,
   CnLabManagerDockerInspect,
   CnLabManagerDockerLogs,
+  CnLabManagerDockerLogSearch,
   CnLabManagerDockerPsFull,
   CnLabManagerErrorLogs,
   CnLabManagerInitConfig,
+  CnLabManagerLogSearchQuery,
   CnLabManagerRestoreBackupDTO,
   CnLabManagerStatus,
   CnManagerLabComposeRestartOptions,
@@ -275,6 +277,14 @@ export class CnLabManagerService {
 
   public async getErrorLogs(lab: CnLab, containerName: string): Promise<CnLabManagerDockerLogs> {
     return this.labManagerApiService.getErrorLogs(lab.getLabManagerApiInfo(), containerName);
+  }
+
+  public async searchLogs(
+    lab: CnLab,
+    containerName: string,
+    query: CnLabManagerLogSearchQuery
+  ): Promise<CnLabManagerDockerLogSearch> {
+    return this.labManagerApiService.searchLogs(lab.getLabManagerApiInfo(), containerName, query);
   }
 
   public async exportLogs(lab: CnLab, containerName: string): Promise<string> {

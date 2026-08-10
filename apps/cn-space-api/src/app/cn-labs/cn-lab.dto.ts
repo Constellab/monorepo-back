@@ -7,6 +7,7 @@ import { CnBrickVersionDTO } from '../cn-bricks/cn-brick.dto';
 import { CnCloudProvider } from '../cn-cloud-providers/cn-cloud-provider.entity';
 import { CnCloudProviderRegion } from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import { CnExternalApiInfo } from '../cn-core/model/config/cn-config.class';
+import { CnLabManagerComposeEnv } from '../cn-external-lab-api/model/cn-lab-manager.class';
 import { CnLabConfigDto } from '../cn-lab-configs/cn-lab-config.dto';
 import { CnServerCloud } from '../cn-servers-info/server-cloud/cn-server-cloud.entity';
 import { CnSpace, CnSpaceEntity } from '../cn-spaces/cn-space.entity';
@@ -218,6 +219,54 @@ export class CnLabStatusDTO {
 
   @ClLuxonDateTimeTransform()
   serverTaskDatetime?: DateTime | null;
+}
+
+/**
+ * One container of a lab, with the compose it belongs to carried alongside it.
+ *
+ * The lab manager answers per compose, so a container's identity is only complete with its
+ * compose: two bricks can run a service of the same name. `containerName` is the docker name
+ * and is what every per-container route takes, so a list of these is what makes reading one
+ * container's logs possible without a caller having to construct a name.
+ */
+export interface CnLabContainerDTO {
+  brickName: string;
+  uniqueName: string;
+  env: CnLabManagerComposeEnv;
+  containerName: string;
+  status: string;
+  exitCode: number;
+  image: string;
+  startedAt: string;
+}
+
+/**
+ * Every container of a lab, and the composes that could not be read.
+ *
+ * A compose whose services cannot be listed is reported rather than dropped: on a lab that
+ * fails to start it is frequently the broken one, and an empty container list that looks
+ * complete would send a reader looking elsewhere.
+ */
+export interface CnLabContainerListDTO {
+  containers: CnLabContainerDTO[];
+  unreadableComposes: {
+    brickName: string;
+    uniqueName: string;
+    env: CnLabManagerComposeEnv;
+    error: string;
+  }[];
+}
+
+/**
+ * A lab's status history, with the "has it ever run" question answered over the whole history
+ * rather than over the page returned.
+ */
+export interface CnLabStatusTimelineDTO {
+  everStarted: boolean;
+  history: CnLabStatusHistory[];
+  serverTaskStatus: CnLabServerTaskStatus;
+  serverTaskText: string | null;
+  serverTaskDatetime: DateTime | null;
 }
 
 export class CnLabBusyStatusDTO {

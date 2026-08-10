@@ -38,6 +38,7 @@ import { CnLabsController } from './cn-labs.controller';
 import { CnLabsSecurity } from './cn-labs.security';
 import { CnLabsService } from './cn-labs.service';
 import { CnLabDesktopService } from './desktop/cn-lab-desktop.service';
+import { CnLabStartDiagnosisService } from './diagnosis/cn-lab-start-diagnosis.service';
 import { CnLabGreenOption } from './green-option/cn-lab-green-option.entity';
 import { CnLabGreenOptionService } from './green-option/cn-lab-green-option.service';
 import { CnLabFree } from './lab-free/cn-lab-free.entity';
@@ -138,6 +139,7 @@ import { CnLabVolumeEntity } from './volume/cn-lab-volume-entity';
     CnLabVolumeService,
     CnLabStatusHistoryService,
     CnLabStatsAggregateService,
+    CnLabStartDiagnosisService,
     // Migration system
     CnLabMigrationRegistryService,
   ],

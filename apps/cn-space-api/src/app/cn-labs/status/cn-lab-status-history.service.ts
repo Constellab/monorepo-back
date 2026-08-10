@@ -4,6 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
+import { CnLabStatus } from './cn-lab-status.enum';
 import { CnLabStatusHistory } from './cn-lab-status-history.entity';
 
 @Injectable()
@@ -48,6 +49,18 @@ export class CnLabStatusHistoryService extends BlAbstractPaginatedService<CnLabS
         createdAt: 'ASC',
       },
     });
+  }
+
+  /**
+   * Whether the lab ever reached a status, over its whole history.
+   *
+   * A count rather than a look through a page of history: "has this lab ever run?" is the
+   * question that tells a first start apart from a regression, and the answer for an old lab
+   * is older than any page a caller would read.
+   */
+  public async hasEverHadStatus(labId: string, status: CnLabStatus): Promise<boolean> {
+    const count = await this.repo.countBy({ entity: { id: labId }, status });
+    return count > 0;
   }
 
   /**

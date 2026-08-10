@@ -1,7 +1,7 @@
 import { BlBadRequestException } from '@monorepo/back-core-lib';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EntityManager, Repository } from 'typeorm';
+import { EntityManager, In, Repository } from 'typeorm';
 
 import { CnErrorText } from '../../cn-core/model/config/cn-error-text.class';
 import { CnUser } from '../../cn-users/cn-user.entity';
@@ -97,6 +97,24 @@ export class CnLabUserService {
   public async findByLabIdAndUserId(labId: string, userId: string): Promise<CnLabUser | null> {
     return this.repository.findOneBy({
       labId: labId,
+      userId: userId,
+    });
+  }
+
+  /**
+   * The caller's membership rows across several labs, in one query.
+   *
+   * Labs the user has no row on are simply absent from the result. Used where a list of labs
+   * has to say what the caller may do with each: one query per row would make the cost of a
+   * lab list grow with its page size.
+   */
+  public async findByLabIdsAndUserId(labIds: string[], userId: string): Promise<CnLabUser[]> {
+    if (labIds.length === 0) {
+      return [];
+    }
+
+    return this.repository.findBy({
+      labId: In(labIds),
       userId: userId,
     });
   }

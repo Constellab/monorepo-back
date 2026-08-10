@@ -346,15 +346,24 @@ export class CnLabsService extends CnAbstractWithStatusService<CnLabEntity, CnLa
     });
   }
 
+  /**
+   * @param restrictToUserId when set, only the labs this user is a member of are returned —
+   * the same restriction as {@link getUserLabs}. Left undefined the search covers the whole
+   * Space, which is what a Space admin is allowed to see.
+   */
   public async searchInSpace(
     spaceId: string,
     searchParams: BlSearchParams,
     page: number,
-    size: number
+    size: number,
+    restrictToUserId?: string
   ): Promise<ClPage<CnLabFull>> {
     const searchBuilder = new BlSearchBuilder<CnLabEntity>();
     searchBuilder.addSearchParams(searchParams);
     searchBuilder.mergeWhereOptions({ spaceId: spaceId });
+    if (restrictToUserId != null) {
+      searchBuilder.mergeWhereOptions({ sharedGroups: { userId: restrictToUserId } });
+    }
     searchBuilder.setRelations(CnLabEntity.relationFull);
 
     return this.findPaginated(page, size, searchBuilder.build());

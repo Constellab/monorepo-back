@@ -8,11 +8,15 @@ import { CnUsersModule } from '../cn-users/cn-users.module';
 import { CN_MCP_SPACE_API_RESOURCE_PATH } from './cn-mcp.constants';
 import { CnMcpTool } from './cn-mcp.tool';
 import { CnMcpAuthGuard } from './cn-mcp-auth.guard';
+import { CnMcpLabTool } from './cn-mcp-lab.tool';
 import { CnMcpSession } from './cn-mcp-session.service';
 
 /**
- * The Space API's MCP endpoint: a small read-only tool set an AI client reaches with an
- * OAuth access token.
+ * The Space API's MCP endpoint: the tool set an AI client reaches with an OAuth access token.
+ *
+ * Two groups of tools live behind it. {@link CnMcpTool} answers questions about Spaces and
+ * labs, and {@link CnMcpLabTool} diagnoses a cloud lab that fails to start. All but one read;
+ * the exception carries no `readOnlyHint` and says what it changes.
  *
  * Endpoint: POST /{@link CN_MCP_SPACE_API_RESOURCE_PATH} — the same constant the
  * application module registers as a Resource, so the endpoint and its token audience
@@ -37,13 +41,18 @@ import { CnMcpSession } from './cn-mcp-session.service';
       version: '0.1.0',
       title: 'Constellab',
       instructions:
-        'Read-only access to Constellab. Data lives in Spaces, and this server remembers ' +
+        'Access to Constellab. Data lives in Spaces, and this server remembers ' +
         'no current Space: every tool that reads inside one takes a required spaceId, so ' +
         'the Space is visible in the conversation on every call. Before using such a tool, ' +
         'establish which Space is meant — call constellab_get_default_space and tell the ' +
         'user which Space you will use, or, when they name one, call constellab_list_spaces ' +
         'to resolve that name to an id. Never guess or reuse an id the user has not been ' +
-        'told about, and re-check when they ask to switch Space mid-conversation.',
+        'told about, and re-check when they ask to switch Space mid-conversation. ' +
+        'When a data lab fails to start, call constellab_lab_diagnose_start before reading ' +
+        'any log: it says which of the six layers of a lab start is blocked, and reading a ' +
+        'deeper layer is wasted effort while an earlier one is down. Every tool here reads ' +
+        'except constellab_lab_refresh_status, which writes a reconciled status and can ' +
+        "start a lab's containers — say so to the user before calling it.",
       transport: McpTransportType.STREAMABLE_HTTP,
       mcpEndpoint: CN_MCP_SPACE_API_RESOURCE_PATH,
       decorators: [BlPublic()],
@@ -51,6 +60,6 @@ import { CnMcpSession } from './cn-mcp-session.service';
       streamableHttp: { statelessMode: true, enableJsonResponse: true },
     }),
   ],
-  providers: [CnMcpAuthGuard, CnMcpSession, CnMcpTool],
+  providers: [CnMcpAuthGuard, CnMcpSession, CnMcpTool, CnMcpLabTool],
 })
 export class CnMcpModule {}
