@@ -813,7 +813,12 @@ CREATE TABLE `refresh_token`
   -- single query — without it that OR degrades to a table scan on every refresh.
   INDEX `IDX_refresh_token_previous_token_hash` (`previous_token_hash`),
   CONSTRAINT `FK_refresh_token_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
-);
+-- InnoDB rejects a foreign key between two varchar columns whose collations differ.
+-- `user` carries an explicit utf8mb4_general_ci (dumps write the collation out, so any
+-- database restored from one keeps it), while a table created here would take the
+-- database default instead — utf8mb4_uca1400_ai_ci or utf8mb4_0900_ai_ci on a recent
+-- server. Pin the collation so the key holds whatever the default happens to be.
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
 -- Only for a database that already ran the CREATE TABLE above without
 -- `previous_token_hash` (local and dev, which were used to validate the flow by hand).
@@ -863,3 +868,16 @@ WHERE `kind` = 'oauth';
 -- earlier version of this file, which created the table. A database first set up
 -- after the cutover never had it.
 DROP TABLE IF EXISTS `oauth_grant`;
+
+-- ENV VARIABLES. Nothing to add — a Resource Server holds no signing key, no redirect
+-- allowlist and no token lifetime. Two to REMOVE, now the Space API's and no longer
+-- read here, harmless to leave but the kind of stale secret that later looks
+-- load-bearing: OAUTH_ALLOWED_REDIRECT_URIS and MCP_JWT_PRIVATE_KEY_BASE64.
+--
+-- SPACE_API_URL, already required for login, now also names the Authorization Server
+-- and the host of the key set. It must name the same host as the Space API's API_URL,
+-- scheme included; a trailing slash on either is stripped. No test compares them, and a
+-- mismatch means every MCP call takes a 401 with both applications looking healthy.
+--
+-- Optional, defaulting to hn-jwt.config.ts: ACCESS_TOKEN_DURATION_SECONDS (900) and
+-- REFRESH_TOKEN_DURATION_SECONDS (2592000).

@@ -455,7 +455,12 @@ CREATE TABLE `refresh_token`
   -- single query — without it that OR degrades to a table scan on every refresh.
   INDEX `IDX_refresh_token_previous_token_hash` (`previous_token_hash`),
   CONSTRAINT `FK_refresh_token_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
-);
+-- InnoDB rejects a foreign key between two varchar columns whose collations differ.
+-- `user` carries an explicit utf8mb4_general_ci (dumps write the collation out, so any
+-- database restored from one keeps it), while a table created here would take the
+-- database default instead — utf8mb4_uca1400_ai_ci or utf8mb4_0900_ai_ci on a recent
+-- server. Pin the collation so the key holds whatever the default happens to be.
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
 -- ############################################################################
 -- MUST RUN BEFORE THE APP STARTS. A Grant is a user's standing approval of one
@@ -481,4 +486,24 @@ CREATE TABLE `oauth_grant`
   PRIMARY KEY (`id`),
   UNIQUE INDEX `IDX_oauth_grant_grant_key` (`grant_key`),
   CONSTRAINT `FK_oauth_grant_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
-);
+-- Same collation pin as `refresh_token` above, and for the same reason: the foreign
+-- key to `user` (id) only forms when both columns share one collation.
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
+
+-- ENV VARIABLES, both required and read while the injector is built, so a missing one
+-- stops the app at startup. Commentary in src/environments/cn-dev.env.
+--
+-- MCP_JWT_PRIVATE_KEY_BASE64 — signs MCP access tokens, public half published at
+--   /.well-known/jwks.json. Not JWT_SECRET. One per environment, never the repo key:
+--     openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:2048 | base64 -w0
+-- OAUTH_ALLOWED_REDIRECT_URIS — non-loopback redirect URIs a client may register,
+--   comma-separated, matched exactly. Incomplete boots fine then refuses registration:
+--     https://claude.ai/api/mcp/auth_callback,https://claude.com/api/mcp/auth_callback
+--
+-- Optional, defaulting to cn-jwt.config.ts: ACCESS_TOKEN_DURATION_SECONDS (900),
+-- REFRESH_TOKEN_DURATION_SECONDS (2592000), MCP_ACCESS_TOKEN_DURATION_SECONDS (3600),
+-- and MCP_JWT_PREVIOUS_PRIVATE_KEY_BASE64 during a key rotation only.
+--
+-- API_URL (the OAuth issuer) and the Community's SPACE_API_URL must name the same host,
+-- scheme included; a trailing slash on either is stripped. No test compares them, and a
+-- mismatch means every MCP call takes a 401 with both applications looking healthy.
