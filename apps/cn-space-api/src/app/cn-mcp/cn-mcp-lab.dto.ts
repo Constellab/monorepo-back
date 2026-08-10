@@ -3,8 +3,12 @@ import {
   CnLabManagerErrorLogs,
 } from '../cn-external-lab-api/model/cn-lab-manager.class';
 import { CnLabContainerDTO, CnLabContainerListDTO, CnLabStatusTimelineDTO } from '../cn-labs/cn-lab.dto';
-import { CnLabFull } from '../cn-labs/cn-lab.entity';
-import { CnLabStartDiagnosis, CnLabStartLayerName } from '../cn-labs/diagnosis/cn-lab-start-diagnosis.dto';
+import { CnLabFull, CnLabWithSpace } from '../cn-labs/cn-lab.entity';
+import {
+  CnLabStartDiagnosis,
+  CnLabStartDiagnosisResult,
+  CnLabStartLayerName,
+} from '../cn-labs/diagnosis/cn-lab-start-diagnosis.dto';
 import {
   CN_MCP_TOOL_LAB_CONTAINER_LOGS,
   CN_MCP_TOOL_LAB_DIAGNOSE_START,
@@ -26,15 +30,18 @@ import {
  */
 
 /**
- * One row of a lab list. `canDebug` is whether the caller holds OWNER on this lab.
+ * The lab, as every payload here names it.
  *
- * `serverTaskStatus` is `@Exclude()`d on the entity and still here on purpose. That decorator
- * keeps it out of the *lab* HTTP payload, where it would be noise; the browser reads the same
- * field from the lab status endpoint. It is the field that says a lab is mid-start rather than
- * broken, so a diagnosis list without it would have a model reading logs on a lab whose start is
- * still running. The credentials are a different matter and appear nowhere.
+ * Four of these fields — `serverTaskStatus`, and `serverTaskText` / `serverTaskDatetime` /
+ * `dnsConfigured` where other payloads carry them — are `@Exclude()`d on `CnLabEntity` and still
+ * returned on purpose. That decorator keeps them out of the *lab* HTTP payload, where they are
+ * noise; the browser reads the same fields from the lab status endpoint, which is the operation
+ * these tools stand in for. They are also the fields that say a lab is mid-start rather than
+ * broken, and a diagnosis without them would have a model reading logs on a lab whose start is
+ * still running. The six credentials the entity carries are a different matter entirely and
+ * appear in no payload, which is what the tests assert.
  */
-export interface CnMcpLabRow {
+export interface CnMcpLabSummary {
   id: string;
   name: string;
   type: string;
@@ -42,10 +49,9 @@ export interface CnMcpLabRow {
   status: string | null;
   serverTaskStatus: string;
   lastModifiedAt: string | null;
-  canDebug: boolean;
 }
 
-export function cnMcpLabRow(lab: CnLabFull, canDebug: boolean): CnMcpLabRow {
+export function cnMcpLabSummary(lab: CnLabWithSpace): CnMcpLabSummary {
   return {
     id: lab.id,
     name: lab.name,
@@ -54,8 +60,14 @@ export function cnMcpLabRow(lab: CnLabFull, canDebug: boolean): CnMcpLabRow {
     status: lab.currentStatus?.status ?? null,
     serverTaskStatus: lab.serverTaskStatus,
     lastModifiedAt: lab.lastModifiedAt?.toISO() ?? null,
-    canDebug,
   };
+}
+
+/** One row of a lab list. `canDebug` is whether the caller holds OWNER on this lab. */
+export type CnMcpLabRow = CnMcpLabSummary & { canDebug: boolean };
+
+export function cnMcpLabRow(lab: CnLabFull, canDebug: boolean): CnMcpLabRow {
+  return { ...cnMcpLabSummary(lab), canDebug };
 }
 
 /**
@@ -82,6 +94,22 @@ export interface CnMcpLabHypothesis {
 export function cnMcpLabHypotheses(diagnosis: CnLabStartDiagnosis): CnMcpLabHypothesis[] {
   const blocked = diagnosis.blockedAtLayer;
   if (blocked == null) {
+    // Nothing probed is blocking. Whether that is the whole story depends on how much was
+    // probed, and a caller that read four layers must not be told the lab is fine.
+    if (diagnosis.notProbedLayers.length > 0) {
+      return [
+        {
+          layer: 'none',
+          hypothesis:
+            `Every layer that was read answers ok, but ${diagnosis.notProbedLayers.join(' and ')} ` +
+            `were not read at all, so this is not a clean bill of health. Reading them needs the ` +
+            `lab owner role; if this account does not hold it, a lab owner has to run the full ` +
+            `diagnosis.`,
+          nextTool: CN_MCP_TOOL_LAB_DIAGNOSE_START,
+        },
+      ];
+    }
+
     return [
       {
         layer: 'none',
@@ -195,11 +223,17 @@ export function cnMcpLabHypotheses(diagnosis: CnLabStartDiagnosis): CnMcpLabHypo
   return byLayer[blocked];
 }
 
-export function cnMcpDiagnosisPayload(diagnosis: CnLabStartDiagnosis): Record<string, unknown> {
+export function cnMcpDiagnosisPayload(result: CnLabStartDiagnosisResult): Record<string, unknown> {
+  const { lab, diagnosis } = result;
+
   return {
+    // The lab, not just its id: a verdict a model is going to repeat to a user has to name which
+    // lab it is about, and its type and status are what make the verdict readable.
+    lab: cnMcpLabSummary(lab),
     layers: diagnosis.layers,
     blockedAtLayer: diagnosis.blockedAtLayer,
     hasUnknownLayer: diagnosis.hasUnknownLayer,
+    notProbedLayers: diagnosis.notProbedLayers,
     hypotheses: cnMcpLabHypotheses(diagnosis),
   };
 }
@@ -283,7 +317,7 @@ export function cnMcpContainerLogsPayload(search: CnLabManagerDockerLogSearch): 
       ? {
           filteredLocallyMeaning:
             'This lab manager has no server-side log search, so only `tail` was applied: ' +
-            '`pattern`, `since`, `until` and `contextLines` were ignored. An empty or ' +
+            '`pattern`, `since` and `contextLines` were ignored. An empty or ' +
             'unfiltered result here says nothing about whether the pattern occurs in the log.',
         }
       : {}),

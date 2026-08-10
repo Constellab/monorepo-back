@@ -1,16 +1,22 @@
 import 'reflect-metadata';
 
-import { BlUnauthorizedException, BlUserCategory } from '@monorepo/back-core-lib';
+import { BlBadRequestException, BlUnauthorizedException, BlUserCategory } from '@monorepo/back-core-lib';
 import { ClPage } from '@monorepo/core-lib';
 import { MCP_TOOL_METADATA_KEY } from '@rekog/mcp-nest';
 import { DateTime } from 'luxon';
 
+import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
 import { CnRequest } from '../cn-core/utils/cn-current-user.helper';
 import { CnLabManagerComposeEnv } from '../cn-external-lab-api/model/cn-lab-manager.class';
 import { CnLabEntity, CnLabFull, CnLabType } from '../cn-labs/cn-lab.entity';
 import { CnLabAggregateService } from '../cn-labs/cn-lab-aggregate.service';
 import { CnLabNotCloudException } from '../cn-labs/diagnosis/cn-lab-not-cloud.exception';
-import { CnLabStartDiagnosis } from '../cn-labs/diagnosis/cn-lab-start-diagnosis.dto';
+import {
+  CnLabStartDiagnosis,
+  CnLabStartDiagnosisResult,
+  CnLabStartLayer,
+  CnLabStartLayerName,
+} from '../cn-labs/diagnosis/cn-lab-start-diagnosis.dto';
 import { CnLabServerTaskStatus, CnLabStatus } from '../cn-labs/status/cn-lab-status.enum';
 import { CnLabStatusHistory } from '../cn-labs/status/cn-lab-status-history.entity';
 import { CnLabUserRole } from '../cn-labs/user/cn-lab-user.entity';
@@ -21,8 +27,10 @@ import { CnSpaceUserService } from '../cn-spaces/cn-space-user.service';
 import { CnUser } from '../cn-users/cn-user.entity';
 import {
   CN_MCP_TOOL_LAB_CONTAINER_LOGS,
+  CN_MCP_TOOL_LAB_DIAGNOSE_START,
   CN_MCP_TOOL_LAB_GET_START_ERRORS,
   CN_MCP_TOOL_LAB_LIST_CONTAINERS,
+  CN_MCP_TOOL_LAB_STATUS_TIMELINE,
 } from './cn-mcp.constants';
 import { CnMcpLabTool } from './cn-mcp-lab.tool';
 import { CnMcpSession } from './cn-mcp-session.service';
@@ -35,7 +43,7 @@ import { CnMcpToolResponse } from './cn-mcp-tool.helper';
  * tools call. A refusal has to name both roles, or the model reads it as a broken lab and
  * starts diagnosing a problem that does not exist. A payload has to carry no credential, and
  * the entity carries six. And a call has to leave an audit line, because a platform admin's
- * token reaches every tenant through this endpoint.
+ * token reaches every Space through this endpoint.
  */
 describe('CnMcpLabTool', () => {
   const SPACE_ID = 'space-1';
@@ -66,8 +74,8 @@ describe('CnMcpLabTool', () => {
     aggregate = {
       searchReachableInCurrentSpace: jest.fn(),
       filterLabIdsManageableByCurrentUser: jest.fn().mockResolvedValue([]),
-      diagnoseLabStart: jest.fn().mockResolvedValue(diagnosisOf('cloud')),
-      refreshAndDescribeLabStart: jest.fn().mockResolvedValue(diagnosisOf('labManager')),
+      diagnoseLabStart: jest.fn().mockResolvedValue(resultOf(diagnosisOf('cloud'))),
+      refreshAndDescribeLabStart: jest.fn().mockResolvedValue(resultOf(diagnosisOf('labManager'))),
       getLabStatusTimeline: jest.fn(),
       getAllLabContainers: jest.fn(),
       searchContainerLogs: jest.fn(),
@@ -113,13 +121,28 @@ describe('CnMcpLabTool', () => {
     return { user, res: {} } as unknown as CnRequest;
   }
 
-  function diagnosisOf(blockedAtLayer: CnLabStartDiagnosis['blockedAtLayer']): CnLabStartDiagnosis {
+  function diagnosisOf(
+    blockedAtLayer: CnLabStartDiagnosis['blockedAtLayer'],
+    notProbedLayers: CnLabStartLayerName[] = []
+  ): CnLabStartDiagnosis {
     const ok = { status: 'ok' as const, reason: 'fine' };
-    return {
-      layers: { spaceDb: ok, cloud: ok, dns: ok, ssh: ok, labManager: ok, glab: ok },
-      blockedAtLayer,
-      hasUnknownLayer: false,
+    const layers: Record<CnLabStartLayerName, CnLabStartLayer> = {
+      spaceDb: ok,
+      cloud: ok,
+      dns: ok,
+      ssh: ok,
+      labManager: ok,
+      glab: ok,
     };
+    for (const name of notProbedLayers) {
+      layers[name] = { status: 'notProbed', reason: 'nobody looked' };
+    }
+
+    return { layers, blockedAtLayer, hasUnknownLayer: false, notProbedLayers };
+  }
+
+  function resultOf(diagnosis: CnLabStartDiagnosis): CnLabStartDiagnosisResult {
+    return { lab: makeLab(), diagnosis };
   }
 
   function makeLab(overrides: Partial<CnLabEntity> = {}): CnLabFull {
@@ -224,11 +247,14 @@ describe('CnMcpLabTool', () => {
   });
 
   describe('diagnoseStart', () => {
-    it('returns the six layers, the blocked one and what to call next', async () => {
+    it('returns the lab, the six layers, the blocked one and what to call next', async () => {
       const payload = payloadOf(
         await tool.diagnoseStart({ spaceId: SPACE_ID, labId: LAB_ID }, undefined, requestOf())
       );
 
+      // The lab and not only its id: a verdict a model repeats to a user has to name the lab it
+      // is about, and the type is what says whether the six layers even apply.
+      expect(payload.lab).toMatchObject({ id: LAB_ID, name: 'rio', type: CnLabType.CLOUD });
       expect(Object.keys(payload.layers).sort()).toEqual(
         ['cloud', 'dns', 'glab', 'labManager', 'spaceDb', 'ssh'].sort()
       );
@@ -242,7 +268,7 @@ describe('CnMcpLabTool', () => {
     });
 
     it('points at the start error log once the lab layer is the blocked one', async () => {
-      aggregate.diagnoseLabStart.mockResolvedValue(diagnosisOf('glab'));
+      aggregate.diagnoseLabStart.mockResolvedValue(resultOf(diagnosisOf('glab')));
 
       const payload = payloadOf(
         await tool.diagnoseStart({ spaceId: SPACE_ID, labId: LAB_ID }, undefined, requestOf())
@@ -297,16 +323,37 @@ describe('CnMcpLabTool', () => {
       expect(refusal).toContain('not a fault of the lab');
     });
 
-    it('refuses a non-cloud lab by naming the tools that still apply', async () => {
+    it('refuses an on-premise lab by naming the tools that still apply', async () => {
       aggregate.diagnoseLabStart.mockRejectedValue(new CnLabNotCloudException(CnLabType.ON_PREMISE));
 
       const refusal = await tool
         .diagnoseStart({ spaceId: SPACE_ID, labId: LAB_ID }, undefined, requestOf())
         .catch((error: Error) => error.message);
 
-      // A refusal with no next step is one the model retries verbatim.
+      // A refusal with no next step is one the model retries verbatim. An on-premise lab has no
+      // cloud layers but does run a lab manager, so its containers and logs are still readable.
       expect(refusal).toContain(CN_MCP_TOOL_LAB_LIST_CONTAINERS);
       expect(refusal).toContain(CN_MCP_TOOL_LAB_CONTAINER_LOGS);
+      expect(refusal).toContain(CN_MCP_TOOL_LAB_STATUS_TIMELINE);
+    });
+
+    it('refuses a desktop lab without offering it the container tools', async () => {
+      // A desktop lab never reaches the cloud check: the aggregate refuses to manage it first,
+      // with a bare i18n key. Left alone, the one lab type the ticket names explicitly would be
+      // the only one whose refusal says nothing — and offering it the container tools, which are
+      // refused on a desktop lab too, would just buy a second refusal.
+      aggregate.diagnoseLabStart.mockRejectedValue(
+        new BlBadRequestException(CnErrorText.CANT_MANAGE_DESKTOP_LAB)
+      );
+
+      const refusal = await tool
+        .diagnoseStart({ spaceId: SPACE_ID, labId: LAB_ID }, undefined, requestOf())
+        .catch((error: Error) => error.message);
+
+      expect(refusal).not.toEqual(CnErrorText.CANT_MANAGE_DESKTOP_LAB);
+      expect(refusal).toContain('desktop lab');
+      expect(refusal).toContain(CN_MCP_TOOL_LAB_STATUS_TIMELINE);
+      expect(refusal).not.toContain(CN_MCP_TOOL_LAB_CONTAINER_LOGS);
     });
   });
 
@@ -521,6 +568,24 @@ describe('CnMcpLabTool', () => {
       expect(payload.blockedAtLayer).toEqual('labManager');
     });
 
+    it('does not report a healthy lab as blocked at a layer nobody read', async () => {
+      // This tool cannot read the cloud and ssh layers — they need the lab owner role — so it
+      // reports them as notProbed. If an unread layer counted as blocking, every lab answered
+      // here, including one that is running perfectly, would come back blocked at `cloud`.
+      aggregate.refreshAndDescribeLabStart.mockResolvedValue(resultOf(diagnosisOf(null, ['cloud', 'ssh'])));
+
+      const payload = payloadOf(
+        await tool.refreshStatus({ spaceId: SPACE_ID, labId: LAB_ID }, undefined, requestOf())
+      );
+
+      expect(payload.blockedAtLayer).toBeNull();
+      expect(payload.notProbedLayers).toEqual(['cloud', 'ssh']);
+      // But it is not a clean bill of health either, and the answer says so rather than
+      // claiming every layer is fine.
+      expect(payload.hypotheses[0].hypothesis).toContain('not read');
+      expect(payload.hypotheses[0].nextTool).toEqual(CN_MCP_TOOL_LAB_DIAGNOSE_START);
+    });
+
     it('carries no read-only hint, unlike every other tool here', () => {
       // It writes a reconciled status, and a lab whose server is ready has its containers
       // started as a consequence. A client that trusted a read-only hint would run it silently,
@@ -608,7 +673,7 @@ describe('CnMcpLabTool', () => {
 
       expect(logged).toHaveLength(1);
       expect(logged[0]).toContain(`labId=${LAB_ID}`);
-      expect(logged[0]).toContain(`spaceId=${SPACE_ID}`);
+      expect(logged[0]).toContain(`spaceIdRequested=${SPACE_ID}`);
       expect(logged[0]).toContain('userId=user-1');
       expect(logged[0]).toContain('adminShortcut=false');
     });
@@ -625,7 +690,7 @@ describe('CnMcpLabTool', () => {
       expect(logged[0]).toContain('adminShortcut=true');
     });
 
-    it('audits a call that is then refused, not only one that succeeds', async () => {
+    it('audits a call that is then refused on the lab, not only one that succeeds', async () => {
       aggregate.diagnoseLabStart.mockRejectedValue(new BlUnauthorizedException());
       aggregate.findByIdAndCheck.mockResolvedValue({ userRole: CnLabUserRole.USER });
 
@@ -633,8 +698,23 @@ describe('CnMcpLabTool', () => {
         .diagnoseStart({ spaceId: SPACE_ID, labId: LAB_ID }, undefined, requestOf())
         .catch(() => null);
 
-      // The cross-tenant attempt is the interesting line, so it is written before the work.
       expect(logged).toHaveLength(1);
+    });
+
+    it('audits a call naming a Space this account cannot reach', async () => {
+      // The line that matters most, and the one an audit written inside the authorized call
+      // would miss entirely: a client reaching for a Space this account is not in leaves no other
+      // trace. The Space logged is the one the call asked for, since there is no other.
+      spaceService.findById.mockResolvedValue(null);
+
+      await tool
+        .diagnoseStart({ spaceId: 'someone-elses-space', labId: LAB_ID }, undefined, requestOf())
+        .catch(() => null);
+
+      expect(logged).toHaveLength(1);
+      expect(logged[0]).toContain('spaceIdRequested=someone-elses-space');
+      expect(logged[0]).toContain('userId=user-1');
+      expect(aggregate.diagnoseLabStart).not.toHaveBeenCalled();
     });
   });
 });

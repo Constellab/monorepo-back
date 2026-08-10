@@ -1,3 +1,5 @@
+import { CnLabType } from '../cn-labs/cn-lab.entity';
+
 /**
  * Path of this application's MCP endpoint, relative to its base URL.
  *
@@ -43,15 +45,32 @@ export const CN_MCP_TOOL_LAB_REFRESH_STATUS = 'constellab_lab_refresh_status';
  * What the lab tools say when the lab is not a cloud lab.
  *
  * Names the tools that still apply, because a refusal that only says "not supported" leaves a
- * model with no next step and it will retry the same call. A desktop or on-premise lab has no
- * cloud instance, volume, static IP or ssh access of ours, so four of the six layers do not
- * exist for it — reporting them anyway would produce a confident, wrong verdict.
+ * model with no next step and it will retry the same call. A lab of another type has no cloud
+ * instance, volume, static IP or ssh access of ours, so four of the six layers do not exist for
+ * it — reporting them anyway would produce a confident, wrong verdict.
+ *
+ * The remaining tools differ by type, which is why this is not one sentence. An on-premise lab
+ * runs a lab manager and its containers and logs are readable; a desktop lab is one the platform
+ * refuses to manage at all, so the container and log tools are refused there too and saying
+ * otherwise would send a model straight into a second refusal.
  */
-export const CN_MCP_LAB_NOT_CLOUD_MESSAGE =
-  `The six-layer start diagnosis only applies to a cloud lab. On a lab of another type, ` +
-  `${CN_MCP_TOOL_LAB_LIST_CONTAINERS}, ${CN_MCP_TOOL_LAB_CONTAINER_LOGS} and ` +
-  `${CN_MCP_TOOL_LAB_GET_START_ERRORS} still work if it runs a lab manager, and ` +
-  `${CN_MCP_TOOL_LAB_STATUS_TIMELINE} works on every lab.`;
+export function cnMcpLabNotCloudMessage(labType: CnLabType): string {
+  const alwaysApply = `${CN_MCP_TOOL_LAB_FIND} and ${CN_MCP_TOOL_LAB_STATUS_TIMELINE} work on every lab.`;
+
+  if (labType === CnLabType.DESKTOP) {
+    return (
+      `This is a desktop lab, which runs on someone's own machine: it has no cloud server, ` +
+      `volume, DNS record or ssh access of ours, and the platform declines to manage it at all — ` +
+      `its containers and logs cannot be read from here either. Only ${alwaysApply}`
+    );
+  }
+
+  return (
+    `The six-layer start diagnosis only applies to a cloud lab, and this lab is ${labType}. ` +
+    `On it, ${CN_MCP_TOOL_LAB_LIST_CONTAINERS}, ${CN_MCP_TOOL_LAB_CONTAINER_LOGS} and ` +
+    `${CN_MCP_TOOL_LAB_GET_START_ERRORS} still work through its lab manager, and ${alwaysApply}`
+  );
+}
 
 /**
  * What a lab tool says when it will not act on the lab for the account that asked.
@@ -65,8 +84,8 @@ export const CN_MCP_LAB_NOT_CLOUD_MESSAGE =
  * causes that the platform deliberately cannot distinguish from one another — the account was
  * never added to the lab, or the lab is not in the Space the call named. Both are stated,
  * because a lab id resolves only inside the Space it was given with and is never quietly
- * resolved into its own: that is what keeps a lab id leaked from another tenant from turning
- * itself into a read of that tenant.
+ * resolved into its own: that is what keeps a lab id leaked from another Space from turning
+ * itself into a read of that Space.
  */
 export function cnMcpLabRoleRefusal(
   heldRole: string | null,

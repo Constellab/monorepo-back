@@ -333,16 +333,28 @@ describe('CnLabStartDiagnosisService', () => {
       );
     });
 
-    it('marks the owner-only layers unknown rather than guessing them', () => {
+    it('marks the owner-only layers notProbed rather than guessing them', () => {
       const diagnosis = service.describeFromStatus(statusOf());
 
       // A refresh is authorized for any member of the lab, while the provider and ssh probes
       // are gated on the lab owner. Answering them here would hand a member information the
       // browser does not give them.
-      expect(diagnosis.layers.ssh.status).toEqual('unknown');
+      expect(diagnosis.layers.ssh.status).toEqual('notProbed');
       expect(diagnosis.layers.ssh.reason).toContain('OWNER');
-      expect(diagnosis.layers.cloud.status).toEqual('unknown');
-      expect(diagnosis.hasUnknownLayer).toBe(true);
+      expect(diagnosis.layers.cloud.status).toEqual('notProbed');
+      expect(diagnosis.notProbedLayers).toEqual(['cloud', 'ssh']);
+      // notProbed is not the same claim as unknown: nobody looked, rather than looked and could
+      // not tell.
+      expect(diagnosis.hasUnknownLayer).toBe(false);
+    });
+
+    it('does not report a healthy lab as blocked at a layer it declined to read', () => {
+      const diagnosis = service.describeFromStatus(statusOf());
+
+      // The bug this guards against: with cloud and ssh reported as `unknown`, and unknown
+      // counting as blocking, every lab answered here — including one that is running
+      // perfectly — came back blocked at `cloud`.
+      expect(diagnosis.blockedAtLayer).toBeNull();
     });
 
     it('still reports what the refreshed status does say', () => {

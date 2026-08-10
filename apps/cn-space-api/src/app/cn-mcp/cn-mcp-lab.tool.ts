@@ -1,8 +1,9 @@
-import { BlSearchParams, BlUnauthorizedException } from '@monorepo/back-core-lib';
+import { BlBadRequestException, BlSearchParams, BlUnauthorizedException } from '@monorepo/back-core-lib';
 import { Injectable, Logger } from '@nestjs/common';
 import { Tool } from '@rekog/mcp-nest';
 import { z } from 'zod';
 
+import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
 // `import type`: these appear in @Tool-decorated signatures, and `emitDecoratorMetadata`
 // would otherwise emit a runtime reference to a type-only import.
 import type { CnRequest } from '../cn-core/utils/cn-current-user.helper';
@@ -13,7 +14,6 @@ import { CnLabStatus } from '../cn-labs/status/cn-lab-status.enum';
 import { CnLabUserRole } from '../cn-labs/user/cn-lab-user.entity';
 import { CnUserSpaceInfo } from '../cn-users/cn-user.dto';
 import {
-  CN_MCP_LAB_NOT_CLOUD_MESSAGE,
   CN_MCP_TOOL_LAB_CONTAINER_LOGS,
   CN_MCP_TOOL_LAB_DIAGNOSE_START,
   CN_MCP_TOOL_LAB_FIND,
@@ -21,6 +21,7 @@ import {
   CN_MCP_TOOL_LAB_LIST_CONTAINERS,
   CN_MCP_TOOL_LAB_REFRESH_STATUS,
   CN_MCP_TOOL_LAB_STATUS_TIMELINE,
+  cnMcpLabNotCloudMessage,
   cnMcpLabRoleRefusal,
 } from './cn-mcp.constants';
 import {
@@ -66,7 +67,7 @@ const labIdParameter = z
  *
  * A platform admin reaches every Space and is treated as the owner of every lab in it. That is
  * the browser's behaviour and is deliberately kept — but it means a token held by a Gencovery
- * admin can read any tenant's logs, which is why {@link audit} writes a line per call saying
+ * admin can read the logs of every Space, which is why {@link audit} writes a line per call saying
  * whether that shortcut applied.
  */
 @Injectable()
@@ -111,9 +112,9 @@ export class CnMcpLabTool {
     _context: unknown,
     request: CnRequest
   ): Promise<CnMcpToolResponse> {
-    return this.session.inSpace(request, spaceId, async (userInfo) => {
-      this.audit(CN_MCP_TOOL_LAB_FIND, userInfo, null);
+    this.audit(CN_MCP_TOOL_LAB_FIND, request, spaceId, null);
 
+    return this.session.inSpace(request, spaceId, async (userInfo) => {
       const searchParams = new BlSearchParams(
         [
           ...(query ? [{ key: 'name', operator: 'CONTAINS' as const, value: query }] : []),
@@ -158,17 +159,14 @@ export class CnMcpLabTool {
     _context: unknown,
     request: CnRequest
   ): Promise<CnMcpToolResponse> {
-    return this.session.inSpace(request, spaceId, async (userInfo) => {
-      this.audit(CN_MCP_TOOL_LAB_DIAGNOSE_START, userInfo, labId);
+    this.audit(CN_MCP_TOOL_LAB_DIAGNOSE_START, request, spaceId, labId);
 
-      const diagnosis = await this.asLabOwner(CN_MCP_TOOL_LAB_DIAGNOSE_START, userInfo, labId, () =>
+    return this.session.inSpace(request, spaceId, async (userInfo) => {
+      const result = await this.asLabOwner(CN_MCP_TOOL_LAB_DIAGNOSE_START, userInfo, labId, () =>
         this.labAggregateService.diagnoseLabStart(labId)
       );
 
-      return cnMcpJson({
-        labId,
-        ...cnMcpDiagnosisPayload(diagnosis),
-      });
+      return cnMcpJson(cnMcpDiagnosisPayload(result));
     });
   }
 
@@ -197,9 +195,9 @@ export class CnMcpLabTool {
     _context: unknown,
     request: CnRequest
   ): Promise<CnMcpToolResponse> {
-    return this.session.inSpace(request, spaceId, async (userInfo) => {
-      this.audit(CN_MCP_TOOL_LAB_GET_START_ERRORS, userInfo, labId);
+    this.audit(CN_MCP_TOOL_LAB_GET_START_ERRORS, request, spaceId, labId);
 
+    return this.session.inSpace(request, spaceId, async (userInfo) => {
       const errorLogs = await this.asLabOwner(CN_MCP_TOOL_LAB_GET_START_ERRORS, userInfo, labId, () =>
         this.labAggregateService.getStartingError(labId)
       );
@@ -231,9 +229,9 @@ export class CnMcpLabTool {
     _context: unknown,
     request: CnRequest
   ): Promise<CnMcpToolResponse> {
-    return this.session.inSpace(request, spaceId, async (userInfo) => {
-      this.audit(CN_MCP_TOOL_LAB_LIST_CONTAINERS, userInfo, labId);
+    this.audit(CN_MCP_TOOL_LAB_LIST_CONTAINERS, request, spaceId, labId);
 
+    return this.session.inSpace(request, spaceId, async (userInfo) => {
       const containers = await this.asLabOwner(CN_MCP_TOOL_LAB_LIST_CONTAINERS, userInfo, labId, () =>
         this.labAggregateService.getAllLabContainers(labId)
       );
@@ -290,9 +288,9 @@ export class CnMcpLabTool {
     _context: unknown,
     request: CnRequest
   ): Promise<CnMcpToolResponse> {
-    return this.session.inSpace(request, args.spaceId, async (userInfo) => {
-      this.audit(CN_MCP_TOOL_LAB_CONTAINER_LOGS, userInfo, args.labId);
+    this.audit(CN_MCP_TOOL_LAB_CONTAINER_LOGS, request, args.spaceId, args.labId);
 
+    return this.session.inSpace(request, args.spaceId, async (userInfo) => {
       const search = await this.asLabOwner(CN_MCP_TOOL_LAB_CONTAINER_LOGS, userInfo, args.labId, () =>
         this.labAggregateService.searchContainerLogs(args.labId, args.containerName, {
           tail: args.tail,
@@ -332,9 +330,9 @@ export class CnMcpLabTool {
     _context: unknown,
     request: CnRequest
   ): Promise<CnMcpToolResponse> {
-    return this.session.inSpace(request, spaceId, async (userInfo) => {
-      this.audit(CN_MCP_TOOL_LAB_STATUS_TIMELINE, userInfo, labId);
+    this.audit(CN_MCP_TOOL_LAB_STATUS_TIMELINE, request, spaceId, labId);
 
+    return this.session.inSpace(request, spaceId, async (userInfo) => {
       const timeline = await this.asLabMember(CN_MCP_TOOL_LAB_STATUS_TIMELINE, userInfo, labId, () =>
         this.labAggregateService.getLabStatusTimeline(labId, limit)
       );
@@ -359,8 +357,10 @@ export class CnMcpLabTool {
       'read-only call: it writes the reconciled status, and reconciling a lab whose server is ' +
       'ready CAN START ITS CONTAINERS. That is often the fix for a lab stuck part-way through ' +
       'starting, but say so to the user before calling it. It reports the layers it can see ' +
-      `without the owner-only probes; ${CN_MCP_TOOL_LAB_DIAGNOSE_START} is the full six-layer ` +
-      'read. Any member of the lab can call this, and it applies to CLOUD labs only.',
+      'without the owner-only probes: the two it cannot read come back as "notProbed", which ' +
+      'means nobody looked and NOT that they failed — do not report them as broken, and read ' +
+      `\`notProbedLayers\` before concluding. ${CN_MCP_TOOL_LAB_DIAGNOSE_START} is the full ` +
+      'six-layer read. Any member of the lab can call this, and it applies to CLOUD labs only.',
     parameters: z.object({ spaceId: CN_MCP_SPACE_ID_PARAMETER, labId: labIdParameter }),
   })
   async refreshStatus(
@@ -368,18 +368,14 @@ export class CnMcpLabTool {
     _context: unknown,
     request: CnRequest
   ): Promise<CnMcpToolResponse> {
-    return this.session.inSpace(request, spaceId, async (userInfo) => {
-      this.audit(CN_MCP_TOOL_LAB_REFRESH_STATUS, userInfo, labId);
+    this.audit(CN_MCP_TOOL_LAB_REFRESH_STATUS, request, spaceId, labId);
 
-      const diagnosis = await this.asLabMember(CN_MCP_TOOL_LAB_REFRESH_STATUS, userInfo, labId, () =>
+    return this.session.inSpace(request, spaceId, async (userInfo) => {
+      const result = await this.asLabMember(CN_MCP_TOOL_LAB_REFRESH_STATUS, userInfo, labId, () =>
         this.labAggregateService.refreshAndDescribeLabStart(labId)
       );
 
-      return cnMcpJson({
-        labId,
-        refreshed: true,
-        ...cnMcpDiagnosisPayload(diagnosis),
-      });
+      return cnMcpJson({ refreshed: true, ...cnMcpDiagnosisPayload(result) });
     });
   }
 
@@ -430,7 +426,12 @@ export class CnMcpLabTool {
       return await run();
     } catch (error) {
       if (error instanceof CnLabNotCloudException) {
-        throw new CnLabNotCloudException(error.labType, CN_MCP_LAB_NOT_CLOUD_MESSAGE);
+        throw new CnLabNotCloudException(error.labType, cnMcpLabNotCloudMessage(error.labType));
+      }
+      if (CnMcpLabTool.isDesktopRefusal(error)) {
+        // A desktop lab never reaches the cloud check: the aggregate refuses to manage it first,
+        // and does so with a bare i18n key, which is not something a model can act on.
+        throw new BlBadRequestException(cnMcpLabNotCloudMessage(CnLabType.DESKTOP));
       }
       if (error instanceof BlUnauthorizedException) {
         throw new BlUnauthorizedException(
@@ -439,6 +440,22 @@ export class CnMcpLabTool {
       }
       throw error;
     }
+  }
+
+  /**
+   * Whether an error is the platform declining to manage a desktop lab.
+   *
+   * Recognised by the message, because that is what the aggregate throws — the untranslated i18n
+   * key, matched against the same constant it was thrown with. Worth the indirection: the four
+   * lab-manager tools never get as far as their own cloud check on a desktop lab, so without this
+   * the one lab type the ticket calls out by name is the one whose refusal says nothing.
+   */
+  private static isDesktopRefusal(error: unknown): boolean {
+    // `String(...)`: the message is a plain string by the time it is on the exception, and
+    // comparing it to the enum member directly is what the unsafe-enum-comparison rule catches.
+    return (
+      error instanceof BlBadRequestException && error.message === String(CnErrorText.CANT_MANAGE_DESKTOP_LAB)
+    );
   }
 
   /**
@@ -456,18 +473,24 @@ export class CnMcpLabTool {
   }
 
   /**
-   * One line per call, before the lab is touched.
+   * One line per call, before the Space on it has been authorized.
    *
    * This is the whole of the audit story here — there is no table. It exists because a platform
-   * admin's token reaches every tenant through this endpoint, and `adminShortcut` is the field
-   * that makes that property reviewable afterwards rather than merely disclosed. Written before
-   * the work so a refused call is audited too: a cross-tenant attempt is the interesting one.
+   * admin's token reaches every Space through this endpoint, and `adminShortcut` is the field
+   * that makes that property reviewable afterwards rather than merely disclosed.
+   *
+   * Written before the Space is resolved, not inside the authorized call, because the call worth
+   * having a record of is the one that was refused: a client reaching for a Space this account
+   * cannot see is exactly what an audit line is for, and logging after the check would be silent
+   * about it. So the Space here is the one the call *asked* for, and the two fields that need no
+   * lookup — who asked, and whether they are a platform admin — are read off the caller the guard
+   * authenticated.
    */
-  private audit(toolName: string, userInfo: CnUserSpaceInfo, labId: string | null): void {
+  private audit(toolName: string, request: CnRequest, spaceId: string, labId: string | null): void {
+    const caller = request?.user;
     this.logger.log(
-      `MCP lab tool=${toolName} labId=${labId ?? '-'} spaceId=${userInfo.spaceId} ` +
-        `userId=${userInfo.userId} roleInSpace=${userInfo.roleInSpace} ` +
-        `adminShortcut=${userInfo.isAdmin()}`
+      `MCP lab tool=${toolName} labId=${labId ?? '-'} spaceIdRequested=${spaceId || '-'} ` +
+        `userId=${caller?.id ?? '-'} adminShortcut=${caller?.isAdmin() ?? false}`
     );
   }
 }

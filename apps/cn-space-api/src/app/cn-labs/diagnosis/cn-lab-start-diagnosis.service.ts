@@ -12,6 +12,7 @@ import { CnCloudProviderFactory } from '../server/cn-cloud-provider.factory';
 import { CnCloudProviderOvhService } from '../server/ovh/cn-cloud-provider-ovh.service';
 import { CnLabServerTaskStatus, CnLabStatus } from '../status/cn-lab-status.enum';
 import {
+  CN_LAB_START_LAYER_ORDER,
   cnBlockedAtLayer,
   CnLabStartDiagnosis,
   CnLabStartLayer,
@@ -93,7 +94,7 @@ export class CnLabStartDiagnosisService {
    * layers are reading different parts of the same answer.
    */
   public async diagnose(lab: CnLabWithSpace): Promise<CnLabStartDiagnosis> {
-    const managerStatus = this.settle(this.labManagerStatus(lab));
+    const managerStatus = this.settle(this.labManagerService.getLabStatus(lab));
 
     const [cloud, dns, ssh, labManager, glab] = await Promise.all([
       this.withCap('cloud', () => this.probeCloud(lab)),
@@ -110,11 +111,14 @@ export class CnLabStartDiagnosisService {
    * The same six layers, read from a status the caller already reconciled.
    *
    * This is what `lab_refresh_status` reports. It reads the fields the browser shows any lab
-   * member after a refresh, and marks as `unknown` the two layers whose real probe reaches
-   * the cloud provider and ssh — those are gated on the lab OWNER role, and answering them
-   * from a member's call would hand out information the browser does not. Same shape, so a
-   * model does not have to learn two verdict formats, and an honest `unknown` rather than a
-   * guess.
+   * member after a refresh, and marks as `notProbed` the two layers whose real probe reaches the
+   * cloud provider and ssh — those are gated on the lab OWNER role, and answering them from a
+   * member's call would hand out information the browser does not. Same shape, so a model does
+   * not have to learn two verdict formats.
+   *
+   * `notProbed` and not `unknown`: an unread layer must not block, or every lab reported here —
+   * including a perfectly healthy one — would come back blocked at the first layer this method
+   * declines to read.
    *
    * Takes the status alone and not the lab: everything it can honestly say is in the reconciled
    * status, and a lab passed alongside it would only invite reading a field that was not
@@ -122,10 +126,11 @@ export class CnLabStartDiagnosisService {
    */
   public describeFromStatus(status: CnLabStatusDTO): CnLabStartDiagnosis {
     const notProbed = (what: string): CnLabStartLayer => ({
-      status: 'unknown' as const,
+      status: 'notProbed' as const,
       reason:
-        `Not probed by a status refresh: reading ${what} needs the lab OWNER role. ` +
-        `Call the start diagnosis tool for the full six-layer read.`,
+        `Nobody looked: reading ${what} needs the lab OWNER role, which a status refresh does ` +
+        `not require. This layer is neither healthy nor broken here — the full six-layer ` +
+        `diagnosis is what reads it.`,
     });
 
     const layers: Record<CnLabStartLayerName, CnLabStartLayer> = {
@@ -171,6 +176,7 @@ export class CnLabStartDiagnosisService {
       layers,
       blockedAtLayer: cnBlockedAtLayer(layers),
       hasUnknownLayer: Object.values(layers).some((layer) => layer.status === 'unknown'),
+      notProbedLayers: CN_LAB_START_LAYER_ORDER.filter((name) => layers[name].status === 'notProbed'),
     };
   }
 
@@ -608,11 +614,6 @@ export class CnLabStartDiagnosisService {
 
   //////////////////////////////// PROBE PLUMBING ////////////////////////////////
 
-  /** The lab manager status, fetched once for the two layers that read parts of it. */
-  private async labManagerStatus(lab: CnLab): Promise<CnLabManagerStatus> {
-    return this.labManagerService.getLabStatus(lab);
-  }
-
   /**
    * The value of an already-settling probe if it arrives inside `capMs`, or null.
    *
@@ -621,14 +622,25 @@ export class CnLabStartDiagnosisService {
    * it is one detail missing from someone else's.
    */
   private async ifPrompt<T>(settled: Promise<CnProbeOutcome<T>>, capMs: number): Promise<T | null> {
+    const outcome = await this.orAfter(settled, capMs, null);
+    return outcome != null && outcome.ok ? outcome.value : null;
+  }
+
+  /**
+   * Whichever comes first: the promise, or `late` once `capMs` has passed.
+   *
+   * The timer is always cleared, because the losing side of the race is still in flight and its
+   * timer would otherwise hold the event loop open for the rest of its budget — on every layer
+   * of every call.
+   */
+  private async orAfter<T, L>(promise: Promise<T>, capMs: number, late: L): Promise<T | L> {
     let timer: NodeJS.Timeout | undefined;
-    const late = new Promise<null>((resolve) => {
-      timer = setTimeout(() => resolve(null), capMs);
+    const afterCap = new Promise<L>((resolve) => {
+      timer = setTimeout(() => resolve(late), capMs);
     });
 
     try {
-      const outcome = await Promise.race([settled, late]);
-      return outcome != null && outcome.ok ? outcome.value : null;
+      return await Promise.race([promise, afterCap]);
     } finally {
       if (timer) clearTimeout(timer);
     }
@@ -664,35 +676,27 @@ export class CnLabStartDiagnosisService {
       CnLabStartDiagnosisService.GLOBAL_CEILING_MS
     );
 
-    let timer: NodeJS.Timeout | undefined;
-    const cap = new Promise<CnProbeOutcome<CnLabStartLayer>>((resolve) => {
-      timer = setTimeout(() => resolve({ ok: false, timedOut: true }), capMs);
-    });
+    const outOfBudget: CnProbeOutcome<CnLabStartLayer> = { ok: false, timedOut: true };
+    const outcome = await this.orAfter(this.settle(probe()), capMs, outOfBudget);
 
-    try {
-      const outcome = await Promise.race([this.settle(probe()), cap]);
-      if (outcome.ok) {
-        return outcome.value;
-      }
+    if (outcome.ok) {
+      return outcome.value;
+    }
 
-      if ('timedOut' in outcome) {
-        return {
-          status: 'unknown',
-          reason:
-            `This layer did not answer within ${capMs}ms, so nothing is known about it. ` +
-            `It is reported as unknown rather than guessed at; a retry may well answer.`,
-        };
-      }
-
-      this.logger.warn(`Lab start diagnosis: layer ${layer} failed: ${this.errorText(outcome)}`);
+    if ('timedOut' in outcome) {
       return {
         status: 'unknown',
-        reason: `This layer could not be read: ${this.errorText(outcome)}.`,
+        reason:
+          `This layer did not answer within ${capMs}ms, so nothing is known about it. ` +
+          `It is reported as unknown rather than guessed at; a retry may well answer.`,
       };
-    } finally {
-      // The probe may still be in flight; the timer must not keep the process awake for it.
-      if (timer) clearTimeout(timer);
     }
+
+    this.logger.warn(`Lab start diagnosis: layer ${layer} failed: ${this.errorText(outcome)}`);
+    return {
+      status: 'unknown',
+      reason: `This layer could not be read: ${this.errorText(outcome)}.`,
+    };
   }
 
   private errorText(outcome: CnProbeOutcome<unknown>): string {

@@ -1,3 +1,5 @@
+import { CnLabWithSpace } from '../cn-lab.entity';
+
 /**
  * The layers a cloud lab passes through on its way up, and the verdict of each.
  *
@@ -26,12 +28,27 @@ export const CN_LAB_START_LAYER_ORDER: CnLabStartLayerName[] = [
 ];
 
 /**
- * `unknown` is a third answer and not a flavour of failure: a layer that could not be
- * reached within its budget has told us nothing, and saying so is different from saying it is
- * broken. It still counts as "not ok" for `blockedAtLayer`, because a layer nobody could read
- * is not a layer anyone should look past.
+ * `unknown` is a third answer and not a flavour of failure: a layer that was probed and could
+ * not be reached within its budget has told us nothing, and saying so is different from saying
+ * it is broken. It still blocks, because a layer nobody could read is not one to look past.
+ *
+ * `notProbed` is a fourth and weaker thing: nobody tried. It is what a caller reports for a
+ * layer outside what it is allowed or equipped to read, and it must NOT block — a verdict where
+ * every probed layer is `ok` is a verdict of `ok`, however many layers went unread. Conflating
+ * the two makes a healthy lab report a blocked layer, which is worse than reporting nothing.
  */
-export type CnLabStartLayerStatus = 'ok' | 'ko' | 'unknown';
+export type CnLabStartLayerStatus = 'ok' | 'ko' | 'unknown' | 'notProbed';
+
+/**
+ * A diagnosis and the lab it is about.
+ *
+ * The lab travels with the verdict because a caller reporting the verdict has to name the lab it
+ * concerns, and a second read to fetch it would be a second chance for the two to disagree.
+ */
+export interface CnLabStartDiagnosisResult {
+  lab: CnLabWithSpace;
+  diagnosis: CnLabStartDiagnosis;
+}
 
 export interface CnLabStartLayer {
   status: CnLabStartLayerStatus;
@@ -43,15 +60,27 @@ export interface CnLabStartLayer {
 
 export interface CnLabStartDiagnosis {
   layers: Record<CnLabStartLayerName, CnLabStartLayer>;
-  /** The first layer that is not `ok`, or null when every layer answered `ok`. */
+  /** The first blocked layer in start order, or null when nothing probed is blocking. */
   blockedAtLayer: CnLabStartLayerName | null;
-  /** True when at least one layer answered nothing, so the verdict rests on partial reads. */
+  /** True when at least one layer was probed and answered nothing. */
   hasUnknownLayer: boolean;
+  /** Layers nobody tried to read, so a reader knows how partial the verdict is. */
+  notProbedLayers: CnLabStartLayerName[];
 }
 
-/** The first non-`ok` layer in start order, which is the layer the start is blocked at. */
+/**
+ * The first blocked layer in start order, which is the layer the start is stuck at.
+ *
+ * `notProbed` layers are stepped over rather than blamed. That does mean the answer can name a
+ * layer while an earlier one went unread — which is exactly what a partial read knows, and the
+ * skipped layer says so in its own reason.
+ */
 export function cnBlockedAtLayer(
   layers: Record<CnLabStartLayerName, CnLabStartLayer>
 ): CnLabStartLayerName | null {
-  return CN_LAB_START_LAYER_ORDER.find((name) => layers[name].status !== 'ok') ?? null;
+  return (
+    CN_LAB_START_LAYER_ORDER.find(
+      (name) => layers[name].status !== 'ok' && layers[name].status !== 'notProbed'
+    ) ?? null
+  );
 }

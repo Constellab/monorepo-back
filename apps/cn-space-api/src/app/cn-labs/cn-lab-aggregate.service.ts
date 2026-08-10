@@ -89,7 +89,7 @@ import { CnLabsService } from './cn-labs.service';
 import { CnLabDesktopGenerateConfig } from './desktop/cn-lab-desktop.class';
 import { CnLabDesktopService } from './desktop/cn-lab-desktop.service';
 import { CnLabNotCloudException } from './diagnosis/cn-lab-not-cloud.exception';
-import { CnLabStartDiagnosis } from './diagnosis/cn-lab-start-diagnosis.dto';
+import { CnLabStartDiagnosisResult } from './diagnosis/cn-lab-start-diagnosis.dto';
 import { CnLabStartDiagnosisService } from './diagnosis/cn-lab-start-diagnosis.service';
 import { CnLabGreenOptionFormDto } from './green-option/cn-lab-green-option.dto';
 import { CnLabGreenOption } from './green-option/cn-lab-green-option.entity';
@@ -801,11 +801,11 @@ export class CnLabAggregateService {
    * throughout: it deliberately does not go through {@link getLabStatus}, which force-refreshes
    * a lab marked stopped while glab answers, and a refresh can start bricks.
    */
-  public async diagnoseLabStart(labId: string): Promise<CnLabStartDiagnosis> {
+  public async diagnoseLabStart(labId: string): Promise<CnLabStartDiagnosisResult> {
     const lab = await this.getAndCheckAuthorizationToManageLab(labId);
     this.checkLabIsCloud(lab);
 
-    return this.labStartDiagnosisService.diagnose(lab);
+    return { lab, diagnosis: await this.labStartDiagnosisService.diagnose(lab) };
   }
 
   /**
@@ -820,7 +820,7 @@ export class CnLabAggregateService {
    * reports are the ones derivable from the refreshed status; the provider and ssh probes stay
    * behind {@link diagnoseLabStart}.
    */
-  public async refreshAndDescribeLabStart(labId: string): Promise<CnLabStartDiagnosis> {
+  public async refreshAndDescribeLabStart(labId: string): Promise<CnLabStartDiagnosisResult> {
     // The type is checked before the refresh, not after: refusing a lab whose layers cannot be
     // reported honestly should not first change its status. On a lab with no cloud DNS record
     // the `dnsConfigured` flag is false by definition, and a verdict built on it would blame
@@ -829,7 +829,7 @@ export class CnLabAggregateService {
     this.checkLabIsCloud(lab);
 
     const status = await this.checkAndRefreshStatus(labId);
-    return this.labStartDiagnosisService.describeFromStatus(status);
+    return { lab, diagnosis: this.labStartDiagnosisService.describeFromStatus(status) };
   }
 
   /**
