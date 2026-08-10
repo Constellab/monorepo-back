@@ -824,28 +824,42 @@ CREATE TABLE `refresh_token`
 --   ADD INDEX `IDX_refresh_token_previous_token_hash` (`previous_token_hash`);
 
 -- ############################################################################
--- MUST RUN BEFORE THE APP STARTS. A Grant is a user's standing approval of one
--- machine client for one Resource, and it is what the consent screen creates. If
--- this table is missing, every authorization request fails at the decision step,
--- so no client can be approved at all.
+-- `oauth_grant` used to be created here. It is not any more: the cutover below
+-- drops it, and a file that created a table only to drop it forty lines later
+-- would no longer describe a schema any database should end up with.
 --
--- Deliberately identical to the Space API's: two databases, one implementation.
+-- Grants are the Space API's now — see `cn-migration.sql`, which still creates
+-- the table, because that is the application that has one.
 -- ############################################################################
 
-CREATE TABLE `oauth_grant`
-(
-  `id`          varchar(36)  NOT NULL,
-  -- SHA-256 of user + client + Resource. One hashed column rather than a unique
-  -- index over the three below: `resource` is a 512-character URL, and hashing is
-  -- also what keeps re-approval a single indexed lookup. This index is the
-  -- "one Grant per user, client and Resource" rule — approving twice updates the
-  -- row it finds instead of accumulating a second one.
-  `grant_key`   varchar(64)  NOT NULL,
-  `client_id`   varchar(64)  NOT NULL,
-  `resource`    varchar(512) NOT NULL COMMENT 'the one Resource this Grant covers, as its URL',
-  `user_id`     varchar(36)  NOT NULL,
-  `approved_at` datetime     NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE INDEX `IDX_oauth_grant_grant_key` (`grant_key`),
-  CONSTRAINT `FK_oauth_grant_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
-);
+-- ############################################################################
+-- THE CUTOVER. This application stops being an Authorization Server and becomes
+-- a Resource Server only (ADR-0001): tokens for its MCP are now minted by the
+-- Space API and verified here against the key set that application publishes.
+--
+-- Run this AFTER the deployment, not before. Until the new code is live these
+-- rows are still what the old endpoints read, and dropping them early would
+-- break a flow that is still being served. Running it late costs nothing — the
+-- new code never looks at either.
+--
+-- Browser sessions are deliberately untouched: `kind = 'session'` rows are the
+-- Community's own logins, which do not change at all. Only Grant-kind rows go.
+-- ############################################################################
+
+-- Refresh tokens belonging to a Grant. They can only be renewed by an
+-- Authorization Server, and this application no longer is one, so they are rows
+-- nothing can act on. Deleting them is what makes that true in the data rather
+-- than only in the code.
+DELETE
+FROM `refresh_token`
+WHERE `kind` = 'oauth';
+
+-- The Grants themselves, i.e. the approvals users gave clients for this
+-- application's Resource. They are re-created against the Space API on the next
+-- connection: a clean break, and none of this was ever in production, so there
+-- is nothing being taken away from anyone.
+--
+-- `IF EXISTS` because this only has anything to drop on a database that ran the
+-- earlier version of this file, which created the table. A database first set up
+-- after the cutover never had it.
+DROP TABLE IF EXISTS `oauth_grant`;

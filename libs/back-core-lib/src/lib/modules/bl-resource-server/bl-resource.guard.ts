@@ -2,7 +2,7 @@ import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from
 import { Request, Response } from 'express';
 
 import { BlDecodedToken } from '../bl-jwt/bl-jwt.class';
-import { BlJwtAsymmetricService } from '../bl-jwt/bl-jwt-asymmetric.service';
+import { BlJwtAsymmetricVerifier } from '../bl-jwt/bl-jwt-asymmetric.verifier';
 import { blExtractBearerToken } from '../bl-oauth/bl-oauth-bearer.util';
 import { blProtectedResourceMetadataUrl } from '../bl-oauth/bl-oauth-resource-url.util';
 import { blStripTrailingSlashes } from '../bl-oauth/bl-oauth-url.util';
@@ -42,19 +42,21 @@ export function blResourceTokenOf(request: Request): BlDecodedToken | null {
  * returning 401 — that header is what makes an MCP client (Claude) start the OAuth
  * discovery flow.
  *
- * Verifies through `BlJwtAsymmetricService`, which accepts RS256 and nothing else. The
+ * Verifies through `BlJwtAsymmetricVerifier`, which accepts RS256 and nothing else. The
  * Session token verifier is a different service accepting HS256 and nothing else, and
- * neither can be reached from here: that is the point. A Resource Server needs only the
- * published public key — it holds no ability to mint what it accepts.
+ * neither can be reached from here: that is the point. Where the verifier's public keys
+ * come from is the mounting application's business — its own key store when it is the
+ * Authorization Server, the published key set when it is not — and this guard is the same
+ * either way, holding no ability to mint what it accepts.
  */
 @Injectable()
 export class BlResourceGuard implements CanActivate {
   constructor(
-    private readonly mcpJwtService: BlJwtAsymmetricService,
+    private readonly mcpJwtVerifier: BlJwtAsymmetricVerifier,
     private readonly registry: BlResourceRegistry
   ) {}
 
-  canActivate(context: ExecutionContext): boolean {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const http = context.switchToHttp();
     const request = http.getRequest<Request>();
     const response = http.getResponse<Response>();
@@ -69,7 +71,7 @@ export class BlResourceGuard implements CanActivate {
       if (!token || !this.registry.isKnownResource(expectedResource)) {
         throw new UnauthorizedException();
       }
-      const payload = this.mcpJwtService.verifyToken(token);
+      const payload = await this.mcpJwtVerifier.verifyToken(token);
       if (!this.audienceMatches(payload.aud, expectedResource)) {
         throw new UnauthorizedException();
       }

@@ -2,7 +2,7 @@ import { ExecutionContext, UnauthorizedException } from '@nestjs/common';
 import { Request, Response } from 'express';
 
 import { BlDecodedToken } from '../bl-jwt/bl-jwt.class';
-import { BlJwtAsymmetricService } from '../bl-jwt/bl-jwt-asymmetric.service';
+import { BlJwtAsymmetricVerifier } from '../bl-jwt/bl-jwt-asymmetric.verifier';
 import { BlResourceGuard } from './bl-resource.guard';
 import { BlResourceRegistry } from './bl-resource.registry';
 
@@ -14,7 +14,7 @@ const UNREGISTERED_PATH = '/mcp/not-a-resource';
 const TOKEN = 'a.jwt.token';
 
 /**
- * A decoded payload as `BlJwtAsymmetricService.verifyToken` would return it.
+ * A decoded payload as `BlJwtAsymmetricVerifier.verifyToken` would return it.
  *
  * Typed rather than cast: `jest.Mock.mockReturnValue` accepts anything, so an assertion
  * here would check nothing and a payload that drifts from `BlDecodedToken` would pass
@@ -36,13 +36,13 @@ interface Harness {
 /**
  * A guard wired to one registered resource, called on `path` with `authorization`.
  * `verifyToken` is a mock: this spec is about the audience decision, not about JWT
- * cryptography, which `BlJwtAsymmetricService` owns and
- * `bl-jwt-asymmetric.service.spec.ts` covers — including the algorithm pinning.
+ * cryptography, which `BlJwtAsymmetricVerifier` owns and
+ * `bl-jwt-asymmetric.verifier.spec.ts` covers — including the algorithm pinning.
  */
 function buildHarness(options: { path?: string; authorization?: string } = {}): Harness {
   const { path = RESOURCE_PATH, authorization } = options;
 
-  const verifyToken = jest.fn().mockReturnValue(payload({ aud: RESOURCE }));
+  const verifyToken = jest.fn().mockResolvedValue(payload({ aud: RESOURCE }));
   const setHeader = jest.fn();
 
   const request = { path, headers: authorization == null ? {} : { authorization } } as unknown as Request;
@@ -55,7 +55,7 @@ function buildHarness(options: { path?: string; authorization?: string } = {}): 
   });
 
   return {
-    guard: new BlResourceGuard({ verifyToken } as unknown as BlJwtAsymmetricService, registry),
+    guard: new BlResourceGuard({ verifyToken } as unknown as BlJwtAsymmetricVerifier, registry),
     verifyToken,
     setHeader,
     context: {
@@ -75,93 +75,91 @@ function advertisedMetadataUrl(setHeader: jest.Mock): string | null {
 
 describe('BlResourceGuard', () => {
   describe('accepts', () => {
-    it('a token whose audience is the resource being called', () => {
+    it('a token whose audience is the resource being called', async () => {
       const { guard, context, setHeader } = buildHarness({ authorization: `Bearer ${TOKEN}` });
 
-      expect(guard.canActivate(context)).toBe(true);
+      await expect(guard.canActivate(context)).resolves.toBe(true);
       expect(setHeader).not.toHaveBeenCalled();
     });
 
-    it('a token carrying the resource among several audiences', () => {
+    it('a token carrying the resource among several audiences', async () => {
       const { guard, context, verifyToken } = buildHarness({ authorization: `Bearer ${TOKEN}` });
-      verifyToken.mockReturnValue(payload({ aud: ['https://other', RESOURCE] }));
+      verifyToken.mockResolvedValue(payload({ aud: ['https://other', RESOURCE] }));
 
-      expect(guard.canActivate(context)).toBe(true);
+      await expect(guard.canActivate(context)).resolves.toBe(true);
     });
 
-    it('a request path with a trailing slash, which names the same resource', () => {
+    it('a request path with a trailing slash, which names the same resource', async () => {
       const { guard, context } = buildHarness({
         path: `${RESOURCE_PATH}/`,
         authorization: `Bearer ${TOKEN}`,
       });
 
-      expect(guard.canActivate(context)).toBe(true);
+      await expect(guard.canActivate(context)).resolves.toBe(true);
     });
   });
 
   describe('rejects', () => {
-    const expectRejected = (harness: Harness): void => {
-      expect(() => harness.guard.canActivate(harness.context)).toThrow(UnauthorizedException);
+    const expectRejected = async (harness: Harness): Promise<void> => {
+      await expect(harness.guard.canActivate(harness.context)).rejects.toThrow(UnauthorizedException);
     };
 
-    it('a request with no Authorization header', () => {
+    it('a request with no Authorization header', async () => {
       const harness = buildHarness();
-      expectRejected(harness);
+      await expectRejected(harness);
       expect(harness.verifyToken).not.toHaveBeenCalled();
     });
 
-    it('a session token, which carries no audience at all', () => {
+    it('a session token, which carries no audience at all', async () => {
       const harness = buildHarness({ authorization: `Bearer ${TOKEN}` });
       // This is the direction the Resource Server guard has always closed: a full-session
       // JWT must not reach a Resource. (`BlJwtStrategy` closes the reverse.)
-      harness.verifyToken.mockReturnValue(payload());
+      harness.verifyToken.mockResolvedValue(payload());
 
-      expectRejected(harness);
+      await expectRejected(harness);
     });
 
-    it('a token minted for another resource', () => {
+    it('a token minted for another resource', async () => {
       const harness = buildHarness({ authorization: `Bearer ${TOKEN}` });
-      harness.verifyToken.mockReturnValue(payload({ aud: `${BASE_URL}/mcp/space-doc` }));
+      harness.verifyToken.mockResolvedValue(payload({ aud: `${BASE_URL}/mcp/space-doc` }));
 
-      expectRejected(harness);
+      await expectRejected(harness);
     });
 
-    it('a token whose audiences all miss the resource', () => {
+    it('a token whose audiences all miss the resource', async () => {
       const harness = buildHarness({ authorization: `Bearer ${TOKEN}` });
-      harness.verifyToken.mockReturnValue(payload({ aud: ['https://other', `${BASE_URL}/mcp/space-doc`] }));
+      harness.verifyToken.mockResolvedValue(payload({ aud: ['https://other', `${BASE_URL}/mcp/space-doc`] }));
 
-      expectRejected(harness);
+      await expectRejected(harness);
     });
 
-    it('a token the JWT service refuses (bad signature, expired)', () => {
+    it('a token the JWT service refuses (bad signature, expired)', async () => {
       const harness = buildHarness({ authorization: `Bearer ${TOKEN}` });
-      harness.verifyToken.mockImplementation(() => {
-        throw new Error('jwt expired');
-      });
+      harness.verifyToken.mockRejectedValue(new Error('jwt expired'));
 
-      expectRejected(harness);
+      await expectRejected(harness);
     });
 
-    it('a path that is not a registered resource, without verifying the token', () => {
+    it('a path that is not a registered resource, without verifying the token', async () => {
       const harness = buildHarness({ path: UNREGISTERED_PATH, authorization: `Bearer ${TOKEN}` });
 
-      expectRejected(harness);
+      await expectRejected(harness);
       // An unregistered path must never be accepted on the strength of a valid token:
       // the audience check would have nothing meaningful to compare against.
       expect(harness.verifyToken).not.toHaveBeenCalled();
     });
 
-    it('a malformed Authorization header', () => {
+    it('a malformed Authorization header', async () => {
       const harness = buildHarness({ authorization: TOKEN });
-      expectRejected(harness);
+      await expectRejected(harness);
       expect(harness.verifyToken).not.toHaveBeenCalled();
     });
   });
 
   describe('WWW-Authenticate', () => {
-    it('points at the metadata document of the resource actually called', () => {
+    it('points at the metadata document of the resource actually called', async () => {
       const harness = buildHarness();
-      expect(() => harness.guard.canActivate(harness.context)).toThrow(UnauthorizedException);
+      await expect(harness.guard.canActivate(harness.context)).rejects.toThrow(UnauthorizedException);
 
       // Per-resource, not a shared document: this header is the only thing telling the
       // client which audience to request, and every Resource on this host needs a
@@ -171,26 +169,26 @@ describe('BlResourceGuard', () => {
       );
     });
 
-    it('is emitted on every rejection, since it is what starts the OAuth flow', () => {
+    it('is emitted on every rejection, since it is what starts the OAuth flow', async () => {
       const cases: Harness[] = [
         buildHarness(),
         buildHarness({ authorization: `Bearer ${TOKEN}` }),
         buildHarness({ path: UNREGISTERED_PATH, authorization: `Bearer ${TOKEN}` }),
       ];
       // Second case: a token that verifies but for the wrong audience.
-      cases[1].verifyToken.mockReturnValue(payload({ aud: 'https://other' }));
+      cases[1].verifyToken.mockResolvedValue(payload({ aud: 'https://other' }));
 
       for (const harness of cases) {
-        expect(() => harness.guard.canActivate(harness.context)).toThrow(UnauthorizedException);
+        await expect(harness.guard.canActivate(harness.context)).rejects.toThrow(UnauthorizedException);
         // Without this header Claude sees a bare 401 and never discovers the
         // authorization server — the MCP just looks broken.
         expect(advertisedMetadataUrl(harness.setHeader)).not.toBeNull();
       }
     });
 
-    it('still names the unregistered path, whose document 404s, rather than guessing', () => {
+    it('still names the unregistered path, whose document 404s, rather than guessing', async () => {
       const harness = buildHarness({ path: UNREGISTERED_PATH });
-      expect(() => harness.guard.canActivate(harness.context)).toThrow(UnauthorizedException);
+      await expect(harness.guard.canActivate(harness.context)).rejects.toThrow(UnauthorizedException);
 
       expect(advertisedMetadataUrl(harness.setHeader)).toBe(
         `${BASE_URL}/.well-known/oauth-protected-resource${UNREGISTERED_PATH}`

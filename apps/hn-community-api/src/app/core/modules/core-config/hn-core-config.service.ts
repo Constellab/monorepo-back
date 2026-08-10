@@ -51,9 +51,11 @@ export class HnCoreConfigService {
   }
 
   /**
-   * Lifetimes of the session token pair and of MCP access tokens, in seconds.
+   * Lifetimes of the session token pair, in seconds.
    *
-   * Optional in the environment: the defaults in `HN_JWT_CONFIG` apply when unset.
+   * Optional in the environment: the defaults in `HN_JWT_CONFIG` apply when unset. There
+   * is no MCP access token lifetime here — this application no longer mints one, so how
+   * long one lives is the Space API's to state.
    */
   public getAccessTokenDurationInSeconds(): number {
     return this.getConfigNumberOrDefault(
@@ -69,48 +71,6 @@ export class HnCoreConfigService {
     );
   }
 
-  public getMcpAccessTokenDurationInSeconds(): number {
-    return this.getConfigNumberOrDefault(
-      'MCP_ACCESS_TOKEN_DURATION_SECONDS',
-      HN_JWT_CONFIG.defaultMcpAccessTokenDurationInSeconds
-    );
-  }
-
-  /**
-   * Base64-encoded PEM private key that signs MCP access tokens.
-   *
-   * Required: an application that mints MCP access tokens without it would sign nothing
-   * anyone can verify, so it must not start. Base64 because PEM is multi-line and
-   * environment variables reliably lose the newlines.
-   *
-   * Not the Session token secret. Session tokens stay on `JWT_SECRET`, which never
-   * leaves this application; this key's public half is published, and the two must not
-   * be the same material — see ADR-0001.
-   */
-  public getMcpJwtPrivateKeyBase64(): string {
-    return this.getConfigString('MCP_JWT_PRIVATE_KEY_BASE64');
-  }
-
-  /**
-   * Base64-encoded PEM private key of the key being rotated out, published and accepted
-   * but never signing again. Absent outside a rotation.
-   */
-  public getMcpJwtPreviousPrivateKeyBase64(): string | undefined {
-    return this.getOptionalConfigString('MCP_JWT_PREVIOUS_PRIVATE_KEY_BASE64');
-  }
-
-  /**
-   * Non-loopback redirect URIs an OAuth client may register, as a comma-separated
-   * list. Loopback URIs are always accepted (RFC 8252), so this only needs to carry
-   * the remote callbacks. An empty value means loopback-only.
-   */
-  public getOAuthAllowedRedirectUris(): string[] {
-    return this.getConfigString('OAUTH_ALLOWED_REDIRECT_URIS')
-      .split(',')
-      .map((uri) => uri.trim())
-      .filter((uri) => uri.length > 0);
-  }
-
   public isLocal(): boolean {
     const env: HnEnvironmentProfile = this.getEnvironmentProfile();
     return env === 'dev' || env === 'docker' || env === 'test';
@@ -120,6 +80,15 @@ export class HnCoreConfigService {
     return this.getEnvironmentProfile() === 'dev';
   }
 
+  /**
+   * The Space API, which this application depends on for two separate things: verifying a
+   * password at login, and — since the cutover — being the single Authorization Server
+   * (ADR-0001). It is the host named in every discovery document served here and the host
+   * whose published key set MCP access tokens are verified against.
+   *
+   * Read while Nest builds the injector now, not lazily, so a deployment that omits it
+   * fails to start rather than serving discovery documents pointing nowhere.
+   */
   public getSpaceApiUrl(): string {
     return this.isLocal() ? 'http://localhost:3001' : this.getConfigString('SPACE_API_URL');
   }
@@ -293,18 +262,6 @@ export class HnCoreConfigService {
       throw Error(`Missing config value for '${configName}'`);
     }
     return value;
-  }
-
-  /**
-   * Read a config value that is genuinely optional, treating a blank one as absent.
-   *
-   * The counterpart to {@link getConfigString} for the handful of values whose absence is
-   * a valid state rather than a misconfiguration — so a caller states that by which
-   * method it reaches for, instead of going around both.
-   */
-  protected getOptionalConfigString(configName: string): string | undefined {
-    const value: string | undefined = this.configService.get(configName);
-    return value == null || value.trim().length === 0 ? undefined : value;
   }
 
   /**

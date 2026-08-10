@@ -79,6 +79,37 @@ export function blPublicJwk(publicKey: KeyObject): BlJwk {
 }
 
 /**
+ * Turn one entry of a published key set back into a usable public key, or null when the
+ * entry is not one this platform verifies with.
+ *
+ * The filter is the point, not the conversion. A key set is fetched over the network from
+ * another application, so every member of an entry is untrusted until checked: an entry
+ * offering another algorithm, another key type, or a key for encryption rather than
+ * signatures must not become something a signature is checked against. `kid` is required
+ * for the same reason it is on the minting side — a key nobody can name is a key no token
+ * can select.
+ *
+ * Returns null rather than throwing: one unusable entry in a document must not cost the
+ * usable ones next to it, which is what a rotation to a future algorithm would look like.
+ */
+export function blPublicKeyFromJwk(jwk: BlJwk): KeyObject | null {
+  if (jwk?.kty !== 'RSA' || jwk.alg !== BL_JWT_ASYMMETRIC_ALGORITHM || jwk.use !== 'sig') {
+    return null;
+  }
+  if (typeof jwk.kid !== 'string' || jwk.kid.length === 0 || jwk.n == null || jwk.e == null) {
+    return null;
+  }
+
+  try {
+    // Rebuilt from `n` and `e` alone: whatever else the document carried is discarded
+    // here rather than trusted, so a member added to an entry cannot reach the key.
+    return createPublicKey({ key: { kty: 'RSA', n: jwk.n, e: jwk.e }, format: 'jwk' });
+  } catch {
+    return null;
+  }
+}
+
+/**
  * JWK Set document for the given keys, in the order handed in — current key first, so a
  * verifier that ignores `kid` and tries keys in order still hits the likely one first.
  */

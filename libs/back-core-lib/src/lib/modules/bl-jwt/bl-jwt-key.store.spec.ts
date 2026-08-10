@@ -42,16 +42,16 @@ describe('BlJwtKeyStore', () => {
       expect(store().signingKey.kid).toBe(kidOf(CURRENT.privateKeyBase64));
     });
 
-    it('accepts either key for verification, so live tokens survive the rotation', () => {
+    it('accepts either key for verification, so live tokens survive the rotation', async () => {
       const rotating = store();
 
-      expect(rotating.publicKeyFor(kidOf(CURRENT.privateKeyBase64))).not.toBeNull();
-      expect(rotating.publicKeyFor(kidOf(PREVIOUS.privateKeyBase64))).not.toBeNull();
+      expect(await rotating.publicKeyFor(kidOf(CURRENT.privateKeyBase64))).not.toBeNull();
+      expect(await rotating.publicKeyFor(kidOf(PREVIOUS.privateKeyBase64))).not.toBeNull();
     });
 
-    it('resolves each key identifier to that key and not to the other', () => {
+    it('resolves each key identifier to that key and not to the other', async () => {
       const rotating = store();
-      const resolved = rotating.publicKeyFor(kidOf(PREVIOUS.privateKeyBase64));
+      const resolved = await rotating.publicKeyFor(kidOf(PREVIOUS.privateKeyBase64));
 
       expect(resolved).not.toBeNull();
       expect(blKeyId(resolved!)).toBe(kidOf(PREVIOUS.privateKeyBase64));
@@ -59,16 +59,16 @@ describe('BlJwtKeyStore', () => {
   });
 
   describe('key resolution', () => {
-    it('resolves nothing for a key it does not publish', () => {
+    it('resolves nothing for a key it does not publish', async () => {
       const foreign = blGenerateTestSigningKey();
 
-      expect(buildStore().publicKeyFor(kidOf(foreign.privateKeyBase64))).toBeNull();
+      expect(await buildStore().publicKeyFor(kidOf(foreign.privateKeyBase64))).toBeNull();
     });
 
-    it('resolves nothing when a token names no key, rather than falling back', () => {
+    it('resolves nothing when a token names no key, rather than falling back', async () => {
       // Every token minted here carries a `kid`, so an absent one means the token came
       // from somewhere else. Defaulting to the current key would accept it.
-      expect(buildStore().publicKeyFor(undefined)).toBeNull();
+      expect(await buildStore().publicKeyFor(undefined)).toBeNull();
     });
   });
 

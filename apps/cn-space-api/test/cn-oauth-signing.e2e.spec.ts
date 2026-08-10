@@ -4,6 +4,10 @@ import { createPublicKey, generateKeyPairSync } from 'node:crypto';
 import * as jwt from 'jsonwebtoken';
 import supertest from 'supertest';
 
+// Relative rather than through `@monorepo/back-core-lib`: this is the fixture the Community
+// suite also uses, and mocks are deliberately kept out of the library's public API.
+import { BlJwk } from '../../../libs/back-core-lib/src/lib/modules/bl-jwt/bl-jwt-key.class';
+import { blVerifyLikeResourceServer } from '../../../libs/back-core-lib/src/lib/modules/bl-jwt/bl-mcp-token.mock';
 import { OAUTH_TEST_ACCESS_COOKIE, OAuthTestClient, OAuthTestTokenPair } from './oauth-client.helper';
 import { TEST_ADMIN_EMAIL } from './test-credentials';
 import { CnTestE2EHelper } from './test-e2e-helper.class';
@@ -155,10 +159,13 @@ describe('OAuth token signing (e2e)', () => {
     });
 
     it('verifies against the published key alone, for the Resource it was granted', async () => {
-      // Exactly what the Community API will do, holding nothing but this document.
-      const payload = jwt.verify(flow.accessToken, pemFor(await publishedKey()), {
-        algorithms: ['RS256'],
-      }) as { aud: string; email: string };
+      // Exactly what the Community API does, holding nothing but this document — and
+      // through the shared fixture rather than a local re-implementation of it, so that a
+      // change to the token shape breaks here and in the Community suite together instead
+      // of leaving one of them quietly testing a token no client is issued.
+      const payload = await blVerifyLikeResourceServer(flow.accessToken, {
+        keys: (await publishedKeys()) as BlJwk[],
+      });
 
       expect(payload.aud).toBe(resource);
       expect(payload.email).toBe(TEST_ADMIN_EMAIL);

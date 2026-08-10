@@ -232,7 +232,97 @@ Ce sont des choix, pas des oublis — mais ils se perdent vite, d'où leur place
 
 ---
 
+## La bascule : la Community n'émet plus rien (#77)
+
+C'est le point d'arrivée du chantier parent. **Le serveur d'autorisation n'est plus ici.**
+Il est sur la Space API, il est unique, et cette application n'est plus qu'un Resource
+Server (ADR-0001).
+
+Ce qui disparaît d'ici : `/oauth/register`, `/oauth/authorize`, `/oauth/token`,
+`/oauth/revoke`, les routes de consentement, le document de métadonnées du serveur
+d'autorisation, `/.well-known/jwks.json`, les stores de clients et de codes, le module
+`src/app/oauth/`, et les lignes `refresh_token` de type `oauth`.
+
+Ce qui reste, inchangé : le MCP, son guard, ses documents de découverte — qui désignent
+désormais la Space API — et **tout le login navigateur**. Les tokens de session, leurs
+refresh tokens et leurs lignes en base ne bougent pas d'un octet. Seule l'émission de
+tokens machine déménage.
+
+Ce qui change dans la vérification : `BlJwtAsymmetricVerifier` remplace la méthode qui
+vivait sur le service de signature, et sa source de clés est `BlJwtRemoteKeyStore`, qui va
+chercher le jeu de clés publié par la Space API. Trois propriétés portent la sécurité de ce
+morceau :
+
+- **Le fetch est paresseux.** La Space API injoignable ne doit pas empêcher cette
+  application de démarrer : ce serait transformer une dépendance qui ne concerne que les
+  appels MCP en une dépendance du login navigateur. Le prix est le premier appel MCP après
+  un redémarrage, qui paie l'aller-retour.
+- **Un échec de fetch refuse, il n'accepte jamais.** Et il ne réessaie pas à chaque appel :
+  un cooldown d'une minute, sinon un endpoint non authentifié devient un générateur de
+  trafic vers une application déjà en panne.
+- **L'algorithme reste épinglé à RS256**, exactement comme quand les clés étaient locales.
+  La bascule est une rupture nette, sans fenêtre où les deux algorithmes seraient acceptés —
+  cette fenêtre _est_ l'attaque par confusion d'algorithme, et rien de tout ceci n'étant en
+  production, il n'y avait rien à migrer.
+
+**Le pilote se rejoue.** Les enregistrements de clients existants sont recréés : ils
+pointaient sur un émetteur qui n'existe plus, et l'URL de l'émetteur fait partie de ce qu'un
+client enregistre. Un utilisateur qui connecte un client au MCP Community est maintenant
+envoyé sur la page de login de la **Space API** — même compte, même mot de passe, autre
+hôte. C'est visible, c'est voulu, et c'est inhérent au fait d'avoir un seul serveur
+d'autorisation.
+
+**Vérification.** `hn-resource-server.e2e.spec.ts` remplace les deux suites OAuth d'ici : il
+substitue le jeu de clés publié (la Space API est une autre application, aucune suite ne
+démarre les deux) et assied le reste sur du vrai — le guard, l'audience, l'épinglage
+d'algorithme, les documents de découverte, l'absence des endpoints supprimés, et le login
+navigateur intact. La substitution passe par `BlTestAuthorizationServer`, la **même** fixture
+que la suite de la Space API utilise pour vérifier ses propres tokens : une dérive d'un côté
+fait rougir l'autre, sans avoir à démarrer les deux applications ensemble.
+
+Ce que ça ne couvre pas, et qui reste à faire à la main : un vrai client Claude, connecté
+aux deux MCP, laissé tourner au-delà de la durée de vie d'un access token. C'est la leçon
+notée plus bas — écrit n'est pas exécuté — et elle vaut aussi pour un chemin qui traverse
+deux applications qu'aucune suite ne fait tourner ensemble.
+
+### ⚠️ Deux valeurs qui doivent coïncider au caractère près
+
+`SPACE_API_URL` **de la Community** et `API_URL` **de la Space API** — qui devient son
+`issuer` OAuth et la racine de son jeu de clés — doivent être **exactement** la même chaîne.
+Ce sont deux variables posées indépendamment, dans deux applications, et **aucun test ne peut
+les comparer** : aucune suite ne démarre les deux. C'est le seul couplage de la bascule
+qu'une relecture doit vérifier à la main.
+
+Ce qu'un décalage produit, dans l'ordre où on le rencontre :
+
+- **Une barre oblique finale, ou http contre https** : le document de découverte de la
+  Community désigne un hôte que le client résout quand même, mais le `jwks_uri` fetché ne
+  répond pas comme prévu, ou l'`issuer` enregistré par le client ne correspond plus. Le
+  client tourne en rond à la découverte.
+- **Un hôte franchement différent** : le client est envoyé s'authentifier au mauvais endroit,
+  revient avec un token signé par des clés que la Community ne connaît pas, et **tous les
+  appels MCP prennent un 401** — alors que les deux applications, prises séparément, ont
+  l'air en parfait état. C'est le mode de panne le plus coûteux à diagnostiquer de tout ce
+  chantier, parce que rien n'est en erreur nulle part.
+
+Rien ne détecte ça au démarrage non plus : la Community ne fetche le jeu de clés qu'au
+premier appel MCP, délibérément (cf. plus haut). Vérifier les deux valeurs côte à côte fait
+partie du déploiement, au même titre que la migration SQL.
+
+---
+
 ## Les pièges au déploiement
+
+> ⚠️ **Cette section décrit l'état d'avant la bascule (#77).** Les deux variables
+> ci-dessous ne sont plus lues par la Community : elles sont désormais celles de la Space
+> API, et peuvent être retirées de son environnement CapRover. Le texte est conservé parce
+> qu'il reste exact pour l'application qui les lit maintenant. La seule variable dont la
+> Community dépend pour l'OAuth est **`SPACE_API_URL`**, qui était déjà obligatoire pour le
+> login, et qui désigne maintenant aussi le serveur d'autorisation et l'hôte du jeu de clés.
+>
+> La migration SQL de la bascule (`DELETE` des refresh tokens `oauth`, `DROP` de
+> `oauth_grant`) se joue **après** le déploiement, pas avant : tant que l'ancien code tourne,
+> ces lignes sont encore celles qu'il lit.
 
 ### ⚠️ Deux variables d'environnement sont obligatoires
 

@@ -167,6 +167,12 @@ The items below are the v1 shortcuts. Item 8 is the only one that can break in p
 
 **August 2026 — the whole server moved, the trade-offs did not.** `src/app/oauth/` no longer holds any of this (#72): discovery, dynamic client registration, `/oauth/authorize`, `/oauth/token`, `/oauth/revoke` and both stores are now `libs/back-core-lib/src/lib/modules/bl-oauth-server/`, and the Resource Server guard is `bl-resource-server/` (#71). What the Community still supplies is configuration and `hn-oauth-current-user.resolver.ts`. The **Files** lines on the RESOLVED items in this section are left as they were written — they record where each piece of work happened, not where the code is today.
 
+**August 2026, the cutover (#77) — this application issues nothing at all any more.** `src/app/oauth/` is gone, and so is every Authorization Server endpoint that used to answer here: `/oauth/register`, `/oauth/authorize`, `/oauth/token`, `/oauth/revoke`, the consent routes, the authorization server metadata document and `/.well-known/jwks.json`. There is one Authorization Server and it is the Space API (ADR-0001).
+
+What remains here is the Resource Server half: the MCP endpoint, `BlResourceGuard`, and one protected-resource discovery document per Resource — now naming the Space API as the place to get a token. Verification is `BlJwtAsymmetricVerifier` over `BlJwtRemoteKeyStore`, which fetches the Space API's published key set; this application holds no signing key of any kind for MCP access tokens, so the items below about what an issuer must get right are no longer this application's to get wrong. Browser login, Session tokens and the browser refresh tokens are untouched and stay entirely local.
+
+A consequence worth stating plainly, because it reads as a regression and is not one: connecting a client to the Community MCP now sends the user to the **Space API's** login page. Same account, same password, different hostname. That is inherent to having one Authorization Server, not to which application was chosen (ADR-0001).
+
 ---
 
 ## 8. In-memory OAuth stores break under multiple replicas — RESOLVED
@@ -266,11 +272,11 @@ connected for more than an hour, refreshing silently.
 
 **Resolved on the back end.** `BlOAuthServerModule` no longer has a path that issues an authorization code without an approval: `/authorize` parks the request and sends the browser to a consent page, which describes it and posts the answer back, and approving records one Grant per Resource in `oauth_grant`. A client already holding a Grant for everything it asks for skips the screen, so the user is asked once per client and Resource.
 
-**What remains, for this application only:** the consent page itself is in the platform front-end (`ca-space-front`), so `frontConsentUrl` here points at a route the community front-end does not serve, and this application's browser flow cannot complete. Deliberate, and unreleased: the Community stops being an Authorization Server in the next step of the parent work, which deletes these endpoints along with this item. Its HTTP surface stays covered by `hn-oauth-flow.e2e.spec.ts`, which drives the consent endpoints as the page would.
+**Closed here by the cutover (#77).** The gap this item recorded — a consent page living in the platform front-end while `frontConsentUrl` pointed at a community route that does not exist — closed by the endpoints leaving rather than by the page arriving. This application registers no clients, issues no codes and asks for no approval; a client connecting to its MCP is sent to the Space API, where the consent page it needs is already served. What is left of the item belongs to the Space API and is tracked there.
 
-**Optional hardening still open:** require an initial access token on `/oauth/register`.
+**Optional hardening still open, on the Space API:** require an initial access token on `/oauth/register`.
 
-**Deployment note:** `OAUTH_ALLOWED_REDIRECT_URIS` is a required config value. It is set in `hn-dev.env` / `hn-test.env`; **it must be added to the CapRover environment for pre-prod and prod**, otherwise `/oauth/register` fails on the missing-config error. An empty value is valid and means loopback-only.
+**Deployment note, now the reverse of what it was:** `OAUTH_ALLOWED_REDIRECT_URIS` and `MCP_JWT_PRIVATE_KEY_BASE64` are **no longer read here** and can be removed from the Community's CapRover environment. They are the Space API's now. Leaving them set is harmless — nothing reads them — but they are the sort of stale secret that later looks load-bearing.
 
 **Triggered by:** opening the server to non-first-party OAuth clients.
 
@@ -314,13 +320,16 @@ a verifier accepting both can be defeated by signing a token with the **publishe
 key** as an HMAC secret, so publishing keys at all is what makes the pin load-bearing.
 
 **Verification:** unit specs for key loading, thumbprints, the key store and the
-asymmetric service, plus `test/hn-oauth-signing.e2e.spec.ts`, which drives the whole flow
-over HTTP and asserts the forged-HS256 token is refused, that an MCP access token is not
-usable as a browser credential, and that browser login is unaffected.
+verifier, plus the e2e suites on both sides — `cn-oauth-signing.e2e.spec.ts` for what is
+minted and published, `test/hn-resource-server.e2e.spec.ts` for what is accepted here.
 
-**Still ahead (not this item):** the Community is still the Authorization Server. Making
-it a Resource Server that fetches this document from the Space API is #74/#77; what
-remains there is key _distribution_, not signing.
+**Since done (#77): key distribution followed signing.** This application no longer holds
+either half of an MCP signing key. `BlJwtRemoteKeyStore` fetches the Space API's published
+key set — lazily, so the Community boots whether or not the Space API is up, and cached,
+so an MCP call is not a round trip. A key set that cannot be fetched means tokens are
+**refused**, never accepted, and the guard still pins RS256 there exactly as it did when
+the keys were local. The cutover was a clean break with no window accepting both
+algorithms, because that window is precisely the confusion attack this item is about.
 
 ---
 

@@ -7,6 +7,7 @@ import {
   BlJwks,
   BlJwtAsymmetricConfig,
   BlJwtKeyPair,
+  BlJwtKeySource,
 } from './bl-jwt-key.class';
 import { blBuildJwks, BlJwtKeyError, blLoadSigningKey } from './bl-jwt-key.util';
 
@@ -24,9 +25,13 @@ const PREVIOUS_KEY_CONFIG_NAME = 'previousPrivateKeyBase64';
  *
  * Holds at most two keys: the one that signs, and optionally the one being rotated out,
  * which is published and accepted but never signs again.
+ *
+ * The key source of the application that mints (`BlJwtRemoteKeyStore` is the other one):
+ * it verifies against the private keys it holds rather than against its own published
+ * document, so verifying does not depend on its own HTTP surface being reachable.
  */
 @Injectable()
-export class BlJwtKeyStore {
+export class BlJwtKeyStore implements BlJwtKeySource {
   private readonly current: BlJwtKeyPair;
 
   /** Current first — the order the key set is published in. */
@@ -69,12 +74,15 @@ export class BlJwtKeyStore {
    * A token with no `kid` resolves to nothing rather than falling back to the current
    * key: every token this application mints carries one, so an absent `kid` is either a
    * token from somewhere else or one built by hand.
+   *
+   * Returns a promise only to satisfy {@link BlJwtKeySource}, whose other implementation
+   * fetches. Deliberately not `async`: nothing here waits on anything, and the keys are
+   * in memory before the first request arrives.
    */
-  publicKeyFor(kid: string | undefined): KeyObject | null {
-    if (kid == null) {
-      return null;
-    }
-    return this.published.find((keyPair) => keyPair.kid === kid)?.publicKey ?? null;
+  publicKeyFor(kid: string | undefined): Promise<KeyObject | null> {
+    const publicKey =
+      kid == null ? null : (this.published.find((keyPair) => keyPair.kid === kid)?.publicKey ?? null);
+    return Promise.resolve(publicKey);
   }
 
   /** The published key set, current key first. */

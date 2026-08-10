@@ -73,3 +73,49 @@ export interface BlJwtKeyPair {
   privateKey: KeyObject;
   publicKey: KeyObject;
 }
+
+export const BL_JWT_KEY_SOURCE = Symbol('BL_JWT_KEY_SOURCE');
+
+/**
+ * Where a verifier gets the public keys it checks MCP access token signatures against.
+ *
+ * The one seam between minting and verifying, and the reason it exists: the application
+ * that signs resolves a `kid` against its own configured private keys, while a Resource
+ * Server resolves the same `kid` against the key set the Authorization Server publishes.
+ * The verification itself — which algorithm is accepted, what an unknown `kid` means — is
+ * identical either way and must stay in one place, so only this differs.
+ *
+ * Public keys only, in both directions. A source that could hand back a private key would
+ * be handing a Resource Server the ability to mint what it accepts, which is exactly what
+ * ADR-0001 exists to prevent.
+ *
+ * Asynchronous because one implementation fetches over the network. The local one answers
+ * from memory and simply resolves immediately.
+ */
+export interface BlJwtKeySource {
+  /** The public key a token names, or null if it names none this source knows. */
+  publicKeyFor(kid: string | undefined): Promise<KeyObject | null>;
+}
+
+export const BL_JWT_REMOTE_KEY_CONFIG_PROVIDER = Symbol('BL_JWT_REMOTE_KEY_CONFIG');
+
+/**
+ * What a Resource Server needs in order to verify tokens it cannot mint.
+ *
+ * One value: where the Authorization Server is. The key set path is not configurable —
+ * it is derived from `BL_OAUTH_PATHS.jwks`, the same constant the publishing route is
+ * mounted on, so the URL fetched and the URL served agree by construction rather than by
+ * two deployments being configured consistently.
+ */
+export interface BlJwtRemoteKeyConfig {
+  /**
+   * Base URL of the Authorization Server whose published key set is fetched, no trailing
+   * slash required.
+   *
+   * The same value the Resource Server names in its discovery documents: a client is sent
+   * there for a token, and the tokens it comes back with are verified against the keys
+   * published there. Naming a different host in the two places is how a Resource Server
+   * ends up refusing every token it was told to expect.
+   */
+  authorizationServerUrl: string;
+}

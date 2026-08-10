@@ -58,6 +58,29 @@ describe('Rate limiting (e2e)', () => {
     }, 60_000);
   });
 
+  describe('POST /oauth/token', () => {
+    it(`is capped at the app-wide ${GLOBAL_LIMIT}/min`, async () => {
+      // The endpoint is unauthenticated and both its grants hit a store, so it must not be
+      // uncapped. Asserted because the decorator that caps it lives in the library with the
+      // rest of the Authorization Server, and a lost decorator is invisible everywhere
+      // else: the endpoint keeps answering, just without a ceiling.
+      //
+      // This assertion used to live in the Community suite, back when that application was
+      // the Authorization Server. It moved here with the endpoint (ADR-0001).
+      const statuses: number[] = [];
+      for (let index = 0; index < GLOBAL_LIMIT + 1; index++) {
+        const response = await supertest(helper.app.getHttpServer())
+          .post('/oauth/token')
+          .send({ grant_type: 'refresh_token', refresh_token: 'nope', client_id: 'nope' });
+        statuses.push(response.status);
+      }
+
+      // Every attempt is a rejected grant (400) until the limiter takes over.
+      expect(statuses.slice(0, GLOBAL_LIMIT)).toEqual(Array(GLOBAL_LIMIT).fill(400));
+      expect(statuses[GLOBAL_LIMIT]).toBe(429);
+    }, 60_000);
+  });
+
   describe('POST /auth/refresh', () => {
     it(`sits on the app-wide ${GLOBAL_LIMIT}/min, not the credential limit`, async () => {
       // It is hit on every access-token expiry and the throttler keys on the IP, so the

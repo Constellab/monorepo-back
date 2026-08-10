@@ -2,22 +2,19 @@ import {
   blConfigureLogger,
   BlDbBackupModule,
   BlExternalApiModule,
-  BlJwtAsymmetricConfig,
-  BlJwtAsymmetricModule,
   BlJwtConfig,
   BlJwtModule,
+  BlJwtRemoteKeyConfig,
+  BlJwtRemoteVerifierModule,
   BlLoggerConfig,
   BlMailModule,
   BlNamingStrategy,
-  BlOAuthServerConfig,
-  BlOAuthServerModule,
   BlObjectStorageModule,
   BlRedisConfig,
   BlRedisModule,
   BlRequestContextMiddleware,
   BlResourceServerConfig,
   BlResourceServerModule,
-  blStripTrailingSlashes,
   BlTranslateModule,
   BlTransportModuleConfig,
   blTransportRedisForRoot,
@@ -95,7 +92,6 @@ import { HnLikeStoryModule } from './app/like-aggregate/like-story/hn-like-story
 import { HnLikeTagModule } from './app/like-aggregate/like-tag/hn-like-tag.module';
 import { HN_MCP_COMMUNITY_DOC_RESOURCE_PATH } from './app/mcp-doc/hn-mcp-doc.constants';
 import { HnMcpDocModule } from './app/mcp-doc/hn-mcp-doc.module';
-import { HnOAuthModule } from './app/oauth/hn-oauth.module';
 import { HnPartnerModule } from './app/partner/hn-partner.module';
 import { HnProtocolModule } from './app/protocol/hn-protocol.module';
 import { HnPublicModule } from './app/public/hn-public.module';
@@ -178,18 +174,19 @@ function configureJwtModule(configService: HnCoreConfigService, userService: HnU
 }
 
 /**
- * Key material for MCP access tokens, which are the only tokens here signed
- * asymmetrically — they are the only ones another application has to verify.
+ * Where the public keys that verify MCP access tokens come from.
  *
- * Reading `MCP_JWT_PRIVATE_KEY_BASE64` throws when it is absent, and `BlJwtKeyStore`
- * throws when it is present but unusable. Both happen while Nest builds the injector, so
- * a bad key stops the process rather than turning into every MCP call being rejected.
+ * One value, and no key material at all: this application no longer mints MCP access
+ * tokens, so it holds nothing that could sign one. The Space API does, and publishes the
+ * public half; this fetches that document (ADR-0001).
+ *
+ * The same URL the discovery documents name as the Authorization Server, for good reason:
+ * a client is sent there for a token, and the tokens it comes back with are verified
+ * against the keys published there. Naming two different hosts is how a Resource Server
+ * ends up refusing every token it told clients to go and get.
  */
-function configureJwtAsymmetricModule(configService: HnCoreConfigService): BlJwtAsymmetricConfig {
-  return {
-    privateKeyBase64: configService.getMcpJwtPrivateKeyBase64(),
-    previousPrivateKeyBase64: configService.getMcpJwtPreviousPrivateKeyBase64(),
-  };
+function configureJwtRemoteVerifierModule(configService: HnCoreConfigService): BlJwtRemoteKeyConfig {
+  return { authorizationServerUrl: configService.getSpaceApiUrl() };
 }
 
 function configureTransportModule(configService: HnCoreConfigService): BlTransportModuleConfig {
@@ -200,14 +197,15 @@ function configureTransportModule(configService: HnCoreConfigService): BlTranspo
  * What this application protects as a Resource Server, and where a client is sent to get
  * a token for it.
  *
- * The authorization server is this application itself for now, and is named separately
- * from the base URL because that is the single value that changes when token issuance
- * moves to the Space API — the Resource identifiers stay this host's.
+ * `authorizationServerUrl` is the Space API, which is the whole of the cutover as far as a
+ * client can see: it discovers this Resource here, and is sent there to register, approve
+ * and be issued a token. The Resource identifiers stay this host's — a Resource is where
+ * it is served, not where its tokens are minted.
  */
 function configureResourceServerModule(configService: HnCoreConfigService): BlResourceServerConfig {
   return {
     baseUrl: configService.getApiUrl(),
-    authorizationServerUrl: configService.getApiUrl(),
+    authorizationServerUrl: configService.getSpaceApiUrl(),
     resources: [
       {
         path: HN_MCP_COMMUNITY_DOC_RESOURCE_PATH,
@@ -217,37 +215,6 @@ function configureResourceServerModule(configService: HnCoreConfigService): BlRe
         description: 'Search and read the public documentation',
       },
     ],
-  };
-}
-
-/**
- * What this application states as the Authorization Server it hosts.
- *
- * Configuration is the whole of it, plus the current-user resolver `HnOAuthModule` supplies:
- * the endpoints, the stores and the grant logic are `bl-oauth-server`'s, so relocating the
- * Authorization Server to the Space API is this function and that module moving, not a
- * rewrite.
- *
- * The issuer is the API's own base URL because RFC 8414 requires it to equal the URL serving
- * the discovery document.
- *
- * `frontConsentUrl` points at a page the community front-end does not serve yet, and that is
- * deliberate: approval before a Grant exists is not optional, so the shared Authorization
- * Server has no path that issues a code without one. This application's browser flow is
- * therefore incomplete until it stops being an Authorization Server altogether — the very
- * next step of the parent work, after which this whole function goes away. Nothing here is
- * in production, so there is no live flow to break; its HTTP surface stays covered by
- * `hn-oauth-flow.e2e.spec.ts`, which drives the consent endpoints as the page would.
- */
-function configureOAuthServerModule(configService: HnCoreConfigService): BlOAuthServerConfig {
-  const frontBaseUrl: string = blStripTrailingSlashes(configService.getFrontBaseUrl());
-  return {
-    issuer: configService.getApiUrl(),
-    frontLoginUrl: `${frontBaseUrl}/login`,
-    frontConsentUrl: `${frontBaseUrl}/oauth/consent`,
-    consentWarning: 'This will let it search and read the documentation as you.',
-    allowedRedirectUris: configService.getOAuthAllowedRedirectUris(),
-    mcpAccessTokenDurationInSeconds: configService.getMcpAccessTokenDurationInSeconds(),
   };
 }
 
@@ -309,31 +276,27 @@ TeRichTextModifications.setBackTimeDifference();
       inject: [HnCoreConfigService, HnUserService],
     }),
 
-    // The asymmetric path, alongside the symmetric one rather than inside it: session
-    // tokens and MCP access tokens deliberately do not share a key.
-    BlJwtAsymmetricModule.forRootAsync({
+    // The verifying half of the asymmetric path, and only that half: this application
+    // checks MCP access tokens against the Space API's published keys and holds nothing
+    // that could mint one. Session tokens stay on `JWT_SECRET` in the module above,
+    // untouched — a browser cookie never leaves the application that issued it.
+    BlJwtRemoteVerifierModule.forRootAsync({
       imports: [HnCoreModule],
-      useFactory: configureJwtAsymmetricModule,
+      useFactory: configureJwtRemoteVerifierModule,
       inject: [HnCoreConfigService],
     }),
 
-    // The Resource Server half of OAuth: the Resources this application serves, the
-    // guard protecting them and their discovery documents. Registered here rather than
-    // inside a feature module because it is global — the guard has to resolve inside
-    // @rekog's dynamically created MCP controllers.
+    // The Resource Server half of OAuth, and the only half this application mounts: the
+    // Resources it serves, the guard protecting them and their discovery documents.
+    // Registered here rather than inside a feature module because it is global — the
+    // guard has to resolve inside @rekog's dynamically created MCP controllers.
+    //
+    // There is no Authorization Server half. Registration, /authorize, /token and /revoke
+    // are the Space API's, and mounting them here as well would mean two issuers for one
+    // set of accounts (ADR-0001).
     BlResourceServerModule.forRootAsync({
       imports: [HnCoreModule],
       useFactory: configureResourceServerModule,
-      inject: [HnCoreConfigService],
-    }),
-
-    // The Authorization Server half: registration, /authorize, /token, /revoke and the
-    // authorization server discovery document. `HnOAuthModule` is imported for the two
-    // tokens the library cannot resolve itself — the current-user resolver and this
-    // application's refresh token service.
-    BlOAuthServerModule.forRootAsync({
-      imports: [HnCoreModule, HnOAuthModule],
-      useFactory: configureOAuthServerModule,
       inject: [HnCoreConfigService],
     }),
 

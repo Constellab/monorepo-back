@@ -1,4 +1,4 @@
-import { BlThrottlerBehindProxyGuard } from '@monorepo/back-core-lib';
+import { BL_JWT_KEY_SOURCE, BlJwtKeySource, BlThrottlerBehindProxyGuard } from '@monorepo/back-core-lib';
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import * as supertest from 'supertest';
@@ -18,6 +18,20 @@ export interface HnTestAppOptions {
    * Only a suite whose subject IS the rate limiting should turn it on.
    */
   throttling?: boolean;
+
+  /**
+   * The public keys MCP access tokens are verified against.
+   *
+   * The one thing an e2e run genuinely cannot stand up: they are published by the Space
+   * API, which is a different application, and no suite here boots it. Substituting the
+   * key set is a narrower stub than it looks — the guard, the audience check, the
+   * algorithm pin and the discovery documents all still run for real, and what changes is
+   * only where the document came from.
+   *
+   * A suite that never presents a bearer token leaves this alone; the real remote store
+   * fetches lazily, so it never reaches the network on the paths those suites take.
+   */
+  mcpKeySource?: BlJwtKeySource;
 }
 
 export class HnTestE2EHelper {
@@ -53,6 +67,10 @@ export class HnTestE2EHelper {
 
     if (!options.throttling) {
       builder.overrideGuard(BlThrottlerBehindProxyGuard).useValue({ canActivate: () => true });
+    }
+
+    if (options.mcpKeySource) {
+      builder.overrideProvider(BL_JWT_KEY_SOURCE).useValue(options.mcpKeySource);
     }
 
     const moduleRef = await builder.compile();
