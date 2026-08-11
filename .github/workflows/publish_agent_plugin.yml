@@ -63,6 +63,20 @@ jobs:
       - name: Validate the plugin manifest
         run: bunx @anthropic-ai/claude-code plugin validate "$PLUGIN_DIR" --strict
 
+      # The version guard runs here, on the pull request, and not only at publish time: a tag
+      # that fails it has already been cut, so the release turns red over a bump that cost one
+      # line while the change was still under review. Comparing against the published copy is
+      # what makes this answerable before the tag exists.
+      - name: Check out the public plugins repository
+        uses: actions/checkout@v6.0.2
+        with:
+          repository: ${{ env.PUBLIC_REPO }}
+          token: ${{ secrets.agent_plugins_token }}
+          path: public
+
+      - name: Check the version was bumped for the change
+        run: bash .github/scripts/check_plugin_version.sh "$PLUGIN_DIR" "public/plugins/$PLUGIN_NAME"
+
   publish:
     needs: validate
     if: startsWith(github.ref, format('refs/tags/{0}', inputs.tag_prefix)) || github.event_name == 'workflow_dispatch'
@@ -77,25 +91,11 @@ jobs:
           token: ${{ secrets.agent_plugins_token }}
           path: public
 
-      # `version` in plugin.json is the only signal a client uses to refresh its cached copy.
-      # Content that moved without a bump would publish and reach nobody, which is worse than
-      # not publishing: the repository says one thing and every install says another.
+      # Already enforced on the pull request; repeated here as the last gate for
+      # workflow_dispatch and for a tag that never passed through one. It also exports
+      # PLUGIN_VERSION for the commit message below.
       - name: Refuse a change that did not bump the version
-        run: |
-          set -euo pipefail
-          dest="public/plugins/$PLUGIN_NAME"
-          new_version=$(jq -r .version "$PLUGIN_DIR/.claude-plugin/plugin.json")
-          if [ -d "$dest" ] && ! diff -r -q "$PLUGIN_DIR" "$dest" > /dev/null; then
-            old_version=$(jq -r .version "$dest/.claude-plugin/plugin.json")
-            if [ "$new_version" = "$old_version" ]; then
-              echo "::error::$PLUGIN_NAME changed but its version is still $new_version." \
-                   "Bump version in $PLUGIN_DIR/.claude-plugin/plugin.json — without it," \
-                   "installed clients keep the cached copy."
-              exit 1
-            fi
-          fi
-          echo "Publishing $PLUGIN_NAME $new_version"
-          echo "PLUGIN_VERSION=$new_version" >> "$GITHUB_ENV"
+        run: bash .github/scripts/check_plugin_version.sh "$PLUGIN_DIR" "public/plugins/$PLUGIN_NAME"
 
       - name: Copy the plugin as reviewed
         run: |
