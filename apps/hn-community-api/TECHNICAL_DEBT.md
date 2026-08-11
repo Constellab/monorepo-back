@@ -99,10 +99,32 @@ credentials belongs on the caller's own login route, which is keyed on the real 
 
 **Still open — deliberately not done here:** rate limiting at the reverse proxy
 (nginx/CapRover) as the primary protection, with the application-level throttler as defense
-in depth. Also, `cn`'s other `@BlPublicSecure()` routes (signup, password-forgotten,
-reset-password, account activation/unlock, invitation codes) are still on the global
-60/min; `password-forgotten` and `reset-password` in particular are credential-adjacent and
-deserve the stricter limit.
+in depth.
+
+### August 2026 — a fourth defect, found by the black box audit
+
+The three defects above were all about the _values_. The **key** was wrong too, which made
+the values moot: `BlThrottlerBehindProxyGuard.getTracker()` returned `req.ips[0]`, copied
+from the NestJS docs. `req.ips` is the `X-Forwarded-For` list ordered client-first whatever
+`trust proxy` says, so entry 0 is written by the caller — a fresh header per request meant a
+fresh bucket per request, and no limit ever fired. Fixed by deleting the override:
+`ThrottlerGuard`'s default is `req.ip`, which with `trust proxy: 1` is the address the
+trusted proxy observed. Read the guard's own comment before reinstating any override there.
+
+`password-forgotten` and `reset-password` moved off the global 60/min onto 10/min, as this
+item asked. The remaining `@BlPublicSecure()` routes (signup, activation/unlock, invitation
+codes) stay on the global ceiling; signup is captcha-protected, and the link-click routes are
+GETs on a token.
+
+**Two things this section still claims that are not true yet**, both now tracked:
+
+- **"Limits now" holds per process, not per deployment.** `ThrottlerModule.forRoot()` has no
+  `storage`, so the counters are an in-memory `Map` — the effective limit is
+  `limit × replicas` and every redeploy resets it. Same shape as item 8. → #80
+- **"Brute-force protection belongs on the caller's own login route."** That was the right
+  call for the Community, but it leaves `external/check-credentials` — the real password
+  verifier for the Community _and_ the labs — with 1000/min shared by every account and
+  nothing per account. Per-identity lockout is the fix. → #79
 
 ---
 
