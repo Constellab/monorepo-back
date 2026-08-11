@@ -43,9 +43,18 @@ _Avoid_: API server, backend, consumer.
 
 **Resource**:
 One protected surface, identified by its absolute URL, which doubles as the audience of the
-tokens that may reach it. Each has its own discovery document. A **Space** is never part of a
-Resource's identity — one MCP endpoint is one Resource however many Spaces it can reach.
+tokens that may reach it. Each has its own discovery document, served by the one application
+that serves the Resource. A **Space** is never part of a Resource's identity — one MCP endpoint
+is one Resource however many Spaces it can reach.
 _Avoid_: scope, service, audience (except as the JWT claim `aud`), MCP server.
+
+**Remote Resource**:
+A Resource the **Authorization Server** mints tokens for and does not serve — a Resource of
+another application, named there by full URL. It has to be declared on the issuing side:
+minting for a Resource and honouring a token for one are separate rights, and the issuer is the
+only one that can say which audiences it will sign. It publishes no discovery document on the
+issuer's host and no endpoint there is protected by it.
+_Avoid_: external resource, third-party resource, delegated resource.
 
 **Grant**:
 A user's standing authorization for one client to reach one **Resource**. It is pinned when

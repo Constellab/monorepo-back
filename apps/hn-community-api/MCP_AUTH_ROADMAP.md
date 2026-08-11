@@ -309,6 +309,39 @@ Rien ne détecte ça au démarrage non plus : la Community ne fetche le jeu de c
 premier appel MCP, délibérément (cf. plus haut). Vérifier les deux valeurs côte à côte fait
 partie du déploiement, au même titre que la migration SQL.
 
+### ⚠️ Et une troisième, dans l'autre sens : `COMMUNITY_API_URL` de la Space API
+
+La bascule a laissé un trou qui n'est apparu qu'en pré-prod : la Space API doit **connaître**
+la Resource de la Community pour accepter d'émettre un token pour elle. La liste des Resources
+pour lesquelles un token peut être frappé appartient à l'émetteur, et rien dans la
+configuration de la Community ne peut l'y ajouter.
+
+Elle y est maintenant, sous `remoteResources` dans `configureResourceServerModule`
+(`cn-app.module.ts`), assemblée depuis **`COMMUNITY_API_URL` de la Space API** et le chemin
+`mcp/community-doc`. Deux conséquences au déploiement :
+
+- **`COMMUNITY_API_URL` de la Space API doit être exactement l'`API_URL` de la Community** —
+  même schéma, même hôte, à la barre oblique près. La comparaison est faite verbatim sur
+  l'identifiant complet. Un décalage donne, au `/authorize`, un redirect
+  `error=invalid_target` avec `missing or unknown resource` : le client n'obtient jamais
+  d'écran de consentement, et les deux applications ont l'air saines prises séparément. C'est
+  le symptôme exact qu'on a eu en pré-prod, et il ne se distingue pas de « l'entrée est
+  absente ».
+- **`COMMUNITY_API_URL` est désormais lue au démarrage** de la Space API, par
+  `getConfigString`, qui **lève** quand la valeur manque. Elle était déjà obligatoire au
+  runtime (bricks, lab manager) mais son absence ne se voyait qu'au premier appel ; elle
+  empêche maintenant l'application de démarrer. Sur un environnement où elle est déjà posée —
+  tous ceux qui parlent à la Community — il n'y a rien à faire.
+
+Le chemin, lui, est dupliqué de part et d'autre (`HN_MCP_COMMUNITY_DOC_RESOURCE_PATH` et
+`CN_MCP_COMMUNITY_DOC_RESOURCE_PATH`) : deux déployables, aucun n'importe le code de l'autre.
+Le changer d'un côté seulement produit le même `invalid_target`.
+
+Ce que la Space API n'accorde **pas** pour autant : la Resource distante n'a aucun document de
+découverte chez elle, et son `BlResourceGuard` ne protège rien avec — un token frappé pour la
+Community ne vaut rien sur la Space API. C'est la distinction `servesResource` /
+`isKnownResource` dans `BlResourceRegistry`, et elle est vérifiée par les specs de la lib.
+
 ---
 
 ## Les pièges au déploiement

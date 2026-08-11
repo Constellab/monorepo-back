@@ -43,3 +43,15 @@ Space API.
 Two signing algorithms now coexist. Every verification path must pin the algorithm it accepts:
 a verifier that accepts both can be defeated by signing symmetrically with the published
 public key.
+
+The issuer has to know every Resource it issues for, including those it does not serve. A
+Resource Server cannot opt itself in: it can point clients at the Space API, but the list of
+audiences that may be signed belongs to the signer, and an unlisted one is refused at
+`/authorize` with `invalid_target`. So each application added as a Resource Server also costs
+an entry in the Space API's own configuration, coupling their deployments — the identifier is
+compared byte for byte and the two applications read it from two independently set environment
+variables. Nothing detects a mismatch before a user hits it.
+
+Minting for a Resource grants nothing on the issuer's host: an entry of this kind publishes no
+discovery document there and protects no endpoint there. Issuing a token and honouring one are
+separate rights, and the code keeps them as two separate questions.
