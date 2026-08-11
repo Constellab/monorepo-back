@@ -1,4 +1,4 @@
-import { blGetCorsConfig } from '@monorepo/back-core-lib';
+import { blApplySecurityHeaders, blGetCorsConfig } from '@monorepo/back-core-lib';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { json, urlencoded } from 'body-parser';
@@ -30,6 +30,8 @@ async function bootstrap(): Promise<void> {
     additionalHeader.push(CN_LOCAL_SPACE_COOKIE);
   }
   app.enableCors(blGetCorsConfig(['constellab.space', 'preconstellab.com'], isLocal, additionalHeader));
+
+  blApplySecurityHeaders(app, { isLocal });
 
   // increase body limit to 10mb
   app.use(json({ limit: '10mb' }));
