@@ -30,10 +30,11 @@ search returning nothing useful into a search the model knows how to retry.
 
 ## Published publicly
 
-`Constellab/agent-plugins` is a public repository, and everything under this folder is
-copied into it on release. Assume every word here is readable by anyone: no credentials, no
+`Constellab/agent-plugins` is a public repository, and everything under `community/` is copied
+into it on release — that subfolder only, so this README and the `CLAUDE.md` beside it stay
+internal. Assume every word inside `community/` is readable by anyone: no credentials, no
 internal hostnames, no customer names. The prod Community API URL is the one internal fact
-that belongs here, because clients need it to connect.
+that belongs there, because clients need it to connect.
 
 ## Develop against your local server
 
@@ -69,8 +70,14 @@ prod API does not expose yet. The shared machinery is in `publish_agent_plugin.y
 space application calls it from its own workflow, on its own tag.
 
 `version` in `plugin.json` is the update signal: without a bump, clients keep their cached
-copy whatever changed in the files. Bump it in the pull request that changes the plugin. CI
-fails the publish if the content moved and the version did not.
+copy whatever changed in the files. Bump it in the pull request that changes the plugin —
+`check_plugin_version.sh` compares this folder against the published copy and fails there,
+where the bump is one line, and again before the push as a backstop.
+
+It compares against what is published, not against your diff, so a missed bump fails every
+later tag until the version moves — including tags whose own commits never touched the plugin.
+That is the shape of the failure to expect: a release turning red over an edit made weeks
+earlier.
 
 ## Names that cannot change cheaply
 
