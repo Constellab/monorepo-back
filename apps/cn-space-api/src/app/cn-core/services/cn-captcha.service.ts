@@ -30,8 +30,27 @@ export class CnCaptchaService {
     return this.recaptchaClient;
   }
 
+  /**
+   * An unconfigured site key is a **local-only** shortcut.
+   *
+   * Answering `true` to a missing key anywhere else silently removes the only
+   * brute-force protection that login, signup and the labs' credential check have, and
+   * nothing about the response says so — a blank `CAPTCHA_SITE_KEY` in an environment's
+   * configuration is enough, which is exactly what an emptied CapRover field looks like.
+   * The August 2026 black box audit read the login of a lab as having no captcha at all;
+   * this branch is how that state can happen without anyone changing code.
+   */
   public async validateCaptcha(token: string | undefined, action: string): Promise<boolean> {
-    if (!this.configService.getCaptchaSiteKey()) {
+    const siteKey: string | undefined = this.configService.getCaptchaSiteKey();
+
+    if (!siteKey) {
+      if (!this.configService.isLocal()) {
+        this.logger.error(
+          'Captcha site key is not configured outside a local environment: refusing the captcha. ' +
+            'Set CAPTCHA_SITE_KEY — every credential entry point is unprotected until it is.'
+        );
+        return false;
+      }
       this.logger.warn('Captcha site key not configured, skipping captcha validation.');
       return true;
     }
@@ -47,7 +66,7 @@ export class CnCaptchaService {
         assessment: {
           event: {
             token: token,
-            siteKey: this.configService.getCaptchaSiteKey(),
+            siteKey,
           },
         },
       };

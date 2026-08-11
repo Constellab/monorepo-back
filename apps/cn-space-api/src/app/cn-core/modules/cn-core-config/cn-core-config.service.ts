@@ -445,8 +445,17 @@ export class CnCoreConfigService {
     return this.getConfigString('LAB_MANAGER_STANDALONE_FRONT_VERSION');
   }
 
-  public getCaptchaSiteKey(): string {
-    return this.getConfigString('CAPTCHA_SITE_KEY');
+  /**
+   * Optional on purpose, so that a blank value and an unset one say the same thing: no
+   * captcha is configured. `getConfigString` throws on the second and returns `''` for the
+   * first, and it is the blank one a commented-out or emptied CapRover field produces — the
+   * case that must not read as "captcha configured".
+   *
+   * Who decides what an absent key means is {@link CnCaptchaService.validateCaptcha}, and
+   * outside a local environment the answer is to refuse.
+   */
+  public getCaptchaSiteKey(): string | undefined {
+    return this.getOptionalConfigString('CAPTCHA_SITE_KEY');
   }
 
   /////////////////////////// YOUTUBE ///////////////////////////
