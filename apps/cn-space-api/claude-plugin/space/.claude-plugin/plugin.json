@@ -1,14 +1,14 @@
 {
-  "name": "datalab",
-  "displayName": "Constellab data lab diagnosis",
-  "version": "0.1.0",
-  "description": "Diagnose a Constellab cloud data lab that fails to start, over the Space API's MCP tools",
+  "name": "space",
+  "displayName": "Constellab Space",
+  "version": "0.2.0",
+  "description": "Work with your Constellab Spaces and their data labs, over the Space API's MCP tools",
   "author": {
     "name": "Gencovery",
     "email": "support@gencovery.com"
   },
   "repository": "https://github.com/Constellab/agent-plugins",
-  "keywords": ["constellab", "datalab", "diagnostics", "mcp"],
+  "keywords": ["constellab", "space", "datalab", "diagnostics", "mcp"],
   "userConfig": {
     "space_api_url": {
       "type": "string",

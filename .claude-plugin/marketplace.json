@@ -7,9 +7,9 @@
   },
   "plugins": [
     {
-      "name": "datalab",
-      "source": "./apps/cn-space-api/claude-plugin/datalab",
-      "description": "Diagnose a Constellab cloud data lab that fails to start"
+      "name": "space",
+      "source": "./apps/cn-space-api/claude-plugin/space",
+      "description": "Work with your Constellab Spaces and their data labs"
     },
     {
       "name": "community",

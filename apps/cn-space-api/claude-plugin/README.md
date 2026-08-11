@@ -11,7 +11,7 @@ not exist. Co-located, the same pull request touches both.
 ## The skill fires by hand
 
 `diagnose-lab-startup` carries `disable-model-invocation: true`: it runs when someone types
-`/datalab:diagnose-lab-startup`, never on its own. Its description leaves the model's reach
+`/space:diagnose-lab-startup`, never on its own. Its description leaves the model's reach
 entirely, so it costs nothing in context until it is called — and the price is that the human
 is the index. Whoever installs the plugin has to be told the command exists, which is what
 the public README is for.
@@ -22,10 +22,11 @@ without the skill is the stopping rules, not the ability to use the tools.
 
 ## Published publicly
 
-`Constellab/agent-plugins` is a public repository, and everything under this folder is
-copied into it on release. Assume every word here is readable by anyone: no credentials, no
+`Constellab/agent-plugins` is a public repository, and everything under `space/` is copied
+into it on release — that subfolder only, so this README and the `CLAUDE.md` beside it stay
+internal. Assume every word inside `space/` is readable by anyone: no credentials, no
 internal hostnames, no customer names. The prod Space API URL is the one internal fact that
-belongs here, because clients need it to connect.
+belongs there, because clients need it to connect.
 
 ## Develop against your local server
 
@@ -35,13 +36,13 @@ only one marketplace per name, and same-named registration replaces the other.
 
 ```
 /plugin marketplace add .
-/plugin install datalab@constellab-dev
+/plugin install space@constellab-dev
 ```
 
 Set `space_api_url` to `http://localhost:3001` when prompted. Edits to `SKILL.md` take
 effect immediately; edits to `plugin.json` need `/reload-plugins`.
 
-Install `datalab@constellab-dev` **or** `datalab@constellab`, never both: they declare the
+Install `space@constellab-dev` **or** `space@constellab`, never both: they declare the
 same MCP server, so you would connect twice and see every tool duplicated.
 
 ## Publishing
@@ -53,13 +54,47 @@ prod API does not expose yet. The shared machinery is in `publish_agent_plugin.y
 community application calls it from its own workflow, on its own tag.
 
 `version` in `plugin.json` is the update signal: without a bump, clients keep their cached
-copy whatever changed in the files. Bump it in the pull request that changes the plugin. CI
-fails the publish if the content moved and the version did not.
+copy whatever changed in the files. Bump it in the pull request that changes the plugin —
+`check_plugin_version.sh` compares this folder against the published copy and fails there,
+where the bump is one line, and again before the push as a backstop.
+
+It compares against what is published, not against your diff, so a missed bump fails every
+later tag until the version moves — including tags whose own commits never touched the plugin.
+That is the shape of the failure to expect: a release turning red over an edit made weeks
+earlier.
 
 ## Names that cannot change cheaply
 
-| Name                          | Where it surfaces                             | Cost of changing it                                                                                       |
-| ----------------------------- | --------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| `constellab` (marketplace)    | `/plugin install datalab@constellab`          | Users keep the old marketplace registered, silently, until they remove it by hand                         |
-| `datalab` (plugin)            | `datalab@constellab`, skill names, tool names | `renames` in the public `marketplace.json` migrates existing installs; forget it and their install breaks |
-| `constellab` (MCP server key) | `mcp__plugin_datalab_constellab__<tool>`      | Breaks users' permission allowlists and hooks with no error — they simply get asked to approve again      |
+| Name                          | Where it surfaces                           | Cost of changing it                                                                                       |
+| ----------------------------- | ------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `constellab` (marketplace)    | `/plugin install space@constellab`          | Users keep the old marketplace registered, silently, until they remove it by hand                         |
+| `space` (plugin)              | `space@constellab`, skill names, tool names | `renames` in the public `marketplace.json` migrates existing installs; forget it and their install breaks |
+| `constellab` (MCP server key) | `mcp__plugin_space_constellab__<tool>`      | Breaks users' permission allowlists and hooks with no error — they simply get asked to approve again      |
+
+## It was `datalab` until 0.2.0
+
+Renamed because the plugin is named after the endpoint it connects to, `/mcp/space-api`, and that
+endpoint answers for the whole Space API rather than for labs. A per-feature plugin cannot work
+here: two plugins declaring the same MCP server make a client connect to it twice and list every
+tool twice, so one plugin per endpoint is the only shape available.
+
+The rename is not free, and two things in the **public** repository carry it. First, `renames` —
+a top-level field of `marketplace.json`, an append-only map of old name to current name, which the
+loader follows on plugin-not-found and uses to migrate a user's plugin settings:
+
+```json
+"renames": { "datalab": "space" }
+```
+
+It has to land in the same commit that renames the entry in `plugins[]`, because a chain resolving
+to a plugin the list does not contain fails validation, and at runtime falls through to
+plugin-not-found — the same broken install as no entry at all.
+
+Second, `plugins/datalab` has to be deleted from the public repository by hand. The publish
+workflow's `git add` is scoped to the plugin it publishes, so it creates `plugins/space` and
+leaves the old folder installable forever.
+
+What does not follow is the mangled tool prefix. Anyone who allowlisted
+`mcp__plugin_datalab_constellab__*` is now being asked about `mcp__plugin_space_constellab__*`,
+with no error to explain why — the loader migrates plugin settings, not permission rules written
+against the old name.
