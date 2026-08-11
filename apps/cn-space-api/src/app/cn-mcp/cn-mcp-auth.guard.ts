@@ -44,8 +44,11 @@ export class CnMcpAuthGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    // Throws with the challenge header on anything wrong with the token itself.
-    if (!this.resourceGuard.canActivate(context)) {
+    // Throws with the challenge header on anything wrong with the token itself. Awaited:
+    // the payload below is published by that guard *after* its own await, so reading the
+    // request without waiting reads it one microtask too early — a valid token refused,
+    // and refused without the challenge, so a client cannot recover by re-authenticating.
+    if (!(await this.resourceGuard.canActivate(context))) {
       return false;
     }
 
