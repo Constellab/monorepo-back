@@ -5,6 +5,7 @@ import { BlDecodedToken } from '../bl-jwt/bl-jwt.class';
 import { BlJwtAsymmetricVerifier } from '../bl-jwt/bl-jwt-asymmetric.verifier';
 import { BlResourceGuard } from './bl-resource.guard';
 import { BlResourceRegistry } from './bl-resource.registry';
+import { BlResourceDescription } from './bl-resource-server.class';
 
 const BASE_URL = 'https://api.example.com';
 const RESOURCE_PATH = '/mcp/community-doc';
@@ -39,8 +40,10 @@ interface Harness {
  * cryptography, which `BlJwtAsymmetricVerifier` owns and
  * `bl-jwt-asymmetric.verifier.spec.ts` covers — including the algorithm pinning.
  */
-function buildHarness(options: { path?: string; authorization?: string } = {}): Harness {
-  const { path = RESOURCE_PATH, authorization } = options;
+function buildHarness(
+  options: { path?: string; authorization?: string; remoteResources?: BlResourceDescription[] } = {}
+): Harness {
+  const { path = RESOURCE_PATH, authorization, remoteResources } = options;
 
   const verifyToken = jest.fn().mockResolvedValue(payload({ aud: RESOURCE }));
   const setHeader = jest.fn();
@@ -52,6 +55,7 @@ function buildHarness(options: { path?: string; authorization?: string } = {}): 
     baseUrl: BASE_URL,
     authorizationServerUrl: BASE_URL,
     resources: [{ path: RESOURCE_PATH, name: 'The documentation' }],
+    remoteResources,
   });
 
   return {
@@ -146,6 +150,22 @@ describe('BlResourceGuard', () => {
       await expectRejected(harness);
       // An unregistered path must never be accepted on the strength of a valid token:
       // the audience check would have nothing meaningful to compare against.
+      expect(harness.verifyToken).not.toHaveBeenCalled();
+    });
+
+    it('a path registered only as a resource this application issues tokens for', async () => {
+      // The reason the guard asks `servesResource` and not `isKnownResource`. A Resource in
+      // the remote list is served by another application: nothing here is mounted at it, no
+      // discovery document names it, and a token minted for it must not open an endpoint here
+      // — even in the pathological case where the two hosts are configured to the same value.
+      const harness = buildHarness({
+        path: UNREGISTERED_PATH,
+        authorization: `Bearer ${TOKEN}`,
+        remoteResources: [{ url: `${BASE_URL}${UNREGISTERED_PATH}`, name: 'Another application' }],
+      });
+      harness.verifyToken.mockResolvedValue(payload({ aud: `${BASE_URL}${UNREGISTERED_PATH}` }));
+
+      await expectRejected(harness);
       expect(harness.verifyToken).not.toHaveBeenCalled();
     });
 

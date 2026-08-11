@@ -13,6 +13,18 @@ import { CnLabType } from '../cn-labs/cn-lab.entity';
  */
 export const CN_MCP_SPACE_API_RESOURCE_PATH = 'mcp/space-api';
 
+/**
+ * Path of the **Community API's** MCP endpoint, relative to the Community's base URL.
+ *
+ * Here because this application is the Authorization Server for the Community too
+ * (ADR-0001): it has to recognize that Resource to mint a token for it, and it does not
+ * serve it. Copied from `HN_MCP_COMMUNITY_DOC_RESOURCE_PATH` rather than imported — the two
+ * applications are two deployables and neither builds the other's code — so this string and
+ * that one must stay equal; a divergence reaches a user as `invalid_target` at `/authorize`
+ * and nowhere earlier.
+ */
+export const CN_MCP_COMMUNITY_DOC_RESOURCE_PATH = 'mcp/community-doc';
+
 /** Tool that answers "which Space would you use if I do not say". */
 export const CN_MCP_TOOL_GET_DEFAULT_SPACE = 'constellab_get_default_space';
 

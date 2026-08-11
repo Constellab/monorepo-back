@@ -76,7 +76,10 @@ import { CnFrontErrorsModule } from './app/cn-front-errors/cn-front-errors.modul
 import { CnGroupsModule } from './app/cn-groups/cn-groups.module';
 import { CnLabConfigsModule } from './app/cn-lab-configs/cn-lab-configs.module';
 import { CnLabsModule } from './app/cn-labs/cn-labs.module';
-import { CN_MCP_SPACE_API_RESOURCE_PATH } from './app/cn-mcp/cn-mcp.constants';
+import {
+  CN_MCP_COMMUNITY_DOC_RESOURCE_PATH,
+  CN_MCP_SPACE_API_RESOURCE_PATH,
+} from './app/cn-mcp/cn-mcp.constants';
 import { CnMcpModule } from './app/cn-mcp/cn-mcp.module';
 import { CnNotificationModule } from './app/cn-notification/cn-notification.module';
 import { CnOAuthModule } from './app/cn-oauth/cn-oauth.module';
@@ -175,8 +178,15 @@ function configureJwtAsymmetricModule(configService: CnCoreConfigService): BlJwt
  * `authorizationServerUrl` is this host because this application is now the Authorization
  * Server (ADR-0001). It is still named separately from `baseUrl`: the two answer different
  * questions, and the Community API sets the same field to this host without being it.
+ *
+ * Being that server for another application is what `remoteResources` is: the Community MCP
+ * is a Resource this host mints tokens for and never serves. Without the entry, a client
+ * discovering the Community MCP arrives here with a `resource` this server has never heard
+ * of and `/authorize` answers `invalid_target` — the Community's own configuration cannot fix
+ * that, because the list of Resources a token may be issued for belongs to the issuer.
  */
 function configureResourceServerModule(configService: CnCoreConfigService): BlResourceServerConfig {
+  const communityApiUrl: string = blStripTrailingSlashes(configService.getCommunityApiUrl());
   return {
     baseUrl: configService.getApiUrl(),
     authorizationServerUrl: configService.getApiUrl(),
@@ -193,6 +203,19 @@ function configureResourceServerModule(configService: CnCoreConfigService): BlRe
         path: CN_MCP_SPACE_API_RESOURCE_PATH,
         name: 'Constellab, read-only',
         description: 'Read your Spaces and their labs, in every Space you belong to',
+      },
+    ],
+    remoteResources: [
+      {
+        // Must byte-match what the Community publishes as its own Resource identifier, so
+        // `COMMUNITY_API_URL` here has to be the Community's `API_URL` — same scheme, same
+        // host. A mismatch is the same `invalid_target` as no entry at all.
+        url: `${communityApiUrl}/${CN_MCP_COMMUNITY_DOC_RESOURCE_PATH}`,
+        // The same words the Community itself gives that Resource: the consent screen is
+        // served from here, and a user must read what the application they are connecting to
+        // says about itself, not a second opinion written on this side.
+        name: 'The Constellab documentation',
+        description: 'Search and read the public documentation',
       },
     ],
   };

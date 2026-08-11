@@ -38,7 +38,7 @@ export class BlProtectedResourceMetadataController {
   @Get(BL_OAUTH_PATHS.protectedResourceMetadata)
   getProtectedResourceMetadata(): BlProtectedResourceMetadata {
     const applicationItself = this.registry.resourceUrl('');
-    const resource = this.registry.isKnownResource(applicationItself)
+    const resource = this.registry.servesResource(applicationItself)
       ? applicationItself
       : this.registry.primaryResource;
 
@@ -57,8 +57,10 @@ export class BlProtectedResourceMetadataController {
    * each document names exactly one `resource`. Serving the same document for every path
    * would tell a client calling one surface to request an audience for another.
    *
-   * The Resource comes from the request path, matched against the registry — an unknown
-   * path is a 404 rather than a document for a Resource we do not serve.
+   * The Resource comes from the request path, matched against what this application serves —
+   * an unknown path is a 404 rather than a document for a Resource we do not serve. A
+   * Resource this host only mints tokens for has its document on the host that serves it, so
+   * it is a 404 here too.
    */
   @BlPublic()
   @Get(`${BL_OAUTH_PATHS.protectedResourceMetadata}/*splat`)
@@ -66,7 +68,7 @@ export class BlProtectedResourceMetadataController {
     const resourcePath = blResourcePathFromMetadataUrl(request.path);
     const resource = this.registry.resourceUrl(resourcePath ?? '');
 
-    if (!resourcePath || !this.registry.isKnownResource(resource)) {
+    if (!resourcePath || !this.registry.servesResource(resource)) {
       throw new NotFoundException('unknown protected resource');
     }
     return blBuildProtectedResourceMetadata(resource, this.registry.authorizationServerUrl);

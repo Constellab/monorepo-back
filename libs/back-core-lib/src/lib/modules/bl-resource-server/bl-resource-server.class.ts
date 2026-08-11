@@ -26,8 +26,13 @@ export interface BlResourceDescription {
  * that answers it, rather than being restated by each application.
  */
 export interface BlResourceLookup {
+  /**
+   * Whether a token may be minted for this Resource — which is a wider question than
+   * whether it is served here: an Authorization Server issues tokens for the Resources of
+   * every application it answers for (ADR-0001), and those live on other hosts.
+   */
   isKnownResource(resource: string): boolean;
-  /** How to describe a Resource to a user. Null for a Resource that is not served here. */
+  /** How to describe a Resource to a user. Null for a Resource this server knows nothing of. */
   describeResource(resource: string): BlResourceDescription | null;
 }
 
@@ -96,4 +101,20 @@ export interface BlResourceServerConfig {
    * document.
    */
   resources: BlResourceDefinition[];
+
+  /**
+   * Resources this application may mint tokens for but does not serve — those of the other
+   * applications it is the Authorization Server for.
+   *
+   * Absent from every discovery document this host publishes, and never matched by
+   * {@link BlResourceGuard}: a Resource is served where it is served. What listing one here
+   * buys is exactly the two answers an Authorization Server owes it — `/authorize` accepting
+   * it as a `resource`, and the consent screen finding words for it.
+   *
+   * Declared as a full URL rather than a path, because it is not under {@link baseUrl}. That
+   * URL has to byte-match what the serving application publishes as its own Resource
+   * identifier — same scheme, same host, same path — since it is compared verbatim, and no
+   * test can compare two applications' environments.
+   */
+  remoteResources?: BlResourceDescription[];
 }

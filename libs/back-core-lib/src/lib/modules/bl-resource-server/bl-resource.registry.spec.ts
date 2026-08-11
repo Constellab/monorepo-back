@@ -1,12 +1,24 @@
 import { BlResourceRegistry } from './bl-resource.registry';
-import { BlResourceDefinition, BlResourceServerConfig } from './bl-resource-server.class';
+import {
+  BlResourceDefinition,
+  BlResourceDescription,
+  BlResourceServerConfig,
+} from './bl-resource-server.class';
 
 const BASE_URL = 'https://community.example.com';
 const AUTH_SERVER_URL = 'https://api.example.com';
+/** A Resource of another application, which this one only mints tokens for. */
+const REMOTE_BASE_URL = 'https://other.example.com';
+const REMOTE_RESOURCE = `${REMOTE_BASE_URL}/mcp/elsewhere`;
 
 /** A Resource entry, when what is under test is the path rather than the words. */
 function resource(path: string, overrides: Partial<BlResourceDefinition> = {}): BlResourceDefinition {
   return { path, name: 'The documentation', ...overrides };
+}
+
+/** A remote entry — a full URL, because it is not under this application's base URL. */
+function remote(overrides: Partial<BlResourceDescription> = {}): BlResourceDescription {
+  return { url: REMOTE_RESOURCE, name: 'Another application', ...overrides };
 }
 
 function buildRegistry(overrides: Partial<BlResourceServerConfig> = {}): BlResourceRegistry {
@@ -54,22 +66,64 @@ describe('BlResourceRegistry', () => {
     });
   });
 
-  describe('isKnownResource', () => {
+  describe('servesResource', () => {
     it('recognizes a registered resource', () => {
-      expect(buildRegistry().isKnownResource(`${BASE_URL}/mcp/community-doc`)).toBe(true);
+      expect(buildRegistry().servesResource(`${BASE_URL}/mcp/community-doc`)).toBe(true);
     });
 
     it('refuses a resource on another host, however similar the path', () => {
-      expect(buildRegistry().isKnownResource(`${AUTH_SERVER_URL}/mcp/community-doc`)).toBe(false);
+      expect(buildRegistry().servesResource(`${AUTH_SERVER_URL}/mcp/community-doc`)).toBe(false);
     });
 
     it('refuses a path that is not registered', () => {
-      expect(buildRegistry().isKnownResource(`${BASE_URL}/mcp/space`)).toBe(false);
+      expect(buildRegistry().servesResource(`${BASE_URL}/mcp/space`)).toBe(false);
     });
 
     it('refuses a prefix of a registered resource', () => {
       // Matching on a prefix would let `/mcp` accept tokens minted for `/mcp/community-doc`.
-      expect(buildRegistry().isKnownResource(`${BASE_URL}/mcp`)).toBe(false);
+      expect(buildRegistry().servesResource(`${BASE_URL}/mcp`)).toBe(false);
+    });
+
+    it('refuses a remote resource, which is served by another application', () => {
+      // The distinction the whole split exists for: this application mints tokens for that
+      // URL and must not honour one presented against its own endpoints. The guard asks
+      // this question, so a false here is what keeps a foreign audience out.
+      const registry = buildRegistry({ remoteResources: [remote()] });
+
+      expect(registry.servesResource(REMOTE_RESOURCE)).toBe(false);
+      expect(registry.resources).toEqual([`${BASE_URL}/mcp/community-doc`]);
+    });
+  });
+
+  describe('isKnownResource', () => {
+    it('recognizes a resource served here', () => {
+      expect(buildRegistry().isKnownResource(`${BASE_URL}/mcp/community-doc`)).toBe(true);
+    });
+
+    it('recognizes a remote resource this application issues tokens for', () => {
+      // Per ADR-0001 one Authorization Server answers for every application: a client
+      // discovering another application's Resource is sent here for the token, and
+      // `/authorize` refuses a `resource` this returns false for.
+      expect(buildRegistry({ remoteResources: [remote()] }).isKnownResource(REMOTE_RESOURCE)).toBe(true);
+    });
+
+    it('normalizes a trailing slash on a remote URL, as it does on a served one', () => {
+      const registry = buildRegistry({ remoteResources: [remote({ url: `${REMOTE_RESOURCE}/` })] });
+
+      expect(registry.isKnownResource(REMOTE_RESOURCE)).toBe(true);
+    });
+
+    it('refuses a resource neither served nor issued for', () => {
+      const registry = buildRegistry({ remoteResources: [remote()] });
+
+      expect(registry.isKnownResource(`${REMOTE_BASE_URL}/mcp/other`)).toBe(false);
+      expect(registry.isKnownResource(`${BASE_URL}/mcp/space`)).toBe(false);
+    });
+
+    it('refuses everything when no remote resource is configured at all', () => {
+      // The field is optional, and its absence must read as an empty list rather than
+      // throwing while Nest builds the injector.
+      expect(buildRegistry().isKnownResource(REMOTE_RESOURCE)).toBe(false);
     });
   });
 
@@ -103,12 +157,37 @@ describe('BlResourceRegistry', () => {
       expect(buildRegistry().describeResource(`${BASE_URL}/mcp/space`)).toBeNull();
     });
 
+    it('describes a remote resource in the words the issuing application was given', () => {
+      // The consent screen is served by the Authorization Server, so a Resource it mints for
+      // has to be describable here even though nothing about it is served here.
+      const registry = buildRegistry({
+        remoteResources: [remote({ name: 'The Constellab documentation', description: 'Read the docs' })],
+      });
+
+      expect(registry.describeResource(REMOTE_RESOURCE)).toEqual({
+        url: REMOTE_RESOURCE,
+        name: 'The Constellab documentation',
+        description: 'Read the docs',
+      });
+    });
+
     it('describes exactly what isKnownResource recognizes, and nothing else', () => {
       // The two answers coming apart is the failure that matters: a Resource a token can be
-      // minted for but not described would reach a user as a blind approval.
-      const registry = buildRegistry({ resources: [resource('mcp/community-doc'), resource('')] });
+      // minted for but not described stops the flow with a 500 at the consent screen, which
+      // is what the remote list was one edit away from causing.
+      const registry = buildRegistry({
+        resources: [resource('mcp/community-doc'), resource('')],
+        remoteResources: [remote()],
+      });
 
-      for (const url of [`${BASE_URL}/mcp/community-doc`, BASE_URL, `${BASE_URL}/mcp`, AUTH_SERVER_URL]) {
+      for (const url of [
+        `${BASE_URL}/mcp/community-doc`,
+        BASE_URL,
+        `${BASE_URL}/mcp`,
+        AUTH_SERVER_URL,
+        REMOTE_RESOURCE,
+        `${REMOTE_BASE_URL}/mcp/other`,
+      ]) {
         expect(registry.describeResource(url) != null).toBe(registry.isKnownResource(url));
       }
     });
@@ -136,6 +215,14 @@ describe('BlResourceRegistry', () => {
 
     it('is null when the application registers no resource at all', () => {
       expect(buildRegistry({ resources: [] }).primaryResource).toBeNull();
+    });
+
+    it('never answers with a remote resource', () => {
+      // It answers a discovery document served from this host. Naming a Resource served
+      // elsewhere would send a client to ask this server's audience for another host's URL.
+      const registry = buildRegistry({ resources: [], remoteResources: [remote()] });
+
+      expect(registry.primaryResource).toBeNull();
     });
   });
 });

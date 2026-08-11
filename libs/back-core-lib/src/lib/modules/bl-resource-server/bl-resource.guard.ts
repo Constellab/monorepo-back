@@ -68,7 +68,10 @@ export class BlResourceGuard implements CanActivate {
     const token = blExtractBearerToken(request.headers?.authorization);
 
     try {
-      if (!token || !this.registry.isKnownResource(expectedResource)) {
+      // `servesResource`, not `isKnownResource`: a Resource this application only mints
+      // tokens for is served on another host, and a token for it reaching an endpoint here
+      // is a token being replayed at the wrong audience.
+      if (!token || !this.registry.servesResource(expectedResource)) {
         throw new UnauthorizedException();
       }
       const payload = await this.mcpJwtVerifier.verifyToken(token);

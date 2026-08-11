@@ -14,6 +14,23 @@ import { CnTestE2EHelper } from './test-e2e-helper.class';
 const OTHER_ALLOWLISTED_URI = 'https://claude.com/api/mcp/auth_callback';
 
 /**
+ * The Community API, as `COMMUNITY_API_URL` in cn-test.env names it, and its MCP Resource.
+ *
+ * Written out rather than read from a discovery document, because this application publishes
+ * none for it — it serves nothing there. In a deployment the same string is assembled from
+ * `COMMUNITY_API_URL` and has to byte-match what the Community publishes as its own Resource
+ * identifier; that coupling spans two applications and no suite can check it.
+ */
+const COMMUNITY_API_URL = 'http://localhost:3333';
+const COMMUNITY_RESOURCE = `${COMMUNITY_API_URL}/mcp/community-doc`;
+
+/** The `aud` of an access token, read without verifying it. */
+function tokenAudience(accessToken: string): string | undefined {
+  const payload = JSON.parse(Buffer.from(accessToken.split('.')[1], 'base64url').toString());
+  return payload.aud as string | undefined;
+}
+
+/**
  * The OAuth flow against the Space API, end to end and over HTTP only: registration and its
  * redirect policy, `/authorize` logged out and logged in, the code exchange, rotation,
  * replay and revocation.
@@ -231,6 +248,73 @@ describe('OAuth flow (e2e)', () => {
       expect(location.searchParams.get('error')).toBe('invalid_target');
       expect(location.searchParams.get('state')).toBe('the-state');
       expect(location.searchParams.get('code')).toBeNull();
+    });
+  });
+
+  /**
+   * Being the Authorization Server for another application (ADR-0001), which is the half of
+   * that decision this suite can see: a client discovering the Community MCP is sent here,
+   * and asks for an audience on a host this application does not serve.
+   *
+   * The Community itself is not running — nothing here needs it. What is under test is that
+   * this server recognizes, describes and mints for a Resource of its own registry that it
+   * serves nothing of.
+   */
+  describe('a Resource served by another application', () => {
+    const communityClient = new OAuthTestClient(server, () => COMMUNITY_RESOURCE);
+
+    it('accepts it as a resource rather than refusing it as unknown', async () => {
+      const clientId = await communityClient.registerClient();
+
+      const redirect = await communityClient.authorize(clientId, await communityClient.sessionToken());
+
+      // The regression: this used to redirect with `invalid_target`, because the only
+      // Resources this server knew were the ones it serves — so the Community MCP was
+      // undiscoverable to a client no matter how the Community was configured.
+      const location = new URL(redirect.headers.location);
+      expect(location.pathname).toBe(OAUTH_TEST_CONSENT_PATH);
+      expect(location.searchParams.get('consent_id')).toBeTruthy();
+    });
+
+    it('describes it on the consent screen in words, not as a bare URL', async () => {
+      const clientId = await communityClient.registerClient();
+      const session = await communityClient.sessionToken();
+      const consentId = await communityClient.consentId(clientId, session);
+
+      const details = await server()
+        .get('/oauth/authorize/consent/details')
+        .query({ consent_id: consentId })
+        .set('Cookie', communityClient.sessionCookie(session))
+        .expect(200);
+
+      // A Resource that cannot be described stops the flow with a 500 rather than asking for
+      // a blind approval, so registering one without words is a deployment that half works.
+      expect(details.body.resources).toEqual([
+        { name: expect.any(String), url: COMMUNITY_RESOURCE, description: expect.any(String) },
+      ]);
+    });
+
+    it('mints a token whose audience is that other host', async () => {
+      const pair = await communityClient.completeAuthorizationFlow();
+
+      // Decoded, not verified: what the signature is worth is `cn-oauth-signing.e2e.spec.ts`.
+      // The audience is the whole point here — it is what the Community's own guard compares
+      // against the URL it was called at, and no suite runs both applications together.
+      expect(tokenAudience(pair.accessToken)).toBe(COMMUNITY_RESOURCE);
+    });
+
+    it('refuses another path on that host, which is not registered either', async () => {
+      const clientId = await communityClient.registerClient();
+
+      const redirect = await server()
+        .get('/oauth/authorize')
+        .query({ ...communityClient.authorizeQuery(clientId), resource: `${COMMUNITY_API_URL}/mcp/other` })
+        .set('Cookie', [`${OAUTH_TEST_ACCESS_COOKIE}=${await communityClient.sessionToken()}`])
+        .expect(302);
+
+      // The entry names one Resource, not a host: knowing the Community is not permission to
+      // mint for anything it might ever serve.
+      expect(new URL(redirect.headers.location).searchParams.get('error')).toBe('invalid_target');
     });
   });
 

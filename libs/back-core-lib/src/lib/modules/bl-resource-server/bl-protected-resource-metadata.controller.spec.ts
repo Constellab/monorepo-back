@@ -59,6 +59,19 @@ describe('BlProtectedResourceMetadataController', () => {
     );
   });
 
+  it('404s for a resource this application only issues tokens for', () => {
+    // Its document lives on the host that serves it, and only that host can say which
+    // authorization server protects it. Publishing one here would be this application
+    // answering discovery on another's behalf.
+    const controller = buildController({
+      remoteResources: [{ url: `${BASE_URL}/mcp/elsewhere`, name: 'Another application' }],
+    });
+
+    expect(() =>
+      controller.getProtectedResourceMetadataForPath(requestFor(`${WELL_KNOWN}/mcp/elsewhere`))
+    ).toThrow(NotFoundException);
+  });
+
   it('serves a resource that is not an MCP endpoint', () => {
     // ADR-0002: a Resource is any protected surface identified by its URL.
     const metadata = buildController({
