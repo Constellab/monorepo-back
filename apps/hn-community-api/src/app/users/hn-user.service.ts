@@ -101,11 +101,15 @@ export class HnUserService implements BlUserService {
     return await this.userRepository.count();
   }
 
+  /**
+   * Local stand-in for the space's credential check: the password is not verified, but an
+   * unknown email is still a failed login, never a 2FA challenge.
+   */
   async getUserCredentialsResponse(credentials: BlCredentials): Promise<HnExternalCheckCredentialResponse> {
     const user: HnUser | null = await this.userRepository.findOneBy({ email: credentials.email });
     if (!user) {
       return {
-        status: '2FA_REQUIRED',
+        status: 'ERROR',
       };
     }
     return {

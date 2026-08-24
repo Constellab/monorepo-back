@@ -68,15 +68,16 @@ describe('Auth (e2e)', () => {
       expect(response.body.token).toBeUndefined();
     });
 
-    it('returns 2FA_REQUIRED for an unknown user (no local account)', async () => {
-      // hn has no password check locally: an unknown email falls through to the
-      // 2FA branch rather than logging in.
+    it('rejects an unknown user (no local account)', async () => {
+      // hn skips the password check locally, but an unknown email is still a failed
+      // login: it must not be answered with a 2FA challenge.
       const response = await helper
         .post('auth/login', { email: 'does-not-exist@gencovery.com', password: 'anything' })
-        .expect(201)
+        .expect(401)
         .getResponse();
 
-      expect(response.body.status).toBe('2FA_REQUIRED');
+      expect(response.body.status).toBeUndefined();
+      expect(response.headers['set-cookie']).toBeUndefined();
     });
   });
 
