@@ -5,4 +5,6 @@ export * from './te-markdown.class';
 export * from './te-rich-text-validator.class';
 export * from './te-metadata-block-config.class';
 export * from './te-rich-text-revision.class';
+export * from './te-rich-text-revision-history.class';
 export * from './te-rich-text-block-inspector.class';
+export * from './te-rich-text-operations.class';

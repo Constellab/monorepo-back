@@ -96,3 +96,29 @@ The practical consequence is narrow: a caller reaching this endpoint holds a Gra
 named Constellab user, so an unsynchronized account is the rare case — a Constellab user who has
 never visited the Community site — and it now gets a message saying exactly that instead of an
 empty result or a 500 from deeper in.
+
+## Writing requires being the brick's author, and a refusal is a result
+
+Reading is the endpoint's; writing to a brick's documentation is the brick's. `community_doc_edit`
+applies the brick's own rule — creator or co-author, `HnBrickSecurity` — rather than one written for
+the MCP, so an author gains and loses nothing by editing through a model instead of through the
+site.
+
+Every refusal of that tool is a **value in the response**, not an exception: not authorized, a stale
+revision, a malformed batch. All three are things the caller acts on — by asking the brick's author,
+by reading the page again, by fixing the operation — and none is a server fault. An exception thrown
+out of a tool handler reaches a model as a transport error stripped of exactly the detail that makes
+it actionable, and the read side already models its refusals this way.
+
+The stale-revision refusal carries the new revision **and the blocks that changed since**, found by
+replaying the recorded history backwards until the document hashes to the revision the caller holds.
+Told only that the page moved on, a model's only move is to read the whole page again and redo its
+work; told which blocks moved, it can see its batch touched none of them and replay it. Nothing
+stored ties a revision to a point in the history — that is the price of a revision being a hash of
+content rather than a counter — so the point has to be found by replaying, and a revision older than
+the walk's bound gets an honest "cannot be listed" instead of a guess.
+
+**Considered and rejected:** letting the tool write with no revision, the way the REST endpoint
+still allows. The optional lock exists for callers written before it; a model that has just read the
+page has nothing to lose by naming what it read, and everything to lose by overwriting an edit it
+never saw.

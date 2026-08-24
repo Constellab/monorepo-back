@@ -1,4 +1,13 @@
-import { TeBlockType, TeRichText, TeRichTextRevision } from '@monorepo/te-text-editor';
+import {
+  TeBlock,
+  TeBlockType,
+  TeRichText,
+  TeRichTextBlockModification,
+  TeRichTextModificationType,
+  TeRichTextOperationInput,
+  TeRichTextOperations,
+  TeRichTextRevision,
+} from '@monorepo/te-text-editor';
 import { HttpStatus } from '@nestjs/common';
 import { Repository } from 'typeorm';
 
@@ -171,6 +180,67 @@ describe('HnDocumentationService.updateContent', () => {
 
       expect(result.warnings).toHaveLength(1);
       expect(result.revision).toBe(TeRichTextRevision.of(richTextWith('x')));
+    });
+  });
+
+  /**
+   * The history is derived from a comparison matched by block id, which is the whole reason the
+   * MCP writes by operations rather than by whole document — see
+   * `docs/adr/0004-the-mcp-writes-documentation-by-operations.md`. These two tests are the claim
+   * the ADR rests on, checked end to end: the library that applies the operations, then the write
+   * path that derives the history from what it produced.
+   */
+  describe('the history a batch of operations leaves behind', () => {
+    function paragraph(id: string, text: string): TeBlock {
+      return { id, type: TeBlockType.PARAGRAPH, data: { text } };
+    }
+
+    function apply(...operations: TeRichTextOperationInput[]): TeRichText {
+      const result = TeRichTextOperations.apply(doc.getRichText(), operations);
+      if (!result.ok) {
+        throw new Error(`Expected the batch to apply, got: ${result.errors.join(' / ')}`);
+      }
+      return result.richText;
+    }
+
+    function modificationsOf(documentation: HnDocumentation): TeRichTextBlockModification[] {
+      return documentation.getRichTextAggregate().modifications.getModifications();
+    }
+
+    beforeEach(() => {
+      doc.content = new TeRichText({
+        ...TeRichText.emptyJson(),
+        blocks: [paragraph('p1', 'One'), paragraph('p2', 'Two'), paragraph('p3', 'Three')],
+      }).toJson();
+    });
+
+    it('names exactly the blocks the batch changed', async () => {
+      await service.updateContent(
+        'doc-1',
+        apply({ op: 'update', blockId: 'p2', data: { text: 'Two, edited' } }, { op: 'delete', blockId: 'p3' })
+      );
+
+      expect(
+        modificationsOf(saved[0]).map((modification) => [modification.blockId, modification.type])
+      ).toEqual([
+        ['p3', TeRichTextModificationType.DELETED],
+        ['p2', TeRichTextModificationType.UPDATED],
+      ]);
+    });
+
+    it('groups the batch as one action, so the page reads as one edit', async () => {
+      await service.updateContent(
+        'doc-1',
+        apply(
+          { op: 'update', blockId: 'p1', data: { text: 'One, edited' } },
+          { op: 'insert', type: 'paragraph', data: { text: 'Four' }, at: 'end' }
+        )
+      );
+
+      const groupIds = modificationsOf(saved[0]).map((modification) => modification.groupId);
+      expect(groupIds).toHaveLength(2);
+      expect(new Set(groupIds).size).toBe(1);
+      expect(groupIds[0]).toBeDefined();
     });
   });
 });

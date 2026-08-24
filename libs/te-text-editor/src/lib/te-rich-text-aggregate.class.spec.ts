@@ -347,6 +347,72 @@ describe('TeRichTextAggregate', () => {
       expect(hasMoveWithDifferentPosition).toBe(true);
     });
 
+    /**
+     * The index a moved block came from, exactly. The scan for deleted blocks walks the old
+     * document backwards, and doing that in place used to leave the old document reversed for the
+     * scan that follows — so every `oldIndex` came out mirrored: a two-block reorder was reported as
+     * no change at all, and a longer one named the wrong block. An `oldIndex` that lies is not a
+     * cosmetic fault: undo splices on it.
+     */
+    it('reports the position a moved block actually came from, and leaves the old document alone', () => {
+      const before = new TeRichText({
+        version: 2,
+        editorVersion: '2.30.2',
+        blocks: [
+          { id: 'block-1', type: TeBlockType.PARAGRAPH, data: { text: 'Block 1' } },
+          { id: 'block-2', type: TeBlockType.PARAGRAPH, data: { text: 'Block 2' } },
+          { id: 'block-3', type: TeBlockType.PARAGRAPH, data: { text: 'Block 3' } },
+        ],
+      });
+      const threeBlockAggregate = new TeRichTextAggregate(before);
+
+      const result = threeBlockAggregate.compareWithCurrent(
+        new TeRichText({
+          version: 2,
+          editorVersion: '2.30.2',
+          blocks: [
+            { id: 'block-2', type: TeBlockType.PARAGRAPH, data: { text: 'Block 2' } },
+            { id: 'block-3', type: TeBlockType.PARAGRAPH, data: { text: 'Block 3' } },
+            { id: 'block-1', type: TeBlockType.PARAGRAPH, data: { text: 'Block 1' } },
+          ],
+        }),
+        mockUserId
+      );
+
+      expect(
+        result
+          .getModifications()
+          .filter((mod) => mod.type === TeRichTextModificationType.MOVED)
+          .map((mod) => [mod.blockId, mod.oldIndex, mod.index])
+      ).toEqual([
+        ['block-2', 1, 0],
+        ['block-3', 2, 1],
+        ['block-1', 0, 2],
+      ]);
+      expect(before.getBlocks().map((block) => block.id)).toEqual(['block-1', 'block-2', 'block-3']);
+    });
+
+    it('detects a two-block reorder rather than reporting no change', () => {
+      const result = aggregate.compareWithCurrent(
+        new TeRichText({
+          version: 2,
+          editorVersion: '2.30.2',
+          blocks: [
+            { id: 'block-2', type: TeBlockType.PARAGRAPH, data: { text: 'Block 2' } },
+            { id: 'block-1', type: TeBlockType.PARAGRAPH, data: { text: 'Block 1' } },
+          ],
+        }),
+        mockUserId
+      );
+
+      expect(
+        result.getModifications().map((mod) => [mod.blockId, mod.type, mod.oldIndex, mod.index])
+      ).toEqual([
+        ['block-2', TeRichTextModificationType.MOVED, 1, 0],
+        ['block-1', TeRichTextModificationType.MOVED, 0, 1],
+      ]);
+    });
+
     it('should handle LIST blocks with meta removal', () => {
       const initialRichText = new TeRichText({
         version: 2,

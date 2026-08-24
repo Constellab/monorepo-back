@@ -57,6 +57,17 @@ export class TeRichTextBlockInspector {
   private static readonly PREVIEW_LENGTH = 120;
 
   /**
+   * Whether a block of this type is filled from an upload or from a lab rather than by typing.
+   *
+   * Read by the write path as well as by this class: the same property that makes such a block
+   * unrewritable makes it uninsertable, since inserting one would mean performing the upload it
+   * points at.
+   */
+  public static isRichType(type: TeBlockType): boolean {
+    return this.RICH_TYPES.includes(type);
+  }
+
+  /**
    * Inspect every block of `richText`, in document order.
    *
    * The blocks come back as they are stored, untouched: validation applies to writes only, and
@@ -72,7 +83,7 @@ export class TeRichTextBlockInspector {
       return { block, editable: false, summary: 'An empty block. Delete it.' };
     }
 
-    if (this.RICH_TYPES.includes(block.type)) {
+    if (this.isRichType(block.type)) {
       return { block, editable: false, summary: `${this.describe(block)} — ${this.RICH_REASON}` };
     }
 

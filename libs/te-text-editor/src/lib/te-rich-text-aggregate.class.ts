@@ -122,9 +122,13 @@ export class TeRichTextAggregate {
   public compareWithCurrent(newRichText: TeRichText, userId: string): TeRichTextModifications {
     const differences: TeRichTextBlockModification[] = [];
 
-    // find deleted blocks, start by the last block
+    // find deleted blocks, start by the last block.
+    // On a copy: `getBlocks()` hands out the internal array, and reversing it in place would
+    // reverse the old document itself — which the second loop below then reads through
+    // `getBlockIndex` to decide what moved. Every `oldIndex` came out mirrored, so a reorder was
+    // recorded against the wrong block, or (for two blocks) not recorded at all.
     let index = this.richText.getBlocks().length - 1;
-    for (const oldBlock of this.richText.getBlocks().reverse()) {
+    for (const oldBlock of [...this.richText.getBlocks()].reverse()) {
       if (oldBlock.id == null) {
         index--;
         continue;
