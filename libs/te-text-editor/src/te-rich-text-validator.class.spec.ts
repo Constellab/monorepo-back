@@ -111,6 +111,49 @@ describe('TeRichTextValidator', () => {
     });
   });
 
+  /**
+   * These removals happen inside a tag the whitelist allows, so a scan of the raw string cannot
+   * single them out. They must still be reported: a silent removal would let a model believe it
+   * wrote what it wrote.
+   */
+  describe('attributes on an allowed tag', () => {
+    it('reports an event handler stripped from an allowed tag', () => {
+      const result = sanitizeBlocks(paragraph('<b onclick="evil()">x</b>'));
+
+      expect(result.blocks[0].data.text).toBe('<b>x</b>');
+      expect(result.warnings).toHaveLength(1);
+      expect(result.warnings[0]).toContain('an attribute');
+    });
+
+    it('reports a target dropped from a link whose href it kept', () => {
+      const result = sanitizeBlocks(paragraph('<a href="https://a.io" target="_blank">x</a>'));
+
+      expect(result.blocks[0].data.text).toBe('<a href="https://a.io">x</a>');
+      expect(result.warnings).toHaveLength(1);
+      expect(result.warnings[0]).toContain('an attribute');
+    });
+
+    it('reports a class dropped from a code tag', () => {
+      const result = sanitizeBlocks(paragraph('<code class="language-py">x</code>'));
+
+      expect(result.blocks[0].data.text).toBe('<code>x</code>');
+      expect(result.warnings).toHaveLength(1);
+    });
+  });
+
+  /**
+   * The mirror of the case above: warnings are triggered by what the sanitizer actually removed,
+   * so prose that merely looks like markup must not be reported as a removal that never happened.
+   */
+  describe('prose that looks like a tag', () => {
+    it('does not report a removal for a comparison written in prose', () => {
+      const result = sanitizeBlocks(paragraph('if x < script and y > 2'));
+
+      expect(result.warnings).toEqual([]);
+      expect(result.blocks[0].data.text).toBe('if x &lt; script and y &gt; 2');
+    });
+  });
+
   describe('link schemes', () => {
     it('neutralizes a javascript: href and keeps the link text', () => {
       const result = sanitizeBlocks(paragraph('<a href="javascript:alert(1)">click me</a>'));
@@ -271,6 +314,28 @@ describe('TeRichTextValidator', () => {
       expect(result.warnings[0]).toContain('title');
       expect(result.warnings[0]).toContain('text');
       expect(result.warnings[0]).toContain('content');
+    });
+
+    it('stores the content as text, not as escaped HTML', () => {
+      const result = sanitizeBlocks({
+        id: 'h1',
+        type: TeBlockType.HINT,
+        data: { hintType: TeBlockHintType.INFO, content: 'a & b, 3 < 4' },
+      });
+
+      expect(result.blocks[0].data.content).toBe('a & b, 3 < 4');
+      expect(result.warnings).toEqual([]);
+    });
+
+    it('decodes an entity the author had escaped, since the content is text', () => {
+      const result = sanitizeBlocks({
+        id: 'h1',
+        type: TeBlockType.HINT,
+        data: { hintType: TeBlockHintType.INFO, content: 'a &amp; b' },
+      });
+
+      expect(result.blocks[0].data.content).toBe('a & b');
+      expect(result.warnings).toEqual([]);
     });
 
     it('replaces an unsupported hint type by info and says so', () => {

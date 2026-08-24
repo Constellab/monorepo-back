@@ -17,6 +17,10 @@ import { TeRichText } from './lib/te-rich-text.class';
  * library with different `esModuleInterop` settings — a default import would break at runtime
  * under one, a namespace import would fail to type-check under the other. A typed require is
  * the one form valid in both.
+ *
+ * Its version is pinned exactly, against the house `^` style: later releases depend on an
+ * ESM-only `htmlparser2`, which `require()` cannot load on Node 20 — the floor this repo
+ * declares in `package.json` — so a caret range would break the runtime on the next bump.
  */
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const sanitizeHtml: (dirty: string, options?: IOptions) => string = require('sanitize-html');
@@ -61,8 +65,34 @@ export class TeRichTextValidator {
     allowedAttributes: {},
   };
 
-  /** Opening or closing tag, up to the tag name. Used to report, never to secure. */
-  private static readonly TAG_REGEX = /<\s*\/?\s*([a-zA-Z][a-zA-Z0-9:-]*)/g;
+  /**
+   * Removes nothing, while applying the same tag normalization and entity handling as the two
+   * configurations above.
+   *
+   * Its output is the yardstick that answers "did the strict pass actually remove something?",
+   * which a regex over the raw string cannot answer: an event handler on an allowed tag, a
+   * `target` on a link, a `class` on a `<code>` are all dropped invisibly otherwise. Comparing
+   * the two outputs also stops the reverse mistake — reporting a removal that never happened.
+   *
+   * **Its output is never stored or returned.** `allowVulnerableTags` is set only because
+   * allowing every tag makes `sanitize-html` warn on `<script>` and `<style>`, and this pass
+   * exists solely to be compared against.
+   */
+  private static readonly NOTHING_REMOVED_OPTIONS: IOptions = {
+    allowedTags: false,
+    allowedAttributes: false,
+    transformTags: TeRichTextValidator.NORMALIZED_TAGS,
+    allowVulnerableTags: true,
+  };
+
+  /**
+   * Opening or closing tag, up to the tag name. Used to report, never to secure.
+   *
+   * No whitespace is tolerated after `<` or `/`, matching how a parser reads a tag: prose like
+   * `if x < script` is text, not a tag, and must not be reported as a removal that never
+   * happened.
+   */
+  private static readonly TAG_REGEX = /<\/?([a-zA-Z][a-zA-Z0-9:-]*)/g;
 
   /** The `href` of an anchor, quoted or bare. Used to report, never to secure. */
   private static readonly HREF_REGEX = /<a\b[^>]*?\bhref\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/gi;
@@ -203,28 +233,47 @@ export class TeRichTextValidator {
     block.data = sanitized;
   }
 
-  /** Keep the allowed inline tags, drop the rest, and neutralize a forbidden link scheme. */
-  private static sanitizeInline(value: unknown, label: string, field: string, warnings: string[]): any {
+  /**
+   * Keep the allowed inline tags, drop the rest, and neutralize a forbidden link scheme.
+   *
+   * A non-string is passed through: a block whose text is absent is not this method's business
+   * to invent.
+   */
+  private static sanitizeInline<T>(value: T, label: string, field: string, warnings: string[]): T | string {
     if (typeof value !== 'string') return value;
 
-    this.reportDisallowedTags(value, label, field, warnings);
+    const clean = sanitizeHtml(value, this.INLINE_OPTIONS);
+
+    // A forbidden scheme is dropped by the permissive pass too, so the comparison below cannot
+    // see it. It is reported on its own.
     this.reportDisallowedHrefs(value, label, field, warnings);
 
-    return this.keepNonBreakingSpaces(sanitizeHtml(value, this.INLINE_OPTIONS));
+    if (clean !== sanitizeHtml(value, this.NOTHING_REMOVED_OPTIONS)) {
+      this.reportRemovedMarkup(value, label, field, warnings);
+    }
+
+    return this.keepNonBreakingSpaces(clean);
   }
 
-  /** A hint's content is plain text: every tag goes, and what remains stays HTML-escaped. */
+  /**
+   * A hint's content is plain text: every tag goes, and the entities `sanitize-html` leaves
+   * behind are decoded, so what is stored is the text itself. Escaping it would show a reader
+   * `a &amp; b` where the author wrote `a & b`.
+   */
   private static sanitizePlainText(value: unknown, label: string, warnings: string[]): string {
     if (typeof value !== 'string') return '';
 
-    if (this.tagNamesOf(value).length > 0) {
+    const stripped = sanitizeHtml(value, this.PLAIN_TEXT_OPTIONS);
+
+    // Both passes escape entities the same way, so a difference is markup and nothing else.
+    if (stripped !== sanitizeHtml(value, this.NOTHING_REMOVED_OPTIONS)) {
       warnings.push(
         `${label}: removed the HTML from "content", which is plain text — the hint's renderer ` +
           `does not interpret it.`
       );
     }
 
-    return this.keepNonBreakingSpaces(sanitizeHtml(value, this.PLAIN_TEXT_OPTIONS));
+    return this.decodeEntities(stripped);
   }
 
   /**
@@ -236,8 +285,13 @@ export class TeRichTextValidator {
     return html.replace(/\u00A0/g, '&nbsp;');
   }
 
-  private static reportDisallowedTags(html: string, label: string, field: string, warnings: string[]): void {
-    const disallowed = [
+  /**
+   * Called only once something is known to have been removed. It names the disallowed tags when
+   * it can see them, and falls back to naming the rule when what went was an attribute — which
+   * a scan of the raw string cannot single out.
+   */
+  private static reportRemovedMarkup(html: string, label: string, field: string, warnings: string[]): void {
+    const disallowedTags = [
       ...new Set(
         this.tagNamesOf(html).filter(
           (tag) => !this.ALLOWED_TAGS.includes(tag) && this.NORMALIZED_TAGS[tag] == null
@@ -245,11 +299,15 @@ export class TeRichTextValidator {
       ),
     ];
 
-    if (disallowed.length === 0) return;
+    const removed =
+      disallowedTags.length > 0
+        ? `the tag(s) ${disallowedTags.map((tag) => `<${tag}>`).join(', ')}`
+        : 'an attribute';
 
     warnings.push(
-      `${label}: removed the tag(s) ${disallowed.map((tag) => `<${tag}>`).join(', ')} from ` +
-        `${field}. Allowed inline tags: ${this.ALLOWED_TAGS.map((tag) => `<${tag}>`).join(', ')}.`
+      `${label}: removed ${removed} from ${field}. Allowed inline tags: ` +
+        `${this.ALLOWED_TAGS.map((tag) => `<${tag}>`).join(', ')}, and the only attribute kept ` +
+        `is the \`href\` of an \`<a>\`.`
     );
   }
 
