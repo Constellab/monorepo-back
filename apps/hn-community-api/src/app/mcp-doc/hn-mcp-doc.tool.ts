@@ -27,6 +27,8 @@ export class HnMcpDocTool {
     name: 'community_doc_search',
     description:
       'Search the Constellab community documentation by keyword (matches title and body). ' +
+      'Covers the Constellab product documentation and the technical documentation of its bricks, ' +
+      'notably gws_core — how to develop in Constellab (tasks, protocols, resources, views, Python API). ' +
       'Returns a list of matching docs with a text snippet, their brick, version and path. ' +
       'Use community_doc_read with the returned id to get the full content.',
     parameters: z.object({
@@ -43,7 +45,8 @@ export class HnMcpDocTool {
     name: 'community_doc_list',
     description:
       'List community documentation pages, optionally filtered by brick name. ' +
-      'Useful to browse what documentation exists before reading a specific page.',
+      'Useful to browse what documentation exists before reading a specific page — for instance ' +
+      'brickName "gws_core" for the technical documentation on developing in Constellab.',
     parameters: z.object({
       brickName: z
         .string()
