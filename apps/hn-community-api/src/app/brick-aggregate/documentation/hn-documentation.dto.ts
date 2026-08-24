@@ -34,3 +34,26 @@ export class HnDocumentationShortDto extends HnBaseDto {
     this.order = documentation.order;
   }
 }
+
+/**
+ * The response of a content update.
+ *
+ * The documentation is wrapped rather than returned bare so the sanitization warnings ride
+ * alongside it: a caller that does not care (the UI) ignores them, and the MCP hands them back
+ * to the model that wrote the content. See
+ * `docs/adr/0004-the-mcp-writes-documentation-by-operations.md`.
+ */
+export class HnDocumentationContentUpdateDto {
+  documentation: HnDocumentation;
+
+  /**
+   * What the server removed from the content it was sent, one line per removal. Empty when the
+   * content was already valid, which is the normal case for the editor.
+   */
+  warnings: string[];
+
+  constructor(documentation: HnDocumentation, warnings: string[]) {
+    this.documentation = documentation;
+    this.warnings = warnings;
+  }
+}

@@ -36,7 +36,7 @@ import {
   HnUploadFileResponseDto,
 } from '../file-aggregate/file-core/hn-abstract-file.dto';
 import { HnFileDocumentationService } from '../file-aggregate/file-documentation/hn-file-documentation.service';
-import { HnDocumentationDto } from './documentation/hn-documentation.dto';
+import { HnDocumentationContentUpdateDto, HnDocumentationDto } from './documentation/hn-documentation.dto';
 import { HnDocumentation, HnDocumentationDTO } from './documentation/hn-documentation.entity';
 import { HnNodeDTO } from './folder/hn-folder.dto';
 import { HnBrickAggregateService } from './hn-brick-aggregate.service';
@@ -57,11 +57,15 @@ export class HnDocumentationController extends HnAbstractFileController<HnDocume
     return this.brickAggregateService.findAllDocs();
   }
 
+  /**
+   * The response wraps the documentation so the sanitization warnings can ride with it. A caller
+   * that does not care about them reads `documentation` and ignores `warnings`.
+   */
   @Put('content/:id')
   updateContent(
     @Param('id') id: string,
     @Body(TeRichTextPipe) updateContentDoc: TeRichText
-  ): Promise<HnDocumentation> {
+  ): Promise<HnDocumentationContentUpdateDto> {
     return this.brickAggregateService.updateDocContent(id, updateContentDoc);
   }
 
