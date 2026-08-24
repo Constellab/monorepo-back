@@ -73,7 +73,11 @@ export class HnCommunityAppService {
     return (result.affected ?? 0) > 0;
   }
 
-  async update(id: string, dto: HnCommunityAppEditDto, space: HnSpace | null = null): Promise<HnCommunityApp> {
+  async update(
+    id: string,
+    dto: HnCommunityAppEditDto,
+    space: HnSpace | null = null
+  ): Promise<HnCommunityApp> {
     const app = await this.findOneById(id);
     if (app == null) {
       throw new BlNotFoundException('App not found');
@@ -82,7 +86,11 @@ export class HnCommunityAppService {
     return this.communityAppRepository.save(updatedApp);
   }
 
-  updateFromDto(app: HnCommunityApp, dto: HnCommunityAppEditDto, space: HnSpace | null = null): HnCommunityApp {
+  updateFromDto(
+    app: HnCommunityApp,
+    dto: HnCommunityAppEditDto,
+    space: HnSpace | null = null
+  ): HnCommunityApp {
     app.title = dto.title;
     app.appUrl = dto.appUrl ?? null;
     app.contactMail = dto.contactMail ?? null;

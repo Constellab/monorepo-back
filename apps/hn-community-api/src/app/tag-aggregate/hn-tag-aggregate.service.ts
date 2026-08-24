@@ -187,7 +187,11 @@ export class HnTagAggregateService {
       space = await this.getSpaceById(createTagKeyDto.space);
     }
     return await this.dataSource.transaction(async (entityManager) => {
-      const tagKey = await this.tagKeyService.createTagKey(createTagKeyDto, space ?? undefined, entityManager);
+      const tagKey = await this.tagKeyService.createTagKey(
+        createTagKeyDto,
+        space ?? undefined,
+        entityManager
+      );
       if (tagKey && tagKey.type === HnTagKeyType.BOOLEAN) {
         await this.tagValueService.createTagValue(
           tagKey,
