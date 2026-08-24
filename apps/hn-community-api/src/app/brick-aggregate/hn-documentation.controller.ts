@@ -58,15 +58,21 @@ export class HnDocumentationController extends HnAbstractFileController<HnDocume
   }
 
   /**
-   * The response wraps the documentation so the sanitization warnings can ride with it. A caller
-   * that does not care about them reads `documentation` and ignores `warnings`.
+   * The response wraps the documentation so the sanitization warnings and the new revision can ride
+   * with it. A caller that does not care about them reads `documentation` and ignores the rest.
+   *
+   * `revision` in the body is optional and is the revision the caller read the content at: the
+   * write is refused if the content has changed since. Sending none keeps the old behaviour, last
+   * write wins — which is why nothing breaks for a caller that has never heard of it. The rich text
+   * pipe ignores the extra field, so the revision never ends up inside the stored content.
    */
   @Put('content/:id')
   updateContent(
     @Param('id') id: string,
-    @Body(TeRichTextPipe) updateContentDoc: TeRichText
+    @Body(TeRichTextPipe) updateContentDoc: TeRichText,
+    @Body('revision') revision?: string
   ): Promise<HnDocumentationContentUpdateDto> {
-    return this.brickAggregateService.updateDocContent(id, updateContentDoc);
+    return this.brickAggregateService.updateDocContent(id, updateContentDoc, revision);
   }
 
   @BlOptionalAuth()

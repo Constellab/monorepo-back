@@ -52,8 +52,15 @@ export class HnDocumentationContentUpdateDto {
    */
   warnings: string[];
 
-  constructor(documentation: HnDocumentation, warnings: string[]) {
+  /**
+   * The revision of the content that was just stored — not of the content that was sent, which the
+   * sanitizer may have cleaned. A caller chaining a second edit locks against this one.
+   */
+  revision: string;
+
+  constructor(documentation: HnDocumentation, warnings: string[], revision: string) {
     this.documentation = documentation;
     this.warnings = warnings;
+    this.revision = revision;
   }
 }

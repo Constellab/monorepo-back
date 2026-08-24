@@ -46,6 +46,33 @@ writer — means the MCP re-implementing rules the CLI already has, in another l
 two drifting on the first change. It has a real cost: the CLI may now be refused content it
 used to accept, wherever its own rules were laxer.
 
+## A write locks on a revision it read, and the lock is optional
+
+An edit names the state it was prepared against: a **revision**, a short hash of the document's
+blocks, computed at read time and sent back on write. A stale one is refused with a 409. It is
+derived from the content on every read, never stored, so there is no column to keep in step with
+the blocks.
+
+The lock is **optional**, and that is the whole reason nothing breaks: a request without a
+revision keeps the historical last-write-wins, which is what every caller written before this did.
+A caller adopts the lock when it has something to lose.
+
+The something is concrete. Two write paths reach one document, and only one of them is driven by
+a human watching the page. Without the lock, a CLI push overwrites a concurrent MCP edit
+silently — and the model that wrote it is told the save succeeded, which is the failure this ADR
+exists to remove in the other direction too.
+
+**Considered and rejected:** a version column bumped on write. It is the same lock with a
+migration and a second source of truth, and it answers "has anyone written since?" where what an
+edit actually needs to know is "is this the content I read?" — a rollback that restores the
+content I read is not a conflict, and a bumped counter would say it is. **Also rejected:** making
+the revision mandatory, which would break the editor and the installed CLIs at once, for a
+guarantee neither of them was asking for.
+
+The response of a write carries the revision of what was **stored**, not of what was sent: the
+sanitizer above may have cleaned the content, and an edit chained onto the previous one has to
+lock against the content that now exists.
+
 ## Reading the MCP requires a Community account
 
 The documentation is public on the web, and the read tools shipped `BlPublic()` +

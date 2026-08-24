@@ -1,8 +1,11 @@
 import { BlPublic } from '@monorepo/back-core-lib';
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { McpModule, McpTransportType } from '@rekog/mcp-nest';
 
+import { HnBrickMajorVersion } from '../brick-aggregate/brick-major-version/hn-brick-major-version.entity';
 import { HnDocumentationModule } from '../brick-aggregate/documentation/hn-documentation.module';
+import { HnFolder } from '../brick-aggregate/folder/hn-folder.entity';
 import { HnCoreConfigModule } from '../core/modules/core-config/hn-core-config.module';
 import { HnRagflowChatbotModule } from '../ragflow-chatbot/hn-ragflow-chatbot.module';
 import { HnUserModule } from '../users/hn-user.module';
@@ -39,6 +42,9 @@ import { HnMcpDocInstallService } from './hn-mcp-doc-install.service';
 @Module({
   imports: [
     HnDocumentationModule,
+    // The tree tool reads folders and brick versions directly: it needs two repositories, not the
+    // services around them, and importing their modules would drag half the brick aggregate in.
+    TypeOrmModule.forFeature([HnFolder, HnBrickMajorVersion]),
     HnCoreConfigModule,
     HnRagflowChatbotModule,
     HnUserModule,
@@ -52,7 +58,10 @@ import { HnMcpDocInstallService } from './hn-mcp-doc-install.service';
         'of its bricks — notably gws_core, i.e. how to develop in Constellab. ' +
         'Ask community_doc_ask a conceptual question to get an answer from the documentation with its ' +
         'sources; use community_doc_search or community_doc_list to find pages by keyword or name, then ' +
-        'community_doc_read for full content.',
+        'community_doc_read for full content. ' +
+        'To prepare an edit rather than answer a question, use community_doc_tree for the folder and page ' +
+        'ids of a brick and community_doc_read_blocks for a page as the blocks it is stored as: the ' +
+        'markdown of community_doc_read loses the block ids an edit is expressed against.',
       transport: McpTransportType.STREAMABLE_HTTP,
       mcpEndpoint: HN_MCP_COMMUNITY_DOC_RESOURCE_PATH,
       // Neutralize the global HnJwtAuthGuard/HnIsAdminGuard on this route...

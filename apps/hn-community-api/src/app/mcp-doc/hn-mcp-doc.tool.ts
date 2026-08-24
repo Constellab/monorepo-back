@@ -91,6 +91,56 @@ export class HnMcpDocTool {
     };
   }
 
+  @Tool({
+    name: 'community_doc_tree',
+    description:
+      'Get the folder and page tree of one brick version, with the id of every folder and every page. ' +
+      'This is the only tool that returns a folder id, so it is a prerequisite of creating a page. ' +
+      'Use it once you know which brick you are working in; community_doc_list is the tool for finding ' +
+      'that out across bricks. Refuses rather than truncating if the tree is too large to return whole.',
+    parameters: z.object({
+      brickName: z.string().min(1).describe('Exact name of the brick, for instance "gws_core".'),
+      version: z
+        .string()
+        .optional()
+        .describe(
+          'Version as the listing tools return it ("latest", "v2"); a full "2.1.0" is accepted too ' +
+            'and read as its major. Omit for the latest.'
+        ),
+    }),
+  })
+  async tree({ brickName, version }: { brickName: string; version?: string }): Promise<HnMcpToolResponse> {
+    const result = await this.docService.tree(brickName, version);
+    if (!result.ok) {
+      return { content: [{ type: 'text' as const, text: result.reason }], isError: true };
+    }
+    return this.asJson(result.tree);
+  }
+
+  @Tool({
+    name: 'community_doc_read_blocks',
+    description:
+      'Read a page as the raw EditorJS blocks it is stored as — block ids included — plus the ' +
+      'revision of its content. Use this, not community_doc_read, before editing a page: the markdown ' +
+      'rendering loses the block ids the modification history is matched on. ' +
+      'A block marked "editable": false can be moved or deleted but never rewritten, and its "summary" ' +
+      'says what it holds and why. Send the "revision" back when writing: the write is refused if the ' +
+      'page changed in the meantime.',
+    parameters: z.object({
+      docId: z.string().min(1).describe('The documentation page id.'),
+    }),
+  })
+  async readBlocks({ docId }: { docId: string }): Promise<HnMcpToolResponse> {
+    const doc = await this.docService.readBlocks(docId);
+    if (doc == null) {
+      return {
+        content: [{ type: 'text' as const, text: `No documentation found for id "${docId}".` }],
+        isError: true,
+      };
+    }
+    return this.asJson(doc);
+  }
+
   private asJson(payload: unknown): HnMcpToolResponse {
     return {
       content: [{ type: 'text' as const, text: JSON.stringify(payload, null, 2) }],

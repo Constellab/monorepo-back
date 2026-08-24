@@ -1,4 +1,5 @@
-import { TeBlockType, TeRichText } from '@monorepo/te-text-editor';
+import { TeBlockType, TeRichText, TeRichTextRevision } from '@monorepo/te-text-editor';
+import { HttpStatus } from '@nestjs/common';
 import { Repository } from 'typeorm';
 
 import { HnCurrentUserHelper } from '../../core/utils/hn-current-user.helper';
@@ -100,5 +101,76 @@ describe('HnDocumentationService.updateContent', () => {
 
     expect(saved[0].modifications).not.toContain('<div>');
     expect(saved[0].modifications).toContain('hello');
+  });
+
+  describe('the optional revision', () => {
+    /** The revision of the content currently in the database. */
+    function currentRevision(): string {
+      return TeRichTextRevision.of(doc.getRichText());
+    }
+
+    beforeEach(() => {
+      doc.content = richTextWith('the content that is stored').toJson();
+    });
+
+    it('lets the write through when it is the one the caller read', async () => {
+      const result = await service.updateContent('doc-1', richTextWith('an edit'), currentRevision());
+
+      expect(storedText()).toBe('an edit');
+      expect(result.documentation).toBe(saved[0]);
+    });
+
+    it('refuses the write with a 409 when it is stale', async () => {
+      const stale = TeRichTextRevision.of(richTextWith('what the caller read'));
+
+      await expect(service.updateContent('doc-1', richTextWith('an edit'), stale)).rejects.toMatchObject({
+        status: HttpStatus.CONFLICT,
+      });
+      expect(saved).toEqual([]);
+    });
+
+    it('names both revisions, so the caller can see its own is the old one', async () => {
+      const stale = TeRichTextRevision.of(richTextWith('what the caller read'));
+
+      await expect(service.updateContent('doc-1', richTextWith('an edit'), stale)).rejects.toThrow(
+        new RegExp(`${stale}.*${currentRevision()}`)
+      );
+    });
+
+    /**
+     * An empty string is not "no revision": a caller sending its uninitialized field would get
+     * last-write-wins out of a request that looks locked.
+     */
+    it('refuses an empty revision rather than reading it as no revision', async () => {
+      await expect(service.updateContent('doc-1', richTextWith('an edit'), '')).rejects.toMatchObject({
+        status: HttpStatus.CONFLICT,
+      });
+      expect(saved).toEqual([]);
+    });
+
+    it('behaves exactly as before when no revision is sent', async () => {
+      const result = await service.updateContent('doc-1', richTextWith('an edit'));
+
+      expect(storedText()).toBe('an edit');
+      expect(result.warnings).toEqual([]);
+    });
+
+    it('returns the revision of what was stored, so a second edit can lock against it', async () => {
+      const result = await service.updateContent('doc-1', richTextWith('an edit'));
+
+      expect(result.revision).toBe(TeRichTextRevision.of(saved[0].getRichText()));
+      expect(result.revision).not.toBe(TeRichTextRevision.of(richTextWith('the content that is stored')));
+    });
+
+    /**
+     * The revision has to describe the content the database holds, not the content that was sent:
+     * a caller locking against the latter would be refused on its very next write.
+     */
+    it('returns the revision of the sanitized content when the content was cleaned', async () => {
+      const result = await service.updateContent('doc-1', richTextWith('<div>x</div>'));
+
+      expect(result.warnings).toHaveLength(1);
+      expect(result.revision).toBe(TeRichTextRevision.of(richTextWith('x')));
+    });
   });
 });

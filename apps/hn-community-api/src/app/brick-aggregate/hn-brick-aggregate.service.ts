@@ -1113,9 +1113,13 @@ export class HnBrickAggregateService {
     return this.fileDocumentationService.saveImage(documentation, file);
   }
 
-  async updateDocContent(id: string, updateContentDoc: TeRichText): Promise<HnDocumentationContentUpdateDto> {
+  async updateDocContent(
+    id: string,
+    updateContentDoc: TeRichText,
+    revision?: string
+  ): Promise<HnDocumentationContentUpdateDto> {
     await this.checkIfUserHasRightsOnDoc(id);
-    return this.documentationService.updateContent(id, updateContentDoc);
+    return this.documentationService.updateContent(id, updateContentDoc, revision);
   }
 
   async checkIfUserHasRightsOnDoc(id: string): Promise<void> {
