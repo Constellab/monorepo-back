@@ -8,6 +8,11 @@ name: Publish an agent plugin
 #
 # A tag builds and pushes the image; the CapRover deploy is a separate manual step. So a
 # plugin can reach clients shortly before the API that serves its tools does.
+#
+# Two things are published, and an install needs both: the plugin folder, and the plugin's
+# entry in the public marketplace manifest. The folder alone is a plugin installable by no
+# name at all, with nothing anywhere reporting it — which is how `space` shipped its files
+# while the manifest still offered only `datalab`.
 
 on:
   workflow_call:
@@ -77,6 +82,16 @@ jobs:
       - name: Check the version was bumped for the change
         run: bash .github/scripts/check_plugin_version.sh "$PLUGIN_DIR" "public/plugins/$PLUGIN_NAME"
 
+      # Dry run against the real published manifest, on the pull request. This one step decides
+      # whether the plugin is installable at all, so a malformed entry has to fail here rather
+      # than on the tag, after the folder has already been copied. The printed diff is the
+      # review — usually empty, and worth reading on the release that first adds a plugin.
+      - name: Check the plugin registers in the marketplace manifest
+        run: |
+          set -euo pipefail
+          bash .github/scripts/register_plugin.sh "$PLUGIN_DIR" public/.claude-plugin/marketplace.json
+          git -C public --no-pager diff -- .claude-plugin/marketplace.json
+
   publish:
     needs: validate
     if: startsWith(github.ref, format('refs/tags/{0}', inputs.tag_prefix)) || github.event_name == 'workflow_dispatch'
@@ -97,34 +112,44 @@ jobs:
       - name: Refuse a change that did not bump the version
         run: bash .github/scripts/check_plugin_version.sh "$PLUGIN_DIR" "public/plugins/$PLUGIN_NAME"
 
-      - name: Copy the plugin as reviewed
-        run: |
-          set -euo pipefail
-          rm -rf "public/plugins/$PLUGIN_NAME"
-          mkdir -p public/plugins
-          cp -r "$PLUGIN_DIR" "public/plugins/$PLUGIN_NAME"
-
-      # `git add` is scoped to this plugin's folder, not `-A`: another application publishes
-      # its own plugin into the same repository, and a wide add would sweep its in-flight
-      # commit into this one. The rebase retry is for the same reason — two releases on the
-      # same day collide on the default branch.
+      # The publish is one function of the remote's current state — copy the folder, write the
+      # entry — so a race is resolved by replaying it on top of whatever landed, never by
+      # rebasing. Rebasing a hand-merged `marketplace.json` is the one outcome to avoid: both
+      # applications write that same file, and a conflict resolved by the loser's copy drops
+      # the winner's entry, leaving a plugin published and uninstallable.
+      #
+      # `git add` is scoped to this plugin's paths, not `-A`: the other application may have an
+      # in-flight commit in this checkout, and a wide add would sweep it into this one.
       - name: Commit and push
-        working-directory: public
         run: |
           set -euo pipefail
-          git config user.name "constellab-bot"
-          git config user.email "support@gencovery.com"
-          git add "plugins/$PLUGIN_NAME"
-          if git diff --quiet --cached; then
-            echo "Nothing changed in $PLUGIN_NAME — already published."
-            exit 0
-          fi
-          git commit -m "$PLUGIN_NAME $PLUGIN_VERSION"
+          git -C public config user.name "constellab-bot"
+          git -C public config user.email "support@gencovery.com"
+
+          apply() {
+            rm -rf "public/plugins/$PLUGIN_NAME"
+            mkdir -p public/plugins
+            cp -r "$PLUGIN_DIR" "public/plugins/$PLUGIN_NAME"
+
+            # `plugins[]` in the public manifest is what `/plugin install <name>@constellab`
+            # resolves; the copied folder alone is installable by no name.
+            bash .github/scripts/register_plugin.sh "$PLUGIN_DIR" public/.claude-plugin/marketplace.json
+            git -C public add "plugins/$PLUGIN_NAME" .claude-plugin/marketplace.json
+          }
+
           for attempt in 1 2 3; do
-            if git pull --rebase && git push; then
+            apply
+            if git -C public diff --quiet --cached; then
+              echo "Nothing changed for $PLUGIN_NAME — already published."
               exit 0
             fi
-            echo "Push attempt $attempt failed, retrying"
+            git -C public commit -m "$PLUGIN_NAME $PLUGIN_VERSION"
+            if git -C public push; then
+              exit 0
+            fi
+            echo "Push attempt $attempt failed — replaying on top of the remote"
+            git -C public fetch origin
+            git -C public reset --hard "origin/$(git -C public rev-parse --abbrev-ref HEAD)"
             sleep 5
           done
           echo "::error::Could not push to $PUBLIC_REPO after 3 attempts"

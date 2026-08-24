@@ -20,6 +20,11 @@ the application because the endpoint is: a second plugin pointing at the same MC
 make a client open two connections to it and show every tool twice, and there is no way for two
 plugins to share one server entry. So a new Space toolset is a new folder under `space/skills/`.
 
+So `name`, `displayName`, `description` and `keywords` stay about the Space API and not about
+any one toolset — `description` is copied verbatim into the public marketplace entry at publish
+time, and it is what a client reads when deciding to install. Naming a feature there dates the
+plugin the moment a second toolset lands beside the first.
+
 A toolset that needs its **own** consent — anything that writes where `/mcp/space-api` is
 advertised read-only — is the one exception, and it is a new Resource on its own path before it
 is a new plugin. See `README.md`.

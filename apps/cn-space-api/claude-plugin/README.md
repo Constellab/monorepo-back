@@ -53,6 +53,17 @@ actually deployed. Publishing off `master` would hand clients a skill describing
 prod API does not expose yet. The shared machinery is in `publish_agent_plugin.yml`; the
 community application calls it from its own workflow, on its own tag.
 
+Two things reach the public repository, and an install needs both: this folder copied to
+`plugins/space`, and an entry for it in `plugins[]` of the public `marketplace.json`. The entry
+is written by `register_plugin.sh` from `plugin.json` — `name`, a `./plugins/<name>` source, and
+`description` — so a reworded description ships without a second edit, and a new plugin is
+installable on its first release rather than the one after. The copy alone would be a folder no
+`/plugin install` resolves, which is exactly how `space` shipped its files while the marketplace
+still offered only `datalab`.
+
+It writes that one entry and nothing else. Removing a plugin, or the `renames` map below, stays
+a hand edit in the public repository: a release should not infer that a name has disappeared.
+
 `version` in `plugin.json` is the update signal: without a bump, clients keep their cached
 copy whatever changed in the files. Bump it in the pull request that changes the plugin —
 `check_plugin_version.sh` compares this folder against the published copy and fails there,
@@ -76,23 +87,25 @@ earlier.
 Renamed because the plugin is named after the endpoint it connects to, `/mcp/space-api`, and that
 endpoint answers for the whole Space API rather than for labs. A per-feature plugin cannot work
 here: two plugins declaring the same MCP server make a client connect to it twice and list every
-tool twice, so one plugin per endpoint is the only shape available.
+tool twice, so one plugin per endpoint is the only shape available. The name has to stay generic
+for the same reason: the next Space toolset joins this plugin, it does not get one of its own.
 
-The rename is not free, and two things in the **public** repository carry it. First, `renames` —
-a top-level field of `marketplace.json`, an append-only map of old name to current name, which the
-loader follows on plugin-not-found and uses to migrate a user's plugin settings:
+The rename is not free, and two things in the **public** repository carried it, both by hand —
+the publish workflow adds and refreshes the `space` entry, and touches nothing else. First,
+`renames` — a top-level field of `marketplace.json`, an append-only map of old name to current
+name, which the loader follows on plugin-not-found and uses to migrate a user's plugin settings:
 
 ```json
 "renames": { "datalab": "space" }
 ```
 
-It has to land in the same commit that renames the entry in `plugins[]`, because a chain resolving
-to a plugin the list does not contain fails validation, and at runtime falls through to
-plugin-not-found — the same broken install as no entry at all.
+It cannot be added before `space` is in `plugins[]`: a chain resolving to a plugin the list does
+not contain fails validation, and at runtime falls through to plugin-not-found — the same broken
+install as no entry at all.
 
-Second, `plugins/datalab` has to be deleted from the public repository by hand. The publish
-workflow's `git add` is scoped to the plugin it publishes, so it creates `plugins/space` and
-leaves the old folder installable forever.
+Second, `plugins/datalab` had to be deleted. The workflow's `git add` is scoped to the plugin it
+publishes, so it creates `plugins/space` and would leave the old folder installable forever —
+serving 0.1.0, whose Space API URL default was never filled in.
 
 What does not follow is the mangled tool prefix. Anyone who allowlisted
 `mcp__plugin_datalab_constellab__*` is now being asked about `mcp__plugin_space_constellab__*`,

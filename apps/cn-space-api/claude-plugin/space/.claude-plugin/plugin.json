@@ -1,14 +1,14 @@
 {
   "name": "space",
   "displayName": "Constellab Space",
-  "version": "0.2.0",
-  "description": "Work with your Constellab Spaces and their data labs, over the Space API's MCP tools",
+  "version": "0.3.0",
+  "description": "Work with your Constellab Spaces over the Space API's MCP tools",
   "author": {
     "name": "Gencovery",
     "email": "support@gencovery.com"
   },
   "repository": "https://github.com/Constellab/agent-plugins",
-  "keywords": ["constellab", "space", "datalab", "diagnostics", "mcp"],
+  "keywords": ["constellab", "space", "mcp"],
   "userConfig": {
     "space_api_url": {
       "type": "string",
