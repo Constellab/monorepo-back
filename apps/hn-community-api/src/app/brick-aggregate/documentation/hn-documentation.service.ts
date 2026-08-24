@@ -1,5 +1,5 @@
 import { BlBadRequestException } from '@monorepo/back-core-lib';
-import { TeRichText, TeRichTextAggregate } from '@monorepo/te-text-editor';
+import { TeRichText, TeRichTextAggregate, TeRichTextValidator } from '@monorepo/te-text-editor';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
@@ -9,6 +9,7 @@ import { HnBrickMajorVersion } from '../brick-major-version/hn-brick-major-versi
 import { HnNodeDTO } from '../folder/hn-folder.dto';
 import { HnFolder } from '../folder/hn-folder.entity';
 import { HnFolderService } from '../folder/hn-folder.service';
+import { HnDocumentationContentUpdateDto } from './hn-documentation.dto';
 import { HnDocumentation, HnDocumentationSearchDTO } from './hn-documentation.entity';
 
 @Injectable()
@@ -113,17 +114,29 @@ export class HnDocumentationService {
     });
   }
 
-  async updateContent(id: string, updateContentDoc: TeRichText): Promise<HnDocumentation> {
+  /**
+   * The single write path for a documentation's content — the UI and the `gws community` CLI
+   * both land here, so the server-side definition of a valid document is applied once, here,
+   * rather than in each writer. See
+   * `docs/adr/0004-the-mcp-writes-documentation-by-operations.md`.
+   */
+  async updateContent(id: string, updateContentDoc: TeRichText): Promise<HnDocumentationContentUpdateDto> {
     const doc = await this.documentationsRepository.findOneBy({
       id: id,
     });
     if (doc == null) {
       throw new BlBadRequestException('Doc not found');
     }
+
+    // Sanitize before the aggregate compares with the stored content: the modification history
+    // is derived from that comparison, so it must describe what was actually stored.
+    const { richText, warnings } = TeRichTextValidator.sanitize(updateContentDoc);
+
     const richTextAggregate = doc.getRichTextAggregate();
-    richTextAggregate.updateContent(updateContentDoc, HnCurrentUserHelper.getAndCheckCurrentUser().id);
+    richTextAggregate.updateContent(richText, HnCurrentUserHelper.getAndCheckCurrentUser().id);
     doc.setRichTextAggregate(richTextAggregate);
-    return this.documentationsRepository.save(doc);
+
+    return new HnDocumentationContentUpdateDto(await this.documentationsRepository.save(doc), warnings);
   }
 
   async updateCompletePath(doc: HnDocumentation, folder: HnFolder): Promise<void> {

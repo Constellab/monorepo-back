@@ -72,7 +72,7 @@ import {
   HnRepoType,
 } from './brick-version/hn-brick-version.entity';
 import { HnBrickVersionService } from './brick-version/hn-brick-version.service';
-import { HnDocumentationDto } from './documentation/hn-documentation.dto';
+import { HnDocumentationContentUpdateDto, HnDocumentationDto } from './documentation/hn-documentation.dto';
 import {
   HnDocumentation,
   HnDocumentationDTO,
@@ -1113,7 +1113,7 @@ export class HnBrickAggregateService {
     return this.fileDocumentationService.saveImage(documentation, file);
   }
 
-  async updateDocContent(id: string, updateContentDoc: TeRichText): Promise<HnDocumentation> {
+  async updateDocContent(id: string, updateContentDoc: TeRichText): Promise<HnDocumentationContentUpdateDto> {
     await this.checkIfUserHasRightsOnDoc(id);
     return this.documentationService.updateContent(id, updateContentDoc);
   }
