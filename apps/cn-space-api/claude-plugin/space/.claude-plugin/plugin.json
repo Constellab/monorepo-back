@@ -1,7 +1,7 @@
 {
   "name": "space",
   "displayName": "Constellab Space",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Work with your Constellab Spaces over the Space API's MCP tools",
   "author": {
     "name": "Gencovery",
@@ -14,8 +14,7 @@
       "type": "string",
       "title": "Space API URL",
       "description": "Base URL of your Constellab Space API, without a trailing slash. Keep the default unless you use a dedicated or on-premise instance.",
-      "default": "https://api.constellab.space",
-      "required": true
+      "default": "https://api.constellab.space"
     }
   },
   "mcpServers": {

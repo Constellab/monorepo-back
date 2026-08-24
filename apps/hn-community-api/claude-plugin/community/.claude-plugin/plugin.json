@@ -1,7 +1,7 @@
 {
   "name": "community",
   "displayName": "Constellab community documentation",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Search and read the Constellab community documentation, over the Community API's MCP tools",
   "author": {
     "name": "Gencovery",
@@ -14,8 +14,7 @@
       "type": "string",
       "title": "Community API URL",
       "description": "Base URL of your Constellab Community API, without a trailing slash. Keep the default unless you use a dedicated or on-premise instance.",
-      "default": "https://api.constellab.community",
-      "required": true
+      "default": "https://api.constellab.community"
     }
   },
   "mcpServers": {
