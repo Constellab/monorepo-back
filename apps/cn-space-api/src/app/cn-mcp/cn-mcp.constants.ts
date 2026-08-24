@@ -25,6 +25,54 @@ export const CN_MCP_SPACE_API_RESOURCE_PATH = 'mcp/space-api';
  */
 export const CN_MCP_COMMUNITY_DOC_RESOURCE_PATH = 'mcp/community-doc';
 
+/////////////////////////// THE CLAUDE CODE PLUGIN ///////////////////////////
+//
+// The four strings a client needs to install the plugin that drives this endpoint. They are
+// the plugin's public identity, so they live beside the path it connects to: everything here
+// exists somewhere else too, and each one fails differently when the two drift.
+//
+// `check_plugin_constants.sh` compares the two that come from the plugin manifest against it
+// on every pull request touching either side. The marketplace pair cannot be checked from
+// this repository — it is published in another one — which is why only these two are.
+
+/**
+ * Repository the marketplace is added from: `claude plugin marketplace add <this>`.
+ *
+ * Also the publish workflow's `PUBLIC_REPO`. The safe one of the four: a wrong value fails
+ * loudly at the first command, before anything is installed.
+ */
+export const CN_MCP_PLUGIN_MARKETPLACE_REPO = 'Constellab/agent-plugins';
+
+/**
+ * `name` in that repository's `marketplace.json` — the `constellab` of `space@constellab`.
+ *
+ * Not the repository name, despite the resemblance, and not this application's name either.
+ * A client that has the marketplace registered under a different name gets
+ * plugin-not-found, which reads exactly like a plugin that was never published.
+ */
+export const CN_MCP_PLUGIN_MARKETPLACE_NAME = 'constellab';
+
+/**
+ * The plugin that carries the skills for this endpoint: `name` in
+ * `claude-plugin/space/.claude-plugin/plugin.json`, and `plugin_name` in
+ * `publish-space-plugin.yml`.
+ *
+ * One plugin per MCP endpoint, named after the API rather than any one toolset: two plugins
+ * declaring the same MCP server would make a client connect to it twice and list every tool
+ * twice. So this string stays generic as toolsets are added — it was `datalab` until 0.2.0.
+ */
+export const CN_MCP_PLUGIN_NAME = 'space';
+
+/**
+ * The `userConfig` key the plugin declares for this API's base URL, passed as
+ * `--config <this>=<apiUrl>` at install time.
+ *
+ * The quiet failure of the four: the CLI rejects a key the manifest does not declare, and the
+ * message names the flag rather than the plugin, so it reads as a bad command line rather than
+ * as a value this API produced.
+ */
+export const CN_MCP_PLUGIN_API_URL_CONFIG_KEY = 'space_api_url';
+
 /** Tool that answers "which Space would you use if I do not say". */
 export const CN_MCP_TOOL_GET_DEFAULT_SPACE = 'constellab_get_default_space';
 

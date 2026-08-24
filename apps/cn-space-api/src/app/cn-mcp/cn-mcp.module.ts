@@ -8,6 +8,8 @@ import { CnUsersModule } from '../cn-users/cn-users.module';
 import { CN_MCP_SPACE_API_RESOURCE_PATH } from './cn-mcp.constants';
 import { CnMcpTool } from './cn-mcp.tool';
 import { CnMcpAuthGuard } from './cn-mcp-auth.guard';
+import { CnMcpInstallController } from './cn-mcp-install.controller';
+import { CnMcpInstallService } from './cn-mcp-install.service';
 import { CnMcpLabTool } from './cn-mcp-lab.tool';
 import { CnMcpSession } from './cn-mcp-session.service';
 
@@ -30,6 +32,10 @@ import { CnMcpSession } from './cn-mcp-session.service';
  *
  * Stateless, deliberately: no session to track, and — the point of ADR-0003 — no
  * remembered current Space that could drift from the one the user believes is selected.
+ *
+ * {@link CnMcpInstallController} serves `GET mcp/install`, the command lines that install the
+ * Claude Code plugin driving this endpoint. Here rather than in a settings module so an
+ * endpoint that moves takes its own install instructions with it.
  */
 @Module({
   imports: [
@@ -60,6 +66,7 @@ import { CnMcpSession } from './cn-mcp-session.service';
       streamableHttp: { statelessMode: true, enableJsonResponse: true },
     }),
   ],
-  providers: [CnMcpAuthGuard, CnMcpSession, CnMcpTool, CnMcpLabTool],
+  controllers: [CnMcpInstallController],
+  providers: [CnMcpAuthGuard, CnMcpSession, CnMcpTool, CnMcpLabTool, CnMcpInstallService],
 })
 export class CnMcpModule {}

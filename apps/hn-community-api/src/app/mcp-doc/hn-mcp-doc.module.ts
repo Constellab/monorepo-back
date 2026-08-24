@@ -3,9 +3,12 @@ import { Module } from '@nestjs/common';
 import { McpModule, McpTransportType } from '@rekog/mcp-nest';
 
 import { HnDocumentationModule } from '../brick-aggregate/documentation/hn-documentation.module';
+import { HnCoreConfigModule } from '../core/modules/core-config/hn-core-config.module';
 import { HN_MCP_COMMUNITY_DOC_RESOURCE_PATH } from './hn-mcp-doc.constants';
 import { HnMcpDocService } from './hn-mcp-doc.service';
 import { HnMcpDocTool } from './hn-mcp-doc.tool';
+import { HnMcpDocInstallController } from './hn-mcp-doc-install.controller';
+import { HnMcpDocInstallService } from './hn-mcp-doc-install.service';
 
 /**
  * MCP server exposing the community documentation (read-only) over Streamable HTTP.
@@ -18,10 +21,15 @@ import { HnMcpDocTool } from './hn-mcp-doc.tool';
  * generic {@link BlResourceGuard} enforces an OAuth Bearer token whose `aud` matches
  * this Resource — emitting the `WWW-Authenticate` header that triggers the OAuth
  * discovery flow in MCP clients.
+ *
+ * {@link HnMcpDocInstallController} serves `GET mcp/install`, the command lines that install
+ * the Claude Code plugin driving this endpoint. Here rather than in a settings module so an
+ * endpoint that moves takes its own install instructions with it.
  */
 @Module({
   imports: [
     HnDocumentationModule,
+    HnCoreConfigModule,
     McpModule.forRoot({
       name: 'community-doc',
       version: '0.1.0',
@@ -39,6 +47,7 @@ import { HnMcpDocTool } from './hn-mcp-doc.tool';
       streamableHttp: { statelessMode: true, enableJsonResponse: true },
     }),
   ],
-  providers: [HnMcpDocService, HnMcpDocTool],
+  controllers: [HnMcpDocInstallController],
+  providers: [HnMcpDocService, HnMcpDocTool, HnMcpDocInstallService],
 })
 export class HnMcpDocModule {}

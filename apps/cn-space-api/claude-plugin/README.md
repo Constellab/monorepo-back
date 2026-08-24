@@ -8,6 +8,30 @@ It lives next to `src/app/cn-mcp/` on purpose. A tool renamed there and a skill 
 names the old one is a silent failure — no error, just a model calling something that does
 not exist. Co-located, the same pull request touches both.
 
+## The API serves the install commands
+
+`GET {API_URL}/mcp/install` returns the two `claude plugin` commands that install this plugin,
+as ordered steps with a description each, plus the sign-in step that is not a command — which
+is where a user whose tools do not appear is actually stuck. Public, and the same path the
+Community API answers for its own plugin, so a front-end asks both APIs the same question.
+
+`space_api_url` in the emitted command is `API_URL`, read at request time and never written per
+environment. That is what makes one route correct in prod, preprod and local, and it ties the
+URL a user configures to the URL the plugin's tokens are minted for — the same value the OAuth
+issuer and this endpoint are advertised at.
+
+The rest of the command line is four constants in `cn-mcp.constants.ts`: the marketplace repo
+and name, the plugin name, and the `userConfig` key. Two of them repeat what `plugin.json`
+declares, so `check_plugin_constants.sh` compares them on every pull request touching either
+side — including the plugin's server URL against the endpoint path, since a manifest pointing
+somewhere this API does not mount fails only in a user's terminal. Jest does not run in CI, so
+that script is the guard rather than the unit test beside the service.
+
+How a command line is assembled is `blMcpInstallInstructions` in back-core-lib, shared with the
+Community API: `claude plugin install <name>@<marketplace> --config <key>=<value>` is the CLI's
+syntax rather than ours, so a flag that changes changes in one place. What this application
+supplies is its identity and its base URL.
+
 ## The skill fires by hand
 
 `diagnose-lab-startup` carries `disable-model-invocation: true`: it runs when someone types
