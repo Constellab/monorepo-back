@@ -39,9 +39,22 @@ export interface HnAuthContextSpace {
 }
 
 /**
+ * Auth for an MCP tool call, established from the OAuth access token by `HnMcpAuthGuard`.
+ *
+ * The user is not optional, and that is the whole of the type: a call that reached a tool has
+ * been resolved to a Community account or refused before the tool ran, so no tool has to ask
+ * whether it knows who is calling.
+ */
+export interface HnAuthContextMcp {
+  type: 'mcp';
+  user: HnUser;
+}
+
+/**
  * Type representing all type of auth context
  */
-export type HnAuthContext = HnAuthContextUser | HnAuthContextLab | HnAuthContextCron | HnAuthContextSpace;
+export type HnAuthContext =
+  HnAuthContextUser | HnAuthContextLab | HnAuthContextCron | HnAuthContextSpace | HnAuthContextMcp;
 
 export type HnRequest = Request & {
   user?: HnUser;

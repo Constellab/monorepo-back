@@ -209,10 +209,13 @@ function configureResourceServerModule(configService: HnCoreConfigService): BlRe
     resources: [
       {
         path: HN_MCP_COMMUNITY_DOC_RESOURCE_PATH,
-        // The words a user sees when asked to approve a client for this Resource. Public
-        // documentation, so what is being handed over is narrow — and saying so is the point.
+        // The words a user sees when asked to approve a client for this Resource, and the
+        // reason they name writing before the first write tool exists: this is the text
+        // approved once, and widening it later would mean re-consenting every Grant already
+        // given. The Space API repeats these two strings verbatim as a remote Resource —
+        // it serves the consent screen, and a user must not be shown a second opinion.
         name: 'The Constellab documentation',
-        description: 'Search and read the public documentation',
+        description: 'Read the public documentation, and write the pages of bricks you author',
       },
     ],
   };

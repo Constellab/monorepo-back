@@ -14,4 +14,5 @@ export enum HnErrorText {
   TECHNICAL_DOCUMENTATION_NOT_FOUND = 'error.technical_documentation_not_found',
   WRONG_CREDENTIALS = 'error.wrong_credentials',
   PRIVATE_BRICK_ACCESS_DENIED = 'error.private_brick_access_denied',
+  MCP_NO_COMMUNITY_ACCOUNT = 'error.mcp_no_community_account',
 }

@@ -213,9 +213,13 @@ function configureResourceServerModule(configService: CnCoreConfigService): BlRe
         url: `${communityApiUrl}/${CN_MCP_COMMUNITY_DOC_RESOURCE_PATH}`,
         // The same words the Community itself gives that Resource: the consent screen is
         // served from here, and a user must read what the application they are connecting to
-        // says about itself, not a second opinion written on this side.
+        // says about itself, not a second opinion written on this side. Byte-equal to what
+        // `configureResourceServerModule` in `hn-app.module.ts` declares — no import can keep
+        // them so, so changing one means changing the other in the same commit. They name
+        // writing before the first write tool exists, because this is the text a user
+        // approves once: widening it later is a re-consent, not a deployment.
         name: 'The Constellab documentation',
-        description: 'Search and read the public documentation',
+        description: 'Read the public documentation, and write the pages of bricks you author',
       },
     ],
   };

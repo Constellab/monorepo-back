@@ -1,10 +1,12 @@
-import { BlPublic, BlResourceGuard } from '@monorepo/back-core-lib';
+import { BlPublic } from '@monorepo/back-core-lib';
 import { Module } from '@nestjs/common';
 import { McpModule, McpTransportType } from '@rekog/mcp-nest';
 
 import { HnDocumentationModule } from '../brick-aggregate/documentation/hn-documentation.module';
 import { HnCoreConfigModule } from '../core/modules/core-config/hn-core-config.module';
 import { HnRagflowChatbotModule } from '../ragflow-chatbot/hn-ragflow-chatbot.module';
+import { HnUserModule } from '../users/hn-user.module';
+import { HnMcpAuthGuard } from './hn-mcp-auth.guard';
 import { HnMcpChatbotTool } from './hn-mcp-chatbot.tool';
 import { HN_MCP_COMMUNITY_DOC_RESOURCE_PATH } from './hn-mcp-doc.constants';
 import { HnMcpDocService } from './hn-mcp-doc.service';
@@ -19,10 +21,12 @@ import { HnMcpDocInstallService } from './hn-mcp-doc-install.service';
  * application module registers as a Resource, so the endpoint and its token audience
  * cannot drift apart.
  *
- * Auth: `BlPublic()` neutralizes the global JWT/admin guards on this route, and the
- * generic {@link BlResourceGuard} enforces an OAuth Bearer token whose `aud` matches
- * this Resource — emitting the `WWW-Authenticate` header that triggers the OAuth
- * discovery flow in MCP clients.
+ * Auth: `BlPublic()` neutralizes the global JWT/admin guards on this route, and
+ * {@link HnMcpAuthGuard} takes over — the generic Bearer/audience check and its
+ * `WWW-Authenticate` challenge, then this application's own user record, put in the request's
+ * auth context once for the whole request. Every tool here therefore knows who is calling,
+ * reads included: see ADR-0004 for why that narrowing was accepted, and why a valid token
+ * with no Community account is refused rather than given one.
  *
  * Toolsets: {@link HnMcpDocTool} browses and reads the documentation, {@link HnMcpChatbotTool} puts a
  * question to the RAG chatbot. Both are registered on this one server because a second MCP server
@@ -37,6 +41,7 @@ import { HnMcpDocInstallService } from './hn-mcp-doc-install.service';
     HnDocumentationModule,
     HnCoreConfigModule,
     HnRagflowChatbotModule,
+    HnUserModule,
     McpModule.forRoot({
       name: 'community-doc',
       version: '0.1.0',
@@ -52,13 +57,14 @@ import { HnMcpDocInstallService } from './hn-mcp-doc-install.service';
       mcpEndpoint: HN_MCP_COMMUNITY_DOC_RESOURCE_PATH,
       // Neutralize the global HnJwtAuthGuard/HnIsAdminGuard on this route...
       decorators: [BlPublic()],
-      // ...and enforce the OAuth Resource Server check (Bearer token + audience).
-      guards: [BlResourceGuard],
+      // ...and enforce the OAuth Resource Server check (Bearer token + audience), then the
+      // Community user behind the token's subject.
+      guards: [HnMcpAuthGuard],
       // Stateless keeps HTTP consumers (and the future gateway) simple: no session to track.
       streamableHttp: { statelessMode: true, enableJsonResponse: true },
     }),
   ],
   controllers: [HnMcpDocInstallController],
-  providers: [HnMcpDocService, HnMcpDocTool, HnMcpChatbotTool, HnMcpDocInstallService],
+  providers: [HnMcpAuthGuard, HnMcpDocService, HnMcpDocTool, HnMcpChatbotTool, HnMcpDocInstallService],
 })
 export class HnMcpDocModule {}

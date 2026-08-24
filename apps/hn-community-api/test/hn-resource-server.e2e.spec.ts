@@ -6,7 +6,7 @@ import * as supertest from 'supertest';
 // Space API suite also uses, and mocks are deliberately kept out of the library's public
 // API so nothing in an application can reach for one by accident.
 import { BlTestAuthorizationServer } from '../../../libs/back-core-lib/src/lib/modules/bl-jwt/bl-mcp-token.mock';
-import { TEST_ADMIN_EMAIL, TEST_ADMIN_PASSWORD } from './test-credentials';
+import { TEST_ADMIN_EMAIL, TEST_ADMIN_ID, TEST_ADMIN_PASSWORD } from './test-credentials';
 import { HnTestE2EHelper } from './test-e2e-helper.class';
 
 /** The Session token cookie, as the browser carries it. */
@@ -88,9 +88,34 @@ describe('The Community as a Resource Server (e2e)', () => {
     return token == null ? request : request.set('Authorization', `Bearer ${token}`);
   }
 
+  /**
+   * Call one MCP tool. Same envelope as {@link callMcp}, one JSON-RPC method deeper: what a
+   * client actually does once `tools/list` told it what is there.
+   */
+  function callTool(token: string, name: string, args: Record<string, unknown> = {}): supertest.Test {
+    return server()
+      .post(new URL(resource).pathname)
+      .set('Accept', 'application/json, text/event-stream')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ jsonrpc: '2.0', id: 1, method: 'tools/call', params: { name, arguments: args } });
+  }
+
   /** A token for this Resource, as the Space API would mint it. */
   function mcpAccessToken(overrides: Parameters<typeof spaceApi.mintMcpAccessToken>[0] = {}): string {
     return spaceApi.mintMcpAccessToken({ audience: resource, ...overrides });
+  }
+
+  /**
+   * A token acting as a user who exists on both sides — the seeded admin, whose id is the
+   * `sub` the Space API would put in a token for them.
+   *
+   * The default `sub` of the fixture names nobody in this database, so it is no longer a
+   * token that gets through: every call now resolves its subject to an `HnUser` first
+   * (ADR-0004). Spelling the synchronized case out is what keeps the accepting tests
+   * asserting an accept rather than a differently-shaped refusal.
+   */
+  function syncedUserToken(): string {
+    return mcpAccessToken({ sub: TEST_ADMIN_ID, email: TEST_ADMIN_EMAIL });
   }
 
   /** Log in as a browser does. */
@@ -157,11 +182,23 @@ describe('The Community as a Resource Server (e2e)', () => {
 
   describe('the guard accepts a token from the Space API', () => {
     it('lets a well-formed token through to the MCP', async () => {
-      const response = await callMcp(mcpAccessToken());
+      const response = await callMcp(syncedUserToken()).expect(200);
 
-      expect(response.status).not.toBe(401);
       // The guard sets this on every refusal, so its absence is the accept.
       expect(response.headers['www-authenticate']).toBeUndefined();
+      expect(response.body.error).toBeUndefined();
+    });
+
+    it('serves the read tools to a synchronized account exactly as before', async () => {
+      // The whole risk of putting an identity resolution in front of these: a read that used
+      // to answer must still answer, with the same payload shape, for an account that exists.
+      const response = await callTool(syncedUserToken(), 'community_doc_list', { limit: 5 }).expect(200);
+
+      expect(response.body.error).toBeUndefined();
+      expect(response.body.result.isError).toBeFalsy();
+
+      const payload = JSON.parse(response.body.result.content[0].text);
+      expect(payload.count).toBe(payload.results.length);
     });
   });
 
@@ -184,6 +221,29 @@ describe('The Community as a Resource Server (e2e)', () => {
 
     it('a request with no token at all', async () => {
       await callMcp().expect(401);
+    });
+  });
+
+  describe('an intact token still needs a Community account', () => {
+    it('refuses a token whose user was never synchronized here, and says why', async () => {
+      // 403, not 401, and deliberately: the token is intact and minted for this Resource, so
+      // a client sent back through the OAuth flow would return with the same token and loop.
+      // The code is the assertion rather than the sentence — the sentence is translated.
+      const response = await callMcp(mcpAccessToken({ sub: 'never-synchronized-here' })).expect(403);
+
+      expect(response.body.code).toBe('error.mcp_no_community_account');
+
+      // No challenge: re-authenticating is not the fix, so nothing must invite it.
+      expect(response.headers['www-authenticate']).toBeUndefined();
+    });
+
+    it('creates nothing on that path, so retrying with the same token is refused again', async () => {
+      const token = mcpAccessToken({ sub: 'never-synchronized-here' });
+
+      await callMcp(token).expect(403);
+      // An on-the-fly account would show up here as a second call getting through — the
+      // token carries `sub` and an email and nothing else a user record needs.
+      await callMcp(token).expect(403);
     });
   });
 
