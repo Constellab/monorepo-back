@@ -268,7 +268,12 @@ describe('TeRichTextModifications', () => {
       expect(modifications.getModifications()).toHaveLength(2);
     });
 
-    it('should filter out single MOVED modifications', () => {
+    /**
+     * A move used to be dropped as soon as the save carried anything else, because the comparison
+     * could not tell a real drag from an index shifted by a deletion above it. It can now, so the
+     * move is kept: the history has to say the block moved, and the undo has to have it to splice on.
+     */
+    it('should keep a MOVED modification saved alongside another change', () => {
       const moveModification = new TeRichTextBlockModification(
         mockBlockId,
         TeBlockType.PARAGRAPH,
@@ -291,11 +296,13 @@ describe('TeRichTextModifications', () => {
 
       modifications.fusion(newModifications);
 
-      expect(modifications.getModifications()).toHaveLength(1);
-      expect(modifications.getModifications()[0].type).toBe(TeRichTextModificationType.CREATED);
+      expect(modifications.getModifications().map((mod) => [mod.blockId, mod.type])).toEqual([
+        [mockBlockId, TeRichTextModificationType.MOVED],
+        ['other-block', TeRichTextModificationType.CREATED],
+      ]);
     });
 
-    it('should keep the move with largest movement when all are MOVED', () => {
+    it('should keep every move of a reorder rather than only the largest one', () => {
       const move1 = new TeRichTextBlockModification(
         'block-1',
         TeBlockType.PARAGRAPH,
@@ -320,8 +327,8 @@ describe('TeRichTextModifications', () => {
 
       modifications.fusion(newModifications);
 
-      expect(modifications.getModifications()).toHaveLength(1);
-      expect(modifications.getModifications()[0].blockId).toBe('block-2');
+      // keeping only one of them left the undo unable to rebuild the order it came from
+      expect(modifications.getModifications().map((mod) => mod.blockId)).toEqual(['block-1', 'block-2']);
     });
 
     it('should keep slash content modifications', () => {

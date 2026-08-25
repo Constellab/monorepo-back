@@ -379,16 +379,13 @@ describe('TeRichTextAggregate', () => {
         mockUserId
       );
 
+      // dragging block-1 down names block-1, not the two blocks it stepped over
       expect(
         result
           .getModifications()
           .filter((mod) => mod.type === TeRichTextModificationType.MOVED)
           .map((mod) => [mod.blockId, mod.oldIndex, mod.index])
-      ).toEqual([
-        ['block-2', 1, 0],
-        ['block-3', 2, 1],
-        ['block-1', 0, 2],
-      ]);
+      ).toEqual([['block-1', 0, 2]]);
       expect(before.getBlocks().map((block) => block.id)).toEqual(['block-1', 'block-2', 'block-3']);
     });
 
@@ -407,10 +404,7 @@ describe('TeRichTextAggregate', () => {
 
       expect(
         result.getModifications().map((mod) => [mod.blockId, mod.type, mod.oldIndex, mod.index])
-      ).toEqual([
-        ['block-2', TeRichTextModificationType.MOVED, 1, 0],
-        ['block-1', TeRichTextModificationType.MOVED, 0, 1],
-      ]);
+      ).toEqual([['block-2', TeRichTextModificationType.MOVED, 1, 0]]);
     });
 
     it('should handle LIST blocks with meta removal', () => {
@@ -1437,6 +1431,200 @@ describe('TeRichTextAggregate', () => {
       // Redo action 2 (single)
       aggregate.redoLastModification();
       expect(aggregate.richText.getBlock('p2')!.data.text).toBe('B modified');
+    });
+  });
+
+  /**
+   * A save is a batch: the user drags a block and types in another one, and the whole thing lands
+   * in a single `updateContent`. The history must name the block that really moved — not the ones
+   * whose index merely shifted because something above them was deleted or inserted — and the undo
+   * of that batch must land exactly on the state the document had before the save.
+   */
+  describe('a move batched with another change', () => {
+    const paragraphs = (...entries: [string, string][]): TeRichText =>
+      new TeRichText({
+        version: 2,
+        editorVersion: '2.30.2',
+        blocks: entries.map(([id, text]) => ({ id, type: TeBlockType.PARAGRAPH, data: { text } })),
+      });
+
+    const contentOf = (target: TeRichTextAggregate): [string, string][] =>
+      target.richText.getBlocks().map((block) => [block.id as string, block.data.text as string]);
+
+    const historyOf = (target: TeRichTextAggregate): [string, TeRichTextModificationType][] =>
+      target.modifications.getModifications().map((mod) => [mod.blockId, mod.type]);
+
+    let before: TeRichTextAggregate;
+
+    beforeEach(() => {
+      before = new TeRichTextAggregate(
+        paragraphs(['p1', 'One'], ['p2', 'Two'], ['p3', 'Three'], ['p4', 'Four'])
+      );
+    });
+
+    it('A) records the move when a block is moved and another block is inserted', () => {
+      before.updateContent(
+        paragraphs(['p2', 'Two'], ['p3', 'Three'], ['p5', 'Five'], ['p4', 'Four'], ['p1', 'One']),
+        mockUserId
+      );
+
+      const history = historyOf(before);
+      expect(history).toHaveLength(2);
+      expect(history).toEqual(
+        expect.arrayContaining([
+          ['p5', TeRichTextModificationType.CREATED],
+          ['p1', TeRichTextModificationType.MOVED],
+        ])
+      );
+
+      before.undoLastModification();
+
+      expect(contentOf(before)).toEqual([
+        ['p1', 'One'],
+        ['p2', 'Two'],
+        ['p3', 'Three'],
+        ['p4', 'Four'],
+      ]);
+    });
+
+    it('B) records the move when a block is moved and another block is edited', () => {
+      before.updateContent(
+        paragraphs(['p2', 'Two'], ['p3', 'Three edited'], ['p4', 'Four'], ['p1', 'One']),
+        mockUserId
+      );
+
+      const history = historyOf(before);
+      expect(history).toHaveLength(2);
+      expect(history).toEqual(
+        expect.arrayContaining([
+          ['p3', TeRichTextModificationType.UPDATED],
+          ['p1', TeRichTextModificationType.MOVED],
+        ])
+      );
+
+      before.undoLastModification();
+
+      expect(contentOf(before)).toEqual([
+        ['p1', 'One'],
+        ['p2', 'Two'],
+        ['p3', 'Three'],
+        ['p4', 'Four'],
+      ]);
+    });
+
+    it('C) records the move when a block is moved and another block is deleted', () => {
+      before.updateContent(paragraphs(['p3', 'Three'], ['p2', 'Two'], ['p4', 'Four']), mockUserId);
+
+      const history = historyOf(before);
+      expect(history).toHaveLength(2);
+      expect(history).toEqual(
+        expect.arrayContaining([
+          ['p1', TeRichTextModificationType.DELETED],
+          ['p3', TeRichTextModificationType.MOVED],
+        ])
+      );
+
+      before.undoLastModification();
+
+      expect(contentOf(before)).toEqual([
+        ['p1', 'One'],
+        ['p2', 'Two'],
+        ['p3', 'Three'],
+        ['p4', 'Four'],
+      ]);
+    });
+
+    it('D) never records a move for an index shifted by a deletion above it', () => {
+      before.updateContent(paragraphs(['p2', 'Two'], ['p3', 'Three'], ['p4', 'Four']), mockUserId);
+
+      expect(historyOf(before)).toEqual([['p1', TeRichTextModificationType.DELETED]]);
+
+      before.undoLastModification();
+
+      expect(contentOf(before)).toEqual([
+        ['p1', 'One'],
+        ['p2', 'Two'],
+        ['p3', 'Three'],
+        ['p4', 'Four'],
+      ]);
+    });
+
+    it('never records a move for an index shifted by an insertion above it', () => {
+      before.updateContent(
+        paragraphs(['p0', 'Zero'], ['p1', 'One'], ['p2', 'Two'], ['p3', 'Three'], ['p4', 'Four']),
+        mockUserId
+      );
+
+      expect(historyOf(before)).toEqual([['p0', TeRichTextModificationType.CREATED]]);
+    });
+
+    it('still records a move alone as a single move', () => {
+      before.updateContent(
+        paragraphs(['p2', 'Two'], ['p3', 'Three'], ['p4', 'Four'], ['p1', 'One']),
+        mockUserId
+      );
+
+      expect(historyOf(before)).toEqual([['p1', TeRichTextModificationType.MOVED]]);
+
+      before.undoLastModification();
+
+      expect(contentOf(before)).toEqual([
+        ['p1', 'One'],
+        ['p2', 'Two'],
+        ['p3', 'Three'],
+        ['p4', 'Four'],
+      ]);
+    });
+
+    it('records both the move and the edit when the same block is moved and edited', () => {
+      before.updateContent(
+        paragraphs(['p2', 'Two'], ['p3', 'Three'], ['p4', 'Four'], ['p1', 'One edited']),
+        mockUserId
+      );
+
+      const history = historyOf(before);
+      expect(history).toHaveLength(2);
+      expect(history).toEqual(
+        expect.arrayContaining([
+          ['p1', TeRichTextModificationType.UPDATED],
+          ['p1', TeRichTextModificationType.MOVED],
+        ])
+      );
+
+      before.undoLastModification();
+
+      expect(contentOf(before)).toEqual([
+        ['p1', 'One'],
+        ['p2', 'Two'],
+        ['p3', 'Three'],
+        ['p4', 'Four'],
+      ]);
+    });
+
+    /**
+     * `rollbackContent` (« restaurer cette version ») is `undoModifications` from an older
+     * modification id, so it carries the same hole: it has to restore the order of the blocks, not
+     * only their text.
+     */
+    it('restores the block order when rolling back to a version before a mixed save', () => {
+      before.updateContent(
+        paragraphs(['p2', 'Two'], ['p3', 'Three edited'], ['p4', 'Four'], ['p1', 'One']),
+        mockUserId
+      );
+      const firstSave = before.modifications.getModifications()[0];
+      before.updateContent(
+        paragraphs(['p2', 'Two edited'], ['p3', 'Three edited'], ['p4', 'Four'], ['p1', 'One']),
+        mockUserId
+      );
+
+      before.undoModifications(firstSave.id);
+
+      expect(contentOf(before)).toEqual([
+        ['p1', 'One'],
+        ['p2', 'Two'],
+        ['p3', 'Three'],
+        ['p4', 'Four'],
+      ]);
     });
   });
 

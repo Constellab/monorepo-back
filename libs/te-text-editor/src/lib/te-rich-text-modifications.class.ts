@@ -1,9 +1,6 @@
 import { Duration } from 'luxon';
 
-import {
-  TeRichTextBlockModification,
-  TeRichTextModificationType,
-} from './te-rich-text-block-modification.class';
+import { TeRichTextBlockModification } from './te-rich-text-block-modification.class';
 import {
   TeRichTextBlockModificationsDTO,
   TeRichTextBlockModificationWithUser,
@@ -90,7 +87,7 @@ export class TeRichTextModifications {
   public fusion(modifications: TeRichTextModifications): void {
     // clear the redo array because this is a modification
     this.resetRedoModifications();
-    const modificationsList = this.reduceModifications(modifications.modifications);
+    const modificationsList = modifications.modifications;
     if (this.isEmpty()) {
       this.modifications = modificationsList;
       return;
@@ -101,45 +98,6 @@ export class TeRichTextModifications {
     }
 
     this.modifications.push(...modificationsList);
-  }
-
-  // Reduce the new modifications array to keep only the important ones
-  private reduceModifications(modifications: TeRichTextBlockModification[]): TeRichTextBlockModification[] {
-    const areAllMoved = modifications.every(
-      (modification) => modification.type === TeRichTextModificationType.MOVED
-    );
-    const numMoved = modifications.filter(
-      (modification) => modification.type === TeRichTextModificationType.MOVED
-    ).length;
-    if (numMoved == 1) {
-      modifications = modifications.filter(
-        (modification) => modification.type !== TeRichTextModificationType.MOVED
-      );
-    }
-    if (areAllMoved) {
-      let moveModification: TeRichTextBlockModification | null = null;
-      modifications.forEach((modification) => {
-        const movement = Math.abs(modification.index - (modification.oldIndex ?? 0));
-        const currentMovement = moveModification
-          ? Math.abs(moveModification.index - (moveModification.oldIndex ?? 0))
-          : 0;
-        if (
-          moveModification == null ||
-          movement > currentMovement ||
-          moveModification.getBlockDataAsString().length < modification.getBlockDataAsString().length
-        ) {
-          moveModification = modification;
-        }
-      });
-      if (moveModification) {
-        return [moveModification];
-      } else {
-        return [];
-      }
-    }
-    modifications = modifications.filter((m) => m.type !== TeRichTextModificationType.MOVED);
-
-    return modifications;
   }
 
   public toJsonObject(): TeRichTextBlockModificationsDTO {

@@ -81,7 +81,9 @@ export class TeRichTextBlockModification {
     } else {
       modification.blockValue = json.blockValue;
     }
-    if (json.oldIndex) {
+    // `0` is a real index: a block dragged away from the very top of the document has an oldIndex
+    // of 0, and a falsy test used to drop it on the way back in — undo then had nothing to splice on.
+    if (json.oldIndex != null) {
       modification.oldIndex = json.oldIndex;
     }
     return modification;
