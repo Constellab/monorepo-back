@@ -1,7 +1,7 @@
 # Editing the community plugin
 
 **Bump `version` in `community/.claude-plugin/plugin.json` in the same change that edits anything
-under `community/`, `SKILL.md` included.** That version is the only signal an installed client uses
+under `community/`, a `SKILL.md` included.** That version is the only signal an installed client uses
 to refresh its cached copy: content published without a bump reaches nobody, and every install
 keeps serving the old skill with no error anywhere to show it. CI refuses the change on the pull
 request — and refuses the release tag if one slips through, which is a red release for a one-line

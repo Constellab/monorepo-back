@@ -1,7 +1,7 @@
 # Claude Code plugins served by this application
 
 Client-side packaging for the MCP tools this application exposes: the manifest that points a
-Claude Code install at `{API_URL}/mcp/community-doc`, and the skill that teaches a model how
+Claude Code install at `{API_URL}/mcp/community-doc`, and the skills that teach a model how
 to use those tools in sequence.
 
 It lives next to `src/app/mcp-doc/` on purpose. A tool renamed there and a skill that still
@@ -33,7 +33,22 @@ Space API: `claude plugin install <name>@<marketplace> --config <key>=<value>` i
 syntax rather than ours, so a flag that changes changes in one place. What this application
 supplies is its identity and its base URL.
 
-## The skill fires on its own
+## Two skills, because only one of them should fire on its own
+
+`search-community-doc` reads and `edit-community-doc` writes, and they are separate skills
+rather than one because their trigger differs. Merging them would load the writing protocol —
+the block formats, the operation rules, the destructive tools — into every session where
+someone merely asked a question about Constellab, and put a model one step from an edit nobody
+asked for.
+
+`edit-community-doc` carries `disable-model-invocation: true` for that reason: writing to
+public pages someone else authored is a thing a user decides to do, and says so. It is also
+markedly less interactive than the internal beta skill it descends from — it stops to confirm
+the plan of operations, and to pick a folder when creating a page, and nowhere else. Every
+other stop the beta skill made is one Claude Code's own tool approval already covers, and a
+skill that asks twice per call is a skill nobody uses to fix a typo.
+
+## The search skill fires on its own
 
 `search-community-doc` has no `disable-model-invocation`, unlike the space application's
 `diagnose-lab-startup`. The two are different kinds of thing: diagnosing a lab is a procedure
@@ -45,13 +60,19 @@ think "I should ask for the documentation search now".
 The price is context: its description sits in every session where the plugin is installed.
 That is what keeps the description one line and the body short.
 
-## What the skill adds over the tool descriptions
+## What the skills add over the tool descriptions
 
 The MCP tool descriptions carry the per-call contract and the search → read order, so a model
-handed no skill still uses the tools correctly. What lives only here is how the search
-actually behaves: `query` is one literal `LIKE` substring rather than keywords, results are
-unranked, and a match can land in the raw rich-text JSON instead of any prose. Those turn a
+handed no skill still uses the tools correctly. What lives only in the search skill is how the
+search actually behaves: `query` is one literal `LIKE` substring rather than keywords, results
+are unranked, and a match can land in the raw rich-text JSON instead of any prose. Those turn a
 search returning nothing useful into a search the model knows how to retry.
+
+The edit skill adds what no single tool description can say, because it is not about one call:
+that the modification history is derived by matching block ids, so a delete-all-then-insert-all
+batch — the natural reflex, and one that passes every check the server makes — records the page
+as destroyed and rewritten. It also gathers the block formats a model has to get right in
+`data`, which the tools deliberately leave to the shape `community_doc_read_blocks` returned.
 
 ## Published publicly
 

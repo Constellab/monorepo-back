@@ -14,7 +14,7 @@
     {
       "name": "community",
       "source": "./apps/hn-community-api/claude-plugin/community",
-      "description": "Search and read the Constellab community documentation, over the Community API's MCP tools"
+      "description": "Read and write the Constellab community documentation — search it, and edit the pages of bricks you author — over the Community API's MCP tools"
     }
   ]
 }

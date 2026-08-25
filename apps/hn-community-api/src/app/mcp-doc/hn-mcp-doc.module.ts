@@ -82,9 +82,11 @@ import { HnMcpDocStructureTool } from './hn-mcp-doc-structure.tool';
       version: '0.1.0',
       title: 'Constellab Community Documentation',
       instructions:
-        'Tools to search and read the Constellab community documentation, which covers both the ' +
+        'Tools to read and to write the Constellab community documentation, which covers both the ' +
         'Constellab product (what the platform does and how to use it) and the technical documentation ' +
-        'of its bricks — notably gws_core, i.e. how to develop in Constellab. ' +
+        'of its bricks — notably gws_core, i.e. how to develop in Constellab. Reading is open to any ' +
+        'account; writing changes public pages, and is why the tools below take operations rather than ' +
+        'whole documents. ' +
         'Ask community_doc_ask a conceptual question to get an answer from the documentation with its ' +
         'sources; use community_doc_search or community_doc_list to find pages by keyword or name, then ' +
         'community_doc_read for full content. ' +

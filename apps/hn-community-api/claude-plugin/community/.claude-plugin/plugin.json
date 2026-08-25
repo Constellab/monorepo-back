@@ -1,14 +1,14 @@
 {
   "name": "community",
   "displayName": "Constellab community documentation",
-  "version": "0.1.1",
-  "description": "Search and read the Constellab community documentation, over the Community API's MCP tools",
+  "version": "0.2.0",
+  "description": "Read and write the Constellab community documentation — search it, and edit the pages of bricks you author — over the Community API's MCP tools",
   "author": {
     "name": "Gencovery",
     "email": "support@gencovery.com"
   },
   "repository": "https://github.com/Constellab/agent-plugins",
-  "keywords": ["constellab", "community", "documentation", "search", "mcp"],
+  "keywords": ["constellab", "community", "documentation", "search", "edit", "mcp"],
   "userConfig": {
     "community_api_url": {
       "type": "string",
