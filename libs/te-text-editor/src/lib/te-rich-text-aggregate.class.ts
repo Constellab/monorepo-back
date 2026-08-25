@@ -1,6 +1,6 @@
 import { ClStringHelper } from '@monorepo/core-lib';
 
-import { TeBlock, TeBlockType } from './te-block.class';
+import { TeBlock, TeBlockData, TeBlockType } from './te-block.class';
 import { TeHTMLEditorJSON, TeRichText, TeRichTextDTO } from './te-rich-text.class';
 import {
   TeRichTextBlockModification,
@@ -34,6 +34,41 @@ interface TePositionedBlock {
   index: number;
   block: TeBlock;
 }
+
+/**
+ * One direction of the walk across a save. Undoing and redoing differ only in which blocks vanish,
+ * which appear, which index a block is known by on the side being rebuilt, and which way the
+ * content differences are applied.
+ */
+interface TeRebuildDirection {
+  vanishing: TeRichTextModificationType;
+  appearing: TeRichTextModificationType;
+  indexOf(modification: TeRichTextBlockModification): number;
+  applyDifferences(modification: TeRichTextBlockModification, data: TeBlockData): TeBlockData;
+}
+
+/** Back to the document the save started from, where what it created never existed. */
+const TE_UNDO_DIRECTION: TeRebuildDirection = {
+  vanishing: TeRichTextModificationType.CREATED,
+  appearing: TeRichTextModificationType.DELETED,
+  indexOf: (modification) => {
+    // a DELETED already carries the index it held in the old document, a MOVED where it came from
+    if (modification.type !== TeRichTextModificationType.MOVED) return modification.index;
+    if (modification.oldIndex == null) {
+      throw new Error('Cannot undo a moved modification without an old index');
+    }
+    return modification.oldIndex;
+  },
+  applyDifferences: (modification, data) => modification.undoDifferences(data),
+};
+
+/** Forward to the document the save produced, where everything is at the index the save recorded. */
+const TE_REDO_DIRECTION: TeRebuildDirection = {
+  vanishing: TeRichTextModificationType.DELETED,
+  appearing: TeRichTextModificationType.CREATED,
+  indexOf: (modification) => modification.index,
+  applyDifferences: (modification, data) => modification.redoDifferences(data),
+};
 
 /**
  * Full stored rich text content, if the migration is done, it will be TeNewFullRichTextContent
@@ -326,37 +361,40 @@ export class TeRichTextAggregate {
   }
 
   /**
-   * Rebuild the document a save started from: every block of the old document is put back by the
-   * coordinates it is known by — a deleted block by its old index, a moved block by the index it
-   * came from — and the blocks the save left in place fill the rest.
+   * Rebuild the document on one side of a save: every block that exists on that side is placed by
+   * the coordinates it is known by there, and the blocks the save left in place fill the rest.
+   *
+   * Undoing and redoing are the same walk in opposite directions — what one makes vanish the other
+   * makes appear — so they share it, and `direction` carries everything that actually differs.
    */
-  private static undoGroup(blocks: TeBlock[], group: TeRichTextBlockModification[]): TeBlock[] {
-    const created = group.filter((mod) => mod.type === TeRichTextModificationType.CREATED);
-    const deleted = group.filter((mod) => mod.type === TeRichTextModificationType.DELETED);
+  private static rebuildAcrossGroup(
+    blocks: TeBlock[],
+    group: TeRichTextBlockModification[],
+    direction: TeRebuildDirection
+  ): TeBlock[] {
+    const vanishing = group.filter((mod) => mod.type === direction.vanishing);
+    const appearing = group.filter((mod) => mod.type === direction.appearing);
     const moved = group.filter((mod) => mod.type === TeRichTextModificationType.MOVED);
     const updated = group.filter((mod) => mod.type === TeRichTextModificationType.UPDATED);
 
-    // drop what the save created, and put back the content it changed
+    // drop the blocks that do not exist on this side, and give the others the content they have there
     const survivors = blocks
-      .filter((block) => !created.some((mod) => mod.blockId === block.id))
+      .filter((block) => !vanishing.some((mod) => mod.blockId === block.id))
       .map((block) => {
         const modification = updated.find((mod) => mod.blockId === block.id);
         if (!modification) return block;
-        const data = modification.undoDifferences(block.data);
+        const data = direction.applyDifferences(modification, block.data);
         return data ? { ...block, data } : block;
       });
 
-    const positioned = deleted.map((mod) => ({
-      index: mod.index,
+    const positioned: TePositionedBlock[] = appearing.map((mod) => ({
+      index: direction.indexOf(mod),
       block: TeRichTextAggregate.blockFromModification(mod),
     }));
     for (const modification of moved) {
-      if (modification.oldIndex == null) {
-        throw new Error('Cannot undo a moved modification without an old index');
-      }
       positioned.push({
-        index: modification.oldIndex,
-        // the survivor carries the content as it stands now, the modification only knows where it was
+        index: direction.indexOf(modification),
+        // the survivor carries the content as it stands now, the modification only knows the index
         block:
           survivors.find((block) => block.id === modification.blockId) ??
           TeRichTextAggregate.blockFromModification(modification),
@@ -365,48 +403,7 @@ export class TeRichTextAggregate {
 
     const movedIds = new Set<string | undefined>(moved.map((mod) => mod.blockId));
     return TeRichTextAggregate.placeBlocks(
-      survivors.length + deleted.length,
-      positioned,
-      survivors.filter((block) => !movedIds.has(block.id))
-    );
-  }
-
-  /**
-   * Replay a save, the mirror of `undoGroup`: the blocks it created and moved go to the index they
-   * hold in the document the save produced, and the ones it left alone fill the rest.
-   */
-  private static redoGroup(blocks: TeBlock[], group: TeRichTextBlockModification[]): TeBlock[] {
-    const created = group.filter((mod) => mod.type === TeRichTextModificationType.CREATED);
-    const deleted = group.filter((mod) => mod.type === TeRichTextModificationType.DELETED);
-    const moved = group.filter((mod) => mod.type === TeRichTextModificationType.MOVED);
-    const updated = group.filter((mod) => mod.type === TeRichTextModificationType.UPDATED);
-
-    // re-apply the content the save changed, and drop what it deleted
-    const survivors = blocks
-      .filter((block) => !deleted.some((mod) => mod.blockId === block.id))
-      .map((block) => {
-        const modification = updated.find((mod) => mod.blockId === block.id);
-        if (!modification) return block;
-        const data = modification.redoDifferences(block.data);
-        return data ? { ...block, data } : block;
-      });
-
-    const positioned = created.map((mod) => ({
-      index: mod.index,
-      block: TeRichTextAggregate.blockFromModification(mod),
-    }));
-    for (const modification of moved) {
-      positioned.push({
-        index: modification.index,
-        block:
-          survivors.find((block) => block.id === modification.blockId) ??
-          TeRichTextAggregate.blockFromModification(modification),
-      });
-    }
-
-    const movedIds = new Set<string | undefined>(moved.map((mod) => mod.blockId));
-    return TeRichTextAggregate.placeBlocks(
-      survivors.length + created.length,
+      survivors.length + appearing.length,
       positioned,
       survivors.filter((block) => !movedIds.has(block.id))
     );
@@ -435,7 +432,7 @@ export class TeRichTextAggregate {
     // that save produced, so they only mean anything once the saves after it have been undone
     let blocks = [...this.richText.getBlocks()];
     for (const group of this.modifications.getGroupsFromModificationId(firstOfGroup.id).reverse()) {
-      blocks = TeRichTextAggregate.undoGroup(blocks, group);
+      blocks = TeRichTextAggregate.rebuildAcrossGroup(blocks, group, TE_UNDO_DIRECTION);
     }
 
     this.richText = new TeRichText({
@@ -452,7 +449,11 @@ export class TeRichTextAggregate {
     const group = this.modifications.getLastRedoGroup();
     if (group.length === 0) return [];
 
-    const blocks = TeRichTextAggregate.redoGroup([...this.richText.getBlocks()], group);
+    const blocks = TeRichTextAggregate.rebuildAcrossGroup(
+      [...this.richText.getBlocks()],
+      group,
+      TE_REDO_DIRECTION
+    );
 
     this.richText = new TeRichText({
       version: this.richText.version,
