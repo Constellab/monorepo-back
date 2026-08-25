@@ -28,6 +28,14 @@ export interface TeOldRichTextContentWithModificationsI {
 }
 
 /**
+ * A block and the index it is known to hold in one version of the document.
+ */
+interface TePositionedBlock {
+  index: number;
+  block: TeBlock;
+}
+
+/**
  * Full stored rich text content, if the migration is done, it will be TeNewFullRichTextContent
  * otherwise it will be TeRichTextContent
  */
@@ -282,27 +290,7 @@ export class TeRichTextAggregate {
     return subsequence;
   }
 
-  /**
-   * Split a flat list of modifications into the saves that produced them. The indexes carried by
-   * one save only make sense against the document that save produced, so a save is always undone
-   * or redone as a whole.
-   */
-  private static groupModifications(
-    modifications: TeRichTextBlockModification[]
-  ): TeRichTextBlockModification[][] {
-    const groups: TeRichTextBlockModification[][] = [];
-    for (const modification of modifications) {
-      const currentGroup = groups[groups.length - 1];
-      if (modification.groupId && currentGroup && currentGroup[0].groupId === modification.groupId) {
-        currentGroup.push(modification);
-      } else {
-        groups.push([modification]);
-      }
-    }
-    return groups;
-  }
-
-  private static blockOf(modification: TeRichTextBlockModification): TeBlock {
+  private static blockFromModification(modification: TeRichTextBlockModification): TeBlock {
     return {
       id: modification.blockId,
       data: modification.blockValue,
@@ -318,7 +306,7 @@ export class TeRichTextAggregate {
    */
   private static placeBlocks(
     length: number,
-    positioned: { index: number; block: TeBlock }[],
+    positioned: TePositionedBlock[],
     stayedPut: TeBlock[]
   ): TeBlock[] {
     const result: (TeBlock | undefined)[] = new Array(length);
@@ -360,7 +348,7 @@ export class TeRichTextAggregate {
 
     const positioned = deleted.map((mod) => ({
       index: mod.index,
-      block: TeRichTextAggregate.blockOf(mod),
+      block: TeRichTextAggregate.blockFromModification(mod),
     }));
     for (const modification of moved) {
       if (modification.oldIndex == null) {
@@ -371,15 +359,15 @@ export class TeRichTextAggregate {
         // the survivor carries the content as it stands now, the modification only knows where it was
         block:
           survivors.find((block) => block.id === modification.blockId) ??
-          TeRichTextAggregate.blockOf(modification),
+          TeRichTextAggregate.blockFromModification(modification),
       });
     }
 
-    const movedIds = new Set(moved.map((mod) => mod.blockId));
+    const movedIds = new Set<string | undefined>(moved.map((mod) => mod.blockId));
     return TeRichTextAggregate.placeBlocks(
       survivors.length + deleted.length,
       positioned,
-      survivors.filter((block) => !movedIds.has(block.id as string))
+      survivors.filter((block) => !movedIds.has(block.id))
     );
   }
 
@@ -405,22 +393,22 @@ export class TeRichTextAggregate {
 
     const positioned = created.map((mod) => ({
       index: mod.index,
-      block: TeRichTextAggregate.blockOf(mod),
+      block: TeRichTextAggregate.blockFromModification(mod),
     }));
     for (const modification of moved) {
       positioned.push({
         index: modification.index,
         block:
           survivors.find((block) => block.id === modification.blockId) ??
-          TeRichTextAggregate.blockOf(modification),
+          TeRichTextAggregate.blockFromModification(modification),
       });
     }
 
-    const movedIds = new Set(moved.map((mod) => mod.blockId));
+    const movedIds = new Set<string | undefined>(moved.map((mod) => mod.blockId));
     return TeRichTextAggregate.placeBlocks(
       survivors.length + created.length,
       positioned,
-      survivors.filter((block) => !movedIds.has(block.id as string))
+      survivors.filter((block) => !movedIds.has(block.id))
     );
   }
 
@@ -440,12 +428,13 @@ export class TeRichTextAggregate {
 
   // Undo the modifications in the modificationsList
   public undoModifications(modificationId: string): void {
-    const modificationsList = this.modifications.getModificationsFromModificationId(modificationId);
+    // a save is atomic, so an id naming its second row still undoes that save whole
+    const firstOfGroup = this.modifications.getFirstModificationOfGroup(modificationId);
 
     // one save at a time, most recent first: each save's indexes are written against the document
     // that save produced, so they only mean anything once the saves after it have been undone
     let blocks = [...this.richText.getBlocks()];
-    for (const group of TeRichTextAggregate.groupModifications(modificationsList).reverse()) {
+    for (const group of this.modifications.getGroupsFromModificationId(firstOfGroup.id).reverse()) {
       blocks = TeRichTextAggregate.undoGroup(blocks, group);
     }
 
@@ -455,15 +444,15 @@ export class TeRichTextAggregate {
       blocks: blocks,
     });
 
-    this.modifications.removeModificationsAfterUndo(modificationId);
+    this.modifications.removeModificationsAfterUndo(firstOfGroup.id);
   }
 
   // Redo the last modification group
   public redoLastModification(): TeRichTextBlockModification[] {
-    const redoGroup = this.modifications.getLastRedoGroup();
-    if (redoGroup.length === 0) return [];
+    const group = this.modifications.getLastRedoGroup();
+    if (group.length === 0) return [];
 
-    const blocks = TeRichTextAggregate.redoGroup([...this.richText.getBlocks()], redoGroup);
+    const blocks = TeRichTextAggregate.redoGroup([...this.richText.getBlocks()], group);
 
     this.richText = new TeRichText({
       version: this.richText.version,
@@ -473,11 +462,11 @@ export class TeRichTextAggregate {
 
     this.modifications.removeLastRedoGroup();
     // re-add the modifications to the list
-    for (const modification of redoGroup) {
+    for (const modification of group) {
       this.modifications.addModification(modification);
     }
 
-    return redoGroup;
+    return group;
   }
 
   public async getModificationsDTO(

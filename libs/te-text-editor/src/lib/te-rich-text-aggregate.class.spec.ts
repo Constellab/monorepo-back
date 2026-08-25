@@ -1462,7 +1462,7 @@ describe('TeRichTextAggregate', () => {
       );
     });
 
-    it('A) records the move when a block is moved and another block is inserted', () => {
+    it('records the move when a block is moved and another block is inserted', () => {
       before.updateContent(
         paragraphs(['p2', 'Two'], ['p3', 'Three'], ['p5', 'Five'], ['p4', 'Four'], ['p1', 'One']),
         mockUserId
@@ -1487,7 +1487,7 @@ describe('TeRichTextAggregate', () => {
       ]);
     });
 
-    it('B) records the move when a block is moved and another block is edited', () => {
+    it('records the move when a block is moved and another block is edited', () => {
       before.updateContent(
         paragraphs(['p2', 'Two'], ['p3', 'Three edited'], ['p4', 'Four'], ['p1', 'One']),
         mockUserId
@@ -1512,7 +1512,7 @@ describe('TeRichTextAggregate', () => {
       ]);
     });
 
-    it('C) records the move when a block is moved and another block is deleted', () => {
+    it('records the move when a block is moved and another block is deleted', () => {
       before.updateContent(paragraphs(['p3', 'Three'], ['p2', 'Two'], ['p4', 'Four']), mockUserId);
 
       const history = historyOf(before);
@@ -1534,7 +1534,7 @@ describe('TeRichTextAggregate', () => {
       ]);
     });
 
-    it('D) never records a move for an index shifted by a deletion above it', () => {
+    it('never records a move for an index shifted by a deletion above it', () => {
       before.updateContent(paragraphs(['p2', 'Two'], ['p3', 'Three'], ['p4', 'Four']), mockUserId);
 
       expect(historyOf(before)).toEqual([['p1', TeRichTextModificationType.DELETED]]);
@@ -1597,6 +1597,55 @@ describe('TeRichTextAggregate', () => {
         ['p1', 'One'],
         ['p2', 'Two'],
         ['p3', 'Three'],
+        ['p4', 'Four'],
+      ]);
+    });
+
+    /**
+     * A save is atomic, so the only states worth rolling back to are the one before it and the one
+     * after it. « Restaurer cette version » passes a modification id chosen from the history list,
+     * and that id can name any row of a save — the second one as easily as the first. Undoing from
+     * the middle of a save rebuilds half of it, which is a document that never existed.
+     */
+    it('rolls the whole save back when asked from the middle of one', () => {
+      before.updateContent(paragraphs(['p3', 'Three'], ['p2', 'Two'], ['p4', 'Four']), mockUserId);
+      const secondRowOfTheSave = before.modifications.getModifications()[1];
+
+      before.undoModifications(secondRowOfTheSave.id);
+
+      expect(contentOf(before)).toEqual([
+        ['p1', 'One'],
+        ['p2', 'Two'],
+        ['p3', 'Three'],
+        ['p4', 'Four'],
+      ]);
+      expect(before.modifications.getModifications()).toHaveLength(0);
+    });
+
+    it('replays a mixed save when it is redone', () => {
+      const saved = paragraphs(['p2', 'Two'], ['p3', 'Three edited'], ['p4', 'Four'], ['p1', 'One']);
+      before.updateContent(saved, mockUserId);
+      before.undoLastModification();
+
+      before.redoLastModification();
+
+      expect(contentOf(before)).toEqual([
+        ['p2', 'Two'],
+        ['p3', 'Three edited'],
+        ['p4', 'Four'],
+        ['p1', 'One'],
+      ]);
+    });
+
+    it('replays a save that moved a block and deleted another one', () => {
+      before.updateContent(paragraphs(['p3', 'Three'], ['p2', 'Two'], ['p4', 'Four']), mockUserId);
+      before.undoLastModification();
+
+      before.redoLastModification();
+
+      expect(contentOf(before)).toEqual([
+        ['p3', 'Three'],
+        ['p2', 'Two'],
         ['p4', 'Four'],
       ]);
     });
