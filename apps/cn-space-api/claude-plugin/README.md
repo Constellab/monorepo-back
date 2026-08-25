@@ -59,9 +59,12 @@ The repository root carries a `.claude-plugin/marketplace.json` naming the marke
 only one marketplace per name, and same-named registration replaces the other.
 
 ```
-/plugin marketplace add .
+/plugin marketplace add ./
 /plugin install space@constellab-dev
 ```
+
+The trailing slash matters: a bare `.` is rejected as a source, the CLI reads it as neither a
+repo nor a path.
 
 Set `space_api_url` to `http://localhost:3001` when prompted. Edits to `SKILL.md` take
 effect immediately; edits to `plugin.json` need `/reload-plugins`.

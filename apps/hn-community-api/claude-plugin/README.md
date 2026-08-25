@@ -89,11 +89,14 @@ The repository root carries a `.claude-plugin/marketplace.json` naming the marke
 only one marketplace per name, and same-named registration replaces the other.
 
 ```
-/plugin marketplace add .
+/plugin marketplace add ./
 /plugin install community@constellab-dev
 ```
 
-Set `community_api_url` to your local Community API when prompted. Edits to `SKILL.md` take
+The trailing slash matters: a bare `.` is rejected as a source, the CLI reads it as neither a
+repo nor a path.
+
+Set `community_api_url` to `http://localhost:3333` when prompted. Edits to `SKILL.md` take
 effect immediately; edits to `plugin.json` need `/reload-plugins`.
 
 Install `community@constellab-dev` **or** `community@constellab`, never both: they declare
@@ -106,6 +109,35 @@ audience is this Resource, and answers an unauthenticated call with the `WWW-Aut
 header that starts the discovery flow — so a client that supports MCP OAuth connects on its
 own. A client that does not will see 401s and no tools, which looks like a broken plugin
 rather than a missing login.
+
+### Locally, that means three processes
+
+Signing in walks across all three applications, so a local install connects only when all three
+are up:
+
+| Process             | Local URL               | Its part in the flow                                                    |
+| ------------------- | ----------------------- | ----------------------------------------------------------------------- |
+| **Community API**   | `http://localhost:3333` | The Resource — serves `/mcp/community-doc` and names the issuer         |
+| **Space API**       | `http://localhost:3001` | The Authorization Server — `/oauth/authorize`, code exchange, the token |
+| **Space front-end** | `http://localhost:4200` | The only two screens a person sees: the login page and the consent page |
+
+The front-end is not optional. `/oauth/authorize` redirects the browser to `frontLoginUrl` when
+there is no session and to `frontConsentUrl` when the client has nothing granted yet — the API
+renders neither screen itself, so with the front down the flow dies mid-redirect and no token is
+ever issued.
+
+Which Space API a client is sent to is `SPACE_API_URL`, read at boot and published in this API's
+protected-resource metadata. Ask a running server rather than reading the env file — an override
+in the shell that started it wins, and this is the one value deciding where the sign-in goes:
+
+```
+curl http://localhost:3333/.well-known/oauth-protected-resource/mcp/community-doc
+```
+
+`authorization_servers` in the answer is where the client will go. Point it at a host nothing is
+listening on and Claude Code reports `Unable to connect` against the MCP URL — which reads as the
+Community API being down when it is in fact answering correctly. Restart the API after changing
+the value: the metadata is built once, at boot.
 
 ## Publishing
 
