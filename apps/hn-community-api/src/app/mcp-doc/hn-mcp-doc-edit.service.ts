@@ -1,4 +1,4 @@
-import { BlConflictException, BlUnauthorizedException } from '@monorepo/back-core-lib';
+import { BlConflictException } from '@monorepo/back-core-lib';
 import {
   TeAppliedRichTextOperation,
   TeRichTextBlockInspector,
@@ -9,15 +9,12 @@ import {
   TeRichTextRevisionHistory,
 } from '@monorepo/te-text-editor';
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 
 import { HnDocumentationContentUpdateDto } from '../brick-aggregate/documentation/hn-documentation.dto';
 import { HnDocumentation } from '../brick-aggregate/documentation/hn-documentation.entity';
 import { HnDocumentationService } from '../brick-aggregate/documentation/hn-documentation.service';
-import { HnBrickSecurity } from '../brick-aggregate/security/hn-brick.security';
-import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
 import { HnMcpDocBlock } from './hn-mcp-doc.service';
+import { HnMcpDocAuthorization, HnMcpDocRefusal } from './hn-mcp-doc-authorization.service';
 
 /** One line of the summary of what a batch did. */
 export interface HnMcpDocAppliedOperation {
@@ -42,9 +39,7 @@ export interface HnMcpDocEditSuccess {
   warnings: string[];
 }
 
-export interface HnMcpDocEditRefusal {
-  ok: false;
-  reason: string;
+export interface HnMcpDocEditRefusal extends HnMcpDocRefusal {
   /** Present when the refusal is a stale revision: the revision the page is at now. */
   revision?: string;
   /**
@@ -68,7 +63,8 @@ export type HnMcpDocEditResult = HnMcpDocEditSuccess | HnMcpDocEditRefusal;
  * Why operations rather than a whole document, and why the batch locks on a revision, is recorded
  * in `docs/adr/0004-the-mcp-writes-documentation-by-operations.md`. What this service adds on top of
  * {@link TeRichTextOperations} is the three things the library cannot know: who is allowed to write
- * to this page, what the page's current revision is, and what the response should cost.
+ * to this page — asked of {@link HnMcpDocAuthorization}, which every write tool here asks — what the
+ * page's current revision is, and what the response should cost.
  *
  * Every refusal is a **result**, not an exception. Permission, a stale revision and a malformed
  * batch are all things the caller can act on — by asking the brick's author, by reading the page
@@ -83,10 +79,8 @@ export type HnMcpDocEditResult = HnMcpDocEditSuccess | HnMcpDocEditRefusal;
 @Injectable()
 export class HnMcpDocEditService {
   constructor(
-    @InjectRepository(HnDocumentation)
-    private readonly documentationsRepository: Repository<HnDocumentation>,
     private readonly documentationService: HnDocumentationService,
-    private readonly brickSecurity: HnBrickSecurity
+    private readonly authorization: HnMcpDocAuthorization
   ) {}
 
   async edit(
@@ -94,12 +88,12 @@ export class HnMcpDocEditService {
     revision: string,
     operations: TeRichTextOperationInput[]
   ): Promise<HnMcpDocEditResult> {
-    const doc = await this.findDocWithBrick(docId);
+    const doc = await this.authorization.findDocWithBrick(docId);
     if (doc == null) {
       return { ok: false, reason: `No documentation found for id "${docId}".` };
     }
 
-    const refusal = await this.refuseUnlessAuthor(doc);
+    const refusal = await this.authorization.refuseUnlessAuthorOfDoc(doc);
     if (refusal != null) {
       return refusal;
     }
@@ -151,7 +145,7 @@ export class HnMcpDocEditService {
    * be described, and there is nothing left for the caller to replay against.
    */
   private async refuseAfterLosingTheRace(docId: string, revision: string): Promise<HnMcpDocEditRefusal> {
-    const doc = await this.findDocWithBrick(docId);
+    const doc = await this.authorization.findDocWithBrick(docId);
     return (
       (doc == null ? null : this.refuseUnlessCurrent(doc, revision)) ?? {
         ok: false,
@@ -160,47 +154,6 @@ export class HnMcpDocEditService {
           `again with community_doc_read_blocks.`,
       }
     );
-  }
-
-  /**
-   * The brick's creator or one of its co-authors, and nobody else.
-   *
-   * Read access is the whole endpoint's (the documentation is public on the web); writing to a
-   * brick's pages is not. The check is the brick's own — the same one the Community site applies to
-   * a human editing the same page — rather than a rule invented for the MCP, so an author does not
-   * gain or lose rights by editing through a model.
-   */
-  private async refuseUnlessAuthor(doc: HnDocumentation): Promise<HnMcpDocEditRefusal | null> {
-    const brick = doc.folder?.brickMajorVersion?.brick;
-    if (brick == null) {
-      return {
-        ok: false,
-        reason: `The page "${doc.title}" is not attached to a brick, so no author can be established.`,
-      };
-    }
-
-    // Outside the catch: this one throws when there is no user in the context, which is a broken
-    // request rather than a verdict on this brick, and must not be reported as one.
-    const user = HnCurrentUserHelper.getAndCheckCurrentUser();
-
-    try {
-      await this.brickSecurity.assertIsCreatorOrCoAuthor(brick, user);
-      return null;
-    } catch (error) {
-      // Only the verdict is turned into a refusal. The check reads the brick's co-authors from the
-      // database, and a timeout reported as "you are not the author" would send the caller off to
-      // ask for rights it already has, instead of trying again.
-      if (!(error instanceof BlUnauthorizedException)) {
-        throw error;
-      }
-      return {
-        ok: false,
-        reason:
-          `You are neither the author nor a co-author of the brick "${brick.name}", so its ` +
-          `documentation cannot be edited with your account. Ask one of them to add you as a ` +
-          `co-author, or send them the change.`,
-      };
-    }
   }
 
   /**
@@ -269,25 +222,5 @@ export class HnMcpDocEditService {
 
   private toAppliedOperation(operation: TeAppliedRichTextOperation): HnMcpDocAppliedOperation {
     return { op: operation.op, blockId: operation.blockId, blockType: operation.blockType };
-  }
-
-  /**
-   * The page with the chain up to its brick, which is where the authorization lives. One query
-   * rather than the documentation service's `findById` plus a walk, because the folder relation it
-   * loads stops one join short of the brick.
-   */
-  private findDocWithBrick(id: string): Promise<HnDocumentation | null> {
-    return (
-      this.documentationsRepository
-        .createQueryBuilder('doc')
-        .leftJoinAndSelect('doc.folder', 'folder')
-        .leftJoinAndSelect('folder.brickMajorVersion', 'brickMajorVersion')
-        .leftJoinAndSelect('brickMajorVersion.brick', 'brick')
-        // `createdBy` is eager on the entity, which a query builder does not honour, and it is the one
-        // column the authorization actually reads on the brick.
-        .leftJoinAndSelect('brick.createdBy', 'createdBy')
-        .where('doc.id = :id', { id })
-        .getOne()
-    );
   }
 }

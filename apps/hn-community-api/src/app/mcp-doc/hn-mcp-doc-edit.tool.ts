@@ -4,15 +4,7 @@ import { Tool } from '@rekog/mcp-nest';
 import { z } from 'zod';
 
 import { HnMcpDocEditService } from './hn-mcp-doc-edit.service';
-
-/** The shape @rekog/mcp-nest expects a tool handler to return. */
-type HnMcpToolResponse = {
-  content: {
-    type: 'text';
-    text: string;
-  }[];
-  isError?: boolean;
-};
+import { HnMcpToolResponse, HnMcpToolResponseHelper } from './hn-mcp-tool-response.helper';
 
 /**
  * One operation of a batch, flat: `op` picks which of the other fields matter.
@@ -105,12 +97,6 @@ export class HnMcpDocEditTool {
     revision: string;
     operations: z.infer<typeof HN_MCP_DOC_OPERATION>[];
   }): Promise<HnMcpToolResponse> {
-    const result = await this.editService.edit(docId, revision, operations);
-    if (!result.ok) {
-      // The refusal goes back as JSON rather than as a sentence: a stale revision carries the new
-      // revision and the blocks that changed, and those are values the caller acts on, not prose.
-      return { content: [{ type: 'text' as const, text: JSON.stringify(result, null, 2) }], isError: true };
-    }
-    return { content: [{ type: 'text' as const, text: JSON.stringify(result, null, 2) }] };
+    return HnMcpToolResponseHelper.fromResult(await this.editService.edit(docId, revision, operations));
   }
 }

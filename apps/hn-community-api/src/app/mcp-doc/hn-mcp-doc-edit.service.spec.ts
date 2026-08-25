@@ -15,9 +15,11 @@ import { HnBrickMajorVersion } from '../brick-aggregate/brick-major-version/hn-b
 import { HnDocumentationContentUpdateDto } from '../brick-aggregate/documentation/hn-documentation.dto';
 import { HnDocumentation } from '../brick-aggregate/documentation/hn-documentation.entity';
 import { HnDocumentationService } from '../brick-aggregate/documentation/hn-documentation.service';
+import { HnFolder } from '../brick-aggregate/folder/hn-folder.entity';
 import { HnBrickSecurity } from '../brick-aggregate/security/hn-brick.security';
 import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
 import { HnUser } from '../users/hn-user.entity';
+import { HnMcpDocAuthorization } from './hn-mcp-doc-authorization.service';
 import { HnMcpDocEditResult, HnMcpDocEditService } from './hn-mcp-doc-edit.service';
 
 /**
@@ -89,6 +91,18 @@ describe('HnMcpDocEditService', () => {
   }
 
   /**
+   * The real authorization provider on fake repositories: it is what the service asks who may
+   * write, and faking it instead would test the service against a rule nothing enforces.
+   */
+  function buildAuthorization(): HnMcpDocAuthorization {
+    return new HnMcpDocAuthorization(
+      buildRepository(),
+      undefined as unknown as Repository<HnFolder>,
+      buildBrickSecurity()
+    );
+  }
+
+  /**
    * Stands in for the one write path of a document's content. It stores what it was given on the
    * document itself, because the response reads the touched blocks back from what was stored.
    */
@@ -153,7 +167,7 @@ describe('HnMcpDocEditService', () => {
     authorized = true;
     securityFailure = null;
     writeCollides = false;
-    service = new HnMcpDocEditService(buildRepository(), buildDocumentationService(), buildBrickSecurity());
+    service = new HnMcpDocEditService(buildDocumentationService(), buildAuthorization());
   });
 
   describe('a batch that applies', () => {

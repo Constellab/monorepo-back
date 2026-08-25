@@ -3,15 +3,7 @@ import { Tool } from '@rekog/mcp-nest';
 import { z } from 'zod';
 
 import { HnMcpDocService } from './hn-mcp-doc.service';
-
-/** The shape @rekog/mcp-nest expects a tool handler to return. */
-type HnMcpToolResponse = {
-  content: {
-    type: 'text';
-    text: string;
-  }[];
-  isError?: boolean;
-};
+import { HnMcpToolResponse, HnMcpToolResponseHelper } from './hn-mcp-tool-response.helper';
 
 /**
  * MCP tools exposing the community documentation (read-only).
@@ -38,7 +30,7 @@ export class HnMcpDocTool {
   })
   async search({ query, limit }: { query: string; limit: number }): Promise<HnMcpToolResponse> {
     const results = await this.docService.search(query, limit);
-    return this.asJson({ count: results.length, results });
+    return HnMcpToolResponseHelper.asJson({ count: results.length, results });
   }
 
   @Tool({
@@ -57,7 +49,7 @@ export class HnMcpDocTool {
   })
   async list({ brickName, limit }: { brickName?: string; limit: number }): Promise<HnMcpToolResponse> {
     const results = await this.docService.list(brickName, limit);
-    return this.asJson({ count: results.length, results });
+    return HnMcpToolResponseHelper.asJson({ count: results.length, results });
   }
 
   @Tool({
@@ -72,10 +64,7 @@ export class HnMcpDocTool {
   async read({ id }: { id: string }): Promise<HnMcpToolResponse> {
     const doc = await this.docService.read(id);
     if (doc == null) {
-      return {
-        content: [{ type: 'text' as const, text: `No documentation found for id "${id}".` }],
-        isError: true,
-      };
+      return HnMcpToolResponseHelper.asError(`No documentation found for id "${id}".`);
     }
     const header = [
       `# ${doc.title}`,
@@ -112,9 +101,9 @@ export class HnMcpDocTool {
   async tree({ brickName, version }: { brickName: string; version?: string }): Promise<HnMcpToolResponse> {
     const result = await this.docService.tree(brickName, version);
     if (!result.ok) {
-      return { content: [{ type: 'text' as const, text: result.reason }], isError: true };
+      return HnMcpToolResponseHelper.asError(result.reason);
     }
-    return this.asJson(result.tree);
+    return HnMcpToolResponseHelper.asJson(result.tree);
   }
 
   @Tool({
@@ -133,17 +122,8 @@ export class HnMcpDocTool {
   async readBlocks({ docId }: { docId: string }): Promise<HnMcpToolResponse> {
     const doc = await this.docService.readBlocks(docId);
     if (doc == null) {
-      return {
-        content: [{ type: 'text' as const, text: `No documentation found for id "${docId}".` }],
-        isError: true,
-      };
+      return HnMcpToolResponseHelper.asError(`No documentation found for id "${docId}".`);
     }
-    return this.asJson(doc);
-  }
-
-  private asJson(payload: unknown): HnMcpToolResponse {
-    return {
-      content: [{ type: 'text' as const, text: JSON.stringify(payload, null, 2) }],
-    };
+    return HnMcpToolResponseHelper.asJson(doc);
   }
 }

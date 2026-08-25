@@ -4,15 +4,7 @@ import { z } from 'zod';
 
 import { HnCoreConfigService } from '../core/modules/core-config/hn-core-config.service';
 import { HnRagflowChatbotService } from '../ragflow-chatbot/hn-ragflow-chatbot.service';
-
-/** The shape @rekog/mcp-nest expects a tool handler to return. */
-type HnMcpToolResponse = {
-  content: {
-    type: 'text';
-    text: string;
-  }[];
-  isError?: boolean;
-};
+import { HnMcpToolResponse, HnMcpToolResponseHelper } from './hn-mcp-tool-response.helper';
 
 /**
  * MCP tool putting a question to the community documentation chatbot (Ragflow RAG).
@@ -62,7 +54,7 @@ export class HnMcpChatbotTool {
   async ask({ question, sessionId }: { question: string; sessionId?: string }): Promise<HnMcpToolResponse> {
     const chatId = this.coreConfigService.getRagflowChatId();
     if (!chatId) {
-      return this.asError(
+      return HnMcpToolResponseHelper.asError(
         'The documentation chatbot is not available on this server. Use community_doc_search instead.'
       );
     }
@@ -71,7 +63,7 @@ export class HnMcpChatbotTool {
       const session = sessionId ?? (await this.ragflowService.createSession(chatId));
       const message = await this.ragflowService.sendMessage(chatId, question, session);
 
-      return this.asJson({
+      return HnMcpToolResponseHelper.asJson({
         answer: message.content,
         sessionId: session,
         references: (message.references ?? []).map((reference) => ({
@@ -82,7 +74,7 @@ export class HnMcpChatbotTool {
       });
     } catch (error) {
       this.logger.error(`[ask] Chatbot call failed`, error);
-      return this.asError(
+      return HnMcpToolResponseHelper.asError(
         'The documentation chatbot could not answer this question. Use community_doc_search instead.'
       );
     }
@@ -93,18 +85,5 @@ export class HnMcpChatbotTool {
     return plain.length > HnMcpChatbotTool.SNIPPET_LENGTH
       ? `${plain.slice(0, HnMcpChatbotTool.SNIPPET_LENGTH)}…`
       : plain;
-  }
-
-  private asJson(payload: unknown): HnMcpToolResponse {
-    return {
-      content: [{ type: 'text' as const, text: JSON.stringify(payload, null, 2) }],
-    };
-  }
-
-  private asError(text: string): HnMcpToolResponse {
-    return {
-      content: [{ type: 'text' as const, text }],
-      isError: true,
-    };
   }
 }
