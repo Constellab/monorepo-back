@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import { Repository } from 'typeorm';
 
 import { BlOAuthGrantEntity } from './bl-oauth-grant.entity';
@@ -88,6 +89,21 @@ describe('BlOAuthGrantEntity.buildGrantKey', () => {
 });
 
 describe('BlOAuthGrantService', () => {
+  /**
+   * Losing an insert race is expected here and says so in the log. Stubbed so a green run
+   * stays quiet, and asserted below: the recovery is silent to the caller, which is the
+   * reason the line exists at all.
+   */
+  let loggedWarnings: jest.SpyInstance;
+
+  beforeEach(() => {
+    loggedWarnings = jest.spyOn(Logger.prototype, 'warn').mockImplementation();
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   describe('approve', () => {
     it('records one Grant per Resource, each bound to exactly one', async () => {
       const { service, create, save } = buildService();
@@ -156,6 +172,7 @@ describe('BlOAuthGrantService', () => {
         { grantKey: grantKey(user.id, CLIENT_ID, RESOURCE) },
         expect.objectContaining({ approvedAt: expect.anything() })
       );
+      expect(loggedWarnings).toHaveBeenCalledWith(expect.stringContaining('Concurrent approval'));
     });
 
     it('does not swallow a failure that is not a duplicate', async () => {

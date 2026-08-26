@@ -1,3 +1,5 @@
+import { Logger } from '@nestjs/common';
+
 import { BlOAuthConsentStore, BlOAuthPendingAuthorization } from './bl-oauth-consent.store';
 import { BlOAuthRedisMock } from './bl-oauth-redis.mock';
 
@@ -19,6 +21,21 @@ function buildStore(): { store: BlOAuthConsentStore; redis: BlOAuthRedisMock } {
 }
 
 describe('BlOAuthConsentStore', () => {
+  /**
+   * `blParseStoredJson` says a corrupt entry out loud once, on purpose. Stubbed so a green
+   * run stays quiet, and asserted below rather than dropped: absent and corrupt are the
+   * same answer to the caller, so this line is the only place the difference survives.
+   */
+  let loggedWarnings: jest.SpyInstance;
+
+  beforeEach(() => {
+    loggedWarnings = jest.spyOn(Logger.prototype, 'warn').mockImplementation();
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   describe('pending authorizations', () => {
     it('parks a request and hands back the id the consent page is given', async () => {
       const { store } = buildStore();
@@ -99,6 +116,8 @@ describe('BlOAuthConsentStore', () => {
 
       await expect(store.findPending(consentId)).resolves.toBeNull();
       await expect(store.consumePending(consentId)).resolves.toBeNull();
+
+      expect(loggedWarnings).toHaveBeenCalledWith(expect.stringContaining('pending authorization'));
     });
   });
 
@@ -155,6 +174,8 @@ describe('BlOAuthConsentStore', () => {
       redis.corrupt(token);
 
       await expect(store.consumeDecisionToken(token)).resolves.toBeNull();
+
+      expect(loggedWarnings).toHaveBeenCalledWith(expect.stringContaining('consent decision token'));
     });
   });
 });

@@ -1,3 +1,5 @@
+import { Logger } from '@nestjs/common';
+
 import { BlOAuthClientStore } from './bl-oauth-client.store';
 import { BlOAuthRedisMock } from './bl-oauth-redis.mock';
 
@@ -6,9 +8,21 @@ describe('BlOAuthClientStore', () => {
   let redis: BlOAuthRedisMock;
   const callbackUri = 'http://example.com/callback';
 
+  /**
+   * `blParseStoredJson` says a corrupt entry out loud once, on purpose. Stubbed so a green
+   * run stays quiet, and asserted below rather than dropped: absent and corrupt are the
+   * same answer to the caller, so this line is the only place the difference survives.
+   */
+  let loggedWarnings: jest.SpyInstance;
+
   beforeEach(() => {
     redis = new BlOAuthRedisMock();
     store = new BlOAuthClientStore(redis);
+    loggedWarnings = jest.spyOn(Logger.prototype, 'warn').mockImplementation();
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
   });
 
   it('registers a client and finds it back by id', async () => {
@@ -78,5 +92,7 @@ describe('BlOAuthClientStore', () => {
     const client = await store.register({ redirect_uris: [callbackUri] });
     redis.corrupt(client.client_id);
     await expect(store.find(client.client_id)).resolves.toBeNull();
+
+    expect(loggedWarnings).toHaveBeenCalledWith(expect.stringContaining('client entry'));
   });
 });

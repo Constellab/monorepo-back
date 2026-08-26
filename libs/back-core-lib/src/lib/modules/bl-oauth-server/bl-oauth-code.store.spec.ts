@@ -1,3 +1,5 @@
+import { Logger } from '@nestjs/common';
+
 import { BlOAuthCodeBinding, BlOAuthCodeStore } from './bl-oauth-code.store';
 import { BlOAuthRedisMock } from './bl-oauth-redis.mock';
 
@@ -15,6 +17,21 @@ function buildStore(): { store: BlOAuthCodeStore; redis: BlOAuthRedisMock } {
 }
 
 describe('BlOAuthCodeStore', () => {
+  /**
+   * `blParseStoredJson` says a corrupt entry out loud once, on purpose. Stubbed so a green
+   * run stays quiet, and asserted below rather than dropped: absent and corrupt are the
+   * same answer to the caller, so this line is the only place the difference survives.
+   */
+  let loggedWarnings: jest.SpyInstance;
+
+  beforeEach(() => {
+    loggedWarnings = jest.spyOn(Logger.prototype, 'warn').mockImplementation();
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it('consumes a code once and returns its binding', async () => {
     const { store } = buildStore();
     const code = await store.create(binding);
@@ -73,5 +90,7 @@ describe('BlOAuthCodeStore', () => {
     const code = await store.create(binding);
     redis.corrupt(code);
     await expect(store.consume(code)).resolves.toBeNull();
+
+    expect(loggedWarnings).toHaveBeenCalledWith(expect.stringContaining('authorization code'));
   });
 });

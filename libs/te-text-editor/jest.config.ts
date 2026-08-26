@@ -1,6 +1,10 @@
 export default {
   displayName: 'te-text-editor',
   testEnvironment: 'node',
+  // 2 workers, not the jest default of cpus-1: each worker reloads the full
+  // import graph of its specs, so the default peaked at 3GB RSS and ran slower
+  maxWorkers: 2,
+  workerIdleMemoryLimit: '512MB',
   transform: {
     '^.+\\.[tj]s$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.spec.json' }],
   },

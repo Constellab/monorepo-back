@@ -1,3 +1,5 @@
+import { Logger } from '@nestjs/common';
+
 import { BlJwks } from './bl-jwt-key.class';
 import { blKeyId } from './bl-jwt-key.util';
 import { BlJwtRemoteKeyStore } from './bl-jwt-remote-key.store';
@@ -31,6 +33,19 @@ function buildStore(
 
 describe('BlJwtRemoteKeyStore', () => {
   const realFetch = globalThis.fetch;
+
+  /**
+   * The store logs a failed fetch for the operator and swallows it. Stubbed rather than
+   * left to write: the failure paths below are exercised on purpose, and a suite that
+   * prints six stack-less ERROR lines on a green run teaches the reader to skim past
+   * exactly the output that matters when the run is not green. Asserted, further down,
+   * where that log is itself the behaviour under test.
+   */
+  let loggedErrors: jest.SpyInstance;
+
+  beforeEach(() => {
+    loggedErrors = jest.spyOn(Logger.prototype, 'error').mockImplementation();
+  });
 
   afterEach(() => {
     globalThis.fetch = realFetch;
@@ -182,6 +197,18 @@ describe('BlJwtRemoteKeyStore', () => {
       const store = buildStore(serving({ keys: [] }));
 
       await expect(store.publicKeyFor(SPACE_API.signingKid)).resolves.toBeNull();
+    });
+
+    it('names the document it could not read, rather than refusing silently', async () => {
+      const store = buildStore(jest.fn().mockRejectedValue(new Error('ECONNREFUSED')));
+
+      await store.publicKeyFor(SPACE_API.signingKid);
+
+      // A Resource Server refusing every MCP call because it cannot reach the key set is
+      // indistinguishable, from the caller's side, from one refusing them for a bad
+      // token. The operator only gets to tell the two apart if this line says which
+      // document went unread.
+      expect(loggedErrors).toHaveBeenCalledWith(expect.stringContaining(JWKS_URL));
     });
   });
 
