@@ -6,7 +6,17 @@ on:
       - 'hn_*'
 
 jobs:
+  # The suites run against the tagged commit before anything is published: an image that
+  # is already in the registry is one somebody can deploy, so a red suite has to stop it
+  # here rather than be noticed afterwards.
+  tests:
+    uses: ./.github/workflows/tests.yml
+    with:
+      app_name: hn-community-api
+      test_script: hn-community-api:test-ci
+
   build_and_push_image:
+    needs: tests
     uses: ./.github/workflows/build_github_package.yml
     with:
       registry: ghcr.io

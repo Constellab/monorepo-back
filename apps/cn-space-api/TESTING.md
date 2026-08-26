@@ -53,30 +53,55 @@ npx jest --config ./apps/cn-space-api/jest.config.ts --testPathPatterns "cn-spac
 `jest.config.ts` ignores `test/` (the E2E suites) and stubs `jsdom` (eagerly
 imported by `te-text-editor`) so app-loading specs run under the node environment.
 
-### E2E tests (require a local MySQL database and Redis)
+### E2E tests (require the test database and Redis)
 
 ```bash
-npm run cn-space-api:test-e2e
-# or directly:
-ENVIRONMENT_PROFILE=test npx jest --config ./apps/cn-space-api/test/jest-e2e.json
+bun run test-db:up            # MariaDB + Redis, throwaway, ~5s to healthy
+bun run cn-space-api:test-e2e
+bun run test-db:down          # when you are done
 ```
 
-**Local database** — the E2E helper drops and re-creates the schema on every run,
-so point it at a throwaway DB, never a real one. Defaults (override with
-`DATABASE_*` env vars, see `test/test-config.service.ts`):
+**Backing services** — [`compose.test.yml`](../../compose.test.yml) at the repo root owns
+them: `space-test-db` (MariaDB on **3311**), `community-test-db` (3312, for the other app)
+and `test-redis` (**6380**). `--wait` in `test-db:up` blocks on their healthchecks, so the
+first connection is not a race against MariaDB's initialization. Nothing persists: the
+datadir is a tmpfs and `test-db:down` removes it.
 
-| var                 | default         |
+This is the same file CI runs ([`.github/workflows/tests.yml`](../../.github/workflows/tests.yml)),
+which is what makes "green locally" and "green in CI" the same statement. If the ports are
+already taken by hand-made containers from before this file existed, remove those
+(`docker rm -f space-test-db community-test-db`) — compose is the source of truth now.
+
+**Database** — the E2E helper drops and re-creates the schema on every run, so it points at
+a throwaway DB, never a real one. Values come from `src/environments/cn-test.env`, loaded
+when `ENVIRONMENT_PROFILE=test`; a real env var wins over the file (`@nestjs/config` never
+overwrites what is already in `process.env`), which is the hook for pointing a run
+elsewhere:
+
+| var                 | value           |
 | ------------------- | --------------- |
 | `DATABASE_HOST`     | `localhost`     |
-| `DATABASE_PORT`     | `3306`          |
+| `DATABASE_PORT`     | `3311`          |
 | `DATABASE_USER`     | `gencoveryUser` |
 | `DATABASE_PASSWORD` | `gencovery`     |
 | `DATABASE`          | `testDb`        |
 
-**Local Redis** — the OAuth client and authorization-code stores are Redis-backed, so the
-OAuth suites need one running at `QUEUE_SERVICE_HOST:QUEUE_SERVICE_PORT` (`localhost:6379`
-by default). Keys are namespaced with a `cn:` prefix, so sharing one server with the
-Community API is safe.
+Note that `dataSource.dropDatabase()` drops the _tables_ of the schema, not the schema
+itself — so `testDb` only has to exist, and the compose entrypoint creates it.
+
+**Redis** — the OAuth client and authorization-code stores are Redis-backed, so the OAuth
+suites need one at `QUEUE_SERVICE_HOST:QUEUE_SERVICE_PORT` (`localhost:6380`). Port 6380
+and not the dev 6379 so the test stack runs next to the dev one and no test run touches
+the dev queue.
+
+### Everything one release gate runs
+
+```bash
+bun run cn-space-api:test-ci   # unit + E2E + the shared libs (back-core-lib, te-text-editor)
+```
+
+The libs are in there because both apps import them: a change to `back-core-lib` or
+`core-lib` can only break the _other_ app, which is exactly what a per-app suite misses.
 
 `CnTestDbInitializerService` (`test/cn-test.module.ts`) drops the DB,
 `synchronize()`s the schema from the entities, and seeds a single admin user via
@@ -103,7 +128,5 @@ in [`test/test-credentials.ts`](test/test-credentials.ts).
 2. ✅ Delete the empty placeholder specs.
 3. Expand E2E per module, one PR each: spaces → folders → user-deletion → labs.
 4. Add unit tests for the remaining guards/`*-security.service.ts` and pure calculators.
-5. Add a MySQL service to CI and gate the E2E suite on DB availability.
-
-> Layer-2 unit tests need no DB, so they give CI regression value **immediately**,
-> even before the CI database lands.
+5. ✅ CI runs the suites on every PR and on master, and `cn_*` tags do not build an
+   image until they pass (`.github/workflows/ci.yml`, `build-space-api.yml`).

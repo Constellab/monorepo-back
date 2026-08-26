@@ -52,25 +52,45 @@ bun run hn-community-api:test -- --testPathPatterns "hn-community-security"
 `jest.config.ts` ignores `test/` (the E2E suites) and stubs `jsdom` (eagerly
 imported by `te-text-editor`) so app-loading specs run under the node environment.
 
-### E2E tests (require a local MySQL database)
+### E2E tests (require the test database)
 
 ```bash
+bun run test-db:up                  # MariaDB + Redis, throwaway, ~5s to healthy
 bun run hn-community-api:test-e2e
+bun run test-db:down                # when you are done
 ```
 
-**Local database** — the E2E helper drops and re-creates the schema on every run,
-so it must point at a throwaway DB. It uses the dedicated **`community-test-db`**
-docker container (port 3312), NOT the dev DB. Config comes from
-`src/environments/hn-test.env` (loaded automatically when `ENVIRONMENT_PROFILE=test`),
-overridable via `DATABASE_*` env vars. Defaults:
+**Backing services** — [`compose.test.yml`](../../compose.test.yml) at the repo root owns
+them, and CI runs that same file
+([`.github/workflows/tests.yml`](../../.github/workflows/tests.yml)) so "green locally" and
+"green in CI" are the same statement. Nothing persists: the datadir is a tmpfs and
+`test-db:down` removes it. If the ports are still held by hand-made containers from before
+this file existed, remove those (`docker rm -f community-test-db`) — compose is the source
+of truth now.
 
-| var                 | default         |
+**Database** — the E2E helper drops and re-creates the schema on every run, so it must
+point at a throwaway DB: the `community-test-db` service (port **3312**), NOT the dev DB.
+Config comes from `src/environments/hn-test.env` (loaded automatically when
+`ENVIRONMENT_PROFILE=test`); a real env var wins over the file (`@nestjs/config` never
+overwrites what is already in `process.env`), which is the hook for pointing a run
+elsewhere:
+
+| var                 | value           |
 | ------------------- | --------------- |
 | `DATABASE_HOST`     | `localhost`     |
 | `DATABASE_PORT`     | `3312`          |
 | `DATABASE_USER`     | `gencoveryUser` |
 | `DATABASE_PASSWORD` | `gencovery`     |
 | `DATABASE`          | `testDb`        |
+
+### Everything one release gate runs
+
+```bash
+bun run hn-community-api:test-ci   # unit + E2E + the shared libs (back-core-lib, te-text-editor)
+```
+
+The libs are in there because both apps import them: a change to `back-core-lib` or
+`core-lib` can only break the _other_ app, which is exactly what a per-app suite misses.
 
 `HnTestDbInitializerService` (`test/hn-test.module.ts`) drops the DB,
 `synchronize()`s the schema from the entities, and seeds a single admin user via
@@ -115,7 +135,5 @@ value the one that runs in production.
 2. ✅ Delete the empty placeholder specs.
 3. Expand E2E per module (brick, agent, story, comment aggregates...), one PR each.
 4. Add unit tests for the remaining guards/`*-security.service.ts` and pure logic.
-5. Add a MySQL service to CI and gate the E2E suite on DB availability.
-
-> Layer-2 unit tests need no DB, so they give CI regression value **immediately**,
-> even before the CI database lands.
+5. ✅ CI runs the suites on every PR and on master, and `hn_*` tags do not build an
+   image until they pass (`.github/workflows/ci.yml`, `build-community-api.yml`).

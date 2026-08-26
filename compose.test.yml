@@ -1,0 +1,77 @@
+# Throwaway backing services for the E2E suites of both apps.
+#
+#   docker compose -f compose.test.yml up -d --wait
+#   bun run cn-space-api:test-ci
+#   bun run hn-community-api:test-ci
+#
+# The same file runs locally and in CI (.github/workflows/tests.yml), so a suite that
+# passes on a laptop is running against the same engine and the same ports as the one
+# the release gate runs. Ports and credentials are the ones already hardcoded in
+# apps/*/src/environments/*-test.env — nothing to override anywhere.
+#
+# Every service is stateless on purpose: the datadir lives in a tmpfs and `down -v`
+# leaves nothing behind. The E2E harness drops and re-synchronizes the schema in
+# beforeAll anyway (CnTestDbInitializerService), so persistence would only preserve
+# rows that the next run deletes.
+#
+# No container_name anywhere: compose derives the names from the project, so this stack
+# comes up next to hand-made containers of the same name instead of refusing to start.
+# What the tests actually depend on is the ports, and those are pinned below.
+name: monorepo-back-test
+
+services:
+  # mariadb:10 to match the dev containers and production, not mysql: TypeORM talks to
+  # both through mysql2, but only one of them is what the queries actually run against.
+  space-test-db:
+    image: mariadb:10
+    ports:
+      - '3311:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: gencovery
+      MYSQL_USER: gencoveryUser
+      MYSQL_PASSWORD: gencovery
+      # Created by the entrypoint, and never dropped by the harness: TypeORM's
+      # dropDatabase() drops the tables of the current schema, not the schema itself.
+      MYSQL_DATABASE: testDb
+    tmpfs:
+      - /var/lib/mysql
+    healthcheck:
+      # Pings over TCP, not the socket: during initialization the entrypoint runs a
+      # temporary server with networking disabled, so a socket ping would report ready
+      # while the port the tests connect to is still refusing connections.
+      test: ['CMD', 'mysqladmin', 'ping', '-h', '127.0.0.1', '-u', 'root', '-pgencovery']
+      interval: 3s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
+  community-test-db:
+    image: mariadb:10
+    ports:
+      - '3312:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: gencovery
+      MYSQL_USER: gencoveryUser
+      MYSQL_PASSWORD: gencovery
+      MYSQL_DATABASE: testDb
+    tmpfs:
+      - /var/lib/mysql
+    healthcheck:
+      test: ['CMD', 'mysqladmin', 'ping', '-h', '127.0.0.1', '-u', 'root', '-pgencovery']
+      interval: 3s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
+  # The OAuth client and authorization-code stores are Redis-backed, so the cn OAuth
+  # suites need one. Port 6380, not 6379: the dev queue container already holds 6379, and
+  # a test stack that cannot come up next to the dev stack is a stack nobody runs.
+  test-redis:
+    image: redis:7-alpine
+    ports:
+      - '6380:6379'
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 3s
+      timeout: 5s
+      retries: 20

@@ -1,0 +1,36 @@
+# Runs both apps' suites on every pull request and on master.
+#
+# This, not the tag workflow, is the real gate: a tag is cut from an already-pushed commit,
+# so a suite that only runs on cn_*/hn_* reports the failure after the release has a name
+# and has to be fixed by deleting and re-pushing the tag. Catching it here means the tag
+# build is a formality.
+#
+# Both apps run even for a change that touches only one: they share libs/, so a change to
+# back-core-lib or core-lib can only break the other app, which is exactly the case a
+# per-app path filter would let through.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+# A new push to a branch makes the previous run's verdict irrelevant, so don't pay for it.
+# master is excluded from cancellation: its runs are the record of what was released from.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
+
+jobs:
+  space_api:
+    uses: ./.github/workflows/tests.yml
+    with:
+      app_name: cn-space-api
+      test_script: cn-space-api:test-ci
+
+  community_api:
+    uses: ./.github/workflows/tests.yml
+    with:
+      app_name: hn-community-api
+      test_script: hn-community-api:test-ci
