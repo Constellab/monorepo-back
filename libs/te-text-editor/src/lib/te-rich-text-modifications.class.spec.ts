@@ -27,7 +27,7 @@ describe('TeRichTextModifications', () => {
   let mockGetUser: TeRichTextGetUserFunction;
 
   beforeEach(() => {
-    mockGetUser = jest.fn().mockResolvedValue(mockUser);
+    mockGetUser = testMock.fn().mockResolvedValue(mockUser);
   });
 
   describe('static configuration methods', () => {
@@ -520,7 +520,7 @@ describe('TeRichTextModifications', () => {
 
       const lastRedo = modifications.getLastRedoModification();
       expect(lastRedo).toBeDefined();
-      expect(lastRedo!.id).toBe('mod-3');
+      expect(lastRedo?.id).toBe('mod-3');
     });
   });
 
@@ -554,7 +554,7 @@ describe('TeRichTextModifications', () => {
         const result = modifications.getLastRedoModification();
 
         expect(result).toBeDefined();
-        expect(result!.id).toBe('mod-2');
+        expect(result?.id).toBe('mod-2');
       });
 
       it('should return null when no redo modifications exist', () => {
@@ -571,7 +571,7 @@ describe('TeRichTextModifications', () => {
 
         modifications.removeLastRedoModification();
 
-        expect(modifications.getLastRedoModification()!.id).toBe('mod-1');
+        expect(modifications.getLastRedoModification()?.id).toBe('mod-1');
       });
     });
   });
@@ -604,7 +604,7 @@ describe('TeRichTextModifications', () => {
 
       const result = modifications.getFirstModificationOfLastGroup();
 
-      expect(result!.id).toBe('mod-2');
+      expect(result?.id).toBe('mod-2');
     });
 
     it('should return the first modification of the last group', () => {
@@ -641,7 +641,7 @@ describe('TeRichTextModifications', () => {
 
       const result = modifications.getFirstModificationOfLastGroup();
 
-      expect(result!.id).toBe('mod-2');
+      expect(result?.id).toBe('mod-2');
     });
 
     it('should distinguish different groups', () => {
@@ -669,7 +669,7 @@ describe('TeRichTextModifications', () => {
 
       const result = modifications.getFirstModificationOfLastGroup();
 
-      expect(result!.id).toBe('mod-2');
+      expect(result?.id).toBe('mod-2');
     });
   });
 
@@ -848,7 +848,7 @@ describe('TeRichTextModifications', () => {
 
       const lastRedo = modifications.getLastRedoModification();
       expect(lastRedo).toBeDefined();
-      expect(lastRedo!.id).toBe('mod-2');
+      expect(lastRedo?.id).toBe('mod-2');
     });
   });
 
@@ -945,7 +945,7 @@ describe('TeRichTextModifications', () => {
         lastname: 'Two',
       };
 
-      const mockGetUserFn = jest.fn().mockImplementation((userId: string) => {
+      const mockGetUserFn = testMock.fn().mockImplementation((userId: string) => {
         if (userId === 'user-1') return Promise.resolve(mockUser1);
         if (userId === 'user-2') return Promise.resolve(mockUser2);
         return Promise.resolve(null);

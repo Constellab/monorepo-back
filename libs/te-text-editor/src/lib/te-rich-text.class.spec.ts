@@ -327,8 +327,8 @@ describe('TeRichText', () => {
         const block = richText.getBlock('header-1');
 
         expect(block).toBeDefined();
-        expect(block!.type).toBe(TeBlockType.HEADER);
-        expect(block!.data.text).toBe('Header 1');
+        expect(block?.type).toBe(TeBlockType.HEADER);
+        expect(block?.data.text).toBe('Header 1');
       });
 
       it('should return undefined for non-existent block', () => {
@@ -412,7 +412,7 @@ describe('TeRichText', () => {
 
         const result = richTextWithLongText.getFirstParagraphsText();
         expect(result).toHaveLength(203); // 200 + '...'
-        expect(result!.endsWith('...')).toBe(true);
+        expect(result?.endsWith('...')).toBe(true);
       });
 
       it('should strip HTML tags', () => {
@@ -541,8 +541,8 @@ describe('TeRichText', () => {
         const figure = richText.getFiguresBlock('image1.jpg');
 
         expect(figure).toBeDefined();
-        expect(figure!.type).toBe(TeBlockType.FIGURE);
-        expect(figure!.data.filename).toBe('image1.jpg');
+        expect(figure?.type).toBe(TeBlockType.FIGURE);
+        expect(figure?.data.filename).toBe('image1.jpg');
       });
 
       it('should return null for non-existing filename', () => {

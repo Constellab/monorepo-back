@@ -29,7 +29,7 @@ describe('TeRichTextAggregate', () => {
   let mockGetUser: TeRichTextGetUserFunction;
 
   beforeEach(() => {
-    mockGetUser = jest.fn().mockResolvedValue(mockUser);
+    mockGetUser = testMock.fn().mockResolvedValue(mockUser);
   });
 
   describe('constructor', () => {
@@ -269,7 +269,7 @@ describe('TeRichTextAggregate', () => {
         .getModifications()
         .find((mod) => mod.type === TeRichTextModificationType.CREATED && mod.blockId === 'block-3');
       expect(createdModification).toBeDefined();
-      expect(createdModification!.type).toBe(TeRichTextModificationType.CREATED);
+      expect(createdModification?.type).toBe(TeRichTextModificationType.CREATED);
     });
 
     it('should detect deleted blocks', () => {
@@ -286,7 +286,7 @@ describe('TeRichTextAggregate', () => {
         .getModifications()
         .find((mod) => mod.type === TeRichTextModificationType.DELETED && mod.blockId === 'block-2');
       expect(deletedModification).toBeDefined();
-      expect(deletedModification!.type).toBe(TeRichTextModificationType.DELETED);
+      expect(deletedModification?.type).toBe(TeRichTextModificationType.DELETED);
     });
 
     it('should detect updated blocks', () => {
@@ -306,8 +306,8 @@ describe('TeRichTextAggregate', () => {
         .getModifications()
         .find((mod) => mod.type === TeRichTextModificationType.UPDATED && mod.blockId === 'block-1');
       expect(updatedModification).toBeDefined();
-      expect(updatedModification!.type).toBe(TeRichTextModificationType.UPDATED);
-      expect(updatedModification!.differences).toBeDefined();
+      expect(updatedModification?.type).toBe(TeRichTextModificationType.UPDATED);
+      expect(updatedModification?.differences).toBeDefined();
     });
 
     it('should detect moved blocks', () => {
@@ -481,7 +481,7 @@ describe('TeRichTextAggregate', () => {
         expect(lastModifications).toBeDefined();
         expect(lastModifications.length).toBe(1);
         expect(lastModifications[0].type).toBe(TeRichTextModificationType.UPDATED);
-        expect(aggregate.richText.getBlock('block-1')!.data.text).toBe('Original');
+        expect(aggregate.richText.getBlock('block-1')?.data.text).toBe('Original');
       });
 
       it('should return empty array when no modifications exist', () => {
@@ -499,7 +499,7 @@ describe('TeRichTextAggregate', () => {
 
         aggregate.undoModifications(modificationId);
 
-        expect(aggregate.richText.getBlock('block-1')!.data.text).toBe('Original');
+        expect(aggregate.richText.getBlock('block-1')?.data.text).toBe('Original');
       });
 
       it('should handle CREATED modification undo', () => {
@@ -597,7 +597,7 @@ describe('TeRichTextAggregate', () => {
         expect(redoneModifications).toBeDefined();
         expect(redoneModifications.length).toBe(1);
         expect(redoneModifications[0].type).toBe(TeRichTextModificationType.UPDATED);
-        expect(aggregate.richText.getBlock('block-1')!.data.text).toBe('Updated');
+        expect(aggregate.richText.getBlock('block-1')?.data.text).toBe('Updated');
       });
 
       it('should return empty array when no redo modifications exist', () => {
@@ -772,8 +772,8 @@ describe('TeRichTextAggregate', () => {
       expect(undone.length).toBe(modsBefore);
       expect(aggregate.modifications.getModifications().length).toBe(0);
       expect(aggregate.richText.getBlocks().length).toBe(2);
-      expect(aggregate.richText.getBlock('block-1')!.data.text).toBe('Block 1');
-      expect(aggregate.richText.getBlock('block-2')!.data.text).toBe('Block 2');
+      expect(aggregate.richText.getBlock('block-1')?.data.text).toBe('Block 1');
+      expect(aggregate.richText.getBlock('block-2')?.data.text).toBe('Block 2');
     });
 
     it('should redo entire group in one redoLastModification call', () => {
@@ -803,7 +803,7 @@ describe('TeRichTextAggregate', () => {
 
       expect(redone.length).toBeGreaterThan(1);
       expect(aggregate.richText.getBlocks().length).toBe(1);
-      expect(aggregate.richText.getBlock('block-1')!.data.text).toBe('Updated Block 1');
+      expect(aggregate.richText.getBlock('block-1')?.data.text).toBe('Updated Block 1');
     });
 
     it('should handle undo/redo with mixed grouped and ungrouped modifications', () => {
@@ -842,11 +842,11 @@ describe('TeRichTextAggregate', () => {
       // Undo should revert the group (second change)
       aggregate.undoLastModification();
       expect(aggregate.richText.getBlocks().length).toBe(2);
-      expect(aggregate.richText.getBlock('block-1')!.data.text).toBe('Updated 1');
+      expect(aggregate.richText.getBlock('block-1')?.data.text).toBe('Updated 1');
 
       // Undo should revert the single modification (first change)
       aggregate.undoLastModification();
-      expect(aggregate.richText.getBlock('block-1')!.data.text).toBe('Block 1');
+      expect(aggregate.richText.getBlock('block-1')?.data.text).toBe('Block 1');
     });
   });
 
@@ -871,7 +871,7 @@ describe('TeRichTextAggregate', () => {
       // Undo → header should come back
       aggregate.undoLastModification();
       expect(aggregate.richText.getBlocks()).toHaveLength(1);
-      expect(aggregate.richText.getBlock('h1')!.data).toEqual({ text: 'Title', level: 2 });
+      expect(aggregate.richText.getBlock('h1')?.data).toEqual({ text: 'Title', level: 2 });
 
       // Redo → header deleted again
       aggregate.redoLastModification();
@@ -897,8 +897,8 @@ describe('TeRichTextAggregate', () => {
       );
 
       aggregate.undoLastModification();
-      expect(aggregate.richText.getBlock('h1')!.data.text).toBe('Original Title');
-      expect(aggregate.richText.getBlock('h1')!.data.level).toBe(3);
+      expect(aggregate.richText.getBlock('h1')?.data.text).toBe('Original Title');
+      expect(aggregate.richText.getBlock('h1')?.data.level).toBe(3);
     });
 
     it('should undo/redo nested list block changes', () => {
@@ -942,7 +942,7 @@ describe('TeRichTextAggregate', () => {
       );
 
       aggregate.undoLastModification();
-      const restoredItems = aggregate.richText.getBlock('list-1')!.data.items;
+      const restoredItems = aggregate.richText.getBlock('list-1')?.data.items;
       expect(restoredItems[0].content).toBe('Item 1');
       expect(restoredItems[1].items).toHaveLength(1);
     });
@@ -979,10 +979,10 @@ describe('TeRichTextAggregate', () => {
       );
 
       aggregate.undoLastModification();
-      const restored = aggregate.richText.getBlock('fig1')!;
+      const restored = aggregate.richText.getBlock('fig1');
       expect(restored).toBeDefined();
-      expect(restored.data.filename).toBe('img_001.png');
-      expect(restored.data.naturalWidth).toBe(2000);
+      expect(restored?.data.filename).toBe('img_001.png');
+      expect(restored?.data.naturalWidth).toBe(2000);
     });
 
     it('should undo/redo mixed block types in a single action', () => {
@@ -1017,8 +1017,8 @@ describe('TeRichTextAggregate', () => {
       // Undo should restore all 3 blocks
       aggregate.undoLastModification();
       expect(aggregate.richText.getBlocks()).toHaveLength(3);
-      expect(aggregate.richText.getBlock('h1')!.type).toBe(TeBlockType.HEADER);
-      expect(aggregate.richText.getBlock('list1')!.type).toBe(TeBlockType.LIST);
+      expect(aggregate.richText.getBlock('h1')?.type).toBe(TeBlockType.HEADER);
+      expect(aggregate.richText.getBlock('list1')?.type).toBe(TeBlockType.LIST);
     });
   });
 
@@ -1047,7 +1047,7 @@ describe('TeRichTextAggregate', () => {
 
       aggregate.undoLastModification();
       // Note: stringifyBlockData normalizes &nbsp; to space, so after undo via diff the &nbsp; is lost
-      expect(aggregate.richText.getBlock('p1')!.data.text).toBe('Hello World');
+      expect(aggregate.richText.getBlock('p1')?.data.text).toBe('Hello World');
     });
 
     it('should handle text with inline HTML formatting', () => {
@@ -1075,7 +1075,7 @@ describe('TeRichTextAggregate', () => {
       );
 
       aggregate.undoLastModification();
-      expect(aggregate.richText.getBlock('p1')!.data.text).toBe('Hello <b>bold</b> text');
+      expect(aggregate.richText.getBlock('p1')?.data.text).toBe('Hello <b>bold</b> text');
     });
 
     it('should handle text with special characters and unicode', () => {
@@ -1097,7 +1097,7 @@ describe('TeRichTextAggregate', () => {
       );
 
       aggregate.undoLastModification();
-      expect(aggregate.richText.getBlock('p1')!.data.text).toBe('Prix: 10€ — résumé «test»');
+      expect(aggregate.richText.getBlock('p1')?.data.text).toBe('Prix: 10€ — résumé «test»');
     });
 
     it('should handle undo to empty state then redo', () => {
@@ -1119,7 +1119,7 @@ describe('TeRichTextAggregate', () => {
 
       aggregate.redoLastModification();
       expect(aggregate.richText.getBlocks()).toHaveLength(1);
-      expect(aggregate.richText.getBlock('p1')!.data.text).toBe('New');
+      expect(aggregate.richText.getBlock('p1')?.data.text).toBe('New');
     });
 
     it('should clear redo stack when new modification is made after undo', () => {
@@ -1141,7 +1141,7 @@ describe('TeRichTextAggregate', () => {
       );
 
       aggregate.undoLastModification();
-      expect(aggregate.richText.getBlock('p1')!.data.text).toBe('V1');
+      expect(aggregate.richText.getBlock('p1')?.data.text).toBe('V1');
 
       // Make a new change instead of redo
       aggregate.updateContent(
@@ -1156,7 +1156,7 @@ describe('TeRichTextAggregate', () => {
       // Redo should do nothing (stack was cleared)
       const redoResult = aggregate.redoLastModification();
       expect(redoResult).toEqual([]);
-      expect(aggregate.richText.getBlock('p1')!.data.text).toBe('V3');
+      expect(aggregate.richText.getBlock('p1')?.data.text).toBe('V3');
     });
 
     it('should handle multiple sequential undo then redo', () => {
@@ -1196,29 +1196,29 @@ describe('TeRichTextAggregate', () => {
 
       // Undo 3 times
       aggregate.undoLastModification();
-      expect(aggregate.richText.getBlock('p1')!.data.text).toBe('V3');
+      expect(aggregate.richText.getBlock('p1')?.data.text).toBe('V3');
       aggregate.undoLastModification();
-      expect(aggregate.richText.getBlock('p1')!.data.text).toBe('V2');
+      expect(aggregate.richText.getBlock('p1')?.data.text).toBe('V2');
       aggregate.undoLastModification();
-      expect(aggregate.richText.getBlock('p1')!.data.text).toBe('V1');
+      expect(aggregate.richText.getBlock('p1')?.data.text).toBe('V1');
 
       // Undo beyond start → no effect
       const emptyUndo = aggregate.undoLastModification();
       expect(emptyUndo).toEqual([]);
-      expect(aggregate.richText.getBlock('p1')!.data.text).toBe('V1');
+      expect(aggregate.richText.getBlock('p1')?.data.text).toBe('V1');
 
       // Redo 3 times
       aggregate.redoLastModification();
-      expect(aggregate.richText.getBlock('p1')!.data.text).toBe('V2');
+      expect(aggregate.richText.getBlock('p1')?.data.text).toBe('V2');
       aggregate.redoLastModification();
-      expect(aggregate.richText.getBlock('p1')!.data.text).toBe('V3');
+      expect(aggregate.richText.getBlock('p1')?.data.text).toBe('V3');
       aggregate.redoLastModification();
-      expect(aggregate.richText.getBlock('p1')!.data.text).toBe('V4');
+      expect(aggregate.richText.getBlock('p1')?.data.text).toBe('V4');
 
       // Redo beyond end → no effect
       const emptyRedo = aggregate.redoLastModification();
       expect(emptyRedo).toEqual([]);
-      expect(aggregate.richText.getBlock('p1')!.data.text).toBe('V4');
+      expect(aggregate.richText.getBlock('p1')?.data.text).toBe('V4');
     });
 
     it('should handle undo/redo with block containing empty data', () => {
@@ -1240,7 +1240,7 @@ describe('TeRichTextAggregate', () => {
       );
 
       aggregate.undoLastModification();
-      expect(aggregate.richText.getBlock('p1')!.data.text).toBe('');
+      expect(aggregate.richText.getBlock('p1')?.data.text).toBe('');
     });
 
     it('should handle rapid successive updates on the same block', () => {
@@ -1268,10 +1268,10 @@ describe('TeRichTextAggregate', () => {
       // Undo all 5 steps
       for (let i = steps.length - 2; i >= 0; i--) {
         aggregate.undoLastModification();
-        expect(aggregate.richText.getBlock('p1')!.data.text).toBe(i >= 0 ? steps[i] : '');
+        expect(aggregate.richText.getBlock('p1')?.data.text).toBe(i >= 0 ? steps[i] : '');
       }
       aggregate.undoLastModification();
-      expect(aggregate.richText.getBlock('p1')!.data.text).toBe('');
+      expect(aggregate.richText.getBlock('p1')?.data.text).toBe('');
     });
 
     it('should handle undo/redo with blocks containing JSON-special characters', () => {
@@ -1297,7 +1297,7 @@ describe('TeRichTextAggregate', () => {
       );
 
       aggregate.undoLastModification();
-      expect(aggregate.richText.getBlock('p1')!.data.text).toBe('Line with "quotes" and \\backslashes');
+      expect(aggregate.richText.getBlock('p1')?.data.text).toBe('Line with "quotes" and \\backslashes');
     });
 
     it('should handle undo when block order changes with content changes simultaneously', () => {
@@ -1331,7 +1331,7 @@ describe('TeRichTextAggregate', () => {
       aggregate.undoLastModification();
       expect(aggregate.richText.getBlocks()).toHaveLength(3);
       expect(aggregate.richText.getBlock('p2')).toBeDefined();
-      expect(aggregate.richText.getBlock('p3')!.data.text).toBe('Third');
+      expect(aggregate.richText.getBlock('p3')?.data.text).toBe('Third');
     });
 
     it('should handle resource view blocks with complex nested data', () => {
@@ -1367,10 +1367,10 @@ describe('TeRichTextAggregate', () => {
       );
 
       aggregate.undoLastModification();
-      const restored = aggregate.richText.getBlock('rv1')!;
+      const restored = aggregate.richText.getBlock('rv1');
       expect(restored).toBeDefined();
-      expect(restored.data.view_config.type).toBe('scatter');
-      expect(restored.data.view_config.x).toEqual([1, 2, 3]);
+      expect(restored?.data.view_config.type).toBe('scatter');
+      expect(restored?.data.view_config.x).toEqual([1, 2, 3]);
     });
 
     it('should handle multiple groups undo/redo in correct order', () => {
@@ -1415,22 +1415,22 @@ describe('TeRichTextAggregate', () => {
 
       // Undo action 2 (single)
       aggregate.undoLastModification();
-      expect(aggregate.richText.getBlock('p2')!.data.text).toBe('B');
-      expect(aggregate.richText.getBlock('p1')!.data.text).toBe('A modified');
+      expect(aggregate.richText.getBlock('p2')?.data.text).toBe('B');
+      expect(aggregate.richText.getBlock('p1')?.data.text).toBe('A modified');
 
       // Undo action 1 (group)
       aggregate.undoLastModification();
-      expect(aggregate.richText.getBlock('p1')!.data.text).toBe('A');
+      expect(aggregate.richText.getBlock('p1')?.data.text).toBe('A');
       expect(aggregate.richText.getBlocks()).toHaveLength(2);
 
       // Redo action 1 (group)
       aggregate.redoLastModification();
-      expect(aggregate.richText.getBlock('p1')!.data.text).toBe('A modified');
+      expect(aggregate.richText.getBlock('p1')?.data.text).toBe('A modified');
       expect(aggregate.richText.getBlocks()).toHaveLength(3);
 
       // Redo action 2 (single)
       aggregate.redoLastModification();
-      expect(aggregate.richText.getBlock('p2')!.data.text).toBe('B modified');
+      expect(aggregate.richText.getBlock('p2')?.data.text).toBe('B modified');
     });
   });
 

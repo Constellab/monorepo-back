@@ -248,8 +248,8 @@ describe('TeRichTextBlockModification', () => {
       modification.setDifferences(oldValue);
 
       expect(modification.differences).toBeDefined();
-      expect(modification.differences!.length).toBeGreaterThan(0);
-      expect(modification.differences!.some((diff) => diff.added || diff.removed)).toBe(true);
+      expect(modification.differences?.length).toBeGreaterThan(0);
+      expect(modification.differences?.some((diff) => diff.added || diff.removed)).toBe(true);
     });
 
     it('should handle empty differences when values are identical', () => {
@@ -266,7 +266,7 @@ describe('TeRichTextBlockModification', () => {
       modification.setDifferences(oldValue);
 
       expect(modification.differences).toBeDefined();
-      expect(modification.differences!.length).toBe(0);
+      expect(modification.differences?.length).toBe(0);
     });
   });
 
