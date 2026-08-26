@@ -137,13 +137,13 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
     @Query('page', new ParseIntPipe()) page: number,
     @Query('size', new ParseIntPipe()) size: number
   ): Promise<ClPage<HnAgentDto>> {
-    return this.agentAggregateService.findAllWithFilters(
-      spacesFilter,
-      titleFilter,
-      sortsCriteria,
-      page,
-      size
-    );
+    return this.agentAggregateService.findAllWithFilters({
+      spacesFilter: spacesFilter,
+      titleFilter: titleFilter,
+      sortsCriteria: sortsCriteria,
+      page: page,
+      size: size,
+    });
   }
 
   /**

@@ -66,7 +66,7 @@ export class CnBrickVersion extends BlEntityWithId {
       this.major,
       this.minor,
       this.patch,
-      this.versionType === CnVersionType.BETA ? this.subPatch ?? undefined : undefined
+      this.versionType === CnVersionType.BETA ? (this.subPatch ?? undefined) : undefined
     );
   }
 

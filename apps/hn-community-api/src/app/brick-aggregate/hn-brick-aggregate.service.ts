@@ -89,6 +89,17 @@ export interface HnBrickUserBasedWhereOptionalParams {
   user?: HnUser | null;
 }
 
+/** A node move in the documentation tree: where the node was, and where it goes. */
+export interface HnNodeLocationUpdate {
+  nodeId: string;
+  nodeType: HnNodeType;
+  oldOrder: number;
+  newOrder: number;
+  oldParentId: string;
+  newParentId: string;
+  mainFolderId: string;
+}
+
 @Injectable()
 export class HnBrickAggregateService {
   private readonly logger = new Logger(HnBrickAggregateService.name);
@@ -131,26 +142,12 @@ export class HnBrickAggregateService {
     size: number,
     user: HnUser | null = null
   ): Promise<ClPage<HnBrickDto>> {
-    let publicSelected = false;
-    let myBricks = false;
-    for (const spaceId of spacesFilter) {
-      if (spaceId === 'public') publicSelected = true;
-      // Verify user right on spaces
-      else if (spaceId === 'my-bricks') myBricks = true;
-      else {
-        if (user != null) {
-          await this.spaceAggregateService.assertCheckSpaceUser(spaceId, user.id);
-        }
-      }
-    }
-
-    if (publicSelected) spacesFilter = spacesFilter.filter((s) => s !== 'public');
-    if (myBricks) spacesFilter = spacesFilter.filter((s) => s !== 'my-bricks');
+    const { publicSelected, myBricks, spaceIds } = await this.resolveSpacesFilter(spacesFilter, user);
 
     const whereConditions: FindOptionsWhere<HnBrickEntity>[] | FindOptionsWhere<HnBrickEntity> = myBricks
-      ? await this.getMyBricksWhereBrickConditions(publicSelected, spacesFilter, user)
+      ? await this.getMyBricksWhereBrickConditions(publicSelected, spaceIds, user)
       : await this.getUserBasedWhereBrickConditions(publicSelected, {
-          spacesFilter: spacesFilter,
+          spacesFilter: spaceIds,
           user: user,
         });
 
@@ -164,6 +161,34 @@ export class HnBrickAggregateService {
     }
 
     return this.brickService.findBrickList(whereConditions, sortsCriteria, page, size);
+  }
+
+  /**
+   * Split the requested filters into the two pseudo spaces ('public' and 'my-bricks') and the real
+   * space ids, checking the user right on each of those.
+   */
+  private async resolveSpacesFilter(
+    spacesFilter: string[],
+    user: HnUser | null
+  ): Promise<{ publicSelected: boolean; myBricks: boolean; spaceIds: string[] }> {
+    let publicSelected = false;
+    let myBricks = false;
+    for (const spaceId of spacesFilter) {
+      if (spaceId === 'public') publicSelected = true;
+      // Verify user right on spaces
+      else if (spaceId === 'my-bricks') myBricks = true;
+      else {
+        if (user != null) {
+          await this.spaceAggregateService.assertCheckSpaceUser(spaceId, user.id);
+        }
+      }
+    }
+
+    let spaceIds = spacesFilter;
+    if (publicSelected) spaceIds = spaceIds.filter((s) => s !== 'public');
+    if (myBricks) spaceIds = spaceIds.filter((s) => s !== 'my-bricks');
+
+    return { publicSelected: publicSelected, myBricks: myBricks, spaceIds: spaceIds };
   }
 
   /**
@@ -376,71 +401,85 @@ export class HnBrickAggregateService {
     const map: HnSitemapItemBase[] = [];
     for (const brick of bricks) {
       if (brick?.visibility === HnBrickVisibility.PUBLIC) {
-        const brickMap: HnSitemapItemBase[] = [];
-
-        brickMap.push({
-          url: this.frontService.getBrickVersionUrl(brick.name, 'latest'),
-          lastmod: brick.lastModifiedAt.toFormat('yyyy-MM-dd'),
-          changefreq: HnSiteMapEnumChangefreq.MONTHLY,
-          priority: 0.8,
-        });
-
-        brickMap.push({
-          url: this.frontService.getBrickVersionListUrl(brick.name, 'latest'),
-          lastmod: brick.lastModifiedAt.toFormat('yyyy-MM-dd'),
-          changefreq: HnSiteMapEnumChangefreq.MONTHLY,
-          priority: 0.5,
-        });
-
-        const brickMajorVersions: HnBrickMajorVersion[] =
-          await this.brickMajorVersionService.findBrickMajorVersionsByBrick(brick);
-
-        for (const brickMajorVersion of brickMajorVersions) {
-          // add docs
-          const docs: HnDocumentation[] = await this.documentationService.getDocsByBrickVersion(
-            brickMajorVersion.id
-          );
-          for (const doc of docs) {
-            brickMap.push({
-              url: this.frontService.getBrickDocUrl(
-                brickMajorVersion.brick.name,
-                brickMajorVersion.getStrVersion(),
-                doc.id,
-                doc.completePath
-              ),
-              // last mode with format YYYY-MM-DD
-              lastmod: doc.lastModifiedAt.toFormat('yyyy-MM-dd'),
-              changefreq: HnSiteMapEnumChangefreq.MONTHLY,
-              priority: brickMajorVersion.isLatest ? 0.8 : 0.2,
-            });
-          }
-
-          // add technical docs
-          const technicalFolder = await this.technicalFolderService.findTechnicalFolder(brickMajorVersion.id);
-          const technicalDocs = await this.technicalFolderService.findTechDocsByBrickMajor(
-            brickMajorVersion.id
-          );
-
-          if (technicalFolder != null) {
-            for (const doc of technicalDocs) {
-              brickMap.push({
-                url: this.frontService.getBrickTechnicalDocUrl(
-                  brickMajorVersion.brick.name,
-                  brickMajorVersion.getStrVersion(),
-                  doc.getCompletePath()
-                ),
-                // last mode with format YYYY-MM-DD
-                lastmod: technicalFolder.lastModifiedAt.toFormat('yyyy-MM-dd'),
-                changefreq: HnSiteMapEnumChangefreq.MONTHLY,
-                priority: brickMajorVersion.isLatest ? 0.7 : 0.1,
-              });
-            }
-          }
-        }
-        map.push(...brickMap);
+        map.push(...(await this.buildBrickMap(brick)));
       }
     }
     return map;
+  }
+
+  /** The sitemap entries of a brick: its version pages, then the ones of each major version. */
+  private async buildBrickMap(brick: HnBrick): Promise<HnSitemapItemBase[]> {
+    const brickMap: HnSitemapItemBase[] = [];
+
+    brickMap.push({
+      url: this.frontService.getBrickVersionUrl(brick.name, 'latest'),
+      lastmod: brick.lastModifiedAt.toFormat('yyyy-MM-dd'),
+      changefreq: HnSiteMapEnumChangefreq.MONTHLY,
+      priority: 0.8,
+    });
+
+    brickMap.push({
+      url: this.frontService.getBrickVersionListUrl(brick.name, 'latest'),
+      lastmod: brick.lastModifiedAt.toFormat('yyyy-MM-dd'),
+      changefreq: HnSiteMapEnumChangefreq.MONTHLY,
+      priority: 0.5,
+    });
+
+    const brickMajorVersions: HnBrickMajorVersion[] =
+      await this.brickMajorVersionService.findBrickMajorVersionsByBrick(brick);
+
+    for (const brickMajorVersion of brickMajorVersions) {
+      brickMap.push(...(await this.buildBrickMajorVersionMap(brickMajorVersion)));
+    }
+
+    return brickMap;
+  }
+
+  private async buildBrickMajorVersionMap(
+    brickMajorVersion: HnBrickMajorVersion
+  ): Promise<HnSitemapItemBase[]> {
+    const versionMap: HnSitemapItemBase[] = [];
+
+    // add docs
+    const docs: HnDocumentation[] = await this.documentationService.getDocsByBrickVersion(
+      brickMajorVersion.id
+    );
+    for (const doc of docs) {
+      versionMap.push({
+        url: this.frontService.getBrickDocUrl(
+          brickMajorVersion.brick.name,
+          brickMajorVersion.getStrVersion(),
+          doc.id,
+          doc.completePath
+        ),
+        // last mode with format YYYY-MM-DD
+        lastmod: doc.lastModifiedAt.toFormat('yyyy-MM-dd'),
+        changefreq: HnSiteMapEnumChangefreq.MONTHLY,
+        priority: brickMajorVersion.isLatest ? 0.8 : 0.2,
+      });
+    }
+
+    // add technical docs
+    const technicalFolder = await this.technicalFolderService.findTechnicalFolder(brickMajorVersion.id);
+    const technicalDocs = await this.technicalFolderService.findTechDocsByBrickMajor(brickMajorVersion.id);
+
+    if (technicalFolder != null) {
+      for (const doc of technicalDocs) {
+        versionMap.push({
+          url: this.frontService.getBrickTechnicalDocUrl(
+            brickMajorVersion.brick.name,
+            brickMajorVersion.getStrVersion(),
+            doc.getCompletePath()
+          ),
+          // last mode with format YYYY-MM-DD
+          lastmod: technicalFolder.lastModifiedAt.toFormat('yyyy-MM-dd'),
+          changefreq: HnSiteMapEnumChangefreq.MONTHLY,
+          priority: brickMajorVersion.isLatest ? 0.7 : 0.1,
+        });
+      }
+    }
+
+    return versionMap;
   }
 
   async createBrick(body: HnCreateBrickDTO): Promise<HnBrick> {
@@ -741,25 +780,9 @@ export class HnBrickAggregateService {
       throw new BlBadRequestException('Folder not found', { detailArgs: { id: updatedFolder.id } });
     }
     if (depth === 0) {
-      // real rename: recompute a unique path among the siblings of the parent folder
-      if (folder.folder) {
-        const { path, completePath } = await this.folderService.resolveNodePathInFolderId(
-          folder.folder.id,
-          updatedFolder.title,
-          folder.id
-        );
-        folder.path = path;
-        folder.completePath = completePath;
-      } else {
-        folder.path = ClStringHelper.generateUrlPathFromString(updatedFolder.title ?? '');
-        folder.completePath = (folder.path ?? '') + '/';
-      }
-      folder.title = updatedFolder.title;
+      await this.renameFolder(folder, updatedFolder.title);
     } else {
-      // propagation after an ancestor rename: keep the folder own path, only rebuild the prefix
-      folder.completePath = folder.folder?.completePath
-        ? folder.folder.completePath + (folder.path ?? '') + '/'
-        : (folder.path ?? '') + '/';
+      this.rebuildCompletePathFromParent(folder);
     }
 
     folder = await this.folderService.save(folder);
@@ -767,6 +790,30 @@ export class HnBrickAggregateService {
     await this.updateChildCompletePath(folder, depth + 1);
 
     return folder;
+  }
+
+  /** Real rename: recompute a unique path among the siblings of the parent folder. */
+  private async renameFolder(folder: HnFolder, title: string | null): Promise<void> {
+    if (folder.folder) {
+      const { path, completePath } = await this.folderService.resolveNodePathInFolderId(
+        folder.folder.id,
+        title,
+        folder.id
+      );
+      folder.path = path;
+      folder.completePath = completePath;
+    } else {
+      folder.path = ClStringHelper.generateUrlPathFromString(title ?? '');
+      folder.completePath = (folder.path ?? '') + '/';
+    }
+    folder.title = title;
+  }
+
+  /** Propagation after an ancestor rename: keep the folder own path, only rebuild the prefix. */
+  private rebuildCompletePathFromParent(folder: HnFolder): void {
+    folder.completePath = folder.folder?.completePath
+      ? folder.folder.completePath + (folder.path ?? '') + '/'
+      : (folder.path ?? '') + '/';
   }
 
   async updateChildCompletePath(folder: HnFolder, depth: number = 0): Promise<void> {
@@ -798,112 +845,28 @@ export class HnBrickAggregateService {
     node.completePath = completePath;
   }
 
-  async updateNodeLocation(
-    nodeId: string,
-    nodeType: HnNodeType,
-    oldOrder: number,
-    newOrder: number,
-    olderParentId: string,
-    newParentId: string,
-    mainFolderId: string
-  ): Promise<HnNode> {
+  async updateNodeLocation(nodeLocation: HnNodeLocationUpdate): Promise<HnNode> {
+    const { nodeId, nodeType, oldOrder, newOrder, oldParentId, newParentId, mainFolderId } = nodeLocation;
     await this.checkIfUserHasRightsOnFolder(mainFolderId);
-    const olderParent = await this.folderService.findById(olderParentId);
+    const olderParent = await this.folderService.findById(oldParentId);
     const newParent = await this.folderService.findById(newParentId);
     if (olderParent == null || newParent == null) {
       throw new BlBadRequestException('Folder not found');
     }
 
-    const parentChanged = olderParentId != newParentId;
+    const parentChanged = oldParentId != newParentId;
 
     if (parentChanged) {
-      for (const childFolder of olderParent.folders) {
-        if (childFolder.order > oldOrder) {
-          childFolder.order--;
-          await this.folderService.save(childFolder);
-        }
-      }
-
-      for (const childDoc of olderParent.documentations) {
-        if (childDoc.order > oldOrder) {
-          childDoc.order--;
-          await this.documentationService.updatePosition(childDoc);
-        }
-      }
-
-      for (const childFolder of newParent.folders) {
-        if (childFolder.order >= newOrder) {
-          childFolder.order++;
-          await this.folderService.save(childFolder);
-        }
-      }
-
-      for (const childDoc of newParent.documentations) {
-        if (childDoc.order >= newOrder) {
-          childDoc.order++;
-          await this.documentationService.updatePosition(childDoc);
-        }
-      }
+      await this.closeOrderGap(olderParent, oldOrder);
+      await this.openOrderGap(newParent, newOrder);
     } else {
-      if (oldOrder < newOrder) {
-        for (const childFolder of newParent.folders) {
-          if (childFolder.order > oldOrder && childFolder.order <= newOrder) {
-            childFolder.order--;
-            await this.folderService.save(childFolder);
-          }
-        }
-
-        for (const childDoc of newParent.documentations) {
-          if (childDoc.order > oldOrder && childDoc.order <= newOrder) {
-            childDoc.order--;
-            await this.documentationService.updatePosition(childDoc);
-          }
-        }
-      } else {
-        for (const childFolder of newParent.folders) {
-          if (childFolder.order >= newOrder && childFolder.order < oldOrder) {
-            childFolder.order++;
-            await this.folderService.save(childFolder);
-          }
-        }
-
-        for (const childDoc of newParent.documentations) {
-          if (childDoc.order >= newOrder && childDoc.order < oldOrder) {
-            childDoc.order++;
-            await this.documentationService.updatePosition(childDoc);
-          }
-        }
-      }
+      await this.reorderSiblings(newParent, oldOrder, newOrder);
     }
 
     if (nodeType == HnNodeType.DOCUMENTATION) {
-      const doc = await this.documentationService.findById(nodeId);
-      if (doc == null) {
-        throw new BlBadRequestException(HnErrorText.DOCUMENTATION_NOT_FOUND, { detailArgs: { id: nodeId } });
-      }
-      doc.folder = newParent;
-      doc.order = newOrder;
-      // only recompute the path on an actual move, so a simple reorder never changes the url
-      if (parentChanged) {
-        this.assignResolvedPath(doc, newParent);
-      }
-      await this.documentationService.save(doc);
+      await this.moveDocToParent(nodeId, newParent, newOrder, parentChanged);
     } else {
-      const folder = await this.folderService.findById(nodeId);
-      if (folder == null) {
-        throw new BlBadRequestException('Folder not found', { detailArgs: { id: nodeId } });
-      }
-      folder.folder = newParent;
-      folder.folderId = newParent.id;
-      folder.order = newOrder;
-      if (parentChanged) {
-        this.assignResolvedPath(folder, newParent);
-        await this.folderService.save(folder);
-        // the folder moved: cascade the new complete path down to its descendants
-        await this.updateChildCompletePath(folder);
-      } else {
-        await this.folderService.save(folder);
-      }
+      await this.moveFolderToParent(nodeId, newParent, newOrder, parentChanged);
     }
 
     const mainFolder = await this.folderService.findById(mainFolderId);
@@ -913,62 +876,182 @@ export class HnBrickAggregateService {
     return await this.folderService.findBrickDocsNodesTree(mainFolder);
   }
 
+  /** The node left the parent: every sibling that was after it takes its place back. */
+  private async closeOrderGap(olderParent: HnFolder, oldOrder: number): Promise<void> {
+    for (const childFolder of olderParent.folders) {
+      if (childFolder.order > oldOrder) {
+        childFolder.order--;
+        await this.folderService.save(childFolder);
+      }
+    }
+
+    for (const childDoc of olderParent.documentations) {
+      if (childDoc.order > oldOrder) {
+        childDoc.order--;
+        await this.documentationService.updatePosition(childDoc);
+      }
+    }
+  }
+
+  /** Make room for the node at its new order among the children of its new parent. */
+  private async openOrderGap(newParent: HnFolder, newOrder: number): Promise<void> {
+    for (const childFolder of newParent.folders) {
+      if (childFolder.order >= newOrder) {
+        childFolder.order++;
+        await this.folderService.save(childFolder);
+      }
+    }
+
+    for (const childDoc of newParent.documentations) {
+      if (childDoc.order >= newOrder) {
+        childDoc.order++;
+        await this.documentationService.updatePosition(childDoc);
+      }
+    }
+  }
+
+  /** The node stays in the same parent: only the siblings it steps over move. */
+  private async reorderSiblings(newParent: HnFolder, oldOrder: number, newOrder: number): Promise<void> {
+    if (oldOrder < newOrder) {
+      await this.shiftSiblingsUp(newParent, oldOrder, newOrder);
+    } else {
+      await this.shiftSiblingsDown(newParent, oldOrder, newOrder);
+    }
+  }
+
+  private async shiftSiblingsUp(newParent: HnFolder, oldOrder: number, newOrder: number): Promise<void> {
+    for (const childFolder of newParent.folders) {
+      if (childFolder.order > oldOrder && childFolder.order <= newOrder) {
+        childFolder.order--;
+        await this.folderService.save(childFolder);
+      }
+    }
+
+    for (const childDoc of newParent.documentations) {
+      if (childDoc.order > oldOrder && childDoc.order <= newOrder) {
+        childDoc.order--;
+        await this.documentationService.updatePosition(childDoc);
+      }
+    }
+  }
+
+  private async shiftSiblingsDown(newParent: HnFolder, oldOrder: number, newOrder: number): Promise<void> {
+    for (const childFolder of newParent.folders) {
+      if (childFolder.order >= newOrder && childFolder.order < oldOrder) {
+        childFolder.order++;
+        await this.folderService.save(childFolder);
+      }
+    }
+
+    for (const childDoc of newParent.documentations) {
+      if (childDoc.order >= newOrder && childDoc.order < oldOrder) {
+        childDoc.order++;
+        await this.documentationService.updatePosition(childDoc);
+      }
+    }
+  }
+
+  private async moveDocToParent(
+    nodeId: string,
+    newParent: HnFolder,
+    newOrder: number,
+    parentChanged: boolean
+  ): Promise<void> {
+    const doc = await this.documentationService.findById(nodeId);
+    if (doc == null) {
+      throw new BlBadRequestException(HnErrorText.DOCUMENTATION_NOT_FOUND, { detailArgs: { id: nodeId } });
+    }
+    doc.folder = newParent;
+    doc.order = newOrder;
+    // only recompute the path on an actual move, so a simple reorder never changes the url
+    if (parentChanged) {
+      this.assignResolvedPath(doc, newParent);
+    }
+    await this.documentationService.save(doc);
+  }
+
+  private async moveFolderToParent(
+    nodeId: string,
+    newParent: HnFolder,
+    newOrder: number,
+    parentChanged: boolean
+  ): Promise<void> {
+    const folder = await this.folderService.findById(nodeId);
+    if (folder == null) {
+      throw new BlBadRequestException('Folder not found', { detailArgs: { id: nodeId } });
+    }
+    folder.folder = newParent;
+    folder.folderId = newParent.id;
+    folder.order = newOrder;
+    if (parentChanged) {
+      this.assignResolvedPath(folder, newParent);
+      await this.folderService.save(folder);
+      // the folder moved: cascade the new complete path down to its descendants
+      await this.updateChildCompletePath(folder);
+    } else {
+      await this.folderService.save(folder);
+    }
+  }
+
   async updateTreeFolder(updatedTree: HnNode[]): Promise<HnNode[]> {
     for (const node of updatedTree) {
-      let isUpdated = false;
       if (node.children) {
-        const f = await this.folderService.findWithRelationById(node.id);
-        if (f == null || f.folder == null || node.parentId == null) {
-          throw new BlBadRequestException('Folder not found', { detailArgs: { id: node.id } });
-        }
-        const folderParentChanged = f.folderId != node.parentId;
-        if (f.order != node.order || folderParentChanged) {
-          isUpdated = true;
-          f.order = node.order;
-          const newParent = await this.folderService.findById(node.parentId);
-          if (newParent == null) {
-            throw new BlBadRequestException('Folder not found', { detailArgs: { id: node.parentId } });
-          }
-          if (folderParentChanged) {
-            this.assignResolvedPath(f, newParent);
-          }
-          f.folder = newParent;
-          f.folderId = newParent.id;
-        }
-        if (isUpdated) {
-          await this.folderService.save(f);
-        }
-        // the folder moved: cascade the new complete path down to its descendants before recursing
-        if (folderParentChanged) {
-          await this.updateChildCompletePath(f);
-        }
-        await this.updateTreeFolder(node.children);
+        await this.updateTreeFolderNode(node, node.children);
       } else {
-        const d = await this.documentationService.findById(node.id);
-        if (d == null || d.folder == null || node.parentId == null) {
-          throw new BlBadRequestException(HnErrorText.DOCUMENTATION_NOT_FOUND, {
-            detailArgs: { id: node.id },
-          });
-        }
-        const docParentChanged = d.folder.id != node.parentId;
-        if (d.order != node.order || docParentChanged) {
-          isUpdated = true;
-          d.order = node.order;
-          const newParent = await this.folderService.findById(node.parentId);
-          if (newParent == null) {
-            throw new BlBadRequestException('Folder not found', { detailArgs: { id: node.parentId } });
-          }
-          if (docParentChanged) {
-            this.assignResolvedPath(d, newParent);
-          }
-          d.folder = newParent;
-        }
-        if (isUpdated) {
-          await this.documentationService.updatePosition(d);
-        }
+        await this.updateTreeDocNode(node);
       }
     }
     return updatedTree;
+  }
+
+  private async updateTreeFolderNode(node: HnNode, children: HnNode[]): Promise<void> {
+    const f = await this.folderService.findWithRelationById(node.id);
+    if (f == null || f.folder == null || node.parentId == null) {
+      throw new BlBadRequestException('Folder not found', { detailArgs: { id: node.id } });
+    }
+    const folderParentChanged = f.folderId != node.parentId;
+    if (f.order != node.order || folderParentChanged) {
+      f.order = node.order;
+      const newParent = await this.getAndCheckFolderById(node.parentId);
+      if (folderParentChanged) {
+        this.assignResolvedPath(f, newParent);
+      }
+      f.folder = newParent;
+      f.folderId = newParent.id;
+      await this.folderService.save(f);
+    }
+    // the folder moved: cascade the new complete path down to its descendants before recursing
+    if (folderParentChanged) {
+      await this.updateChildCompletePath(f);
+    }
+    await this.updateTreeFolder(children);
+  }
+
+  private async updateTreeDocNode(node: HnNode): Promise<void> {
+    const d = await this.documentationService.findById(node.id);
+    if (d == null || d.folder == null || node.parentId == null) {
+      throw new BlBadRequestException(HnErrorText.DOCUMENTATION_NOT_FOUND, {
+        detailArgs: { id: node.id },
+      });
+    }
+    const docParentChanged = d.folder.id != node.parentId;
+    if (d.order != node.order || docParentChanged) {
+      d.order = node.order;
+      const newParent = await this.getAndCheckFolderById(node.parentId);
+      if (docParentChanged) {
+        this.assignResolvedPath(d, newParent);
+      }
+      d.folder = newParent;
+      await this.documentationService.updatePosition(d);
+    }
+  }
+
+  private async getAndCheckFolderById(folderId: string): Promise<HnFolder> {
+    const folder = await this.folderService.findById(folderId);
+    if (folder == null) {
+      throw new BlBadRequestException('Folder not found', { detailArgs: { id: folderId } });
+    }
+    return folder;
   }
 
   async findDocsNodeByBrick(brickId: string, version: string): Promise<HnNode> {
@@ -1785,7 +1868,8 @@ export class HnBrickAggregateService {
     publicSelected: boolean | null = null,
     optionalParams?: HnBrickUserBasedWhereOptionalParams
   ): Promise<FindOptionsWhere<HnBrickEntity>[] | FindOptionsWhere<HnBrickEntity>> {
-    const currentUser: HnUser | null = optionalParams?.user ?? HnCurrentUserHelper.getCurrentUser();
+    const { spacesFilter, user } = optionalParams ?? {};
+    const currentUser: HnUser | null = user ?? HnCurrentUserHelper.getCurrentUser();
     let whereConditions: FindOptionsWhere<HnBrickEntity>[] | FindOptionsWhere<HnBrickEntity>;
 
     if (currentUser == null) {
@@ -1801,7 +1885,7 @@ export class HnBrickAggregateService {
       whereConditions = [
         {
           space: {
-            id: In(optionalParams?.spacesFilter ?? []),
+            id: In(spacesFilter ?? []),
           },
         },
         {
@@ -1810,29 +1894,36 @@ export class HnBrickAggregateService {
           },
         },
       ];
-    } else if (optionalParams?.spacesFilter && optionalParams.spacesFilter.length > 0) {
+    } else if (spacesFilter && spacesFilter.length > 0) {
       whereConditions = [
         {
           space: {
-            id: In(optionalParams.spacesFilter),
+            id: In(spacesFilter),
           },
         },
       ];
     } else {
-      const userSpacesIds: string[] = (
-        await this.spaceUserService.findActiveSpaceUsersByUserId(currentUser?.id)
-      ).map((su) => su.spaceId);
-
-      whereConditions = [
-        {
-          visibility: HnBrickVisibility.PUBLIC,
-        },
-        {
-          space: In(userSpacesIds),
-        },
-      ];
+      whereConditions = await this.getOwnSpacesWhereBrickConditions(currentUser);
     }
 
     return whereConditions;
+  }
+
+  /** The default scope: every public brick, plus every brick of a space the user belongs to. */
+  private async getOwnSpacesWhereBrickConditions(
+    currentUser: HnUser
+  ): Promise<FindOptionsWhere<HnBrickEntity>[]> {
+    const userSpacesIds: string[] = (
+      await this.spaceUserService.findActiveSpaceUsersByUserId(currentUser.id)
+    ).map((su) => su.spaceId);
+
+    return [
+      {
+        visibility: HnBrickVisibility.PUBLIC,
+      },
+      {
+        space: In(userSpacesIds),
+      },
+    ];
   }
 }

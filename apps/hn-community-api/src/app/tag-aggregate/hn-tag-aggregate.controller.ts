@@ -36,14 +36,14 @@ export class HnTagAggregateController {
     @Query('page', new ParseIntPipe()) page: number,
     @Query('size', new ParseIntPipe()) size: number
   ): Promise<ClPage<HnTagKeyDto>> {
-    const tagKeys: ClPage<HnTagKey> = await this.tagAggregateService.getAllTagKeysWithFilters(
-      ['public'],
-      '',
-      '',
-      [],
+    const tagKeys: ClPage<HnTagKey> = await this.tagAggregateService.getAllTagKeysWithFilters({
+      spacesFilter: ['public'],
+      technicalNameFilter: '',
+      labelFilter: '',
+      sortsCriteria: [],
       page,
-      size
-    );
+      size,
+    });
     return tagKeys.map((tagKey) => new HnTagKeyDto(tagKey));
   }
 
@@ -77,14 +77,14 @@ export class HnTagAggregateController {
     @Query('page', new ParseIntPipe()) page: number,
     @Query('size', new ParseIntPipe()) size: number
   ): Promise<ClPage<HnTagKeyDto>> {
-    const tagKeys: ClPage<HnTagKey> = await this.tagAggregateService.getAllTagKeysWithFilters(
-      [],
-      '',
-      '',
-      [],
+    const tagKeys: ClPage<HnTagKey> = await this.tagAggregateService.getAllTagKeysWithFilters({
+      spacesFilter: [],
+      technicalNameFilter: '',
+      labelFilter: '',
+      sortsCriteria: [],
       page,
-      size
-    );
+      size,
+    });
     return tagKeys.map((tagKey) => new HnTagKeyDto(tagKey));
   }
 
@@ -98,14 +98,14 @@ export class HnTagAggregateController {
     @Query('page', new ParseIntPipe()) page: number,
     @Query('size', new ParseIntPipe()) size: number
   ): Promise<ClPage<HnTagKeyDto>> {
-    const tagKeys: ClPage<HnTagKey> = await this.tagAggregateService.getAllTagKeysWithFilters(
+    const tagKeys: ClPage<HnTagKey> = await this.tagAggregateService.getAllTagKeysWithFilters({
       spacesFilter,
       technicalNameFilter,
       labelFilter,
       sortsCriteria,
       page,
-      size
-    );
+      size,
+    });
     return tagKeys.map((tagKey) => new HnTagKeyDto(tagKey));
   }
 

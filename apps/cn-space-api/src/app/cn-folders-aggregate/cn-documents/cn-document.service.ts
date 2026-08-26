@@ -110,20 +110,20 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
       );
     }
 
-    let document = CnDocumentEntity.newDocument(
-      documentName,
-      this.objectStorageService.generateRandomFileNameFromExtension(
+    let document = CnDocumentEntity.newDocument({
+      name: documentName,
+      filename: this.objectStorageService.generateRandomFileNameFromExtension(
         BlFileHelper.getFileExtension(file.originalname)
       ),
-      file.size,
-      file.mimetype,
-      documentType,
+      size: file.size,
+      mimeType: file.mimetype,
+      type: documentType,
       entityId,
       // TODO TO IMPROVE
-      bucketsConfig.getFirstBucketType(),
+      bucketType: bucketsConfig.getFirstBucketType(),
       parentFolder,
-      options.parentDocument
-    );
+      parentDocument: options.parentDocument,
+    });
 
     await this.objectStorageService.uploadObject(bucketsConfig.bucketConfigs, file, {
       filename: document.filename,
@@ -371,17 +371,17 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
       this.checkIfStorageIsFull(0);
     }
 
-    let document = CnDocumentEntity.newDocument(
-      documentName,
-      this.objectStorageService.generateRandomFileNameFromExtension('json'),
-      0,
-      'application/json',
+    let document = CnDocumentEntity.newDocument({
+      name: documentName,
+      filename: this.objectStorageService.generateRandomFileNameFromExtension('json'),
+      size: 0,
+      mimeType: 'application/json',
       type,
       entityId,
-      bucketsConfig.bucketConfigs[0].type,
+      bucketType: bucketsConfig.bucketConfigs[0].type,
       parentFolder,
-      parentDocument
-    );
+      parentDocument,
+    });
 
     await this.objectStorageService.uploadJson(bucketsConfig.bucketConfigs, content, {
       filename: document.filename,
@@ -608,7 +608,10 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
       }
     }
     // don't generate the token if the last token is still valid with 10 minutes margin
-    if (!document.previewTokenExpiration || document.previewTokenExpiration < ClDateHelper.getDate().plus({ minutes: 10 })) {
+    if (
+      !document.previewTokenExpiration ||
+      document.previewTokenExpiration < ClDateHelper.getDate().plus({ minutes: 10 })
+    ) {
       document.previewToken = ClStringHelper.generateUUID();
       // set expiration in 1 hour
       document.previewTokenExpiration = ClDateHelper.getDate().plus({ hours: 1 });
@@ -887,9 +890,8 @@ export class CnDocumentService extends BlAbstractService<CnDocumentEntity> {
           tags as any
         );
       } catch (error) {
-        this.logger.error(
-          `Failed to set tags for document ${document.id}: ${error instanceof Error ? error.message : String(error)}`
-        );
+        const reason = error instanceof Error ? error.message : String(error);
+        this.logger.error(`Failed to set tags for document ${document.id}: ${reason}`);
       }
     }
     this.logger.log(`[REFRESH DOCUMENTS TAGS] Finished refreshing tags for all documents`);

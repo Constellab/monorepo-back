@@ -27,17 +27,9 @@ export class HnAgentVersionMigrator {
     agentVersionFileInput: HnAgentVersionFileInput
   ): HnAgentVersionFileInput {
     agentVersionFileInput.json_version = 3;
-    const params: Record<string, any> = {
-      specs: {},
-      values: {},
-    };
-    for (const param of (agentVersionFileInput.params as string).split('\n')) {
-      const [key, value] = param.split('=');
-      const v = this.parseValue(value);
-      params['specs'][key] = this.getBasicParamSpecs(v);
-      params['values'][key] = v;
-    }
-    agentVersionFileInput.params = params;
+    agentVersionFileInput.params = this.buildParamsFromEntries(
+      (agentVersionFileInput.params as string).split('\n')
+    );
     return agentVersionFileInput;
   }
 
@@ -45,7 +37,11 @@ export class HnAgentVersionMigrator {
     agentVersionDto: HnAgentVersionDto,
     version: number
   ): HnAgentVersionDto {
-    if (!(agentVersionDto.params as Record<string, any>)?.specs) {
+    // Only params that carry no readable content at all are defaulted. Defaulting on the absence
+    // of `specs` alone replaced a legacy array or newline-string params with an empty one, which
+    // emptied the params of every agent version still stored in a pre-v3 format — and made the
+    // legacy branches of each migration below unreachable, since `specs` was then always set.
+    if (!this.holdsLegacyParams(agentVersionDto.params) && !this.holdsV3Params(agentVersionDto.params)) {
       agentVersionDto.params = {
         specs: {},
         values: {},
@@ -53,114 +49,134 @@ export class HnAgentVersionMigrator {
     }
 
     if (version === 1) {
-      if ((agentVersionDto.params as Record<string, any>)?.specs) {
-        const params = [];
-        for (const [key, value] of Object.entries((agentVersionDto.params as Record<string, any>).values)) {
-          params.push(`${key}=${String(value)}`);
-        }
-        agentVersionDto.params = params;
-        return agentVersionDto;
-      } else if (agentVersionDto.params instanceof Array) {
-        return agentVersionDto;
-      } else {
-        agentVersionDto.params = (agentVersionDto.params as string).split('\n');
-        return agentVersionDto;
-      }
+      return this.migrateAgentVersionToV1(agentVersionDto);
     }
 
     if (version === 2) {
-      if ((agentVersionDto.params as Record<string, any>)?.specs) {
-        let params: string = '';
-        for (const [key, value] of Object.entries((agentVersionDto.params as Record<string, any>).values)) {
-          params = params + `${key}=${String(value)}\n`;
-        }
-        agentVersionDto.params = params;
-        return agentVersionDto;
-      }
-      if (agentVersionDto.params instanceof Array) {
-        agentVersionDto.params = agentVersionDto.params.join('\n');
-        return agentVersionDto;
-      } else {
-        return agentVersionDto;
-      }
+      return this.migrateAgentVersionToV2(agentVersionDto);
     }
 
     if (version === 3) {
-      let agentVersionDtoRes: HnAgentVersionDto;
-      if ((agentVersionDto.params as Record<string, any>)?.specs) {
-        const specs = (agentVersionDto.params as Record<string, any>).specs;
-        for (const key of Object.keys(specs)) {
-          if (specs[key]['type'] == 'string') {
-            specs[key]['type'] = 'str';
-          }
-        }
-        agentVersionDto.params = {
-          specs: specs,
-          values: (agentVersionDto.params as Record<string, any>).values,
-        };
-        agentVersionDtoRes = agentVersionDto;
-      } else if (agentVersionDto.params instanceof Array) {
-        const params: Record<string, any> = {
-          specs: {},
-          values: {},
-        };
-        for (const param of agentVersionDto.params) {
-          const [key, value] = param.trim().split('=');
-          const v = this.parseValue(value);
-          params['specs'][key] = this.getBasicParamSpecs(v);
-          params['values'][key] = v;
-        }
-        agentVersionDto.params = params;
-        agentVersionDtoRes = agentVersionDto;
-      } else {
-        const params: Record<string, any> = {
-          specs: {},
-          values: {},
-        };
-        for (const param of (agentVersionDto.params as string).split('\n')) {
-          const [key, value] = param.split('=');
-          const v = this.parseValue(value);
-          params['specs'][key] = this.getBasicParamSpecs(v);
-          params['values'][key] = v;
-        }
-        agentVersionDto.params = params;
-        agentVersionDtoRes = agentVersionDto;
-      }
-
-      const inputSpecs = agentVersionDtoRes.inputSpecs?.specs;
-      if (inputSpecs) {
-        for (const spec of Object.keys(inputSpecs)) {
-          if ('is_optional' in inputSpecs[spec]) {
-            inputSpecs[spec]['optional'] = inputSpecs[spec]['is_optional'];
-            delete inputSpecs[spec]['is_optional'];
-          }
-
-          if ('is_constant' in inputSpecs[spec]) {
-            inputSpecs[spec]['constant'] = inputSpecs[spec]['is_constant'];
-            delete inputSpecs[spec]['is_constant'];
-          }
-        }
-      }
-
-      const outputSpecs = agentVersionDtoRes.outputSpecs?.specs;
-      if (outputSpecs) {
-        for (const spec of Object.keys(outputSpecs)) {
-          if ('is_optional' in outputSpecs[spec]) {
-            outputSpecs[spec]['optional'] = outputSpecs[spec]['is_optional'];
-            delete outputSpecs[spec]['is_optional'];
-          }
-
-          if ('is_constant' in outputSpecs[spec]) {
-            outputSpecs[spec]['constant'] = outputSpecs[spec]['is_constant'];
-            delete outputSpecs[spec]['is_constant'];
-          }
-        }
-      }
-
-      return agentVersionDtoRes;
+      return this.migrateAgentVersionToV3(agentVersionDto);
     }
 
     return agentVersionDto;
+  }
+
+  /** Whether params are still in a pre-v3 format: a list of `key=value`, or one newline-separated. */
+  private holdsLegacyParams(params: HnAgentVersionDto['params']): boolean {
+    return params instanceof Array || (typeof params === 'string' && params !== '');
+  }
+
+  /** Whether params are already the v3 `{ specs, values }` object. */
+  private holdsV3Params(params: HnAgentVersionDto['params']): boolean {
+    return (params as Record<string, any>)?.specs != null;
+  }
+
+  private migrateAgentVersionToV1(agentVersionDto: HnAgentVersionDto): HnAgentVersionDto {
+    if ((agentVersionDto.params as Record<string, any>)?.specs) {
+      const params = [];
+      for (const [key, value] of Object.entries((agentVersionDto.params as Record<string, any>).values)) {
+        params.push(`${key}=${String(value)}`);
+      }
+      agentVersionDto.params = params;
+      return agentVersionDto;
+    } else if (agentVersionDto.params instanceof Array) {
+      return agentVersionDto;
+    } else {
+      agentVersionDto.params = (agentVersionDto.params as string).split('\n');
+      return agentVersionDto;
+    }
+  }
+
+  private migrateAgentVersionToV2(agentVersionDto: HnAgentVersionDto): HnAgentVersionDto {
+    if ((agentVersionDto.params as Record<string, any>)?.specs) {
+      let params: string = '';
+      for (const [key, value] of Object.entries((agentVersionDto.params as Record<string, any>).values)) {
+        params = params + `${key}=${String(value)}\n`;
+      }
+      agentVersionDto.params = params;
+      return agentVersionDto;
+    }
+    if (agentVersionDto.params instanceof Array) {
+      agentVersionDto.params = agentVersionDto.params.join('\n');
+      return agentVersionDto;
+    } else {
+      return agentVersionDto;
+    }
+  }
+
+  private migrateAgentVersionToV3(agentVersionDto: HnAgentVersionDto): HnAgentVersionDto {
+    const agentVersionDtoRes: HnAgentVersionDto = this.migrateParamsToV3(agentVersionDto);
+
+    this.renameLegacySpecsFlags(agentVersionDtoRes.inputSpecs?.specs);
+    this.renameLegacySpecsFlags(agentVersionDtoRes.outputSpecs?.specs);
+
+    return agentVersionDtoRes;
+  }
+
+  private migrateParamsToV3(agentVersionDto: HnAgentVersionDto): HnAgentVersionDto {
+    if ((agentVersionDto.params as Record<string, any>)?.specs) {
+      const specs = (agentVersionDto.params as Record<string, any>).specs;
+      for (const key of Object.keys(specs)) {
+        if (specs[key]['type'] == 'string') {
+          specs[key]['type'] = 'str';
+        }
+      }
+      agentVersionDto.params = {
+        specs: specs,
+        values: (agentVersionDto.params as Record<string, any>).values,
+      };
+      return agentVersionDto;
+    }
+
+    if (agentVersionDto.params instanceof Array) {
+      agentVersionDto.params = this.buildParamsFromEntries(
+        agentVersionDto.params.map((param) => param.trim())
+      );
+      return agentVersionDto;
+    }
+
+    agentVersionDto.params = this.buildParamsFromEntries((agentVersionDto.params as string).split('\n'));
+    return agentVersionDto;
+  }
+
+  /**
+   * Rename the specs flags that were prefixed with `is_` before the v3
+   */
+  private renameLegacySpecsFlags(specs: Record<string, any> | undefined): void {
+    if (!specs) {
+      return;
+    }
+
+    for (const spec of Object.keys(specs)) {
+      if ('is_optional' in specs[spec]) {
+        specs[spec]['optional'] = specs[spec]['is_optional'];
+        delete specs[spec]['is_optional'];
+      }
+
+      if ('is_constant' in specs[spec]) {
+        specs[spec]['constant'] = specs[spec]['is_constant'];
+        delete specs[spec]['is_constant'];
+      }
+    }
+  }
+
+  /**
+   * Build the v3 params (specs and values) from a list of `key=value` entries
+   */
+  private buildParamsFromEntries(entries: string[]): Record<string, any> {
+    const params: Record<string, any> = {
+      specs: {},
+      values: {},
+    };
+    for (const param of entries) {
+      const [key, value] = param.split('=');
+      const v = this.parseValue(value);
+      params['specs'][key] = this.getBasicParamSpecs(v);
+      params['values'][key] = v;
+    }
+    return params;
   }
 
   private parseValue(value: string): any {

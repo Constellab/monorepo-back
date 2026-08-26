@@ -1,10 +1,20 @@
 import { BlEntityWithIdDTO } from '@monorepo/back-core-lib';
 import { TeRichTextDTO } from '@monorepo/te-text-editor';
+import { DateTime } from 'luxon';
 
 import { HnSpaceDto, HnSpaceForLabDto } from '../../space-aggregate/space/hn-space.dto';
 import { HnUserDto } from '../../users/hn-user.dto';
+import { HnUser } from '../../users/hn-user.entity';
 import { HnTagCoAuthorDto } from '../tag-co-author/hn-tag-co-author.dto';
 import { HnTagKey, HnTagKeyType } from './hn-tag-key.entity';
+
+function toIsoString(date: DateTime | null | undefined): string | undefined {
+  return date?.toISO() ?? undefined;
+}
+
+function toUserDto(user: HnUser | null | undefined): HnUserDto | undefined {
+  return user ? new HnUserDto(user) : undefined;
+}
 
 export class HnTagKeyDto extends BlEntityWithIdDTO {
   technicalName!: string;
@@ -32,16 +42,16 @@ export class HnTagKeyDto extends BlEntityWithIdDTO {
     this.label = tagKey.label;
     this.type = tagKey.type;
     this.deprecated = tagKey.deprecated;
-    this.publishedAt = tagKey.publishedAt?.toISO() ?? undefined;
+    this.publishedAt = toIsoString(tagKey.publishedAt);
     this.unit = tagKey.unit;
     this.description = tagKey.description;
     this.additionalInfosSpecs = tagKey.additionalInfosSpecs;
     this.space = tagKey.space ? new HnSpaceDto(tagKey.space) : undefined;
     this.tagCoAuthors = tagKey.tagCoAuthors?.map((tagCoAuthor) => new HnTagCoAuthorDto(tagCoAuthor));
-    this.createdAt = tagKey.createdAt?.toISO() ?? undefined;
-    this.createdBy = tagKey.createdBy ? new HnUserDto(tagKey.createdBy) : undefined;
-    this.lastModifiedAt = tagKey.lastModifiedAt?.toISO() ?? undefined;
-    this.lastModifiedBy = tagKey.lastModifiedBy ? new HnUserDto(tagKey.lastModifiedBy) : undefined;
+    this.createdAt = toIsoString(tagKey.createdAt);
+    this.createdBy = toUserDto(tagKey.createdBy);
+    this.lastModifiedAt = toIsoString(tagKey.lastModifiedAt);
+    this.lastModifiedBy = toUserDto(tagKey.lastModifiedBy);
     this.likes = tagKey.likes ?? 0;
     this.comments = tagKey.comments ?? 0;
   }
@@ -80,15 +90,15 @@ export class HnTagKeyForLabDto {
     this.label = tagKey.label;
     this.value_format = tagKey.type;
     this.deprecated = tagKey.deprecated;
-    this.published_at = tagKey.publishedAt?.toISO() ?? undefined;
+    this.published_at = toIsoString(tagKey.publishedAt);
     this.unit = tagKey.unit;
     this.description = tagKey.description;
     this.space = tagKey.space ? { id: tagKey.space.id, name: tagKey.space.name } : undefined;
     this.tag_co_authors = tagKey.tagCoAuthors?.map((tagCoAuthor) => new HnUserDto(tagCoAuthor.user));
-    this.created_at = tagKey.createdAt?.toISO() ?? undefined;
-    this.created_by = tagKey.createdBy ? new HnUserDto(tagKey.createdBy) : undefined;
-    this.last_modified_at = tagKey.lastModifiedAt?.toISO() ?? undefined;
-    this.last_modified_by = tagKey.lastModifiedBy ? new HnUserDto(tagKey.lastModifiedBy) : undefined;
+    this.created_at = toIsoString(tagKey.createdAt);
+    this.created_by = toUserDto(tagKey.createdBy);
+    this.last_modified_at = toIsoString(tagKey.lastModifiedAt);
+    this.last_modified_by = toUserDto(tagKey.lastModifiedBy);
     this.additional_infos_specs = tagKey.additionalInfosSpecs;
   }
 }

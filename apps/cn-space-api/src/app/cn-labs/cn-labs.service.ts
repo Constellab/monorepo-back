@@ -73,29 +73,7 @@ export class CnLabsService extends CnAbstractWithStatusService<CnLabEntity, CnLa
   private async checkLabBeforeSave(entity: CnLabFull): Promise<void> {
     this.checkLabName(entity.name);
     if (entity.isCloud()) {
-      // check virtual host
-      entity.virtualHost = await this.checkLabVirtualHost(entity, true);
-
-      if (
-        entity.serverCloud == null ||
-        entity.region == null ||
-        ClHelpService.isNullOrEmpty(entity.billingMode)
-      ) {
-        throw new BlBadRequestException('Missing parameters for cloud instance');
-      }
-
-      if (
-        entity.region.cloudProvider == null ||
-        entity.region.cloudProvider.id !== entity.serverCloud.cloudProvider.id
-      ) {
-        throw new BlBadRequestException('The server and region have different cloud provider');
-      }
-
-      if (!entity.region.supportsServer()) {
-        throw new BlBadRequestException('Region must be a server region');
-      }
-
-      entity.desktopPlatform = null;
+      await this.checkCloudLabBeforeSave(entity);
     } else if (entity.isOnPremise()) {
       // check virtual host
       entity.virtualHost = await this.checkLabVirtualHost(entity, false);
@@ -114,6 +92,32 @@ export class CnLabsService extends CnAbstractWithStatusService<CnLabEntity, CnLa
       entity.serverInstanceId = null;
       entity.serverVolumeId = null;
     }
+  }
+
+  private async checkCloudLabBeforeSave(entity: CnLabFull): Promise<void> {
+    // check virtual host
+    entity.virtualHost = await this.checkLabVirtualHost(entity, true);
+
+    if (
+      entity.serverCloud == null ||
+      entity.region == null ||
+      ClHelpService.isNullOrEmpty(entity.billingMode)
+    ) {
+      throw new BlBadRequestException('Missing parameters for cloud instance');
+    }
+
+    if (
+      entity.region.cloudProvider == null ||
+      entity.region.cloudProvider.id !== entity.serverCloud.cloudProvider.id
+    ) {
+      throw new BlBadRequestException('The server and region have different cloud provider');
+    }
+
+    if (!entity.region.supportsServer()) {
+      throw new BlBadRequestException('Region must be a server region');
+    }
+
+    entity.desktopPlatform = null;
   }
 
   private checkLabName(labName: string): void {

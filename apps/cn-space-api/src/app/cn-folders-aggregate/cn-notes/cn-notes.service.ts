@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
 
 import { CnCurrentUserHelper } from '../../cn-core/utils/cn-current-user.helper';
+import { CnLabConfig } from '../../cn-lab-configs/cn-lab-config.entity';
 import { CnLabConfigsService } from '../../cn-lab-configs/cn-lab-configs.service';
 import { CnDocument, CnDocumentType } from '../cn-documents/cn-document.entity';
 import { CnDocumentService } from '../cn-documents/cn-document.service';
@@ -136,8 +137,42 @@ export class CnNotesService extends BlAbstractService<CnNoteEntity> {
     // retrieve the lab config
     const labConfig = await this.labConfigService.getOrCreateLabConfig(createNoteDto.lab_config);
 
-    // copy fields of the note DTO to note
     const noteDto: CnSaveNoteDto = createNoteDto.note;
+    const note = this.buildNoteToSave(noteDto, labConfig);
+
+    // if this is a creation
+    if (!noteDb) {
+      note.hierarchyRepresentation = CnHierarchyObjectEntity.newSubHierarchyObject(
+        parentFolder,
+        note.getHierarchyObjectInfo()
+      );
+      // also set the id of the folder hierarchy because it should be the same as the note id
+      note.hierarchyRepresentation.id = noteDto.id;
+    }
+
+    let mode: 'create' | 'update';
+    if (noteDb) {
+      noteDb = await this.updateNoteAndScenarios(note, noteDb, scenarios);
+      mode = 'update';
+    } else {
+      note.lab = CnCurrentUserHelper.getAndCheckCurrentLab();
+      note.scenarios = scenarios;
+      noteDb = await this.create(note);
+      mode = 'create';
+    }
+
+    // update the content of the note
+    noteDb = await this.saveNoteContent(noteDb, parentFolder, createNoteDto, files);
+    return {
+      mode: mode,
+      note: noteDb,
+    };
+  }
+
+  /**
+   * Copy fields of the note DTO to a new note
+   */
+  private buildNoteToSave(noteDto: CnSaveNoteDto, labConfig: CnLabConfig): CnNoteEntity {
     const note = new CnNoteEntity();
 
     note.id = noteDto.id;
@@ -161,42 +196,25 @@ export class CnNotesService extends BlAbstractService<CnNoteEntity> {
     note.lastSyncAt = noteDto.last_sync_at;
     note.lastSyncBy = noteDto.last_sync_by;
 
-    // if this is a creation
-    if (!noteDb) {
-      note.hierarchyRepresentation = CnHierarchyObjectEntity.newSubHierarchyObject(
-        parentFolder,
-        note.getHierarchyObjectInfo()
-      );
-      // also set the id of the folder hierarchy because it should be the same as the note id
-      note.hierarchyRepresentation.id = noteDto.id;
-    }
+    return note;
+  }
 
-    let mode: 'create' | 'update';
-    if (noteDb) {
-      // clean associated scenarios
-      note.scenarios = [];
-      noteDb = await this.updateWithCompare(note, noteDb);
-      // save the associated scenarios
-      // we do it after the clean because if I save directly the new array, I have the error
-      // DUPLICATE KEY VALUE for table note_scenarios
-      if (scenarios.length > 0) {
-        noteDb.scenarios = scenarios;
-        noteDb = await this.repository.save(noteDb);
-      }
-      mode = 'update';
-    } else {
-      note.lab = CnCurrentUserHelper.getAndCheckCurrentLab();
-      note.scenarios = scenarios;
-      noteDb = await this.create(note);
-      mode = 'create';
+  private async updateNoteAndScenarios(
+    note: CnNoteEntity,
+    noteDb: CnNoteEntity,
+    scenarios: CnScenario[]
+  ): Promise<CnNoteEntity> {
+    // clean associated scenarios
+    note.scenarios = [];
+    noteDb = await this.updateWithCompare(note, noteDb);
+    // save the associated scenarios
+    // we do it after the clean because if I save directly the new array, I have the error
+    // DUPLICATE KEY VALUE for table note_scenarios
+    if (scenarios.length > 0) {
+      noteDb.scenarios = scenarios;
+      noteDb = await this.repository.save(noteDb);
     }
-
-    // update the content of the note
-    noteDb = await this.saveNoteContent(noteDb, parentFolder, createNoteDto, files);
-    return {
-      mode: mode,
-      note: noteDb,
-    };
+    return noteDb;
   }
 
   /**

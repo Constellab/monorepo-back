@@ -153,9 +153,7 @@ export class CnLabStatsStorage {
 
       const startDate = period.fromDate < this.stats.fromDate ? this.stats.fromDate : period.fromDate;
       const endDate =
-        period.getToDateWithDefault() > this.stats.toDate
-          ? this.stats.toDate
-          : period.getToDateWithDefault();
+        period.getToDateWithDefault() > this.stats.toDate ? this.stats.toDate : period.getToDateWithDefault();
 
       const filteredPrices = this.getStoragePricePeriodsAt(storagePrices, startDate, endDate);
       for (const price of filteredPrices) {
@@ -219,30 +217,62 @@ export class CnLabStatsStorage {
       if (storagePrice.getToDateWithDefault() < startDate) continue;
       // we have to stop the loop if the storage price starts after the end of the period
       if (storagePrice.fromDate > endDate) break;
-      // if a storage price include the full period
-      if (storagePrice.fromDate <= startDate && storagePrice.getToDateWithDefault() >= endDate) {
-        periodPrices.addPeriod(new CnLabStorageStatsPeriodNumber(startDate, endDate, storagePrice.data));
-        break;
-        // if a storage price starts before the period and finis                      h before the end
-      } else if (storagePrice.fromDate <= startDate && storagePrice.getToDateWithDefault() < endDate) {
-        periodPrices.addPeriod(
-          new CnLabStorageStatsPeriodNumber(startDate, storagePrice.toDate, storagePrice.data)
-        );
-        // if a storage price starts after the start and after the period
-      } else if (storagePrice.fromDate >= startDate && storagePrice.getToDateWithDefault() > endDate) {
-        periodPrices.addPeriod(
-          new CnLabStorageStatsPeriodNumber(storagePrice.fromDate, endDate, storagePrice.data)
-        );
-        break;
-        // if a storage price starts after the start and finish before the end (inside the period)
-      } else if (storagePrice.fromDate > startDate && storagePrice.getToDateWithDefault() < endDate) {
-        periodPrices.addPeriod(
-          new CnLabStorageStatsPeriodNumber(storagePrice.fromDate, storagePrice.toDate, storagePrice.data)
-        );
+
+      const clipped = this.clipStoragePriceToPeriod(storagePrice, startDate, endDate);
+      if (clipped.period) {
+        periodPrices.addPeriod(clipped.period);
       }
+      // a storage price that covers the end of the period leaves nothing for the next ones
+      if (clipped.reachesEndOfPeriod) break;
     }
 
     return periodPrices.periods;
+  }
+
+  /**
+   * The part of one storage price that falls inside the period, if any, and whether it reaches
+   * the end of the period
+   * @param storagePrice
+   * @param startDate
+   * @param endDate
+   * @private
+   */
+  private clipStoragePriceToPeriod(
+    storagePrice: CnLabStorageStatsPeriodNumber,
+    startDate: DateTime,
+    endDate: DateTime
+  ): { period: CnLabStorageStatsPeriodNumber | null; reachesEndOfPeriod: boolean } {
+    // if a storage price include the full period
+    if (storagePrice.fromDate <= startDate && storagePrice.getToDateWithDefault() >= endDate) {
+      return {
+        period: new CnLabStorageStatsPeriodNumber(startDate, endDate, storagePrice.data),
+        reachesEndOfPeriod: true,
+      };
+      // if a storage price starts before the period and finis                      h before the end
+    } else if (storagePrice.fromDate <= startDate && storagePrice.getToDateWithDefault() < endDate) {
+      return {
+        period: new CnLabStorageStatsPeriodNumber(startDate, storagePrice.toDate, storagePrice.data),
+        reachesEndOfPeriod: false,
+      };
+      // if a storage price starts after the start and after the period
+    } else if (storagePrice.fromDate >= startDate && storagePrice.getToDateWithDefault() > endDate) {
+      return {
+        period: new CnLabStorageStatsPeriodNumber(storagePrice.fromDate, endDate, storagePrice.data),
+        reachesEndOfPeriod: true,
+      };
+      // if a storage price starts after the start and finish before the end (inside the period)
+    } else if (storagePrice.fromDate > startDate && storagePrice.getToDateWithDefault() < endDate) {
+      return {
+        period: new CnLabStorageStatsPeriodNumber(
+          storagePrice.fromDate,
+          storagePrice.toDate,
+          storagePrice.data
+        ),
+        reachesEndOfPeriod: false,
+      };
+    }
+
+    return { period: null, reachesEndOfPeriod: false };
   }
 
   private getStoragePriceAsPeriods(

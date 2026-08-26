@@ -35,6 +35,20 @@ export interface CnActivityAndNotif {
   notif?: CnNotifInfo;
 }
 
+/**
+ * What every notification of one folder event shares, so the recipient and the text stay the only
+ * things that vary per notification sent.
+ */
+interface CnFolderNotificationContext {
+  activityUser: CnUser;
+  spaceId: string;
+  entityType: CnActivityEntityType;
+  entityId: string;
+  appRoute: string;
+  parentFolder: CnHierarchyObject;
+  ancestorFolderIds: string[];
+}
+
 @Injectable()
 export class CnFolderListener {
   protected readonly logger = new Logger(CnFolderListener.name);
@@ -106,18 +120,18 @@ export class CnFolderListener {
       ancestorIds = ancestors.map((a) => a.id);
     }
 
+    const context: CnFolderNotificationContext = {
+      activityUser: activity.user,
+      spaceId: activity.space.id,
+      entityType: activity.entityType,
+      entityId: activity.entityId,
+      appRoute: notifInfo.link,
+      parentFolder,
+      ancestorFolderIds: ancestorIds,
+    };
+
     for (const folderUser of folderUsers) {
-      await this.sendNotification(
-        folderUser,
-        activity.user,
-        activity.space.id,
-        activity.entityType,
-        activity.entityId,
-        activity.cleanTitle,
-        notifInfo.link,
-        parentFolder,
-        ancestorIds
-      );
+      await this.sendNotification(folderUser, activity.cleanTitle, context);
     }
   }
 
@@ -127,21 +141,15 @@ export class CnFolderListener {
    */
   private async sendNotification(
     folderUser: CnFolderUser,
-    activityUser: CnUser,
-    spaceId: string,
-    entityType: CnActivityEntityType,
-    entityId: string,
     text: string,
-    appRoute: string,
-    parentFolder: CnHierarchyObject,
-    ancestorFolderIds: string[]
+    context: CnFolderNotificationContext
   ): Promise<void> {
-    if (folderUser.userId === activityUser.id) return;
+    if (folderUser.userId === context.activityUser.id) return;
 
-    const notifMode = this.getNotifMode(folderUser, entityType);
+    const notifMode = this.getNotifMode(folderUser, context.entityType);
     if (notifMode === CnRootFolderNotifOptions.NONE) return;
 
-    const notificationType = this.fromActivityEntityType(entityType);
+    const notificationType = this.fromActivityEntityType(context.entityType);
     if (!notificationType) return;
 
     // notif
@@ -151,14 +159,14 @@ export class CnFolderListener {
     ) {
       await this.notificationService.createNotification({
         user: folderUser.user,
-        link: appRoute,
-        spaceId: spaceId,
-        createdBy: activityUser,
+        link: context.appRoute,
+        spaceId: context.spaceId,
+        createdBy: context.activityUser,
         objectType: notificationType,
         text: text,
-        text2: parentFolder.name,
-        objectId: entityId,
-        associatedObjectIds: ancestorFolderIds,
+        text2: context.parentFolder.name,
+        objectId: context.entityId,
+        associatedObjectIds: context.ancestorFolderIds,
       });
     }
 
@@ -167,7 +175,8 @@ export class CnFolderListener {
       notifMode === CnRootFolderNotifOptions.NOTIF_AND_EMAIL ||
       notifMode === CnRootFolderNotifOptions.EMAIL_ONLY
     ) {
-      const fullLink = (await this.frontService.getSpaceWebsiteURLFromId(spaceId)) + '/' + appRoute;
+      const fullLink =
+        (await this.frontService.getSpaceWebsiteURLFromId(context.spaceId)) + '/' + context.appRoute;
       await this.mailService.sendMailToUser(
         CnMailTemplate.folder_notification,
         [folderUser.user],
@@ -177,7 +186,7 @@ export class CnFolderListener {
             firstname: folderUser.user.firstname,
             lastname: folderUser.user.lastname,
           },
-          title: parentFolder.name,
+          title: context.parentFolder.name,
           link: fullLink,
         },
         { text: text, translate: false }
@@ -508,18 +517,22 @@ export class CnFolderListener {
 
     const userMentions = this.getUserMentions(message.getRichTextContent(), folderUsers);
 
+    const context: CnFolderNotificationContext = {
+      activityUser: activity.user,
+      spaceId: activity.space.id,
+      entityType: activity.entityType,
+      entityId: activity.entityId,
+      appRoute: link,
+      parentFolder,
+      ancestorFolderIds: ancestorIds,
+    };
+
     // send notification to mentioned users
     for (const userMention of userMentions) {
       await this.sendNotification(
         userMention,
-        activity.user,
-        activity.space.id,
-        activity.entityType,
-        activity.entityId,
         `${message.createdBy.alias} mentioned you in a message on folder ${parentFolder.name}`,
-        link,
-        parentFolder,
-        ancestorIds
+        context
       );
     }
 
@@ -532,17 +545,7 @@ export class CnFolderListener {
       )
         continue;
 
-      await this.sendNotification(
-        folderUser,
-        activity.user,
-        activity.space.id,
-        activity.entityType,
-        activity.entityId,
-        activity.cleanTitle,
-        link,
-        parentFolder,
-        ancestorIds
-      );
+      await this.sendNotification(folderUser, activity.cleanTitle, context);
     }
   }
 

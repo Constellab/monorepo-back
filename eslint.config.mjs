@@ -1,6 +1,7 @@
 import eslint from '@eslint/js';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
+import sonarjs from 'eslint-plugin-sonarjs';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
@@ -51,7 +52,10 @@ export default tseslint.config(
 
   // Ignore patterns
   {
-    ignores: ['eslint.config.mjs', 'node_modules', 'dist'],
+    // Root-level .mjs files are standalone tooling scripts (this config, the
+    // deploy script) that no tsconfig includes, so the type-aware parser
+    // cannot resolve them.
+    ignores: ['*.mjs', 'node_modules', 'dist'],
   },
 
   // Language and plugins configuration
@@ -69,6 +73,7 @@ export default tseslint.config(
     },
     plugins: {
       'simple-import-sort': simpleImportSort,
+      sonarjs,
     },
   },
 
@@ -116,6 +121,30 @@ export default tseslint.config(
       ],
 
       'simple-import-sort/imports': 'error',
+
+      // Method complexity budgets. `variant: 'modified'` counts a whole `switch`
+      // as one path, so mapping tables (status enums, file-icon lookups) are not
+      // punished for having many cases; cognitive-complexity then weights nesting.
+      complexity: ['error', { max: 10, variant: 'modified' }],
+      'sonarjs/cognitive-complexity': ['error', 15],
+      'max-depth': ['error', 4],
+      'max-statements': ['error', 25],
+      'max-nested-callbacks': ['error', 3],
+      'max-lines-per-function': ['error', { max: 80, skipBlankLines: true, skipComments: true }],
+
+      // `max-params` cannot exempt constructors, and NestJS DI constructors
+      // legitimately take many. Restrict the parameter count on everything else.
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'MethodDefinition[kind!="constructor"] > FunctionExpression[params.length>6]',
+          message: 'This method takes more than 6 parameters. Pass an options object instead.',
+        },
+        {
+          selector: 'FunctionDeclaration[params.length>6]',
+          message: 'This function takes more than 6 parameters. Pass an options object instead.',
+        },
+      ],
     },
   },
 
@@ -137,6 +166,19 @@ export default tseslint.config(
     files: ['apps/*/test/**/*.ts'],
     rules: {
       '@typescript-eslint/naming-convention': 'off',
+    },
+  },
+
+  // A spec is a flat list of arrange/act/assert steps, so its length and
+  // statement count say nothing about complexity, and `describe > describe >
+  // it > callback` already nests four deep. The branching budgets still apply:
+  // no test in the repo exceeds a cognitive complexity of 8.
+  {
+    files: ['**/*.spec.ts', 'apps/*/test/**/*.ts'],
+    rules: {
+      'max-lines-per-function': 'off',
+      'max-statements': 'off',
+      'max-nested-callbacks': 'off',
     },
   }
 );

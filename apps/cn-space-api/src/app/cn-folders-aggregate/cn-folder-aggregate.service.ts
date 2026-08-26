@@ -16,7 +16,7 @@ import { CnActivity, CnActivityEntityType } from '../cn-activity/cn-activity.ent
 import { CnActivityService } from '../cn-activity/cn-activity.service';
 import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
-import { CnBucketLocationDTO } from '../cn-object-storages/cn-buckets/cn-bucket.entity';
+import { CnBucket, CnBucketLocationDTO } from '../cn-object-storages/cn-buckets/cn-bucket.entity';
 import { CnSpaceAggregateService } from '../cn-spaces/cn-space-aggregate.service';
 import { CnUser } from '../cn-users/cn-user.entity';
 import { CnUsersService } from '../cn-users/cn-users.service';
@@ -633,17 +633,14 @@ export class CnFolderAggregateService {
       throw new BlBadRequestException('The folder storage regions are already defined');
     }
 
-    if (folderWithStorage.mainStorage == null && folderStorageLocationDTO.mainStorage) {
-      folderWithStorage.mainStorage = await this.folderBucketService.getBucketById(
-        folderStorageLocationDTO.mainStorage.bucketId
-      );
-    }
-
-    if (folderWithStorage.backupStorage == null && folderStorageLocationDTO.backupStorage) {
-      folderWithStorage.backupStorage = await this.folderBucketService.getBucketById(
-        folderStorageLocationDTO.backupStorage.bucketId
-      );
-    }
+    folderWithStorage.mainStorage = await this.storageAfterCreate(
+      folderWithStorage.mainStorage,
+      folderStorageLocationDTO.mainStorage
+    );
+    folderWithStorage.backupStorage = await this.storageAfterCreate(
+      folderWithStorage.backupStorage,
+      folderStorageLocationDTO.backupStorage
+    );
 
     await this.foldersService.update(folderWithStorage as CnFolderEntity);
 
@@ -652,6 +649,21 @@ export class CnFolderAggregateService {
       mainStorage: folderWithStorage.mainStorage?.getBucketLocation() ?? null,
       backupStorage: folderWithStorage.backupStorage?.getBucketLocation() ?? null,
     };
+  }
+
+  /**
+   * The bucket a storage keeps: the one already set, which a create never replaces, or the one the
+   * DTO asks for when there is none yet.
+   */
+  private async storageAfterCreate(
+    current: CnBucket | null,
+    asked: CnBucketLocationDTO | null | undefined
+  ): Promise<CnBucket | null> {
+    if (current != null || !asked) {
+      return current;
+    }
+
+    return this.folderBucketService.getBucketById(asked.bucketId);
   }
 
   public async getFolderStorage(folderId: string): Promise<CnFolderStorageLocationDTO> {

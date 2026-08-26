@@ -20,6 +20,13 @@ import {
 } from './cn-hierarchy-object.entity';
 import { CnHierarchyObjectSearchBuilder } from './cn-hierarchy-object-search-builder';
 
+/** The root folders a search runs over, and whose objects it is allowed to see. */
+export interface CnRootFoldersSearchScope {
+  rootFoldersIds: string[];
+  spaceId: string;
+  visibility: CnHierarchyObjectVisibility;
+}
+
 @Injectable()
 export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjectEntity> {
   constructor(
@@ -219,16 +226,19 @@ export class CnHierarchyObjectService extends BlAbstractService<CnHierarchyObjec
   }
 
   public async searchInRootFoldersAndChildrenByType(
-    rootFoldersIds: string[],
-    spaceId: string,
-    visibility: CnHierarchyObjectVisibility,
+    scope: CnRootFoldersSearchScope,
     objectType: CnHierarchyObjectType,
     searchParam: BlSearchParams,
     page: number,
     size: number
   ): Promise<ClPage<CnHierarchyObject>> {
     const searchBuilder = new CnHierarchyObjectSearchBuilder();
-    searchBuilder.addSearchInRootFolderAndChildrenOption(rootFoldersIds, spaceId, visibility, searchParam);
+    searchBuilder.addSearchInRootFolderAndChildrenOption(
+      scope.rootFoldersIds,
+      scope.spaceId,
+      scope.visibility,
+      searchParam
+    );
     searchBuilder.mergeWhereOptions({ objectType: objectType });
     return await this.findPaginated(page, size, searchBuilder.build());
   }

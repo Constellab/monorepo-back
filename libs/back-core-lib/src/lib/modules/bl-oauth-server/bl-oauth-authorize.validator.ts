@@ -60,26 +60,12 @@ export async function blValidateAuthorizeParams(
   registry: BlResourceLookup
 ): Promise<BlOAuthAuthorizeValidation> {
   // 1. client_id + redirect_uri must be trusted before we can redirect anything.
-  const client = query.client_id ? await clients.find(query.client_id) : null;
-  if (!client) {
-    return {
-      ok: false,
-      kind: 'pre_redirect',
-      error: 'invalid_client',
-      errorDescription: 'unknown or missing client_id',
-    };
+  const trusted = await resolveTrustedTarget(query, clients);
+  if ('ok' in trusted) {
+    return trusted;
   }
 
-  const redirectUri = query.redirect_uri;
-  if (!redirectUri || !clients.redirectUriAllowed(client, redirectUri)) {
-    return {
-      ok: false,
-      kind: 'pre_redirect',
-      error: 'invalid_request',
-      errorDescription: 'missing or unregistered redirect_uri',
-    };
-  }
-
+  const { client, redirectUri } = trusted;
   const state = query.state || undefined;
   const fail = (error: string, errorDescription: string): BlOAuthAuthorizeValidation => ({
     ok: false,
@@ -119,4 +105,42 @@ export async function blValidateAuthorizeParams(
     ok: true,
     params: { client, redirectUri, codeChallenge, resources, state },
   };
+}
+
+/** A client and a redirect_uri that have been checked against the client store. */
+interface BlOAuthTrustedTarget {
+  client: BlOAuthClient;
+  redirectUri: string;
+}
+
+/**
+ * The two checks that have to pass before anything may be redirected anywhere, kept apart from the
+ * rest so the `pre_redirect` / `post_redirect` split is visible in the shape of the code: either a
+ * trusted target comes back, or a validation the caller must render itself.
+ */
+async function resolveTrustedTarget(
+  query: BlOAuthAuthorizeQueryDto,
+  clients: BlOAuthClientLookup
+): Promise<BlOAuthTrustedTarget | BlOAuthAuthorizeValidation> {
+  const client = query.client_id ? await clients.find(query.client_id) : null;
+  if (!client) {
+    return {
+      ok: false,
+      kind: 'pre_redirect',
+      error: 'invalid_client',
+      errorDescription: 'unknown or missing client_id',
+    };
+  }
+
+  const redirectUri = query.redirect_uri;
+  if (!redirectUri || !clients.redirectUriAllowed(client, redirectUri)) {
+    return {
+      ok: false,
+      kind: 'pre_redirect',
+      error: 'invalid_request',
+      errorDescription: 'missing or unregistered redirect_uri',
+    };
+  }
+
+  return { client, redirectUri };
 }

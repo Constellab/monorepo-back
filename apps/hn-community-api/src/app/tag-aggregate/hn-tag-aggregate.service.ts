@@ -30,6 +30,20 @@ import { HnEditTagValueDto, HnTagValueForLabDto } from './tag-value/hn-tag-value
 import { HnTagValue } from './tag-value/hn-tag-value.entity';
 import { HnTagValueService } from './tag-value/hn-tag-value.service';
 
+/**
+ * Options of a paginated tag key search
+ */
+export interface HnTagKeysSearchOptions {
+  spacesFilter: string[];
+  technicalNameFilter: string;
+  labelFilter: string;
+  sortsCriteria: BlSearchSortCriteria[];
+  page: number;
+  size: number;
+  user?: HnUser | null;
+  personalOnly?: boolean;
+}
+
 @Injectable()
 export class HnTagAggregateService {
   constructor(
@@ -63,41 +77,25 @@ export class HnTagAggregateService {
     personalOnly: boolean = false
   ): Promise<ClPage<HnTagKey>> {
     const currentUser = HnCurrentUserHelper.getAndCheckCurrentUser();
-    return this.getAllTagKeysWithFilters(
+    return this.getAllTagKeysWithFilters({
       spacesFilter,
       technicalNameFilter,
       labelFilter,
-      [],
+      sortsCriteria: [],
       page,
       size,
-      currentUser,
-      personalOnly
-    );
+      user: currentUser,
+      personalOnly,
+    });
   }
 
-  async getAllTagKeysWithFilters(
-    spacesFilter: string[],
-    technicalNameFilter: string,
-    labelFilter: string,
-    sortsCriteria: BlSearchSortCriteria[],
-    page: number,
-    size: number,
-    user: HnUser | null = null,
-    personalOnly: boolean = false
-  ): Promise<ClPage<HnTagKey>> {
-    const currentUser = user ?? HnCurrentUserHelper.getCurrentUser();
-    let publicSelected = false;
-    let myTagKeysSelected = false;
-    for (const spaceId of spacesFilter) {
-      if (spaceId === 'public') publicSelected = true;
-      else if (spaceId === 'my-tag-keys') myTagKeysSelected = true;
-      else {
-        if (currentUser == null) {
-          throw new BlUnauthorizedException('You must be logged in to filter by space');
-        }
-        await this.spaceAggregateService.assertCheckSpaceUser(spaceId, currentUser.id);
-      }
-    }
+  async getAllTagKeysWithFilters(options: HnTagKeysSearchOptions): Promise<ClPage<HnTagKey>> {
+    const currentUser = options.user ?? HnCurrentUserHelper.getCurrentUser();
+    const { publicSelected, myTagKeysSelected } = await this.readSpacesSelection(
+      options.spacesFilter,
+      currentUser
+    );
+    let spacesFilter = options.spacesFilter;
     let userSpacesIds: string[] | null = null;
     let coAuthorTagKeysIds: string[] = [];
     if (currentUser) {
@@ -119,19 +117,44 @@ export class HnTagAggregateService {
     }
 
     return await this.tagKeyService.findAllTagKeysWithFiltersPaginated(
-      spacesFilter,
-      technicalNameFilter,
-      labelFilter,
-      publicSelected,
-      myTagKeysSelected,
-      personalOnly,
-      sortsCriteria,
-      page,
-      size,
-      user,
-      userSpacesIds,
-      coAuthorTagKeysIds
+      {
+        spacesFilter,
+        technicalNameFilter: options.technicalNameFilter,
+        labelFilter: options.labelFilter,
+        publicSelected,
+        myTagKeysSelected,
+        personalOnly: options.personalOnly ?? false,
+        user: options.user,
+        userSpacesIds,
+        coAuthorTagKeysIds,
+      },
+      options.sortsCriteria,
+      options.page,
+      options.size
     );
+  }
+
+  /**
+   * Reads the 'public' and 'my-tag-keys' pseudo spaces from the spaces filter and checks that the
+   * user can access the real spaces it contains
+   */
+  private async readSpacesSelection(
+    spacesFilter: string[],
+    currentUser: HnUser | null
+  ): Promise<{ publicSelected: boolean; myTagKeysSelected: boolean }> {
+    let publicSelected = false;
+    let myTagKeysSelected = false;
+    for (const spaceId of spacesFilter) {
+      if (spaceId === 'public') publicSelected = true;
+      else if (spaceId === 'my-tag-keys') myTagKeysSelected = true;
+      else {
+        if (currentUser == null) {
+          throw new BlUnauthorizedException('You must be logged in to filter by space');
+        }
+        await this.spaceAggregateService.assertCheckSpaceUser(spaceId, currentUser.id);
+      }
+    }
+    return { publicSelected, myTagKeysSelected };
   }
 
   async getTagValue(technicalName: string, valueId: string): Promise<HnTagValue | null> {

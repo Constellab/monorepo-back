@@ -48,6 +48,18 @@ export type TeRichTextOperationsResult =
 /** A gap in the document a block is placed into. */
 type TeOperationAnchor = { kind: 'before' | 'after'; blockId: string } | { kind: 'start' } | { kind: 'end' };
 
+/** Everything a batch does to the document, gathered before a single block is built. */
+interface TeOperationPlan {
+  /** The new data of every block an `update` rewrites, by block id. */
+  updates: Map<string, TeBlockData>;
+  /** The ids leaving their original place: deleted, or moved elsewhere. */
+  removed: Set<string>;
+  /** Blocks and inserts waiting on the gap they were anchored to, in batch order. */
+  placements: Map<string, TeParsedOperation[]>;
+  /** The id an insert was given, by batch position, so the summary and the built block agree. */
+  insertedIds: Map<number, string>;
+}
+
 /** An input operation whose fields have been checked and named. */
 interface TeParsedOperation {
   /** Position in the batch, so a refusal can point at the operation that caused it. */
@@ -384,6 +396,16 @@ export class TeRichTextOperations {
       targets.set(operation.blockId, kinds);
     }
 
+    errors.push(...TeRichTextOperations.deletedAndAlsoErrors(targets));
+    errors.push(...TeRichTextOperations.anchoredOnMovedErrors(parsed, targets));
+
+    return errors;
+  }
+
+  /** A block cannot both leave the document and be changed within it. */
+  private static deletedAndAlsoErrors(targets: Map<string, TeRichTextOperationType[]>): string[] {
+    const errors: string[] = [];
+
     for (const [blockId, kinds] of targets) {
       if (kinds.includes(TeRichTextOperationType.DELETE) && kinds.length > 1) {
         errors.push(
@@ -394,6 +416,15 @@ export class TeRichTextOperations {
       }
     }
 
+    return errors;
+  }
+
+  /** An anchor on a block the same batch moves names two possible gaps, so it names neither. */
+  private static anchoredOnMovedErrors(
+    parsed: TeParsedOperation[],
+    targets: Map<string, TeRichTextOperationType[]>
+  ): string[] {
+    const errors: string[] = [];
     const moved = new Set(
       [...targets]
         .filter(([, kinds]) => kinds.includes(TeRichTextOperationType.MOVE))
@@ -428,102 +459,142 @@ export class TeRichTextOperations {
     blocks: TeBlock[],
     parsed: TeParsedOperation[]
   ): TeRichTextOperationsResult {
-    const updates = new Map<string, TeBlockData>();
-    const removed = new Set<string>();
-    /** Blocks and inserts waiting on the gap they were anchored to, in batch order. */
-    const placements = new Map<string, TeParsedOperation[]>();
-    const applied: TeAppliedRichTextOperation[] = [];
-    const mintId = TeRichTextOperations.idMinter(blocks);
-    /** The id an insert was given, so the summary and the built block agree on it. */
-    const insertedIds = new Map<number, string>();
-
-    for (const operation of parsed) {
-      switch (operation.op) {
-        case TeRichTextOperationType.UPDATE:
-          updates.set(operation.blockId as string, operation.data as TeBlockData);
-          break;
-        case TeRichTextOperationType.DELETE:
-          removed.add(operation.blockId as string);
-          break;
-        case TeRichTextOperationType.MOVE:
-          removed.add(operation.blockId as string);
-          TeRichTextOperations.addPlacement(placements, operation);
-          break;
-        case TeRichTextOperationType.INSERT:
-          insertedIds.set(operation.index, mintId());
-          TeRichTextOperations.addPlacement(placements, operation);
-          break;
-      }
-    }
-
+    const plan = TeRichTextOperations.plan(blocks, parsed);
     const byId = new Map(
       blocks
         .filter((block) => block?.id != null && block.id !== '')
         .map((block) => [block.id as string, block])
     );
 
-    /** Resolve one waiting operation into the block it puts in the document. */
-    const blockOf = (operation: TeParsedOperation): TeBlock => {
-      if (operation.op === TeRichTextOperationType.INSERT) {
-        return {
-          id: insertedIds.get(operation.index),
-          type: operation.blockType as TeBlockType,
-          data: operation.data as TeBlockData,
-        };
-      }
-      // A move carries the block over with its id — that is what keeps the history reading "moved"
-      // rather than "deleted and recreated". Its data still goes through the updates, so a batch
-      // that both rewrites and moves one block does both.
-      return TeRichTextOperations.withUpdate(byId.get(operation.blockId as string) as TeBlock, updates);
-    };
-
-    const result: TeBlock[] = [];
-    const drain = (key: string): void => {
-      for (const operation of placements.get(key) ?? []) {
-        result.push(blockOf(operation));
-      }
-      placements.delete(key);
-    };
-
-    drain('at:start');
-    for (const block of blocks) {
-      const id = block?.id;
-      if (id != null && id !== '') {
-        drain(`before:${id}`);
-      }
-      if (id == null || id === '' || !removed.has(id)) {
-        result.push(TeRichTextOperations.withUpdate(block, updates));
-      }
-      if (id != null && id !== '') {
-        drain(`after:${id}`);
-      }
-    }
-    drain('at:end');
-
-    for (const operation of parsed) {
-      applied.push({
-        op: operation.op,
-        blockId:
-          operation.op === TeRichTextOperationType.INSERT
-            ? (insertedIds.get(operation.index) as string)
-            : (operation.blockId as string),
-        blockType:
-          operation.op === TeRichTextOperationType.INSERT
-            ? (operation.blockType as TeBlockType)
-            : ((byId.get(operation.blockId as string)?.type ?? operation.blockType) as TeBlockType),
-      });
-    }
-
     return {
       ok: true,
       // The document's own format version is passed as the target so building it cannot trigger a
       // migration: a batch of operations must change what the operations name and nothing else.
       richText: new TeRichText(
-        { version: richText.version, editorVersion: richText.editorVersion, blocks: result },
+        {
+          version: richText.version,
+          editorVersion: richText.editorVersion,
+          blocks: TeRichTextOperations.walk(blocks, plan, byId),
+        },
         richText.version
       ),
-      applied,
+      applied: TeRichTextOperations.summarize(parsed, plan, byId),
     };
+  }
+
+  /**
+   * What the batch does to the document, gathered in batch order before a single block is built.
+   */
+  private static plan(blocks: TeBlock[], parsed: TeParsedOperation[]): TeOperationPlan {
+    const plan: TeOperationPlan = {
+      updates: new Map<string, TeBlockData>(),
+      removed: new Set<string>(),
+      placements: new Map<string, TeParsedOperation[]>(),
+      insertedIds: new Map<number, string>(),
+    };
+    const mintId = TeRichTextOperations.idMinter(blocks);
+
+    for (const operation of parsed) {
+      switch (operation.op) {
+        case TeRichTextOperationType.UPDATE:
+          plan.updates.set(operation.blockId as string, operation.data as TeBlockData);
+          break;
+        case TeRichTextOperationType.DELETE:
+          plan.removed.add(operation.blockId as string);
+          break;
+        case TeRichTextOperationType.MOVE:
+          plan.removed.add(operation.blockId as string);
+          TeRichTextOperations.addPlacement(plan.placements, operation);
+          break;
+        case TeRichTextOperationType.INSERT:
+          plan.insertedIds.set(operation.index, mintId());
+          TeRichTextOperations.addPlacement(plan.placements, operation);
+          break;
+      }
+    }
+
+    return plan;
+  }
+
+  /**
+   * The blocks of the new document, in order.
+   *
+   * Goes through the original blocks in their original order and, at each one, empties the gaps
+   * around it. A block that moved away leaves its gap behind — which is exactly why anchoring on a
+   * moved block is refused by {@link crossCheck}.
+   */
+  private static walk(blocks: TeBlock[], plan: TeOperationPlan, byId: Map<string, TeBlock>): TeBlock[] {
+    const result: TeBlock[] = [];
+    const drain = (key: string): void => {
+      for (const operation of plan.placements.get(key) ?? []) {
+        result.push(TeRichTextOperations.blockOf(operation, plan, byId));
+      }
+      plan.placements.delete(key);
+    };
+
+    drain('at:start');
+    for (const block of blocks) {
+      const id = TeRichTextOperations.anchorableId(block);
+      if (id != null) {
+        drain(`before:${id}`);
+      }
+      if (id == null || !plan.removed.has(id)) {
+        result.push(TeRichTextOperations.withUpdate(block, plan.updates));
+      }
+      if (id != null) {
+        drain(`after:${id}`);
+      }
+    }
+    drain('at:end');
+
+    return result;
+  }
+
+  /** Resolve one waiting operation into the block it puts in the document. */
+  private static blockOf(
+    operation: TeParsedOperation,
+    plan: TeOperationPlan,
+    byId: Map<string, TeBlock>
+  ): TeBlock {
+    if (operation.op === TeRichTextOperationType.INSERT) {
+      return {
+        id: plan.insertedIds.get(operation.index),
+        type: operation.blockType as TeBlockType,
+        data: operation.data as TeBlockData,
+      };
+    }
+    // A move carries the block over with its id — that is what keeps the history reading "moved"
+    // rather than "deleted and recreated". Its data still goes through the updates, so a batch
+    // that both rewrites and moves one block does both.
+    return TeRichTextOperations.withUpdate(byId.get(operation.blockId as string) as TeBlock, plan.updates);
+  }
+
+  /** What the batch did, one entry per operation, in the order the batch listed them. */
+  private static summarize(
+    parsed: TeParsedOperation[],
+    plan: TeOperationPlan,
+    byId: Map<string, TeBlock>
+  ): TeAppliedRichTextOperation[] {
+    return parsed.map((operation) => {
+      if (operation.op === TeRichTextOperationType.INSERT) {
+        return {
+          op: operation.op,
+          blockId: plan.insertedIds.get(operation.index) as string,
+          blockType: operation.blockType as TeBlockType,
+        };
+      }
+      return {
+        op: operation.op,
+        blockId: operation.blockId as string,
+        blockType: (byId.get(operation.blockId as string)?.type ?? operation.blockType) as TeBlockType,
+      };
+    });
+  }
+
+  /** The id a gap can be anchored to, or null for a block that carries none. */
+  private static anchorableId(block: TeBlock): string | null {
+    const id = block?.id;
+    return id != null && id !== '' ? id : null;
   }
 
   private static addPlacement(

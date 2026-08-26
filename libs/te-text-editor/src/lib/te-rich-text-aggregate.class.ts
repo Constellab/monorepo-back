@@ -163,44 +163,64 @@ export class TeRichTextAggregate {
    * @param userId
    */
   public compareWithCurrent(newRichText: TeRichText, userId: string): TeRichTextModifications {
-    const differences: TeRichTextBlockModification[] = [];
-    const movedBlockIds = this.getMovedBlockIds(newRichText);
+    return new TeRichTextModifications([
+      ...this.getDeletedModifications(newRichText, userId),
+      ...this.getBlockModifications(newRichText, userId, this.getMovedBlockIds(newRichText)),
+    ]);
+  }
 
-    // find deleted blocks, start by the last block.
-    // On a copy: `getBlocks()` hands out the internal array, and reversing it in place would
-    // reverse the old document itself — which the second loop below then reads through
-    // `getBlockIndex` to decide what moved. Every `oldIndex` came out mirrored, so a reorder was
-    // recorded against the wrong block, or (for two blocks) not recorded at all.
-    let index = this.richText.getBlocks().length - 1;
-    for (const oldBlock of [...this.richText.getBlocks()].reverse()) {
-      if (oldBlock.id == null) {
-        index--;
+  /**
+   * The blocks the new version no longer holds, last one first.
+   *
+   * Walked backwards over the old array by index rather than over a reversal of it: `getBlocks()`
+   * hands out the internal array, and reversing it in place would reverse the old document itself
+   * — which {@link getBlockModifications} then reads through `getBlockIndex` to decide what moved.
+   * Every `oldIndex` came out mirrored, so a reorder was recorded against the wrong block, or (for
+   * two blocks) not recorded at all.
+   */
+  private getDeletedModifications(newRichText: TeRichText, userId: string): TeRichTextBlockModification[] {
+    const differences: TeRichTextBlockModification[] = [];
+    const oldBlocks = this.richText.getBlocks();
+
+    for (let index = oldBlocks.length - 1; index >= 0; index--) {
+      const oldBlock = oldBlocks[index];
+      if (oldBlock.id == null || newRichText.hasBlock(oldBlock.id)) {
         continue;
       }
-      if (!newRichText.hasBlock(oldBlock.id)) {
-        // block is deleted
-        const modif = new TeRichTextBlockModification(
-          oldBlock.id,
-          oldBlock.type,
-          TeRichTextModificationType.DELETED,
-          index,
-          userId
-        );
-        modif.blockValue = oldBlock.data;
-        differences.push(modif);
-      }
 
-      index--;
+      const modif = new TeRichTextBlockModification(
+        oldBlock.id,
+        oldBlock.type,
+        TeRichTextModificationType.DELETED,
+        index,
+        userId
+      );
+      modif.blockValue = oldBlock.data;
+      differences.push(modif);
     }
 
-    index = 0;
+    return differences;
+  }
+
+  /**
+   * What the new version says about each of the blocks it holds: created, updated, moved — and a
+   * block can be both updated and moved, so an edit no longer hides a drag.
+   */
+  private getBlockModifications(
+    newRichText: TeRichText,
+    userId: string,
+    movedBlockIds: Set<string>
+  ): TeRichTextBlockModification[] {
+    const differences: TeRichTextBlockModification[] = [];
+    let index = 0;
+
     for (const block of newRichText.getBlocks()) {
       if (block.id == null) {
         index++;
         continue;
       }
+
       const oldBlock = this.richText.getBlock(block.id);
-      const oldBlockIndex = this.richText.getBlockIndex(block.id);
       if (oldBlock == null) {
         // block is new
         const modif = new TeRichTextBlockModification(
@@ -220,24 +240,7 @@ export class TeRichTextAggregate {
         TeRichTextBlockModification.stringifyBlockData(oldBlock) !==
         TeRichTextBlockModification.stringifyBlockData(block)
       ) {
-        // block is updated
-        const modif = new TeRichTextBlockModification(
-          block.id,
-          block.type,
-          TeRichTextModificationType.UPDATED,
-          index,
-          userId
-        );
-        if (modif.blockType == TeBlockType.LIST) {
-          if ('meta' in block.data) delete block.data['meta'];
-          if ('meta' in oldBlock.data) delete oldBlock.data['meta'];
-        }
-
-        modif.blockValue = block.data;
-        // get the differences between the old block data and the new block data,
-        // we stringify the data to compare them as string with the lib diff
-        modif.setDifferences(oldBlock.data);
-        differences.push(modif);
+        differences.push(this.buildUpdatedModification(block, oldBlock, index, userId));
       }
 
       // a block can be dragged and typed into in the same save: the edit used to hide the move, so
@@ -251,13 +254,39 @@ export class TeRichTextAggregate {
           index,
           userId
         );
-        modif.oldIndex = oldBlockIndex; // old index of the block
+        modif.oldIndex = this.richText.getBlockIndex(block.id); // old index of the block
         modif.blockValue = block.data;
         differences.push(modif);
       }
       index++;
     }
-    return new TeRichTextModifications(differences);
+
+    return differences;
+  }
+
+  private buildUpdatedModification(
+    block: TeBlock,
+    oldBlock: TeBlock,
+    index: number,
+    userId: string
+  ): TeRichTextBlockModification {
+    const modif = new TeRichTextBlockModification(
+      block.id as string,
+      block.type,
+      TeRichTextModificationType.UPDATED,
+      index,
+      userId
+    );
+    if (modif.blockType == TeBlockType.LIST) {
+      if ('meta' in block.data) delete block.data['meta'];
+      if ('meta' in oldBlock.data) delete oldBlock.data['meta'];
+    }
+
+    modif.blockValue = block.data;
+    // get the differences between the old block data and the new block data,
+    // we stringify the data to compare them as string with the lib diff
+    modif.setDifferences(oldBlock.data);
+    return modif;
   }
 
   /**

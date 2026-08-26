@@ -26,67 +26,87 @@ export class CnProtocolMigrator {
   }
 
   private migrateProcessFromV1ToV2Recur(protocol: any): any {
-    if (!protocol.name) {
-      protocol.name = protocol.human_name;
+    this.migrateProcessTypeFromV1ToV2(protocol);
+    this.migrateGraphFromV1ToV2(protocol);
+    return protocol;
+  }
+
+  /**
+   * Migrate what a process holds below it, leaving the process itself alone.
+   *
+   * Separate from {@link migrateProcessFromV1ToV2Recur} because a sub-protocol node is reached
+   * through {@link migrateNodesFromV1ToV2}, which has already migrated its process type: recursing
+   * with the whole-process migration re-read `human_name` and `short_description` after they had
+   * been deleted, and so overwrote the node's `process_type` with two `undefined` fields.
+   */
+  private migrateGraphFromV1ToV2(process: any): void {
+    if (!process.graph) {
+      return;
     }
 
-    protocol.process_type = {
-      human_name: protocol.human_name,
-      short_description: protocol.short_description,
+    this.migrateNodesFromV1ToV2(process.graph.nodes);
+
+    if (process.graph.interfaces) {
+      this.migrateInterfacesFromV1ToV2(process.graph.interfaces);
+    }
+
+    if (process.graph.outerfaces) {
+      this.migrateOuterfacesFromV1ToV2(process.graph.outerfaces);
+    }
+  }
+
+  /**
+   * Move the human name and the description of a process into its process type
+   */
+  private migrateProcessTypeFromV1ToV2(process: any): void {
+    if (!process.name) {
+      process.name = process.human_name;
+    }
+
+    process.process_type = {
+      human_name: process.human_name,
+      short_description: process.short_description,
     };
 
-    delete protocol.human_name;
-    delete protocol.short_description;
+    delete process.human_name;
+    delete process.short_description;
+  }
 
-    if (protocol.graph) {
-      for (const key in protocol.graph.nodes) {
-        const process = protocol.graph.nodes[key];
-        if (!process.name) {
-          process.name = process.human_name;
-        }
+  private migrateNodesFromV1ToV2(nodes: any): void {
+    for (const key in nodes) {
+      const process = nodes[key];
+      this.migrateProcessTypeFromV1ToV2(process);
+      // its own process type is done: a sub-protocol only has its graph left to migrate
+      this.migrateGraphFromV1ToV2(process);
+    }
+  }
 
-        process.process_type = {
-          human_name: process.human_name,
-          short_description: process.short_description,
-        };
-
-        delete process.human_name;
-        delete process.short_description;
-
-        if (process.graph) {
-          this.migrateProcessFromV1ToV2Recur(process);
-        }
+  private migrateInterfacesFromV1ToV2(interfaces: any): void {
+    for (const key in interfaces) {
+      const inter = interfaces[key];
+      if (inter.to) {
+        inter.process_instance_name = inter.to.node;
+        inter.port_name = inter.to.port;
+        delete inter.to;
       }
-
-      if (protocol.graph.interfaces) {
-        for (const key in protocol.graph.interfaces) {
-          const inter = protocol.graph.interfaces[key];
-          if (inter.to) {
-            inter.process_instance_name = inter.to.node;
-            inter.port_name = inter.to.port;
-            delete inter.to;
-          }
-          if (inter.from) {
-            delete inter.from;
-          }
-        }
-      }
-
-      if (protocol.graph.outerfaces) {
-        for (const key in protocol.graph.outerfaces) {
-          const outerface = protocol.graph.outerfaces[key];
-          if (outerface.from) {
-            outerface.process_instance_name = outerface.from.node;
-            outerface.port_name = outerface.from.port;
-            delete outerface.from;
-          }
-          if (outerface.to) {
-            delete outerface.to;
-          }
-        }
+      if (inter.from) {
+        delete inter.from;
       }
     }
-    return protocol;
+  }
+
+  private migrateOuterfacesFromV1ToV2(outerfaces: any): void {
+    for (const key in outerfaces) {
+      const outerface = outerfaces[key];
+      if (outerface.from) {
+        outerface.process_instance_name = outerface.from.node;
+        outerface.port_name = outerface.from.port;
+        delete outerface.from;
+      }
+      if (outerface.to) {
+        delete outerface.to;
+      }
+    }
   }
 
   // to keep until all labs are V 0.7.5 or higher

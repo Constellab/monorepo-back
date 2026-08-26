@@ -84,33 +84,12 @@ export class HnRagflowChatbotGateway implements OnGatewayInit, OnGatewayConnecti
     }
 
     try {
-      let sessionId: string;
-      let messages: HnRagflowMessage[] = [];
-
-      // conversationId is actually the Ragflow sessionId (they are the same for persistence)
-      if (dto.conversationId) {
-        // Check conversation ownership before allowing access
-        if (!this.canAccessSession(dto.conversationId, clientUserId)) {
-          client.emit(HnRagflowWsEvent.MESSAGE_ERROR, {
-            error: 'Unauthorized: you do not have access to this conversation',
-          });
-          return;
-        }
-
-        // Check if the session exists in Ragflow
-        const sessionExists = await this.ragflowService.sessionExists(chatId, dto.conversationId);
-
-        if (sessionExists) {
-          sessionId = dto.conversationId;
-          messages = await this.ragflowService.getSessionHistory(chatId, sessionId);
-        } else {
-          sessionId = await this.ragflowService.createSession(chatId);
-          this.registerSessionOwnership(sessionId, clientUserId);
-        }
-      } else {
-        sessionId = await this.ragflowService.createSession(chatId);
-        this.registerSessionOwnership(sessionId, clientUserId);
+      const resolvedSession = await this.resolveSessionToJoin(dto, client, chatId, clientUserId);
+      if (!resolvedSession) {
+        // The access has been denied, the error is already emitted to the client
+        return;
       }
+      const { sessionId, messages } = resolvedSession;
 
       if (!sessionId) {
         this.logger.error(`[JOIN] Failed to obtain a session ID from Ragflow for client ${client.id}`);
@@ -129,12 +108,7 @@ export class HnRagflowChatbotGateway implements OnGatewayInit, OnGatewayConnecti
         conversationId,
       });
 
-      const joinPromise = client.join(conversationId);
-      if (joinPromise) {
-        joinPromise.catch((error) => {
-          this.logger.error(`[JOIN] Error joining conversation for client ${client.id}`, error);
-        });
-      }
+      this.joinConversationRoom(client, conversationId);
 
       client.emit(HnRagflowWsEvent.CONVERSATION_JOINED, {
         conversationId,
@@ -145,6 +119,57 @@ export class HnRagflowChatbotGateway implements OnGatewayInit, OnGatewayConnecti
       this.logger.error(`[JOIN] Error joining conversation for client ${client.id}`, error);
       client.emit(HnRagflowWsEvent.MESSAGE_ERROR, {
         error: 'Failed to join conversation',
+      });
+    }
+  }
+
+  /**
+   * Resolves the Ragflow session the client asked to join: the requested conversation when the client
+   * owns it and it still exists in Ragflow, a brand new session otherwise.
+   * Returns null when the access is denied, the error is then already emitted to the client.
+   */
+  private async resolveSessionToJoin(
+    dto: HnRagflowJoinConversationDto,
+    client: Socket,
+    chatId: string,
+    clientUserId: string | null
+  ): Promise<{ sessionId: string; messages: HnRagflowMessage[] } | null> {
+    // conversationId is actually the Ragflow sessionId (they are the same for persistence)
+    if (!dto.conversationId) {
+      return { sessionId: await this.createOwnedSession(chatId, clientUserId), messages: [] };
+    }
+
+    // Check conversation ownership before allowing access
+    if (!this.canAccessSession(dto.conversationId, clientUserId)) {
+      client.emit(HnRagflowWsEvent.MESSAGE_ERROR, {
+        error: 'Unauthorized: you do not have access to this conversation',
+      });
+      return null;
+    }
+
+    // Check if the session exists in Ragflow
+    const sessionExists = await this.ragflowService.sessionExists(chatId, dto.conversationId);
+
+    if (!sessionExists) {
+      return { sessionId: await this.createOwnedSession(chatId, clientUserId), messages: [] };
+    }
+
+    const sessionId = dto.conversationId;
+    return { sessionId, messages: await this.ragflowService.getSessionHistory(chatId, sessionId) };
+  }
+
+  /** Creates a new Ragflow session and registers its ownership */
+  private async createOwnedSession(chatId: string, clientUserId: string | null): Promise<string> {
+    const sessionId = await this.ragflowService.createSession(chatId);
+    this.registerSessionOwnership(sessionId, clientUserId);
+    return sessionId;
+  }
+
+  private joinConversationRoom(client: Socket, conversationId: string): void {
+    const joinPromise = client.join(conversationId);
+    if (joinPromise) {
+      joinPromise.catch((error) => {
+        this.logger.error(`[JOIN] Error joining conversation for client ${client.id}`, error);
       });
     }
   }
@@ -191,37 +216,7 @@ export class HnRagflowChatbotGateway implements OnGatewayInit, OnGatewayConnecti
         conversationId: session.conversationId,
       });
 
-      let fullResponse = '';
-
-      for await (const chunk of this.ragflowService.streamMessage(chatId, dto.message, session.sessionId)) {
-        if (chunk.type === 'chunk' && chunk.content) {
-          fullResponse += chunk.content;
-          client.emit(HnRagflowWsEvent.MESSAGE_CHUNK, {
-            conversationId: session.conversationId,
-            content: chunk.content,
-          });
-        } else if (chunk.type === 'error') {
-          this.logger.error(`[SEND] Stream error: ${chunk.error}`);
-          client.emit(HnRagflowWsEvent.MESSAGE_ERROR, {
-            conversationId: session.conversationId,
-            error: chunk.error,
-          });
-          break;
-        } else if (chunk.type === 'done') {
-          const assistantMessage = this.ragflowService.createMessage('assistant', fullResponse);
-          assistantMessage.references = chunk.references;
-
-          this.server.to(session.conversationId).emit(HnRagflowWsEvent.TYPING_END, {
-            conversationId: session.conversationId,
-          });
-
-          client.emit(HnRagflowWsEvent.MESSAGE_COMPLETE, {
-            conversationId: session.conversationId,
-            message: assistantMessage,
-            references: chunk.references || [],
-          });
-        }
-      }
+      await this.streamAnswerToClient(client, chatId, session.conversationId, session.sessionId, dto.message);
     } catch (error) {
       this.logger.error(`[SEND] Error sending message for client ${client.id}`, error);
 
@@ -233,6 +228,49 @@ export class HnRagflowChatbotGateway implements OnGatewayInit, OnGatewayConnecti
         conversationId: session.conversationId,
         error: 'Failed to send message',
       });
+    }
+  }
+
+  /**
+   * Forwards the Ragflow answer to the client chunk by chunk, until the stream is done or errors out.
+   */
+  private async streamAnswerToClient(
+    client: Socket,
+    chatId: string,
+    conversationId: string,
+    sessionId: string,
+    message: string
+  ): Promise<void> {
+    let fullResponse = '';
+
+    for await (const chunk of this.ragflowService.streamMessage(chatId, message, sessionId)) {
+      if (chunk.type === 'chunk' && chunk.content) {
+        fullResponse += chunk.content;
+        client.emit(HnRagflowWsEvent.MESSAGE_CHUNK, {
+          conversationId,
+          content: chunk.content,
+        });
+      } else if (chunk.type === 'error') {
+        this.logger.error(`[SEND] Stream error: ${chunk.error}`);
+        client.emit(HnRagflowWsEvent.MESSAGE_ERROR, {
+          conversationId,
+          error: chunk.error,
+        });
+        break;
+      } else if (chunk.type === 'done') {
+        const assistantMessage = this.ragflowService.createMessage('assistant', fullResponse);
+        assistantMessage.references = chunk.references;
+
+        this.server.to(conversationId).emit(HnRagflowWsEvent.TYPING_END, {
+          conversationId,
+        });
+
+        client.emit(HnRagflowWsEvent.MESSAGE_COMPLETE, {
+          conversationId,
+          message: assistantMessage,
+          references: chunk.references || [],
+        });
+      }
     }
   }
 

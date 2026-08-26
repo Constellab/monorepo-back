@@ -16,6 +16,7 @@ import { CnSpaceService } from '../../cn-spaces/cn-space.service';
 import { CnSpaceUserRole } from '../../cn-spaces/cn-space-user.entity';
 import { CnSpaceUserService } from '../../cn-spaces/cn-space-user.service';
 import { CnUserSpaceInfo } from '../../cn-users/cn-user.dto';
+import { CnUser } from '../../cn-users/cn-user.entity';
 import { CnUsersService } from '../../cn-users/cn-users.service';
 import { cnIsDecoratedWithLabAuth } from '../decorators/cn-lab-guard.decorator';
 import { cnIsDecoratedWithLabManagerAuth } from '../decorators/cn-lab-manager-guard.decorator';
@@ -50,6 +51,37 @@ export class CnJwtAuthGuard extends AuthGuard('jwt') {
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    if (await this.authenticationIsDelegated(context)) {
+      return true;
+    }
+
+    const request = await this.authenticateJwt(context);
+    if (request == null) {
+      return false;
+    }
+
+    // the user is available in the request from super.canActivate
+    const user = request.user;
+    if (user == null) {
+      return false;
+    }
+
+    // retrieve the space
+    const space = await this.getSpaceFromRequest(request);
+    if (space == null) {
+      // set the auth context as user without space
+      CnCurrentUserHelper.setAuthContext(new CnAuthContextUserNoSpace(user));
+      return true;
+    }
+
+    // a space is in the context, so the user has to be in the space
+    return this.setAuthContextInSpace(user, space);
+  }
+
+  /**
+   * Whether another guard answers for this route, in which case this one lets it pass.
+   */
+  private async authenticationIsDelegated(context: ExecutionContext): Promise<boolean> {
     // Check if the route is annotated with @Public
     // if yes, don't check the authorization
     if (this.contextIsPublic(context)) {
@@ -65,15 +97,22 @@ export class CnJwtAuthGuard extends AuthGuard('jwt') {
     // if the method or class is annotated with @HierarchyObjectToken
     // authentication is manage by {@link CnHierarchyObjectTokenGuard}
     if (this.contextIsHierarchyObjectToken(context)) {
-      const canActivate = await this.hierarchyObjectTokenGuard2.canActivate(context);
-      if (canActivate) return true;
+      // a token that does not pass falls through to the jwt authentication below
+      return await this.hierarchyObjectTokenGuard2.canActivate(context);
     }
 
-    // jwt authentication
+    return false;
+  }
+
+  /**
+   * Run the jwt authentication and return the request it set the user on. Null when the strategy
+   * refused without throwing.
+   */
+  private async authenticateJwt(context: ExecutionContext): Promise<CnRequest | null> {
     try {
       // this set the user in the request (accessible by CnCurrentUserHelper)
       const result = await (super.canActivate(context) as Promise<boolean>);
-      if (!result) return false;
+      if (!result) return null;
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (_) {
       throw new BlUnauthorizedException(CnErrorText.WRONG_TOKEN);
@@ -83,54 +122,48 @@ export class CnJwtAuthGuard extends AuthGuard('jwt') {
     if (requestContext == null) {
       throw new BlUnauthorizedException(CnErrorText.WRONG_TOKEN);
     }
-    const request = requestContext.req as CnRequest;
+    return requestContext.req as CnRequest;
+  }
 
-    // the user is available in the request from super.canActivate
-    const user = request.user;
-    if (user == null) {
+  /**
+   * Register the user as a member of the space in the auth context. False when they are not one,
+   * which denies the route.
+   */
+  private async setAuthContextInSpace(user: CnUser, space: CnSpace): Promise<boolean> {
+    const roleInSpace = await this.getRoleInSpace(user, space);
+
+    // if the user is not part of the space of his account is not active for this space
+    // don't allow the user to access the route
+    if (roleInSpace == null) {
       return false;
     }
 
-    // retrieve the space
-    const space = await this.getSpaceFromRequest(request);
+    // set the auth context as user in the space
+    const userInfo = new CnUserSpaceInfo(user, space, roleInSpace);
+    CnCurrentUserHelper.setAuthContext(new CnAuthContextUser(userInfo));
 
-    // if a space is in the context, check if the user is in the space
-    if (space) {
-      let roleInSpace: CnSpaceUserRole;
-      // consider a G admin as an admin of all spaces
-      if (user.isAdmin()) {
-        roleInSpace = CnSpaceUserRole.ADMIN;
-      } else {
-        const spaceUser = await this.spaceUserService.getSpaceUserIfAccess(space.id, user.id);
-
-        // if the user is not part of the space of his account is not active for this space
-        // don't allow the user to access the route
-        if (spaceUser == null) {
-          return false;
-        }
-
-        roleInSpace = spaceUser.role;
-      }
-
-      // set the auth context as user in the space
-      const userInfo = new CnUserSpaceInfo(user, space, roleInSpace);
-      CnCurrentUserHelper.setAuthContext(new CnAuthContextUser(userInfo));
-
-      if (user.lastConnectedSpaceId !== space.id) {
-        this.userService
-          .updateLastConnectedSpace(user.id, space.id)
-          .catch((err) =>
-            this.logger.error(
-              `Error updating last connected space for user ${user.id} and space ${space.id}. Error '${err}'`
-            )
-          );
-        user.lastConnectedSpaceId = space.id;
-      }
-    } else {
-      // set the auth context as user without space
-      CnCurrentUserHelper.setAuthContext(new CnAuthContextUserNoSpace(user));
+    if (user.lastConnectedSpaceId !== space.id) {
+      this.userService
+        .updateLastConnectedSpace(user.id, space.id)
+        .catch((err) =>
+          this.logger.error(
+            `Error updating last connected space for user ${user.id} and space ${space.id}. Error '${err}'`
+          )
+        );
+      user.lastConnectedSpaceId = space.id;
     }
+
     return true;
+  }
+
+  private async getRoleInSpace(user: CnUser, space: CnSpace): Promise<CnSpaceUserRole | null> {
+    // consider a G admin as an admin of all spaces
+    if (user.isAdmin()) {
+      return CnSpaceUserRole.ADMIN;
+    }
+
+    const spaceUser = await this.spaceUserService.getSpaceUserIfAccess(space.id, user.id);
+    return spaceUser?.role ?? null;
   }
 
   private async getSpaceFromRequest(request: CnRequest): Promise<CnSpace | null> {

@@ -8,7 +8,7 @@ import { HnDocumentation } from '../brick-aggregate/documentation/hn-documentati
 import { HnNodeDTO, HnNodeType } from '../brick-aggregate/folder/hn-folder.dto';
 import { HnFolder } from '../brick-aggregate/folder/hn-folder.entity';
 import { HnFolderService } from '../brick-aggregate/folder/hn-folder.service';
-import { HnBrickAggregateService } from '../brick-aggregate/hn-brick-aggregate.service';
+import { HnBrickAggregateService, HnNodeLocationUpdate } from '../brick-aggregate/hn-brick-aggregate.service';
 import { HnBrickSecurity } from '../brick-aggregate/security/hn-brick.security';
 import { HnErrorText } from '../core/model/config/hn-error-text.class';
 import { HnCurrentUserHelper } from '../core/utils/hn-current-user.helper';
@@ -149,15 +149,15 @@ describe('HnMcpDocStructureService', () => {
         const folder = folders.get(dto.id) as HnFolder;
         return Promise.resolve(buildFolder(folder.id, folder.folderId, dto.title ?? '', 'renamed/'));
       },
-      updateNodeLocation: (
-        nodeId: string,
-        nodeType: HnNodeType,
-        oldOrder: number,
-        newOrder: number,
-        oldParentId: string,
-        newParentId: string,
-        mainFolderId: string
-      ): Promise<unknown> => {
+      updateNodeLocation: ({
+        nodeId,
+        nodeType,
+        oldOrder,
+        newOrder,
+        oldParentId,
+        newParentId,
+        mainFolderId,
+      }: HnNodeLocationUpdate): Promise<unknown> => {
         calls.push(
           `updateNodeLocation(${nodeId},${nodeType},${oldOrder}->${newOrder},` +
             `${oldParentId}->${newParentId},main=${mainFolderId})`

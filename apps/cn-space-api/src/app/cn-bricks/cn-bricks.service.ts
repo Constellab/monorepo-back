@@ -4,7 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { FindOptionsWhere, IsNull, Repository } from 'typeorm';
 
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
-import { CnBrickSaveDTO } from './cn-brick.dto';
+import { CnBrickSaveDTO, CnBrickVersionSaveDTO } from './cn-brick.dto';
 import { CnBrick, CnBrickVisibility } from './cn-brick.entity';
 import { CnBrickVersion, CnVersionType } from './cn-brick-version.entity';
 
@@ -18,40 +18,53 @@ export class CnBricksService extends BlAbstractService<CnBrick> {
   }
 
   public async saveBrick(brickSaveDTO: CnBrickSaveDTO): Promise<void> {
-    // create or update the brick
-    let brick: CnBrick | null =
+    const brick = await this.saveBrickEntity(brickSaveDTO);
+
+    // create or update brick version
+    for (const versionDTO of brickSaveDTO.versions) {
+      await this.saveBrickVersion(versionDTO, brick);
+    }
+  }
+
+  /**
+   * The brick the DTO names, created if there is none and re-created if the one found by name
+   * carries another id.
+   */
+  private async saveBrickEntity(brickSaveDTO: CnBrickSaveDTO): Promise<CnBrick> {
+    const found: CnBrick | null =
       (await this.brickRepo.findOneBy({ id: brickSaveDTO.id })) ??
       (await this.brickRepo.findOneBy({ name: brickSaveDTO.name }));
+
+    let brick = found;
+    if (brick != null && brick.id != brickSaveDTO.id) {
+      await this.brickRepo.remove(brick);
+      brick = null;
+    }
     if (brick == null) {
       brick = new CnBrick();
       brick.id = brickSaveDTO.id;
     }
-    if (brick.id != brickSaveDTO.id) {
-      await this.brickRepo.remove(brick);
-      brick = new CnBrick();
-      brick.id = brickSaveDTO.id;
-    }
+
     brick.name = brickSaveDTO.name;
     brick.pipRepo = brickSaveDTO.pipRepo;
     brick.gitRepo = brickSaveDTO.gitRepo;
     brick.visibility = brickSaveDTO.visibility;
-    brick = await this.brickRepo.save(brick);
+    return this.brickRepo.save(brick);
+  }
 
-    // create or update brick version
-    for (const versionDTO of brickSaveDTO.versions) {
-      const brickVersion = new CnBrickVersion();
-      brickVersion.id = versionDTO.id;
-      brickVersion.major = versionDTO.major;
-      brickVersion.minor = versionDTO.minor;
-      brickVersion.patch = versionDTO.patch;
-      brickVersion.subPatch = versionDTO.subPatch;
-      brickVersion.versionType = versionDTO.versionType;
-      brickVersion.versionState = versionDTO.versionState;
-      brickVersion.repoType = versionDTO.repoType;
-      brickVersion.technicalInfo = versionDTO.technicalInfo ?? null;
-      brickVersion.brick = brick;
-      await this.brickVersionRepo.save(brickVersion);
-    }
+  private saveBrickVersion(versionDTO: CnBrickVersionSaveDTO, brick: CnBrick): Promise<CnBrickVersion> {
+    const brickVersion = new CnBrickVersion();
+    brickVersion.id = versionDTO.id;
+    brickVersion.major = versionDTO.major;
+    brickVersion.minor = versionDTO.minor;
+    brickVersion.patch = versionDTO.patch;
+    brickVersion.subPatch = versionDTO.subPatch;
+    brickVersion.versionType = versionDTO.versionType;
+    brickVersion.versionState = versionDTO.versionState;
+    brickVersion.repoType = versionDTO.repoType;
+    brickVersion.technicalInfo = versionDTO.technicalInfo ?? null;
+    brickVersion.brick = brick;
+    return this.brickVersionRepo.save(brickVersion);
   }
 
   public findByName(name: string): Promise<CnBrick | null> {
@@ -127,9 +140,7 @@ export class CnBricksService extends BlAbstractService<CnBrick> {
     });
 
     if (brickVersion == null) {
-      throw new BlBadRequestException(
-        `The brick version '${brickVersionId}' does not exist.`
-      );
+      throw new BlBadRequestException(`The brick version '${brickVersionId}' does not exist.`);
     }
 
     return brickVersion.brick;

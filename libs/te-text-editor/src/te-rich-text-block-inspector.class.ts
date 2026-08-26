@@ -142,27 +142,35 @@ export class TeRichTextBlockInspector {
         return `Table (${this.describeTable(data)})`;
       case TeBlockType.CODE:
         return `Code block (${data.language ?? 'unknown language'}, ${this.countLines(data.code)} line(s))`;
-      case TeBlockType.HINT: {
-        const hint = data as TeBlockHintData;
-        return `Hint (${hint.hintType ?? 'unknown type'}) "${this.preview(hint.content)}"`;
-      }
-      case TeBlockType.FIGURE: {
-        const figure = data as TeBlockFigureData;
-        const filename = figure.filename ?? 'unknown';
-        return `Figure "${this.preview(figure.title || figure.caption)}" (file ${filename})`;
-      }
-      case TeBlockType.RESOURCE_VIEW: {
-        const view = data as TeBlockViewData;
-        const method = view.view_method_name ?? 'unknown view';
-        return `Resource view "${this.preview(view.title || view.caption)}" (${method})`;
-      }
-      case TeBlockType.FILE_VIEW: {
-        const view = data as TeBlockFileViewData;
-        return `File view "${this.preview(view.title || view.caption)}"`;
-      }
+      case TeBlockType.HINT:
+        return this.describeHint(data);
+      case TeBlockType.FIGURE:
+        return this.describeFigure(data);
+      case TeBlockType.RESOURCE_VIEW:
+        return this.describeResourceView(data);
+      case TeBlockType.FILE_VIEW:
+        return this.describeFileView(data);
       default:
         return `Block of type "${String(block.type)}"`;
     }
+  }
+
+  private static describeHint(data: TeBlockHintData): string {
+    return `Hint (${data.hintType ?? 'unknown type'}) "${this.preview(data.content)}"`;
+  }
+
+  private static describeFigure(data: TeBlockFigureData): string {
+    const filename = data.filename ?? 'unknown';
+    return `Figure "${this.preview(data.title || data.caption)}" (file ${filename})`;
+  }
+
+  private static describeResourceView(data: TeBlockViewData): string {
+    const method = data.view_method_name ?? 'unknown view';
+    return `Resource view "${this.preview(data.title || data.caption)}" (${method})`;
+  }
+
+  private static describeFileView(data: TeBlockFileViewData): string {
+    return `File view "${this.preview(data.title || data.caption)}"`;
   }
 
   private static describeTable(data: TeBlockTableData): string {

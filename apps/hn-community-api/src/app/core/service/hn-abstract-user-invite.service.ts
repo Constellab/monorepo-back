@@ -30,24 +30,8 @@ export abstract class HnAbstractUserInviteService<T extends HnUserInvite, E> {
     const userInviteMail: T = this.initNewUserInvite(entity);
     userInviteMail.token = ClStringHelper.generateUUID();
     userInviteMail.expiresAt = DateTime.now().plus({ days: HnUserInvite.INVITE_EXPIRY_DAYS });
-    let user: HnUser | null;
-    if (ClStringHelper.isEmail(emailOrId)) {
-      if (emailOrId === currentUser.email) {
-        throw new BlBadRequestException('You cannot invite yourself as a co-author');
-      }
-      user = await this.userService.findOneByEmail(emailOrId);
-      userInviteMail.email = emailOrId;
-    } else {
-      if (!ClStringHelper.isUUID(emailOrId)) throw new BlNotFoundException('User not found');
-      if (emailOrId === currentUser.id) {
-        throw new BlBadRequestException('You cannot invite yourself as a co-author');
-      }
-      user = await this.userService.findOne(emailOrId);
-      if (user == null) {
-        throw new BlNotFoundException('User not found');
-      }
-      userInviteMail.email = user.email;
-    }
+    const { user, email } = await this.resolveInviteRecipient(emailOrId, currentUser);
+    userInviteMail.email = email;
 
     const savedUserInviteMail: T = await this.repository.save(userInviteMail);
 
@@ -81,6 +65,29 @@ export abstract class HnAbstractUserInviteService<T extends HnUserInvite, E> {
       lang: lang,
       data: data,
     });
+  }
+
+  /** Resolves the invited user, and the email to invite, from an email address or a user id */
+  private async resolveInviteRecipient(
+    emailOrId: string,
+    currentUser: HnUser
+  ): Promise<{ user: HnUser | null; email: string }> {
+    if (ClStringHelper.isEmail(emailOrId)) {
+      if (emailOrId === currentUser.email) {
+        throw new BlBadRequestException('You cannot invite yourself as a co-author');
+      }
+      return { user: await this.userService.findOneByEmail(emailOrId), email: emailOrId };
+    }
+
+    if (!ClStringHelper.isUUID(emailOrId)) throw new BlNotFoundException('User not found');
+    if (emailOrId === currentUser.id) {
+      throw new BlBadRequestException('You cannot invite yourself as a co-author');
+    }
+    const user: HnUser | null = await this.userService.findOne(emailOrId);
+    if (user == null) {
+      throw new BlNotFoundException('User not found');
+    }
+    return { user: user, email: user.email };
   }
 
   async getAndCheckInvite(token: string): Promise<T> {

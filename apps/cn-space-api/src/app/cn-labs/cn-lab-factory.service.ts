@@ -153,8 +153,7 @@ export class CnLabFactoryService {
   }
 
   private async getLatestBrickVersion(brickName: string): Promise<CnBrickVersionDTO> {
-    const gwsCoreVersion: CnBrickVersion | null =
-      await this.brickService.getBrickLatestVersion(brickName);
+    const gwsCoreVersion: CnBrickVersion | null = await this.brickService.getBrickLatestVersion(brickName);
     if (!gwsCoreVersion) {
       throw new BlBadRequestException(`No version found for brick ${brickName}`);
     }

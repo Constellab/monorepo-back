@@ -25,6 +25,18 @@ export interface CnSshRetryOptions {
 }
 
 /**
+ * Result of one DNS propagation check. The labels are only meant for logging.
+ */
+interface DnsResolutionState {
+  /** addresses returned by the public resolvers, or 'unresolved' */
+  publicLabel: string;
+  /** address returned by the OS resolver, or 'unresolved' */
+  osLabel: string;
+  /** true when both resolvers answered with the expected IP */
+  resolved: boolean;
+}
+
+/**
  * Service to execute ssh command to the lab server
  */
 export class CnLabSshService {
@@ -89,10 +101,8 @@ export class CnLabSshService {
     options?: CnExecOptions,
     retry?: CnSshRetryOptions
   ): Promise<string> {
-    const attempts = retry?.attempts ?? 1;
-    const backoffFactor = retry?.backoffFactor ?? 2;
-    const maxDelayMs = retry?.maxDelayMs ?? 30000;
-    let delayMs = retry?.initialDelayMs ?? 5000;
+    const { attempts, backoffFactor, maxDelayMs, initialDelayMs } = CnLabSshService.getRetryOptions(retry);
+    let delayMs = initialDelayMs;
 
     let lastError: unknown;
     for (let attempt = 1; attempt <= attempts; attempt++) {
@@ -117,6 +127,19 @@ export class CnLabSshService {
 
     // unreachable, but keeps the type checker happy
     throw lastError;
+  }
+
+  /**
+   * Apply the default retry options: a single attempt, then an exponential backoff
+   * starting at 5s and capped at 30s.
+   */
+  private static getRetryOptions(retry?: CnSshRetryOptions): Required<CnSshRetryOptions> {
+    return {
+      attempts: retry?.attempts ?? 1,
+      initialDelayMs: retry?.initialDelayMs ?? 5000,
+      backoffFactor: retry?.backoffFactor ?? 2,
+      maxDelayMs: retry?.maxDelayMs ?? 30000,
+    };
   }
 
   /**
@@ -272,38 +295,15 @@ export class CnLabSshService {
     for (let count = 0; count < countLimit; count++) {
       const attemptLabel = `Attempt ${count + 1} of ${countLimit}`;
 
-      // 1. public resolver: confirm the record propagated to the world
-      const publicAddresses = await this.resolveWithPublicResolver(publicResolver, host);
-      const publicOk =
-        publicAddresses != null &&
-        publicAddresses.length > 0 &&
-        (!expectedIp || publicAddresses.includes(expectedIp));
-
-      // 2. OS resolver: confirm the resolver ssh actually uses sees it too
-      const osAddress = publicOk ? await this.resolveWithOsResolver(host) : null;
-      const osOk = osAddress != null && (!expectedIp || osAddress === expectedIp);
-
-      if (publicOk && osOk) {
-        // 3. real by-domain ssh probe: the resolver checks reduce the race
-        // window but the OS cache can still flip between the lookup and the
-        // command, so confirm with the actual transport before we rely on it.
-        if (!confirmWithSshProbe || (await this.checkSshConnection())) {
-          this.logger.log(
-            `DNS for ${host} resolved (public: ${publicAddresses.join(', ')}, os: ${osAddress}) ` +
-              `for lab ${this.labId}`
-          );
-          return;
-        }
-
-        this.logger.log(
-          `DNS for ${host} resolved but ssh probe failed for lab ${this.labId}. ${attemptLabel}`
-        );
-      } else {
-        this.logger.log(
-          `DNS for ${host} not ready yet for lab ${this.labId}. ${attemptLabel}. ` +
-            `Public: ${publicAddresses?.join(', ') ?? 'unresolved'}, os: ${osAddress ?? 'unresolved'}` +
-            (expectedIp ? `, expected: ${expectedIp}` : '')
-        );
+      const resolved = await this.checkDnsAttempt(
+        publicResolver,
+        host,
+        attemptLabel,
+        expectedIp,
+        confirmWithSshProbe
+      );
+      if (resolved) {
+        return;
       }
 
       await new Promise((r) => setTimeout(r, waitTime));
@@ -312,6 +312,71 @@ export class CnLabSshService {
     throw new BlBadRequestException(
       `DNS for ${host} did not resolve` + (expectedIp ? ` to ${expectedIp}` : '') + ` for lab ${this.labId}`
     );
+  }
+
+  /**
+   * One propagation attempt: both resolvers must agree, then the optional real
+   * ssh probe must succeed. Logs why the attempt failed, if it did.
+   */
+  private async checkDnsAttempt(
+    resolver: Resolver,
+    host: string,
+    attemptLabel: string,
+    expectedIp: string | undefined,
+    confirmWithSshProbe: boolean
+  ): Promise<boolean> {
+    const state = await this.resolveWithBothResolvers(resolver, host, expectedIp);
+
+    if (!state.resolved) {
+      this.logger.log(
+        `DNS for ${host} not ready yet for lab ${this.labId}. ${attemptLabel}. ` +
+          `Public: ${state.publicLabel}, os: ${state.osLabel}` +
+          (expectedIp ? `, expected: ${expectedIp}` : '')
+      );
+      return false;
+    }
+
+    // 3. real by-domain ssh probe: the resolver checks reduce the race
+    // window but the OS cache can still flip between the lookup and the
+    // command, so confirm with the actual transport before we rely on it.
+    if (!confirmWithSshProbe || (await this.checkSshConnection())) {
+      this.logger.log(
+        `DNS for ${host} resolved (public: ${state.publicLabel}, os: ${state.osLabel}) ` +
+          `for lab ${this.labId}`
+      );
+      return true;
+    }
+
+    this.logger.log(`DNS for ${host} resolved but ssh probe failed for lab ${this.labId}. ${attemptLabel}`);
+    return false;
+  }
+
+  /**
+   * Resolve the host with the public resolvers and, only if they answered as
+   * expected, with the OS resolver. Both must agree for the record to be live.
+   */
+  private async resolveWithBothResolvers(
+    resolver: Resolver,
+    host: string,
+    expectedIp?: string
+  ): Promise<DnsResolutionState> {
+    // 1. public resolver: confirm the record propagated to the world
+    const publicAddresses = await this.resolveWithPublicResolver(resolver, host);
+    const publicOk = CnLabSshService.publicAddressesMatch(publicAddresses, expectedIp);
+
+    // 2. OS resolver: confirm the resolver ssh actually uses sees it too
+    const osAddress = publicOk ? await this.resolveWithOsResolver(host) : null;
+    const osOk = osAddress != null && (!expectedIp || osAddress === expectedIp);
+
+    return {
+      publicLabel: publicAddresses ? publicAddresses.join(', ') : 'unresolved',
+      osLabel: osAddress ?? 'unresolved',
+      resolved: publicOk && osOk,
+    };
+  }
+
+  private static publicAddressesMatch(addresses: string[] | null, expectedIp?: string): boolean {
+    return addresses != null && addresses.length > 0 && (!expectedIp || addresses.includes(expectedIp));
   }
 
   /**

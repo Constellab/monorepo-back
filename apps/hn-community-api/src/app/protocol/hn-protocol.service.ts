@@ -25,51 +25,59 @@ export class HnProtocolService {
     const deduped = [...new Map(protocols.map((p) => [p.unique_name, p])).values()];
 
     for (const p of deduped) {
-      const proto = new HnProtocol();
-      proto.shortDescription = p.short_description ? p.short_description : null;
-      proto.doc = p.doc;
-      proto.brickName = technicalFolder.brickMajorVersion.brick.name;
-      proto.technicalFolder = technicalFolder;
-      proto.hide = p.hide;
-      proto.brickMajor = technicalFolder.brickMajorVersion.major;
-      proto.typingName = p.typing_name;
-      proto.uniqueName = p.unique_name;
-      proto.style = p.style;
-      proto.humanName = p.human_name;
-
-      //TODO A MODIFIER pour le deprecatedSince
-
-      if (p.parent) {
-        proto.parentTypingName = p.parent.typing_name;
-        proto.parentHumanName = p.parent.human_name;
-        proto.parentMajorVersion = +p.parent.brick_version.split('.')[0];
-        proto.parentVersion = p.parent.brick_version;
-      }
-      proto.deprecatedSince = p.deprecated_since;
-      proto.deprecatedMessage = p.deprecated_message;
-      proto.shortDescription = p.short_description;
-      proto.objectSubType = p.object_sub_type;
-
-      if (p.input_specs && Object.keys(p.input_specs).length > 0) {
-        proto.inputSpecs = p.input_specs;
-      }
-
-      if (p.output_specs && Object.keys(p.output_specs).length > 0) {
-        proto.outputSpecs = p.output_specs;
-      }
-
-      if (p.config_specs && Object.keys(p.config_specs).length > 0) {
-        proto.configSpecs = p.config_specs;
-      }
-
-      if (p.status) {
-        proto.status = p.status;
-      }
-
-      await this.protocolsRepository.save(proto);
+      await this.protocolsRepository.save(this.buildProtocol(technicalFolder, p));
     }
 
     return true;
+  }
+
+  private buildProtocol(technicalFolder: HnTechnicalFolder, p: HnImportProtocolDTO): HnProtocol {
+    const proto = new HnProtocol();
+    proto.shortDescription = p.short_description ? p.short_description : null;
+    proto.doc = p.doc;
+    proto.brickName = technicalFolder.brickMajorVersion.brick.name;
+    proto.technicalFolder = technicalFolder;
+    proto.hide = p.hide;
+    proto.brickMajor = technicalFolder.brickMajorVersion.major;
+    proto.typingName = p.typing_name;
+    proto.uniqueName = p.unique_name;
+    proto.style = p.style;
+    proto.humanName = p.human_name;
+
+    //TODO A MODIFIER pour le deprecatedSince
+
+    if (p.parent) {
+      proto.parentTypingName = p.parent.typing_name;
+      proto.parentHumanName = p.parent.human_name;
+      proto.parentMajorVersion = +p.parent.brick_version.split('.')[0];
+      proto.parentVersion = p.parent.brick_version;
+    }
+    proto.deprecatedSince = p.deprecated_since;
+    proto.deprecatedMessage = p.deprecated_message;
+    proto.shortDescription = p.short_description;
+    proto.objectSubType = p.object_sub_type;
+
+    this.assignSpecs(proto, p);
+
+    if (p.status) {
+      proto.status = p.status;
+    }
+
+    return proto;
+  }
+
+  private assignSpecs(proto: HnProtocol, p: HnImportProtocolDTO): void {
+    if (p.input_specs && Object.keys(p.input_specs).length > 0) {
+      proto.inputSpecs = p.input_specs;
+    }
+
+    if (p.output_specs && Object.keys(p.output_specs).length > 0) {
+      proto.outputSpecs = p.output_specs;
+    }
+
+    if (p.config_specs && Object.keys(p.config_specs).length > 0) {
+      proto.configSpecs = p.config_specs;
+    }
   }
 
   async findProtocols(technicalFolderId: string): Promise<HnProtocol[]> {

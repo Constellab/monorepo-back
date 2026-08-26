@@ -9,6 +9,7 @@ import { CnLabStatusDTO } from '../cn-lab.dto';
 import { CnLab, CnLabWithSpace } from '../cn-lab.entity';
 import { CnLabManagerService } from '../cn-lab-manager.service';
 import { CnCloudProviderFactory } from '../server/cn-cloud-provider.factory';
+import { CnCloudProviderService } from '../server/cn-cloud-provider.service';
 import { CnCloudProviderOvhService } from '../server/ovh/cn-cloud-provider-ovh.service';
 import { CnLabServerTaskStatus, CnLabStatus } from '../status/cn-lab-status.enum';
 import {
@@ -205,12 +206,7 @@ export class CnLabStartDiagnosisService {
     serverTaskText: string | null | undefined,
     serverTaskDatetime: DateTime | null | undefined
   ): CnLabStartLayer {
-    const details: Record<string, unknown> = {
-      labStatus: labStatus ?? null,
-      serverTaskStatus,
-      serverTaskText: serverTaskText ?? null,
-      serverTaskAt: serverTaskDatetime?.toISO() ?? null,
-    };
+    const details = this.spaceDbDetails(labStatus, serverTaskStatus, serverTaskText, serverTaskDatetime);
 
     if (labStatus === CnLabStatus.ERROR) {
       return {
@@ -229,23 +225,7 @@ export class CnLabStartDiagnosisService {
     }
 
     if (serverTaskStatus === CnLabServerTaskStatus.RUNNING) {
-      const runningForMinutes = serverTaskDatetime
-        ? Math.round(DateTime.now().diff(serverTaskDatetime, 'minutes').minutes)
-        : null;
-      const isStuck =
-        runningForMinutes == null ||
-        runningForMinutes >= CnLabStartDiagnosisService.STUCK_SERVER_TASK_MINUTES;
-
-      return {
-        status: isStuck ? 'ko' : 'ok',
-        reason: isStuck
-          ? `A server task has been RUNNING for ${runningForMinutes ?? 'an unknown number of'} ` +
-            `minutes and is very likely stuck: "${serverTaskText ?? 'no text recorded'}". ` +
-            `Nothing else will run on this lab while the task is held open.`
-          : `A server task started ${runningForMinutes} minute(s) ago and is still running: ` +
-            `"${serverTaskText ?? 'no text recorded'}". The start is in progress.`,
-        details: { ...details, runningForMinutes },
-      };
+      return this.spaceDbRunningTask(serverTaskText, serverTaskDatetime, details);
     }
 
     if (labStatus === CnLabStatus.NO_SERVER) {
@@ -268,6 +248,49 @@ export class CnLabStartDiagnosisService {
       status: 'ok',
       reason: `The lab row records status ${labStatus ?? 'none'} and no failing server task.`,
       details,
+    };
+  }
+
+  private spaceDbDetails(
+    labStatus: CnLabStatus | undefined,
+    serverTaskStatus: CnLabServerTaskStatus,
+    serverTaskText: string | null | undefined,
+    serverTaskDatetime: DateTime | null | undefined
+  ): Record<string, unknown> {
+    return {
+      labStatus: labStatus ?? null,
+      serverTaskStatus,
+      serverTaskText: serverTaskText ?? null,
+      serverTaskAt: serverTaskDatetime?.toISO() ?? null,
+    };
+  }
+
+  /**
+   * A server task still marked RUNNING: a start in progress, or a task whose runner is gone.
+   *
+   * A task with no start time is read as stuck rather than as young, because a task nobody
+   * timed is one nothing will ever close.
+   */
+  private spaceDbRunningTask(
+    serverTaskText: string | null | undefined,
+    serverTaskDatetime: DateTime | null | undefined,
+    details: Record<string, unknown>
+  ): CnLabStartLayer {
+    const runningForMinutes = serverTaskDatetime
+      ? Math.round(DateTime.now().diff(serverTaskDatetime, 'minutes').minutes)
+      : null;
+    const isStuck =
+      runningForMinutes == null || runningForMinutes >= CnLabStartDiagnosisService.STUCK_SERVER_TASK_MINUTES;
+
+    return {
+      status: isStuck ? 'ko' : 'ok',
+      reason: isStuck
+        ? `A server task has been RUNNING for ${runningForMinutes ?? 'an unknown number of'} ` +
+          `minutes and is very likely stuck: "${serverTaskText ?? 'no text recorded'}". ` +
+          `Nothing else will run on this lab while the task is held open.`
+        : `A server task started ${runningForMinutes} minute(s) ago and is still running: ` +
+          `"${serverTaskText ?? 'no text recorded'}". The start is in progress.`,
+      details: { ...details, runningForMinutes },
     };
   }
 
@@ -329,14 +352,32 @@ export class CnLabStartDiagnosisService {
       };
     }
 
+    return this.probeCloudStorage(
+      provider,
+      { region, instanceId: instance.id, volumeId: lab.serverVolumeId, staticIpId: lab.serverIpAddressId },
+      details
+    );
+  }
+
+  /**
+   * The volume, its attachment and the static IP, once the instance is known to be running.
+   *
+   * Takes the ids rather than the lab, because {@link probeCloud} is where they are checked for
+   * being recorded at all, and a second read off the lab here would lose that.
+   */
+  private async probeCloudStorage(
+    provider: CnCloudProviderService,
+    server: { region: string; instanceId: string; volumeId: string; staticIpId: string | null },
+    details: Record<string, unknown>
+  ): Promise<CnLabStartLayer> {
+    const { region, instanceId, volumeId, staticIpId } = server;
+
     // In parallel: the volume, and the static IP for the providers that hold one separately
     // from the instance. Sequentially these would eat the layer's whole budget on a slow
     // provider, and the two are independent.
     const [volume, staticIp] = await Promise.all([
-      provider.getVolume(lab.serverVolumeId, region),
-      lab.serverIpAddressId == null
-        ? Promise.resolve(undefined)
-        : provider.getIpAddressFromId(lab.serverIpAddressId, region),
+      provider.getVolume(volumeId, region),
+      staticIpId == null ? Promise.resolve(undefined) : provider.getIpAddressFromId(staticIpId, region),
     ]);
     details.volumeStatus = volume?.status ?? null;
     details.staticIp = staticIp?.ipAddress ?? null;
@@ -345,7 +386,7 @@ export class CnLabStartDiagnosisService {
       return {
         status: 'ko',
         reason:
-          `Static IP ${lab.serverIpAddressId} is recorded on the lab but the provider does not ` +
+          `Static IP ${staticIpId} is recorded on the lab but the provider does not ` +
           `know it. The lab's address is reserved separately from its instance here, so nothing ` +
           `reaches the server until it exists.`,
         details,
@@ -355,12 +396,12 @@ export class CnLabStartDiagnosisService {
     if (volume == null) {
       return {
         status: 'ko',
-        reason: `Volume ${lab.serverVolumeId} is recorded on the lab but the provider does not know it.`,
+        reason: `Volume ${volumeId} is recorded on the lab but the provider does not know it.`,
         details,
       };
     }
 
-    const attached = await provider.volumeIsAttachedToInstance(instance.id, volume.id, region);
+    const attached = await provider.volumeIsAttachedToInstance(instanceId, volume.id, region);
     details.volumeIsAttached = attached;
     if (!attached) {
       return {
@@ -570,13 +611,7 @@ export class CnLabStartDiagnosisService {
     // answered for itself. Waited for briefly, then done without — otherwise a slow lab manager
     // costs us the one layer that could still be read.
     const managerView = await this.ifPrompt(statusOutcome, CnLabStartDiagnosisService.MANAGER_VIEW_CAP_MS);
-    const details: Record<string, unknown> = {
-      answersHealthCheck: isRunning,
-      labStatus: managerView?.labStatus ?? null,
-      glabStatus: managerView?.glabStatus?.status ?? null,
-      hasStartError: managerView?.glabStatus?.hasStartError ?? null,
-      startProgress: managerView?.glabStatus?.startProgress ?? null,
-    };
+    const details = this.glabDetails(isRunning, managerView);
 
     if (managerView?.glabStatus?.hasStartError === true || managerView?.labStatus === 'ERROR') {
       return {
@@ -593,21 +628,37 @@ export class CnLabStartDiagnosisService {
     }
 
     if (managerView?.labStatus === 'STARTING') {
-      return {
-        status: 'ko',
-        reason:
-          `The lab is still STARTING` +
-          (managerView.glabStatus?.startProgress
-            ? ` at ${managerView.glabStatus.startProgress.percent}%: ` +
-              `${managerView.glabStatus.startProgress.message}.`
-            : '.'),
-        details,
-      };
+      return this.glabStarting(managerView, details);
     }
 
     return {
       status: 'ko',
       reason: 'The lab does not answer its health check and the lab manager does not report it starting.',
+      details,
+    };
+  }
+
+  private glabDetails(isRunning: boolean, managerView: CnLabManagerStatus | null): Record<string, unknown> {
+    const glabStatus = managerView?.glabStatus;
+
+    return {
+      answersHealthCheck: isRunning,
+      labStatus: managerView?.labStatus ?? null,
+      glabStatus: glabStatus?.status ?? null,
+      hasStartError: glabStatus?.hasStartError ?? null,
+      startProgress: glabStatus?.startProgress ?? null,
+    };
+  }
+
+  private glabStarting(managerView: CnLabManagerStatus, details: Record<string, unknown>): CnLabStartLayer {
+    return {
+      status: 'ko',
+      reason:
+        `The lab is still STARTING` +
+        (managerView.glabStatus?.startProgress
+          ? ` at ${managerView.glabStatus.startProgress.percent}%: ` +
+            `${managerView.glabStatus.startProgress.message}.`
+          : '.'),
       details,
     };
   }

@@ -157,15 +157,15 @@ export class HnMcpDocStructureService {
     }
 
     return this.resultOrInterruptedMove(doc.title, async () => {
-      await this.brickAggregateService.updateNodeLocation(
-        docId,
-        HnNodeType.DOCUMENTATION,
-        doc.order,
-        target.folder.nextOrder(),
-        doc.folder.id,
-        target.folder.id,
-        target.mainFolderId
-      );
+      await this.brickAggregateService.updateNodeLocation({
+        nodeId: docId,
+        nodeType: HnNodeType.DOCUMENTATION,
+        oldOrder: doc.order,
+        newOrder: target.folder.nextOrder(),
+        oldParentId: doc.folder.id,
+        newParentId: target.folder.id,
+        mainFolderId: target.mainFolderId,
+      });
       // Read back rather than assembled: the move recomputes the page's path against its new
       // siblings, so what its url is now is a question only the stored row answers.
       const moved = await this.authorization.findDocWithBrick(docId);
@@ -299,15 +299,15 @@ export class HnMcpDocStructureService {
     }
 
     return this.resultOrInterruptedMove(folder.title ?? '', async () => {
-      await this.brickAggregateService.updateNodeLocation(
-        folderId,
-        HnNodeType.FOLDER,
-        folder.order,
-        target.folder.nextOrder(),
-        folder.folderId ?? target.folder.id,
-        target.folder.id,
-        target.mainFolderId
-      );
+      await this.brickAggregateService.updateNodeLocation({
+        nodeId: folderId,
+        nodeType: HnNodeType.FOLDER,
+        oldOrder: folder.order,
+        newOrder: target.folder.nextOrder(),
+        oldParentId: folder.folderId ?? target.folder.id,
+        newParentId: target.folder.id,
+        mainFolderId: target.mainFolderId,
+      });
       const moved = await this.authorization.findFolderWithBrick(folderId);
       return {
         ok: true,

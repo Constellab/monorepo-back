@@ -70,28 +70,18 @@ export class BlVersion {
    * @param other
    */
   public getDif(other: BlVersion): number {
-    if (
-      this.major === other.major &&
-      this.minor === other.minor &&
-      this.patch === other.patch &&
-      this.getSubPatchAsNumber() === other.getSubPatchAsNumber()
-    ) {
-      return 0;
+    // Compared component by component, most significant first: the first component that differs
+    // decides, and the spelled-out conjunctions this replaces said the same thing four times over.
+    const mine = [this.major, this.minor, this.patch, this.getSubPatchAsNumber()];
+    const theirs = [other.major, other.minor, other.patch, other.getSubPatchAsNumber()];
+
+    for (let index = 0; index < mine.length; index++) {
+      if (mine[index] !== theirs[index]) {
+        return mine[index] > theirs[index] ? 1 : -1;
+      }
     }
 
-    if (
-      this.major > other.major ||
-      (this.major === other.major && this.minor > other.minor) ||
-      (this.major === other.major && this.minor === other.minor && this.patch > other.patch) ||
-      (this.major === other.major &&
-        this.minor === other.minor &&
-        this.patch === other.patch &&
-        this.getSubPatchAsNumber() > other.getSubPatchAsNumber())
-    ) {
-      return 1;
-    } else {
-      return -1;
-    }
+    return 0;
   }
 
   public isBeta(): boolean {

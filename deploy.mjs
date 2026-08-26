@@ -20,13 +20,22 @@ if (!imageVersion) {
       imageVersion = latestTag.replace(tagPrefix, '');
       console.log(`Found latest tag: ${imageVersion}`);
     }
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
 
   if (!imageVersion) {
     console.log(`No git tags found starting with '${tagPrefix}'`);
     const rl = createInterface({ input: process.stdin, output: process.stdout });
-    imageVersion = await new Promise(resolve => rl.question('Image version: ', answer => { rl.close(); resolve(answer); }));
+    imageVersion = await new Promise((resolve) =>
+      rl.question('Image version: ', (answer) => {
+        rl.close();
+        resolve(answer);
+      })
+    );
   }
 }
 
-execSync(`caprover deploy --host ${host} --appName ${appName} --imageName ${imageName}:${imageVersion}`, { stdio: 'inherit' });
+execSync(`caprover deploy --host ${host} --appName ${appName} --imageName ${imageName}:${imageVersion}`, {
+  stdio: 'inherit',
+});

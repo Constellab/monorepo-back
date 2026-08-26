@@ -83,6 +83,94 @@ export interface CnMcpLabHypothesis {
 }
 
 /**
+ * The hypotheses {@link cnMcpLabHypotheses} proposes for each layer, in the order they are
+ * offered to a reader.
+ */
+const HYPOTHESES_BY_LAYER: Record<CnLabStartLayerName, CnMcpLabHypothesis[]> = {
+  spaceDb: [
+    {
+      layer: 'spaceDb',
+      hypothesis:
+        'A server task is held open by a process that no longer exists — a restart of the ' +
+        'Space API while the task ran, most often. Nothing else may run on the lab while the ' +
+        'task is open, so this blocks the start without being its cause.',
+      nextTool: CN_MCP_TOOL_LAB_REFRESH_STATUS,
+    },
+    {
+      layer: 'spaceDb',
+      hypothesis:
+        'Or the lab is genuinely stopped and was never asked to start. Its status history ' +
+        'says which of the two it is: a stop written by a user, or a status that drifted.',
+      nextTool: CN_MCP_TOOL_LAB_STATUS_TIMELINE,
+    },
+  ],
+  cloud: [
+    {
+      layer: 'cloud',
+      hypothesis:
+        'The start sequence stopped part-way through creating the server: instances, volumes ' +
+        'and the volume attachment are created in that order, so the first missing one is ' +
+        'where it died. A quota refusal at the cloud provider is the usual reason.',
+      nextTool: CN_MCP_TOOL_LAB_REFRESH_STATUS,
+    },
+  ],
+  dns: [
+    {
+      layer: 'dns',
+      hypothesis:
+        'Either the DNS record creation step never ran, or it ran and has not propagated. ' +
+        'Propagation resolves itself within minutes; a missing record does not, and the ' +
+        'server is unreachable by name until it exists.',
+      nextTool: CN_MCP_TOOL_LAB_DIAGNOSE_START,
+    },
+  ],
+  ssh: [
+    {
+      layer: 'ssh',
+      hypothesis:
+        'The instance runs but nothing answers on it: it may still be booting, its ssh ' +
+        'daemon may not have come up, or the volume mount may have failed early enough to ' +
+        'leave the machine in an unusable state.',
+      nextTool: CN_MCP_TOOL_LAB_STATUS_TIMELINE,
+    },
+  ],
+  labManager: [
+    {
+      layer: 'labManager',
+      hypothesis:
+        'The server is reachable but the lab manager is not up, so the configuration steps ' +
+        'that run over ssh are what failed: the lab-configurer clone, prepare_server.sh, ' +
+        'init.sh or the docker compose that starts the lab manager itself.',
+      nextTool: CN_MCP_TOOL_LAB_REFRESH_STATUS,
+    },
+    {
+      layer: 'labManager',
+      hypothesis:
+        'The lab manager is not the layer that can report its own failure. Its start error ' +
+        'log is unreachable while it is down; the status history is what says when it last ' +
+        'worked.',
+      nextTool: CN_MCP_TOOL_LAB_STATUS_TIMELINE,
+    },
+  ],
+  glab: [
+    {
+      layer: 'glab',
+      hypothesis:
+        'The lab manager is up and the lab bricks are what failed to start. This is the one ' +
+        'layer whose failure is written down in full: the start error log names it.',
+      nextTool: CN_MCP_TOOL_LAB_GET_START_ERRORS,
+    },
+    {
+      layer: 'glab',
+      hypothesis:
+        'A single container is the usual culprit — one brick exiting non-zero takes the lab ' +
+        'down with it. The container list says which, and its logs say why.',
+      nextTool: CN_MCP_TOOL_LAB_LIST_CONTAINERS,
+    },
+  ],
+};
+
+/**
  * The most likely causes for the layer the start is blocked at.
  *
  * This is the least defensible part of the diagnosis and is meant to be read as such: these
@@ -136,91 +224,7 @@ export function cnMcpLabHypotheses(diagnosis: CnLabStartDiagnosis): CnMcpLabHypo
     ];
   }
 
-  const byLayer: Record<CnLabStartLayerName, CnMcpLabHypothesis[]> = {
-    spaceDb: [
-      {
-        layer: 'spaceDb',
-        hypothesis:
-          'A server task is held open by a process that no longer exists — a restart of the ' +
-          'Space API while the task ran, most often. Nothing else may run on the lab while the ' +
-          'task is open, so this blocks the start without being its cause.',
-        nextTool: CN_MCP_TOOL_LAB_REFRESH_STATUS,
-      },
-      {
-        layer: 'spaceDb',
-        hypothesis:
-          'Or the lab is genuinely stopped and was never asked to start. Its status history ' +
-          'says which of the two it is: a stop written by a user, or a status that drifted.',
-        nextTool: CN_MCP_TOOL_LAB_STATUS_TIMELINE,
-      },
-    ],
-    cloud: [
-      {
-        layer: 'cloud',
-        hypothesis:
-          'The start sequence stopped part-way through creating the server: instances, volumes ' +
-          'and the volume attachment are created in that order, so the first missing one is ' +
-          'where it died. A quota refusal at the cloud provider is the usual reason.',
-        nextTool: CN_MCP_TOOL_LAB_REFRESH_STATUS,
-      },
-    ],
-    dns: [
-      {
-        layer: 'dns',
-        hypothesis:
-          'Either the DNS record creation step never ran, or it ran and has not propagated. ' +
-          'Propagation resolves itself within minutes; a missing record does not, and the ' +
-          'server is unreachable by name until it exists.',
-        nextTool: CN_MCP_TOOL_LAB_DIAGNOSE_START,
-      },
-    ],
-    ssh: [
-      {
-        layer: 'ssh',
-        hypothesis:
-          'The instance runs but nothing answers on it: it may still be booting, its ssh ' +
-          'daemon may not have come up, or the volume mount may have failed early enough to ' +
-          'leave the machine in an unusable state.',
-        nextTool: CN_MCP_TOOL_LAB_STATUS_TIMELINE,
-      },
-    ],
-    labManager: [
-      {
-        layer: 'labManager',
-        hypothesis:
-          'The server is reachable but the lab manager is not up, so the configuration steps ' +
-          'that run over ssh are what failed: the lab-configurer clone, prepare_server.sh, ' +
-          'init.sh or the docker compose that starts the lab manager itself.',
-        nextTool: CN_MCP_TOOL_LAB_REFRESH_STATUS,
-      },
-      {
-        layer: 'labManager',
-        hypothesis:
-          'The lab manager is not the layer that can report its own failure. Its start error ' +
-          'log is unreachable while it is down; the status history is what says when it last ' +
-          'worked.',
-        nextTool: CN_MCP_TOOL_LAB_STATUS_TIMELINE,
-      },
-    ],
-    glab: [
-      {
-        layer: 'glab',
-        hypothesis:
-          'The lab manager is up and the lab bricks are what failed to start. This is the one ' +
-          'layer whose failure is written down in full: the start error log names it.',
-        nextTool: CN_MCP_TOOL_LAB_GET_START_ERRORS,
-      },
-      {
-        layer: 'glab',
-        hypothesis:
-          'A single container is the usual culprit — one brick exiting non-zero takes the lab ' +
-          'down with it. The container list says which, and its logs say why.',
-        nextTool: CN_MCP_TOOL_LAB_LIST_CONTAINERS,
-      },
-    ],
-  };
-
-  return byLayer[blocked];
+  return HYPOTHESES_BY_LAYER[blocked];
 }
 
 export function cnMcpDiagnosisPayload(result: CnLabStartDiagnosisResult): Record<string, unknown> {
