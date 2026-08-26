@@ -76,7 +76,10 @@ describe('Auth (e2e)', () => {
         .expect(401)
         .getResponse();
 
-      expect(response.body.status).toBeUndefined();
+      // The error envelope (BlApiError) carries the numeric HTTP status, so what
+      // matters is that it is not the 2FA challenge payload.
+      expect(response.body.status).not.toBe('2FA_REQUIRED');
+      expect(response.body.twoFAUrlCode).toBeUndefined();
       expect(response.headers['set-cookie']).toBeUndefined();
     });
   });

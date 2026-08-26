@@ -294,12 +294,37 @@ describe('OAuth consent (e2e)', () => {
       const session = await client.sessionToken();
       const consentId = await client.consentId(clientId, session);
 
-      await decide(consentId, 'deny', session);
+      // Both tokens are minted while the request is still pending, because that is the only
+      // state in which one can be: the second navigation therefore arrives with a token the
+      // decision endpoint accepts, and the request itself is what has to stop it.
+      const [refusal, approval] = [
+        await client.consentToken(consentId, session),
+        await client.consentToken(consentId, session),
+      ];
+
+      const refused = await client.decideWithToken(consentId, 'deny', refusal, session).expect(302);
+      expect(new URL(refused.headers.location).searchParams.get('error')).toBe('access_denied');
 
       // A refusal spends the request exactly as an approval does, so a second navigation
       // cannot turn "no" into "yes": it goes back to the page, which reports it as gone.
-      const retried = await decide(consentId, 'allow', session);
+      const retried = await client.decideWithToken(consentId, 'allow', approval, session).expect(302);
       expect(new URL(retried.headers.location).pathname).toBe(OAUTH_TEST_CONSENT_PATH);
+    });
+
+    it('leaves nothing to mint a decision token for', async () => {
+      const clientId = await client.registerClient();
+      const session = await client.sessionToken();
+      const consentId = await client.consentId(clientId, session);
+
+      await decide(consentId, 'deny', session);
+
+      // What a browser that comes back to the page actually meets: there is no request left
+      // to answer, so the page cannot arm a button with a token for it.
+      await server()
+        .post('/oauth/authorize/consent/token')
+        .send({ consent_id: consentId })
+        .set('Cookie', client.sessionCookie(session))
+        .expect(404);
     });
   });
 
