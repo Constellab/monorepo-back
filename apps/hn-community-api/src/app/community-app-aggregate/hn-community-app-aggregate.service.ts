@@ -299,18 +299,27 @@ export class HnCommunityAppAggregateService {
     user: HnUser | null = null
   ): Promise<FindOptionsWhere<HnCommunityApp>[] | FindOptionsWhere<HnCommunityApp>> {
     const currentUser: HnUser | null = user ?? HnCurrentUserHelper.getCurrentUser();
-    let whereConditions: FindOptionsWhere<HnCommunityApp>[] | FindOptionsWhere<HnCommunityApp>;
 
     if (currentUser == null) {
-      whereConditions = [
+      return [
         {
           space: {
             id: IsNull(),
           },
         },
       ];
-    } else if (publicSelected) {
-      whereConditions = [
+    }
+
+    return this.getSpacesBasedWhereAppConditions(currentUser, publicSelected, spacesFilter);
+  }
+
+  private async getSpacesBasedWhereAppConditions(
+    currentUser: HnUser,
+    publicSelected: boolean | null,
+    spacesFilter: string[] | null
+  ): Promise<FindOptionsWhere<HnCommunityApp>[] | FindOptionsWhere<HnCommunityApp>> {
+    if (publicSelected) {
+      return [
         {
           space: {
             id: In(spacesFilter ?? []),
@@ -322,30 +331,30 @@ export class HnCommunityAppAggregateService {
           },
         },
       ];
-    } else if (spacesFilter && spacesFilter.length > 0) {
-      whereConditions = [
+    }
+
+    if (spacesFilter && spacesFilter.length > 0) {
+      return [
         {
           space: {
             id: In(spacesFilter),
           },
         },
       ];
-    } else {
-      const userSpacesIds: string[] = (
-        await this.spaceAggregateService.findSpacesOfUser(currentUser?.id)
-      ).map((space) => space.id);
-
-      whereConditions = [
-        {
-          space: IsNull(),
-        },
-        {
-          space: In(userSpacesIds),
-        },
-      ];
     }
 
-    return whereConditions;
+    const userSpacesIds: string[] = (await this.spaceAggregateService.findSpacesOfUser(currentUser.id)).map(
+      (space) => space.id
+    );
+
+    return [
+      {
+        space: IsNull(),
+      },
+      {
+        space: In(userSpacesIds),
+      },
+    ];
   }
 
   private async getMyAppsWhereAppConditions(

@@ -139,3 +139,44 @@ export interface TeBlockTableData {
   stretched: boolean;
   content: string[][];
 }
+
+/////////////// CODE //////////////////////
+/**
+ * The languages the code block's editor offers. A block carrying anything else renders
+ * unhighlighted, so an unknown value is normalized rather than kept.
+ */
+export enum TeBlockCodeLanguage {
+  PYTHON = 'python',
+  TYPESCRIPT = 'typescript',
+  JAVASCRIPT = 'javascript',
+  JSON = 'json',
+  BASH = 'bash',
+  YAML = 'yaml',
+  PLAINTEXT = 'plaintext',
+}
+
+export interface TeBlockCodeData {
+  /**
+   * The code, as plain text. The renderer escapes it, so it is never sanitized:
+   * a sample legitimately contains angle brackets.
+   */
+  code: string;
+  language: TeBlockCodeLanguage;
+}
+
+/////////////// HINT //////////////////////
+export enum TeBlockHintType {
+  INFO = 'info',
+  WARNING = 'warning',
+  SCIENCE = 'science',
+}
+
+/**
+ * A hint has exactly these two fields. Anything else (a `title`, a `message`, a `text`)
+ * is stored but rendered by nothing, so the block would show up empty.
+ */
+export interface TeBlockHintData {
+  hintType: TeBlockHintType;
+  /** Plain text: the hint's renderer does not interpret HTML. */
+  content: string;
+}

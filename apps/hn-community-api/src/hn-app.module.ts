@@ -1,15 +1,20 @@
 import {
   blConfigureLogger,
-  BlCookieHelper,
   BlDbBackupModule,
   BlExternalApiModule,
   BlJwtConfig,
   BlJwtModule,
+  BlJwtRemoteKeyConfig,
+  BlJwtRemoteVerifierModule,
   BlLoggerConfig,
   BlMailModule,
   BlNamingStrategy,
   BlObjectStorageModule,
+  BlRedisConfig,
+  BlRedisModule,
   BlRequestContextMiddleware,
+  BlResourceServerConfig,
+  BlResourceServerModule,
   BlTranslateModule,
   BlTransportModuleConfig,
   blTransportRedisForRoot,
@@ -24,7 +29,6 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { Request } from 'express';
 import { WinstonModule, WinstonModuleOptions } from 'nest-winston';
 import { AcceptLanguageResolver, CookieResolver, I18nJsonLoader, I18nModule } from 'nestjs-i18n';
 import { join } from 'path';
@@ -36,7 +40,8 @@ import { HnAgentVersionModule } from './app/agent-aggregate/agent-version/hn-age
 import { HnAgentVersionBrickDependenciesModule } from './app/agent-aggregate/agent-version-brick-dependencies/hn-agent-version-brick-dependencies.module';
 import { HnAgentAggregateModule } from './app/agent-aggregate/hn-agent-aggregate.module';
 import { HnAuthModule } from './app/auth/hn-auth.module';
-import { HN_JWT_CONFIG } from './app/auth/hn-jwt.config';
+import { HN_JWT_CONFIG, hnExtractJwtFromRequest } from './app/auth/hn-jwt.config';
+import { HnRefreshTokenModule } from './app/auth/refresh-token/hn-refresh-token.module';
 import { HnBrickModule } from './app/brick-aggregate/brick/hn-brick.module';
 import { HnBrickMajorVersionModule } from './app/brick-aggregate/brick-major-version/hn-brick-major-version.module';
 import { HnBrickUserModule } from './app/brick-aggregate/brick-user/hn-brick-user.module';
@@ -85,6 +90,8 @@ import { HnLikeBrickModule } from './app/like-aggregate/like-brick/hn-like-brick
 import { HnLikePartnerModule } from './app/like-aggregate/like-partner/hn-like-partner.module';
 import { HnLikeStoryModule } from './app/like-aggregate/like-story/hn-like-story.module';
 import { HnLikeTagModule } from './app/like-aggregate/like-tag/hn-like-tag.module';
+import { HN_MCP_COMMUNITY_DOC_RESOURCE_PATH } from './app/mcp-doc/hn-mcp-doc.constants';
+import { HnMcpDocModule } from './app/mcp-doc/hn-mcp-doc.module';
 import { HnPartnerModule } from './app/partner/hn-partner.module';
 import { HnProtocolModule } from './app/protocol/hn-protocol.module';
 import { HnPublicModule } from './app/public/hn-public.module';
@@ -156,19 +163,70 @@ function configureLogger(configService: HnCoreConfigService): WinstonModuleOptio
 function configureJwtModule(configService: HnCoreConfigService, userService: HnUserService): BlJwtConfig {
   return {
     jwtSecret: configService.getJwtSecret(),
-    jwtFromRequest: (request: Request) => {
-      return (
-        request.headers.authorization ??
-        BlCookieHelper.getCookieFromHeader(request.headers.cookie ?? '', HN_JWT_CONFIG.authorizationCookie)
-      );
-    },
+    // Shared with `HnJwtAuthGuard`, which needs the same notion of "a token was
+    // presented" to tell a stale session from an anonymous caller.
+    jwtFromRequest: hnExtractJwtFromRequest,
     usersService: userService,
-    tokenDurationInSeconds: HN_JWT_CONFIG.tokenDurationInSeconds,
+    // Module-wide fallback. Login, 2FA and the OAuth token endpoint pass their own
+    // (shorter) lifetime explicitly, so this only applies to `cli-auth`.
+    tokenDurationInSeconds: HN_JWT_CONFIG.legacyTokenDurationInSeconds,
   };
+}
+
+/**
+ * Where the public keys that verify MCP access tokens come from.
+ *
+ * One value, and no key material at all: this application no longer mints MCP access
+ * tokens, so it holds nothing that could sign one. The Space API does, and publishes the
+ * public half; this fetches that document (ADR-0001).
+ *
+ * The same URL the discovery documents name as the Authorization Server, for good reason:
+ * a client is sent there for a token, and the tokens it comes back with are verified
+ * against the keys published there. Naming two different hosts is how a Resource Server
+ * ends up refusing every token it told clients to go and get.
+ */
+function configureJwtRemoteVerifierModule(configService: HnCoreConfigService): BlJwtRemoteKeyConfig {
+  return { authorizationServerUrl: configService.getSpaceApiUrl() };
 }
 
 function configureTransportModule(configService: HnCoreConfigService): BlTransportModuleConfig {
   return configService.getTransportModuleConfig();
+}
+
+/**
+ * What this application protects as a Resource Server, and where a client is sent to get
+ * a token for it.
+ *
+ * `authorizationServerUrl` is the Space API, which is the whole of the cutover as far as a
+ * client can see: it discovers this Resource here, and is sent there to register, approve
+ * and be issued a token. The Resource identifiers stay this host's — a Resource is where
+ * it is served, not where its tokens are minted.
+ */
+function configureResourceServerModule(configService: HnCoreConfigService): BlResourceServerConfig {
+  return {
+    baseUrl: configService.getApiUrl(),
+    authorizationServerUrl: configService.getSpaceApiUrl(),
+    resources: [
+      {
+        path: HN_MCP_COMMUNITY_DOC_RESOURCE_PATH,
+        // The words a user sees when asked to approve a client for this Resource, and the
+        // reason they name writing before the first write tool exists: this is the text
+        // approved once, and widening it later would mean re-consenting every Grant already
+        // given. The Space API repeats these two strings verbatim as a remote Resource —
+        // it serves the consent screen, and a user must not be shown a second opinion.
+        name: 'The Constellab documentation',
+        description: 'Read the public documentation, and write the pages of bricks you author',
+      },
+    ],
+  };
+}
+
+/**
+ * Reuses the queue connection details (BullMQ already needs a Redis instance) and
+ * namespaces the keys, so sharing one server with another app stays safe.
+ */
+function configureRedisModule(configService: HnCoreConfigService): BlRedisConfig {
+  return { ...configService.getTransportModuleConfig(), keyPrefix: 'hn:' };
 }
 
 // configure the text editor
@@ -221,6 +279,30 @@ TeRichTextModifications.setBackTimeDifference();
       inject: [HnCoreConfigService, HnUserService],
     }),
 
+    // The verifying half of the asymmetric path, and only that half: this application
+    // checks MCP access tokens against the Space API's published keys and holds nothing
+    // that could mint one. Session tokens stay on `JWT_SECRET` in the module above,
+    // untouched — a browser cookie never leaves the application that issued it.
+    BlJwtRemoteVerifierModule.forRootAsync({
+      imports: [HnCoreModule],
+      useFactory: configureJwtRemoteVerifierModule,
+      inject: [HnCoreConfigService],
+    }),
+
+    // The Resource Server half of OAuth, and the only half this application mounts: the
+    // Resources it serves, the guard protecting them and their discovery documents.
+    // Registered here rather than inside a feature module because it is global — the
+    // guard has to resolve inside @rekog's dynamically created MCP controllers.
+    //
+    // There is no Authorization Server half. Registration, /authorize, /token and /revoke
+    // are the Space API's, and mounting them here as well would mean two issuers for one
+    // set of accounts (ADR-0001).
+    BlResourceServerModule.forRootAsync({
+      imports: [HnCoreModule],
+      useFactory: configureResourceServerModule,
+      inject: [HnCoreConfigService],
+    }),
+
     BullModule.forRootAsync(
       blTransportRedisForRoot({
         useFactory: configureTransportModule,
@@ -228,6 +310,12 @@ TeRichTextModifications.setBackTimeDifference();
         inject: [HnCoreConfigService],
       })
     ),
+
+    BlRedisModule.forRootAsync({
+      imports: [HnCoreModule],
+      useFactory: configureRedisModule,
+      inject: [HnCoreConfigService],
+    }),
 
     BlTranslateModule.forRoot({
       getCurrentUserLang: () => HnCurrentUserHelper.getCurrentUser()?.lang ?? null,
@@ -241,11 +329,13 @@ TeRichTextModifications.setBackTimeDifference();
       HnMailConfig.currentUserIsAdmin
     ),
 
+    // Global ceiling for every route carrying @BlPublicSecure().
+    // `ttl` is in MILLISECONDS since throttler v5.
     ThrottlerModule.forRoot({
       throttlers: [
         {
-          ttl: 60,
-          limit: 10,
+          ttl: 60_000,
+          limit: 60,
         },
       ],
     }),
@@ -268,6 +358,7 @@ TeRichTextModifications.setBackTimeDifference();
     HnBrickVersionModule,
     HnBrickMajorVersionModule,
     HnAuthModule,
+    HnRefreshTokenModule,
     HnCliAuthModule,
     HnFolderModule,
     HnTechnicalFolderModule,
@@ -337,6 +428,8 @@ TeRichTextModifications.setBackTimeDifference();
     HnPartnerModule,
 
     HnRagflowChatbotModule,
+
+    HnMcpDocModule,
   ],
   controllers: [HnHealthController],
   providers: [

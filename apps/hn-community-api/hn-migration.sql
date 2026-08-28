@@ -788,3 +788,96 @@ ALTER TABLE `folder`
 ALTER TABLE `story_topics_topic`
   CHANGE `storyId` `story_id` varchar(36) NOT NULL,
   CHANGE `topicId` `topic_id` varchar(36) NOT NULL;
+
+-- ############################################################################
+-- MUST RUN BEFORE THE APP STARTS. Session refresh tokens live in this table; if
+-- it is missing, /auth/refresh and /oauth/token fail, so nobody can stay logged
+-- in. This is not a degraded feature, it breaks authentication.
+-- ############################################################################
+
+CREATE TABLE `refresh_token`
+(
+  `id`                   varchar(36)  NOT NULL,
+  `token_hash`           varchar(64)  NOT NULL,
+  `previous_token_hash`  varchar(64)  NULL COMMENT 'hash consumed by the last rotation; NULL when never rotated',
+  `kind`                 varchar(16)  NOT NULL COMMENT 'session | oauth',
+  `user_id`              varchar(36)  NOT NULL,
+  `expires_at`           datetime     NOT NULL,
+  `client_id`            varchar(64)  NULL COMMENT 'OAuth clients only',
+  `resource`             varchar(512) NULL COMMENT 'OAuth clients only: token audience',
+  `created_at`           datetime     NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `IDX_refresh_token_token_hash` (`token_hash`),
+  -- NOT unique: rotation writes the consumed hash here, and two sessions could in
+  -- principle collide. Indexed because `rotate` matches on either hash column in a
+  -- single query — without it that OR degrades to a table scan on every refresh.
+  INDEX `IDX_refresh_token_previous_token_hash` (`previous_token_hash`),
+  CONSTRAINT `FK_refresh_token_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
+-- InnoDB rejects a foreign key between two varchar columns whose collations differ.
+-- `user` carries an explicit utf8mb4_general_ci (dumps write the collation out, so any
+-- database restored from one keeps it), while a table created here would take the
+-- database default instead — utf8mb4_uca1400_ai_ci or utf8mb4_0900_ai_ci on a recent
+-- server. Pin the collation so the key holds whatever the default happens to be.
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
+
+-- Only for a database that already ran the CREATE TABLE above without
+-- `previous_token_hash` (local and dev, which were used to validate the flow by hand).
+-- Skip on any database created from the statement above — it already has the column.
+--
+-- ALTER TABLE `refresh_token`
+--   ADD COLUMN `previous_token_hash` varchar(64) NULL COMMENT 'hash consumed by the last rotation; NULL when never rotated' AFTER `token_hash`,
+--   ADD INDEX `IDX_refresh_token_previous_token_hash` (`previous_token_hash`);
+
+-- ############################################################################
+-- `oauth_grant` used to be created here. It is not any more: the cutover below
+-- drops it, and a file that created a table only to drop it forty lines later
+-- would no longer describe a schema any database should end up with.
+--
+-- Grants are the Space API's now — see `cn-migration.sql`, which still creates
+-- the table, because that is the application that has one.
+-- ############################################################################
+
+-- ############################################################################
+-- THE CUTOVER. This application stops being an Authorization Server and becomes
+-- a Resource Server only (ADR-0001): tokens for its MCP are now minted by the
+-- Space API and verified here against the key set that application publishes.
+--
+-- Run this AFTER the deployment, not before. Until the new code is live these
+-- rows are still what the old endpoints read, and dropping them early would
+-- break a flow that is still being served. Running it late costs nothing — the
+-- new code never looks at either.
+--
+-- Browser sessions are deliberately untouched: `kind = 'session'` rows are the
+-- Community's own logins, which do not change at all. Only Grant-kind rows go.
+-- ############################################################################
+
+-- Refresh tokens belonging to a Grant. They can only be renewed by an
+-- Authorization Server, and this application no longer is one, so they are rows
+-- nothing can act on. Deleting them is what makes that true in the data rather
+-- than only in the code.
+DELETE
+FROM `refresh_token`
+WHERE `kind` = 'oauth';
+
+-- The Grants themselves, i.e. the approvals users gave clients for this
+-- application's Resource. They are re-created against the Space API on the next
+-- connection: a clean break, and none of this was ever in production, so there
+-- is nothing being taken away from anyone.
+--
+-- `IF EXISTS` because this only has anything to drop on a database that ran the
+-- earlier version of this file, which created the table. A database first set up
+-- after the cutover never had it.
+DROP TABLE IF EXISTS `oauth_grant`;
+
+-- ENV VARIABLES. Nothing to add — a Resource Server holds no signing key, no redirect
+-- allowlist and no token lifetime. Two to REMOVE, now the Space API's and no longer
+-- read here, harmless to leave but the kind of stale secret that later looks
+-- load-bearing: OAUTH_ALLOWED_REDIRECT_URIS and MCP_JWT_PRIVATE_KEY_BASE64.
+--
+-- SPACE_API_URL, already required for login, now also names the Authorization Server
+-- and the host of the key set. It must name the same host as the Space API's API_URL,
+-- scheme included; a trailing slash on either is stripped. No test compares them, and a
+-- mismatch means every MCP call takes a 401 with both applications looking healthy.
+--
+-- Optional, defaulting to hn-jwt.config.ts: ACCESS_TOKEN_DURATION_SECONDS (900) and
+-- REFRESH_TOKEN_DURATION_SECONDS (2592000).

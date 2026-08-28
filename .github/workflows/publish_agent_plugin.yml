@@ -1,0 +1,156 @@
+name: Publish an agent plugin
+
+# Reusable: publishes one Claude Code plugin folder into the public Constellab/agent-plugins
+# repository. Each application calls it from its own workflow, on its own release tag.
+#
+# The tag, not master, is the trigger every caller uses: the skills describe MCP tools, so
+# publishing from master would hand clients a skill naming tools that no deployed API answers.
+#
+# A tag builds and pushes the image; the CapRover deploy is a separate manual step. So a
+# plugin can reach clients shortly before the API that serves its tools does.
+#
+# Two things are published, and an install needs both: the plugin folder, and the plugin's
+# entry in the public marketplace manifest. The folder alone is a plugin installable by no
+# name at all, with nothing anywhere reporting it — which is how `space` shipped its files
+# while the manifest still offered only `datalab`.
+
+on:
+  workflow_call:
+    inputs:
+      plugin_dir:
+        description: Path of the plugin folder in this repository, without a trailing slash.
+        required: true
+        type: string
+      plugin_name:
+        description: Folder name under plugins/ in the public repository. Must match `name` in plugin.json.
+        required: true
+        type: string
+      tag_prefix:
+        description: Release tag prefix that authorizes publishing this plugin, e.g. `cn_`.
+        required: true
+        type: string
+    secrets:
+      agent_plugins_token:
+        required: true
+
+env:
+  PLUGIN_DIR: ${{ inputs.plugin_dir }}
+  PLUGIN_NAME: ${{ inputs.plugin_name }}
+  PUBLIC_REPO: Constellab/agent-plugins
+
+jobs:
+  # Runs on pull requests too: a manifest that fails to load is only visible to whoever
+  # installs it, so it has to be caught before the tag, not at publish time.
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6.0.2
+
+      - uses: oven-sh/setup-bun@v2.2.0
+        with:
+          bun-version: 1.3.14
+
+      # The folder name under plugins/ is what `/plugin install <name>@constellab` resolves,
+      # and it comes from the caller while `name` comes from the manifest. Nothing downstream
+      # compares them, so a mismatch would publish a plugin nobody can install by its own name.
+      - name: Check the plugin name matches its manifest
+        run: |
+          set -euo pipefail
+          manifest_name=$(jq -r .name "$PLUGIN_DIR/.claude-plugin/plugin.json")
+          if [ "$manifest_name" != "$PLUGIN_NAME" ]; then
+            echo "::error::plugin_name is '$PLUGIN_NAME' but $PLUGIN_DIR/.claude-plugin/plugin.json" \
+                 "declares '$manifest_name'. They have to match."
+            exit 1
+          fi
+
+      # --strict turns manifest warnings into errors, which is what catches a misspelled
+      # field name that would otherwise be ignored at runtime.
+      - name: Validate the plugin manifest
+        run: bunx @anthropic-ai/claude-code plugin validate "$PLUGIN_DIR" --strict
+
+      # The version guard runs here, on the pull request, and not only at publish time: a tag
+      # that fails it has already been cut, so the release turns red over a bump that cost one
+      # line while the change was still under review. Comparing against the published copy is
+      # what makes this answerable before the tag exists.
+      - name: Check out the public plugins repository
+        uses: actions/checkout@v6.0.2
+        with:
+          repository: ${{ env.PUBLIC_REPO }}
+          token: ${{ secrets.agent_plugins_token }}
+          path: public
+
+      - name: Check the version was bumped for the change
+        run: bash .github/scripts/check_plugin_version.sh "$PLUGIN_DIR" "public/plugins/$PLUGIN_NAME"
+
+      # Dry run against the real published manifest, on the pull request. This one step decides
+      # whether the plugin is installable at all, so a malformed entry has to fail here rather
+      # than on the tag, after the folder has already been copied. The printed diff is the
+      # review — usually empty, and worth reading on the release that first adds a plugin.
+      - name: Check the plugin registers in the marketplace manifest
+        run: |
+          set -euo pipefail
+          bash .github/scripts/register_plugin.sh "$PLUGIN_DIR" public/.claude-plugin/marketplace.json
+          git -C public --no-pager diff -- .claude-plugin/marketplace.json
+
+  publish:
+    needs: validate
+    if: startsWith(github.ref, format('refs/tags/{0}', inputs.tag_prefix)) || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6.0.2
+
+      - name: Check out the public plugins repository
+        uses: actions/checkout@v6.0.2
+        with:
+          repository: ${{ env.PUBLIC_REPO }}
+          token: ${{ secrets.agent_plugins_token }}
+          path: public
+
+      # Already enforced on the pull request; repeated here as the last gate for
+      # workflow_dispatch and for a tag that never passed through one. It also exports
+      # PLUGIN_VERSION for the commit message below.
+      - name: Refuse a change that did not bump the version
+        run: bash .github/scripts/check_plugin_version.sh "$PLUGIN_DIR" "public/plugins/$PLUGIN_NAME"
+
+      # The publish is one function of the remote's current state — copy the folder, write the
+      # entry — so a race is resolved by replaying it on top of whatever landed, never by
+      # rebasing. Rebasing a hand-merged `marketplace.json` is the one outcome to avoid: both
+      # applications write that same file, and a conflict resolved by the loser's copy drops
+      # the winner's entry, leaving a plugin published and uninstallable.
+      #
+      # `git add` is scoped to this plugin's paths, not `-A`: the other application may have an
+      # in-flight commit in this checkout, and a wide add would sweep it into this one.
+      - name: Commit and push
+        run: |
+          set -euo pipefail
+          git -C public config user.name "constellab-bot"
+          git -C public config user.email "support@gencovery.com"
+
+          apply() {
+            rm -rf "public/plugins/$PLUGIN_NAME"
+            mkdir -p public/plugins
+            cp -r "$PLUGIN_DIR" "public/plugins/$PLUGIN_NAME"
+
+            # `plugins[]` in the public manifest is what `/plugin install <name>@constellab`
+            # resolves; the copied folder alone is installable by no name.
+            bash .github/scripts/register_plugin.sh "$PLUGIN_DIR" public/.claude-plugin/marketplace.json
+            git -C public add "plugins/$PLUGIN_NAME" .claude-plugin/marketplace.json
+          }
+
+          for attempt in 1 2 3; do
+            apply
+            if git -C public diff --quiet --cached; then
+              echo "Nothing changed for $PLUGIN_NAME — already published."
+              exit 0
+            fi
+            git -C public commit -m "$PLUGIN_NAME $PLUGIN_VERSION"
+            if git -C public push; then
+              exit 0
+            fi
+            echo "Push attempt $attempt failed — replaying on top of the remote"
+            git -C public fetch origin
+            git -C public reset --hard "origin/$(git -C public rev-parse --abbrev-ref HEAD)"
+            sleep 5
+          done
+          echo "::error::Could not push to $PUBLIC_REPO after 3 attempts"
+          exit 1

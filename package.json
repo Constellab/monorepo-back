@@ -11,12 +11,16 @@
     "prepare": "husky",
     "e2e": "ng e2e",
     "version": "nest --version",
+    "test-db:up": "docker compose -f compose.test.yml up -d --wait",
+    "test-db:down": "docker compose -f compose.test.yml down -v",
+    "libs:test": "bun run back-core-lib:test && bun run te-text-editor:test",
     "cn-space-api:serve": "nest start cn-space-api --debug --watch",
     "cn-space-api:build": "nest build cn-space-api",
     "cn-space-api:serve-prod": "node dist/cn-main",
     "cn-space-api:test": "jest --config ./apps/cn-space-api/jest.config.ts",
     "cn-space-api:test-e2e": "cross-env ENVIRONMENT_PROFILE=test jest --config ./apps/cn-space-api/test/jest-e2e.json",
     "cn-space-api:test-all": "bun run cn-space-api:test && bun run cn-space-api:test-e2e",
+    "cn-space-api:test-ci": "bun run cn-space-api:test-all && bun run libs:test",
     "cn-space-api:caprover-deploy-preprod": "node deploy.mjs https://captain.constellab-pre-prod.gencovery.com space-api-pre-prod ghcr.io/constellab/space-api cn_",
     "cn-space-api:caprover-deploy-prod": "node deploy.mjs https://captain.constellab.gencovery.com space-api ghcr.io/constellab/space-api cn_",
     "cn-space-api:build-image": "docker build -f apps/cn-space-api/Dockerfile -t cn-space-api .",
@@ -25,10 +29,12 @@
     "hn-community-api:test": "jest --config ./apps/hn-community-api/jest.config.ts",
     "hn-community-api:test-e2e": "cross-env ENVIRONMENT_PROFILE=test jest --config ./apps/hn-community-api/test/jest-e2e.json",
     "hn-community-api:test-all": "bun run hn-community-api:test && bun run hn-community-api:test-e2e",
+    "hn-community-api:test-ci": "bun run hn-community-api:test-all && bun run libs:test",
     "hn-community-api:caprover-deploy-pre-prod": "node deploy.mjs https://captain.constellab-pre-prod.gencovery.com community-api-pre-prod ghcr.io/constellab/community-api hn_",
     "hn-community-api:caprover-deploy-prod": "node deploy.mjs https://captain.constellab.gencovery.com community-api ghcr.io/constellab/community-api hn_",
     "hn-community-api:build-image": "docker build -f apps/hn-community-api/Dockerfile -t hn-community-api .",
-    "te-text-editor:test": "jest --config ./libs/te-text-editor/jest.config.ts"
+    "te-text-editor:test": "jest --config ./libs/te-text-editor/jest.config.ts",
+    "back-core-lib:test": "jest --config ./libs/back-core-lib/jest.config.ts"
   },
   "private": true,
   "dependencies": {
@@ -41,6 +47,7 @@
     "@azure/storage-blob": "^12.33.0",
     "@google-cloud/compute": "^6.13.0",
     "@google-cloud/recaptcha-enterprise": "^6.4.2",
+    "@modelcontextprotocol/sdk": "^1.29.0",
     "@nestjs/axios": "^4.0.0",
     "@nestjs/bullmq": "^11.0.0",
     "@nestjs/common": "^11.0.0",
@@ -56,6 +63,7 @@
     "@nestjs/throttler": "^6.4.0",
     "@nestjs/typeorm": "^11.0.0",
     "@nestjs/websockets": "^11.0.0",
+    "@rekog/mcp-nest": "^1.9.11",
     "argon2": "^0.44.0",
     "asyncctx": "^2.1.6",
     "axios": "^1.18.1",
@@ -66,6 +74,7 @@
     "express": "^5.0.0",
     "handlebars": "^4.7.8",
     "image-size": "^2.0.2",
+    "ioredis": "^5.11.1",
     "jsdom": "^29.1.1",
     "jszip": "^3.10.1",
     "luxon": "^3.4.4",
@@ -80,10 +89,12 @@
     "passport-jwt": "^4.0.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "~7.8.1",
+    "sanitize-html": "2.13.1",
     "tslib": "^2.6.3",
     "typeorm": "^1.1.0",
     "winston": "^3.13.1",
     "winston-daily-rotate-file": "^5.0.0",
+    "zod": "^4.4.3",
     "zone.js": "0.16.2"
   },
   "devDependencies": {
@@ -108,13 +119,16 @@
     "@types/nodemailer": "^8.0.1",
     "@types/passport-jwt": "^4.0.1",
     "@types/passport-local": "^1.0.33",
+    "@types/sanitize-html": "^2.16.1",
     "@types/supertest": "^7.2.0",
     "@typescript-eslint/eslint-plugin": "^8.62.1",
     "@typescript-eslint/parser": "^8.62.1",
+    "cross-env": "^10.1.0",
     "eslint": "^10.6.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-prettier": "^5.5.6",
     "eslint-plugin-simple-import-sort": "^13.0.0",
+    "eslint-plugin-sonarjs": "^4.2.0",
     "globals": "^17.7.0",
     "husky": "^9.1.7",
     "jest": "30.4.2",
@@ -134,7 +148,7 @@
     ],
     "*.{ts,js,html}": [
       "prettier --write --cache",
-      "eslint --fix --cache --max-warnings=0"
+      "cross-env NODE_OPTIONS=--max-old-space-size=8192 eslint --fix --cache --max-warnings=0"
     ]
   }
 }

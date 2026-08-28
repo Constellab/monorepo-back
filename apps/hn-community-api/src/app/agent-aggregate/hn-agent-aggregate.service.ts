@@ -45,6 +45,16 @@ import { HnAgentVersionBrickDependencies } from './agent-version-brick-dependenc
 import { HnAgentVersionBrickDependenciesService } from './agent-version-brick-dependencies/hn-agent-version-brick-dependencies.service';
 import { HnAgentSecurity } from './security/hn-agent.security';
 
+export interface HnAgentSearchCriteria {
+  spacesFilter: string[];
+  titleFilter: string;
+  sortsCriteria: BlSearchSortCriteria[];
+  page: number;
+  size: number;
+  user?: HnUser | null;
+  personalOnly?: boolean;
+}
+
 @Injectable()
 export class HnAgentAggregateService {
   constructor(
@@ -195,9 +205,17 @@ export class HnAgentAggregateService {
     size: number
   ): Promise<ClPage<HnAgentForLabDto>> {
     const user = HnCurrentUserHelper.getAndCheckCurrentUser();
-    return (await this.findAllWithFilters(spacesFilter, titleFilter, [], page, size, user, personalOnly)).map(
-      (agent) => HnAgentForLabDto.fromAgentDto(agent)
-    );
+    return (
+      await this.findAllWithFilters({
+        spacesFilter: spacesFilter,
+        titleFilter: titleFilter,
+        sortsCriteria: [],
+        page: page,
+        size: size,
+        user: user,
+        personalOnly: personalOnly,
+      })
+    ).map((agent) => HnAgentForLabDto.fromAgentDto(agent));
   }
 
   public async getAgentForLabByVersionId(
@@ -243,16 +261,48 @@ export class HnAgentAggregateService {
     return HnAgentForLabDto.fromAgentDto(agentDto);
   }
 
-  public async findAllWithFilters(
+  public async findAllWithFilters(criteria: HnAgentSearchCriteria): Promise<ClPage<HnAgentDto>> {
+    const currentUser = criteria.user ? criteria.user : HnCurrentUserHelper.getCurrentUser();
+    const { publicSelected, myAgentsSelected } = await this.resolveSpacesSelection(
+      criteria.spacesFilter,
+      currentUser
+    );
+    const { userSpacesIds, coAuthorAgentsIds } = await this.findUserSpacesAndCoAuthorAgentsIds(
+      currentUser,
+      myAgentsSelected
+    );
+
+    let spacesFilter = criteria.spacesFilter;
+    if (publicSelected) {
+      spacesFilter = spacesFilter.filter((spaceId) => spaceId !== 'public');
+    }
+    if (myAgentsSelected) {
+      spacesFilter = spacesFilter.filter((spaceId) => spaceId !== 'my-agents');
+    }
+    return await this.agentService.findAllWithFiltersPaginated(
+      {
+        spacesFilter: spacesFilter,
+        titleFilter: criteria.titleFilter,
+        publicSelected: publicSelected,
+        myAgentsSelected: myAgentsSelected,
+        personalOnly: criteria.personalOnly ?? false,
+        user: criteria.user ?? null,
+        userSpacesIds: userSpacesIds,
+        coAuthorAgentsIds: coAuthorAgentsIds,
+      },
+      criteria.page,
+      criteria.size,
+      criteria.sortsCriteria
+    );
+  }
+
+  /**
+   * Read the 'public' and 'my-agents' pseudo spaces of the filter and check the access to the real ones
+   */
+  private async resolveSpacesSelection(
     spacesFilter: string[],
-    titleFilter: string,
-    sortsCriteria: BlSearchSortCriteria[],
-    page: number,
-    size: number,
-    user: HnUser | null = null,
-    personalOnly: boolean = false
-  ): Promise<ClPage<HnAgentDto>> {
-    const currentUser = user ? user : HnCurrentUserHelper.getCurrentUser();
+    currentUser: HnUser | null
+  ): Promise<{ publicSelected: boolean; myAgentsSelected: boolean }> {
     let publicSelected = false;
     let myAgentsSelected = false;
     for (const spaceId of spacesFilter) {
@@ -265,6 +315,13 @@ export class HnAgentAggregateService {
         await this.spaceAggregateService.assertCheckSpaceUser(spaceId, currentUser.id);
       }
     }
+    return { publicSelected, myAgentsSelected };
+  }
+
+  private async findUserSpacesAndCoAuthorAgentsIds(
+    currentUser: HnUser | null,
+    myAgentsSelected: boolean
+  ): Promise<{ userSpacesIds: string[] | null; coAuthorAgentsIds: string[] }> {
     let userSpacesIds: string[] | null = null;
     let coAuthorAgentsIds: string[] = [];
     if (currentUser) {
@@ -277,26 +334,7 @@ export class HnAgentAggregateService {
         );
       }
     }
-
-    if (publicSelected) {
-      spacesFilter = spacesFilter.filter((spaceId) => spaceId !== 'public');
-    }
-    if (myAgentsSelected) {
-      spacesFilter = spacesFilter.filter((spaceId) => spaceId !== 'my-agents');
-    }
-    return await this.agentService.findAllWithFiltersPaginated(
-      spacesFilter,
-      titleFilter,
-      publicSelected,
-      myAgentsSelected,
-      personalOnly,
-      page,
-      size,
-      sortsCriteria,
-      user,
-      userSpacesIds,
-      coAuthorAgentsIds
-    );
+    return { userSpacesIds, coAuthorAgentsIds };
   }
 
   public async findUserAgents(userId: string, page: number, size: number): Promise<ClPage<HnAgentDto>> {
@@ -313,7 +351,13 @@ export class HnAgentAggregateService {
   }
 
   public async getAllAgentsMap(): Promise<HnSitemapItemBase[]> {
-    const agents = await this.agentService.findAllWithFilters([], '', true, false, false);
+    const agents = await this.agentService.findAllWithFilters({
+      spacesFilter: [],
+      titleFilter: '',
+      publicSelected: true,
+      myAgentsSelected: false,
+      personalOnly: false,
+    });
     const agentVersions: HnAgentVersion[] = [];
     const agentsMap: HnSitemapItemBase[] = [];
     for (const agent of agents) {
@@ -630,9 +674,8 @@ export class HnAgentAggregateService {
       throw new BlBadRequestException('The latest agent version could not be replaced');
 
     return await this.dataSource.transaction(async (entityManager) => {
-      let agent = foundAgent;
       if (latestAgentVersion.version == 1) {
-        agent = await this.agentService.updateLatestStyle(agent.id, newAgentVersionFile.style);
+        await this.agentService.updateLatestStyle(foundAgent.id, newAgentVersionFile.style);
       }
 
       await this.agentVersionService.deleteById(entityManager, latestAgentVersion.id);

@@ -22,16 +22,28 @@ export class HnAgentVersionDto extends BlEntityWithIdDTO {
 
   constructor(agentVersion: HnAgentVersion) {
     super();
+    this.assignBaseFields(agentVersion);
+    this.assignContentFields(agentVersion);
+    this.assignSpecsFields(agentVersion);
+  }
+
+  private assignBaseFields(agentVersion: HnAgentVersion): void {
     this.id = agentVersion?.id;
     this.version = agentVersion?.version;
     if (agentVersion?.agent) this.agent = new HnAgentDto(agentVersion.agent);
     this.versionState = agentVersion?.versionState;
     this.type = agentVersion?.type;
     this.versionInfos = agentVersion?.getVersionInfoRichText().toJson();
+  }
+
+  private assignContentFields(agentVersion: HnAgentVersion): void {
     this.params = agentVersion?.params;
     this.environment = agentVersion?.environment;
     this.code = agentVersion?.code;
     this.createdAt = agentVersion?.createdAt?.toISO() ?? null;
+  }
+
+  private assignSpecsFields(agentVersion: HnAgentVersion): void {
     this.inputSpecs = agentVersion?.inputSpecs;
     this.outputSpecs = agentVersion?.outputSpecs;
     this.configSpecs = agentVersion?.configSpecs;

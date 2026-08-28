@@ -68,6 +68,36 @@ export class CnScenariosService extends BlAbstractService<CnScenarioEntity> {
     const labConfig = await this.labConfigService.getOrCreateLabConfig(createLabScenarioDto.lab_config);
 
     const labScenarioDto = createLabScenarioDto.scenario;
+    const scenario = this.buildScenarioToSave(createLabScenarioDto, labConfig);
+
+    // if this is a creation
+    if (!scenarioDB) {
+      scenario.hierarchyRepresentation = CnHierarchyObjectEntity.newSubHierarchyObject(
+        parentFolder,
+        scenario.getHierarchyObjectInfo()
+      );
+      // also set the id of the folder hierarchy because it should be the same as the scenario id
+      scenario.hierarchyRepresentation.id = labScenarioDto.id;
+    }
+
+    if (scenarioDB) {
+      const exp = await this.updateWithCompare(scenario, scenarioDB as CnScenarioEntity);
+      return { scenario: exp, mode: 'update' };
+    } else {
+      scenario.lab = CnCurrentUserHelper.getAndCheckCurrentLab();
+      const exp = await this.create(scenario);
+      return { scenario: exp, mode: 'create' };
+    }
+  }
+
+  /**
+   * Copy the fields of the scenario DTO into a new scenario entity
+   */
+  private buildScenarioToSave(
+    createLabScenarioDto: CnCreateLabScenarioDto,
+    labConfig: CnLabConfig
+  ): CnScenarioEntity {
+    const labScenarioDto = createLabScenarioDto.scenario;
     const scenario = new CnScenarioEntity();
 
     scenario.id = labScenarioDto.id;
@@ -95,24 +125,7 @@ export class CnScenariosService extends BlAbstractService<CnScenarioEntity> {
     scenario.lastSyncAt = labScenarioDto.last_sync_at;
     scenario.lastSyncBy = labScenarioDto.last_sync_by;
 
-    // if this is a creation
-    if (!scenarioDB) {
-      scenario.hierarchyRepresentation = CnHierarchyObjectEntity.newSubHierarchyObject(
-        parentFolder,
-        scenario.getHierarchyObjectInfo()
-      );
-      // also set the id of the folder hierarchy because it should be the same as the scenario id
-      scenario.hierarchyRepresentation.id = labScenarioDto.id;
-    }
-
-    if (scenarioDB) {
-      const exp = await this.updateWithCompare(scenario, scenarioDB as CnScenarioEntity);
-      return { scenario: exp, mode: 'update' };
-    } else {
-      scenario.lab = CnCurrentUserHelper.getAndCheckCurrentLab();
-      const exp = await this.create(scenario);
-      return { scenario: exp, mode: 'create' };
-    }
+    return scenario;
   }
 
   public async deleteScenario(scenario: CnScenario, entityManager: EntityManager): Promise<void> {

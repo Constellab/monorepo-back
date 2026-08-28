@@ -1,0 +1,20 @@
+{
+  "name": "constellab-dev",
+  "description": "The Constellab plugins as they exist in this checkout — for developing them. Published copies live in the 'constellab' marketplace.",
+  "owner": {
+    "name": "Gencovery",
+    "email": "support@gencovery.com"
+  },
+  "plugins": [
+    {
+      "name": "space",
+      "source": "./apps/cn-space-api/claude-plugin/space",
+      "description": "Work with your Constellab Spaces over the Space API's MCP tools"
+    },
+    {
+      "name": "community",
+      "source": "./apps/hn-community-api/claude-plugin/community",
+      "description": "Read and write the Constellab community documentation — search it, and edit the pages of bricks you author — over the Community API's MCP tools"
+    }
+  ]
+}

@@ -151,20 +151,28 @@ export class HnRunStatAgService {
 
   async getRunStatCreators(runStat: HnRunStat): Promise<string[]> {
     if (runStat.agentVersion) {
-      const agentVersion = await this.agentAggregateService.findAgentVersionById(runStat.agentVersion.id);
-      const agentCreatedBy = agentVersion.agent.createdBy;
-      if (!agentCreatedBy) {
-        throw new BlNotFoundException(`Agent ${agentVersion.agent.id} has no creator`);
-      }
-      const creators: string[] = [agentCreatedBy.id];
-      if (agentVersion.agent.agentCoAuthors?.length > 0) {
-        for (const agentCoAuthor of agentVersion.agent.agentCoAuthors) {
-          if (!creators.includes(agentCoAuthor.user.id)) creators.push(agentCoAuthor.user.id);
-        }
-      }
-      return creators;
+      return this.getAgentCreators(runStat.agentVersion.id);
     }
-    const brickName: string = HnTypingName.getBrickName(runStat.processTypingName);
+    return this.getProcessCreators(runStat.processTypingName);
+  }
+
+  private async getAgentCreators(agentVersionId: string): Promise<string[]> {
+    const agentVersion = await this.agentAggregateService.findAgentVersionById(agentVersionId);
+    const agentCreatedBy = agentVersion.agent.createdBy;
+    if (!agentCreatedBy) {
+      throw new BlNotFoundException(`Agent ${agentVersion.agent.id} has no creator`);
+    }
+    const creators: string[] = [agentCreatedBy.id];
+    if (agentVersion.agent.agentCoAuthors?.length > 0) {
+      for (const agentCoAuthor of agentVersion.agent.agentCoAuthors) {
+        if (!creators.includes(agentCoAuthor.user.id)) creators.push(agentCoAuthor.user.id);
+      }
+    }
+    return creators;
+  }
+
+  private async getProcessCreators(processTypingName: string): Promise<string[]> {
+    const brickName: string = HnTypingName.getBrickName(processTypingName);
     const brick: HnBrick = await this.brickAggregateService.findBrickByName(brickName, undefined, false);
     const brickCreatedBy = brick.createdBy;
     if (!brickCreatedBy) {

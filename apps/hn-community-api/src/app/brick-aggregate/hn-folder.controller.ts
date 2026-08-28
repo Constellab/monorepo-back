@@ -1,12 +1,12 @@
-import { BlParsePipe, BlPublic } from '@monorepo/back-core-lib';
+import { BlOptionalAuth, BlParsePipe } from '@monorepo/back-core-lib';
 import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
 
 import { HnIsAdminGuard } from '../core/guards/hn-is-admin.guard';
 import { HnDocumentationDto } from './documentation/hn-documentation.dto';
 import { HnDocumentation } from './documentation/hn-documentation.entity';
-import { HnFolderDto, HnNode, HnNodeDTO, HnNodeType } from './folder/hn-folder.dto';
+import { HnFolderDto, HnNode, HnNodeDTO } from './folder/hn-folder.dto';
 import { HnFolder } from './folder/hn-folder.entity';
-import { HnBrickAggregateService } from './hn-brick-aggregate.service';
+import { HnBrickAggregateService, HnNodeLocationUpdate } from './hn-brick-aggregate.service';
 
 @Controller('folder')
 @UseGuards(HnIsAdminGuard)
@@ -29,45 +29,29 @@ export class HnFolderController {
   }
 
   @Put('tree')
-  updateNodeLocation(
-    @Body('nodeId') nodeId: string,
-    @Body('nodeType') nodeType: HnNodeType,
-    @Body('oldOrder') oldOrder: number,
-    @Body('newOrder') newOrder: number,
-    @Body('oldParentId') oldParentId: string,
-    @Body('newParentId') newParentId: string,
-    @Body('mainFolderId') mainFolderId: string
-  ): Promise<HnNode> {
-    return this.brickAggregateService.updateNodeLocation(
-      nodeId,
-      nodeType,
-      oldOrder,
-      newOrder,
-      oldParentId,
-      newParentId,
-      mainFolderId
-    );
+  updateNodeLocation(@Body() nodeLocation: HnNodeLocationUpdate): Promise<HnNode> {
+    return this.brickAggregateService.updateNodeLocation(nodeLocation);
   }
 
-  @BlPublic()
+  @BlOptionalAuth()
   @Get()
   findAll(): Promise<HnFolderDto[]> {
     return this.brickAggregateService.findAllFolders();
   }
 
-  @BlPublic()
+  @BlOptionalAuth()
   @Get(':id')
   findById(@Param('id') id: string): Promise<HnFolderDto> {
     return this.brickAggregateService.findFolderById(id);
   }
 
-  @BlPublic()
+  @BlOptionalAuth()
   @Get('folders/:id')
   findFoldersByParentId(@Param('id') id: string): Promise<HnFolderDto[]> {
     return this.brickAggregateService.findFoldersByParentId(id);
   }
 
-  @BlPublic()
+  @BlOptionalAuth()
   @Get('docs/:id')
   findDocsByParentId(@Param('id') id: string): Promise<HnDocumentationDto[]> {
     return this.brickAggregateService.findDocsByParentId(id);

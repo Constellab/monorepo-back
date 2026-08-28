@@ -1,6 +1,7 @@
 import {
   BlFile,
   BlNotFoundException,
+  BlOptionalAuth,
   BlParsePipe,
   BlPublic,
   BlSearchSortCriteria,
@@ -63,7 +64,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
 
   //////////////////////////////////////////// Agent ////////////////////////////////////////////
 
-  @BlPublic()
+  @BlOptionalAuth()
   @Get('all-map')
   async getAllAgentsMap(): Promise<HnSitemapItemBase[]> {
     return this.agentAggregateService.getAllAgentsMap();
@@ -81,7 +82,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
     return this.agentAggregateService.create(createAgentDto);
   }
 
-  @BlPublic()
+  @BlOptionalAuth()
   @Get('public')
   async getPublicAgents(): Promise<HnAgentDto[]> {
     return (await this.agentAggregateService.findPublic()).map((agent) => new HnAgentDto(agent));
@@ -113,7 +114,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
    * Get agents
    * @return agents
    */
-  @BlPublic()
+  @BlOptionalAuth()
   @Get()
   async getAll(
     @Query('page', new ParseIntPipe()) page: number,
@@ -127,7 +128,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
    * @body spacesFilter
    * @return agents
    */
-  @BlPublic()
+  @BlOptionalAuth()
   @Post('filters')
   getAllWithSpacesFilter(
     @Body('spacesFilter') spacesFilter: string[],
@@ -136,13 +137,13 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
     @Query('page', new ParseIntPipe()) page: number,
     @Query('size', new ParseIntPipe()) size: number
   ): Promise<ClPage<HnAgentDto>> {
-    return this.agentAggregateService.findAllWithFilters(
-      spacesFilter,
-      titleFilter,
-      sortsCriteria,
-      page,
-      size
-    );
+    return this.agentAggregateService.findAllWithFilters({
+      spacesFilter: spacesFilter,
+      titleFilter: titleFilter,
+      sortsCriteria: sortsCriteria,
+      page: page,
+      size: size,
+    });
   }
 
   /**
@@ -152,7 +153,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
    * @param size
    * @return agents
    */
-  @BlPublic()
+  @BlOptionalAuth()
   @Get('user/:userId')
   getUserAgents(
     @Param('userId', ParseUUIDPipe) userId: string,
@@ -167,7 +168,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
    * @param id
    * @return an agent
    */
-  @BlPublic()
+  @BlOptionalAuth()
   @Get(':id')
   async getAgentById(@Param('id', ParseUUIDPipe) id: string): Promise<HnAgentDto> {
     return new HnAgentDto(await this.agentAggregateService.findAgentById(id));
@@ -220,7 +221,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
    * @param id
    * @return an agent version
    */
-  @BlPublic()
+  @BlOptionalAuth()
   @Get('version/:id')
   async getAgentVersionById(@Param('id', ParseUUIDPipe) id: string): Promise<HnAgentVersionDto> {
     return new HnAgentVersionDto(await this.agentAggregateService.findAgentVersionById(id));
@@ -231,7 +232,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
    * @param agentId
    * @return an agent version code
    */
-  @BlPublic()
+  @BlOptionalAuth()
   @Get(':agentId/version/latest')
   async getLatestPublishedAgentVersionByAgentId(
     @Param('agentId', ParseUUIDPipe) agentId: string
@@ -260,7 +261,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
     return res.redirect(jsonVersionNumber ? `${basePath}/${jsonVersionNumber}` : basePath);
   }
 
-  @BlPublic()
+  @BlOptionalAuth()
   @Get(':agentId/version/:versionNumber')
   async getAgentVersionByAgentIdAndVersionNumber(
     @Param('agentId', ParseUUIDPipe) agentId: string,
@@ -328,7 +329,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
    * @param agentId
    * @return a list of agent versions
    */
-  @BlPublic()
+  @BlOptionalAuth()
   @Get(':agentId/versions/published')
   async getPublishedAgentVersions(
     @Param('agentId', ParseUUIDPipe) agentId: string
@@ -391,7 +392,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
    * @param agentVersionId
    * @return a list of brick versions
    */
-  @BlPublic()
+  @BlOptionalAuth()
   @Get('version/:agentVersionId/brick-dependencies')
   async getAgentVersionBrickDependencies(
     @Param('agentVersionId', ParseUUIDPipe) agentVersionId: string
@@ -418,7 +419,7 @@ export class HnAgentController extends HnAbstractFileController<HnAgent> {
     return this.agentAggregateService.inviteAgentCoAuthor(id, emailOrId);
   }
 
-  @BlPublic()
+  @BlOptionalAuth()
   @Get('co-authors/:id')
   async getAgentCoAuthors(@Param('id', new ParseUUIDPipe()) id: string): Promise<HnUserDto[]> {
     return (await this.agentAggregateService.getAgentCoAuthors(id)).map(

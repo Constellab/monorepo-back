@@ -1,6 +1,6 @@
 import { ClStringHelper } from '@monorepo/core-lib';
 
-import { TeBlock, TeBlockType } from './te-block.class';
+import { TeBlock, TeBlockData, TeBlockType } from './te-block.class';
 import { TeHTMLEditorJSON, TeRichText, TeRichTextDTO } from './te-rich-text.class';
 import {
   TeRichTextBlockModification,
@@ -26,6 +26,49 @@ export interface TeOldRichTextContentWithModificationsI {
   content: TeHTMLEditorJSON;
   modifications: TeRichTextBlockModificationsDTO;
 }
+
+/**
+ * A block and the index it is known to hold in one version of the document.
+ */
+interface TePositionedBlock {
+  index: number;
+  block: TeBlock;
+}
+
+/**
+ * One direction of the walk across a save. Undoing and redoing differ only in which blocks vanish,
+ * which appear, which index a block is known by on the side being rebuilt, and which way the
+ * content differences are applied.
+ */
+interface TeRebuildDirection {
+  vanishing: TeRichTextModificationType;
+  appearing: TeRichTextModificationType;
+  indexOf(modification: TeRichTextBlockModification): number;
+  applyDifferences(modification: TeRichTextBlockModification, data: TeBlockData): TeBlockData;
+}
+
+/** Back to the document the save started from, where what it created never existed. */
+const TE_UNDO_DIRECTION: TeRebuildDirection = {
+  vanishing: TeRichTextModificationType.CREATED,
+  appearing: TeRichTextModificationType.DELETED,
+  indexOf: (modification) => {
+    // a DELETED already carries the index it held in the old document, a MOVED where it came from
+    if (modification.type !== TeRichTextModificationType.MOVED) return modification.index;
+    if (modification.oldIndex == null) {
+      throw new Error('Cannot undo a moved modification without an old index');
+    }
+    return modification.oldIndex;
+  },
+  applyDifferences: (modification, data) => modification.undoDifferences(data),
+};
+
+/** Forward to the document the save produced, where everything is at the index the save recorded. */
+const TE_REDO_DIRECTION: TeRebuildDirection = {
+  vanishing: TeRichTextModificationType.DELETED,
+  appearing: TeRichTextModificationType.CREATED,
+  indexOf: (modification) => modification.index,
+  applyDifferences: (modification, data) => modification.redoDifferences(data),
+};
 
 /**
  * Full stored rich text content, if the migration is done, it will be TeNewFullRichTextContent
@@ -120,39 +163,64 @@ export class TeRichTextAggregate {
    * @param userId
    */
   public compareWithCurrent(newRichText: TeRichText, userId: string): TeRichTextModifications {
-    const differences: TeRichTextBlockModification[] = [];
+    return new TeRichTextModifications([
+      ...this.getDeletedModifications(newRichText, userId),
+      ...this.getBlockModifications(newRichText, userId, this.getMovedBlockIds(newRichText)),
+    ]);
+  }
 
-    // find deleted blocks, start by the last block
-    let index = this.richText.getBlocks().length - 1;
-    for (const oldBlock of this.richText.getBlocks().reverse()) {
-      if (oldBlock.id == null) {
-        index--;
+  /**
+   * The blocks the new version no longer holds, last one first.
+   *
+   * Walked backwards over the old array by index rather than over a reversal of it: `getBlocks()`
+   * hands out the internal array, and reversing it in place would reverse the old document itself
+   * — which {@link getBlockModifications} then reads through `getBlockIndex` to decide what moved.
+   * Every `oldIndex` came out mirrored, so a reorder was recorded against the wrong block, or (for
+   * two blocks) not recorded at all.
+   */
+  private getDeletedModifications(newRichText: TeRichText, userId: string): TeRichTextBlockModification[] {
+    const differences: TeRichTextBlockModification[] = [];
+    const oldBlocks = this.richText.getBlocks();
+
+    for (let index = oldBlocks.length - 1; index >= 0; index--) {
+      const oldBlock = oldBlocks[index];
+      if (oldBlock.id == null || newRichText.hasBlock(oldBlock.id)) {
         continue;
       }
-      if (!newRichText.hasBlock(oldBlock.id)) {
-        // block is deleted
-        const modif = new TeRichTextBlockModification(
-          oldBlock.id,
-          oldBlock.type,
-          TeRichTextModificationType.DELETED,
-          index,
-          userId
-        );
-        modif.blockValue = oldBlock.data;
-        differences.push(modif);
-      }
 
-      index--;
+      const modif = new TeRichTextBlockModification(
+        oldBlock.id,
+        oldBlock.type,
+        TeRichTextModificationType.DELETED,
+        index,
+        userId
+      );
+      modif.blockValue = oldBlock.data;
+      differences.push(modif);
     }
 
-    index = 0;
+    return differences;
+  }
+
+  /**
+   * What the new version says about each of the blocks it holds: created, updated, moved — and a
+   * block can be both updated and moved, so an edit no longer hides a drag.
+   */
+  private getBlockModifications(
+    newRichText: TeRichText,
+    userId: string,
+    movedBlockIds: Set<string>
+  ): TeRichTextBlockModification[] {
+    const differences: TeRichTextBlockModification[] = [];
+    let index = 0;
+
     for (const block of newRichText.getBlocks()) {
       if (block.id == null) {
         index++;
         continue;
       }
+
       const oldBlock = this.richText.getBlock(block.id);
-      const oldBlockIndex = this.richText.getBlockIndex(block.id);
       if (oldBlock == null) {
         // block is new
         const modif = new TeRichTextBlockModification(
@@ -164,29 +232,20 @@ export class TeRichTextAggregate {
         );
         modif.blockValue = block.data;
         differences.push(modif);
-      } else if (
+        index++;
+        continue;
+      }
+
+      if (
         TeRichTextBlockModification.stringifyBlockData(oldBlock) !==
         TeRichTextBlockModification.stringifyBlockData(block)
       ) {
-        // block is updated
-        const modif = new TeRichTextBlockModification(
-          block.id,
-          block.type,
-          TeRichTextModificationType.UPDATED,
-          index,
-          userId
-        );
-        if (modif.blockType == TeBlockType.LIST) {
-          if ('meta' in block.data) delete block.data['meta'];
-          if ('meta' in oldBlock.data) delete oldBlock.data['meta'];
-        }
+        differences.push(this.buildUpdatedModification(block, oldBlock, index, userId));
+      }
 
-        modif.blockValue = block.data;
-        // get the differences between the old block data and the new block data,
-        // we stringify the data to compare them as string with the lib diff
-        modif.setDifferences(oldBlock.data);
-        differences.push(modif);
-      } else if (oldBlockIndex !== -1 && oldBlockIndex != index) {
+      // a block can be dragged and typed into in the same save: the edit used to hide the move, so
+      // the undo restored the text and left the block where the drag had put it
+      if (movedBlockIds.has(block.id)) {
         // block is moved
         const modif = new TeRichTextBlockModification(
           block.id,
@@ -195,14 +254,188 @@ export class TeRichTextAggregate {
           index,
           userId
         );
-        modif.oldIndex = oldBlockIndex; // old index of the block
+        modif.oldIndex = this.richText.getBlockIndex(block.id); // old index of the block
         modif.blockValue = block.data;
         differences.push(modif);
       }
       index++;
     }
 
-    return new TeRichTextModifications(differences);
+    return differences;
+  }
+
+  private buildUpdatedModification(
+    block: TeBlock,
+    oldBlock: TeBlock,
+    index: number,
+    userId: string
+  ): TeRichTextBlockModification {
+    const modif = new TeRichTextBlockModification(
+      block.id as string,
+      block.type,
+      TeRichTextModificationType.UPDATED,
+      index,
+      userId
+    );
+    if (modif.blockType == TeBlockType.LIST) {
+      if ('meta' in block.data) delete block.data['meta'];
+      if ('meta' in oldBlock.data) delete oldBlock.data['meta'];
+    }
+
+    modif.blockValue = block.data;
+    // get the differences between the old block data and the new block data,
+    // we stringify the data to compare them as string with the lib diff
+    modif.setDifferences(oldBlock.data);
+    return modif;
+  }
+
+  /**
+   * The blocks the user actually moved, as opposed to those whose index merely shifted because a
+   * block above them was deleted or inserted. A raw index comparison cannot tell the two apart, so
+   * it used to report a deletion as "you moved the 40 blocks below it" — which is why the history
+   * threw every MOVED away as soon as the save contained anything else, and why undoing such a
+   * save did not restore the order.
+   *
+   * The decision is taken on the order of the blocks *present in both versions*: the longest run of
+   * them that kept its relative order is considered to have stayed put, and everything else is a
+   * real move. A shift suffered from above leaves that relative order intact, so it names nobody.
+   */
+  private getMovedBlockIds(newRichText: TeRichText): Set<string> {
+    const commonBlocks: { id: string; oldIndex: number }[] = [];
+    for (const block of newRichText.getBlocks()) {
+      if (block.id == null) continue;
+      const oldIndex = this.richText.getBlockIndex(block.id);
+      if (oldIndex !== -1) {
+        commonBlocks.push({ id: block.id, oldIndex });
+      }
+    }
+
+    const stayedPut = new Set(
+      TeRichTextAggregate.longestIncreasingSubsequence(
+        commonBlocks.map((commonBlock) => commonBlock.oldIndex)
+      ).map((position) => commonBlocks[position].id)
+    );
+
+    return new Set(
+      commonBlocks.filter((commonBlock) => !stayedPut.has(commonBlock.id)).map((block) => block.id)
+    );
+  }
+
+  /**
+   * Positions of a longest strictly increasing subsequence of `values`, in order.
+   * Patience sorting: `tails[k]` holds the position of the smallest possible tail of an increasing
+   * subsequence of length k + 1, and `previous` remembers what each position extended.
+   */
+  private static longestIncreasingSubsequence(values: number[]): number[] {
+    const tails: number[] = [];
+    const previous: number[] = new Array(values.length).fill(-1);
+
+    for (let position = 0; position < values.length; position++) {
+      let low = 0;
+      let high = tails.length;
+      while (low < high) {
+        const middle = (low + high) >> 1;
+        if (values[tails[middle]] < values[position]) {
+          low = middle + 1;
+        } else {
+          high = middle;
+        }
+      }
+      previous[position] = low > 0 ? tails[low - 1] : -1;
+      tails[low] = position;
+    }
+
+    const subsequence: number[] = [];
+    let position = tails.length > 0 ? tails[tails.length - 1] : -1;
+    while (position !== -1) {
+      subsequence.unshift(position);
+      position = previous[position];
+    }
+    return subsequence;
+  }
+
+  private static blockFromModification(modification: TeRichTextBlockModification): TeBlock {
+    return {
+      id: modification.blockId,
+      data: modification.blockValue,
+      type: modification.blockType,
+    };
+  }
+
+  /**
+   * Place blocks known by an absolute index at that index, then let the blocks that stayed put fill
+   * what is left, in their own order. Splicing modification by modification cannot rebuild a mixed
+   * save: a DELETED is indexed on the old document while a MOVED or a CREATED is indexed on the new
+   * one, so each splice invalidates the index of the next.
+   */
+  private static placeBlocks(
+    length: number,
+    positioned: TePositionedBlock[],
+    stayedPut: TeBlock[]
+  ): TeBlock[] {
+    const result: (TeBlock | undefined)[] = new Array(length);
+    for (const { index, block } of positioned) {
+      result[index] = block;
+    }
+
+    let next = 0;
+    for (let position = 0; position < result.length; position++) {
+      if (result[position] === undefined && next < stayedPut.length) {
+        result[position] = stayedPut[next++];
+      }
+    }
+
+    // anything left over kept its relative order too — appending it never loses a block
+    return [...result, ...stayedPut.slice(next)].filter((block): block is TeBlock => block !== undefined);
+  }
+
+  /**
+   * Rebuild the document on one side of a save: every block that exists on that side is placed by
+   * the coordinates it is known by there, and the blocks the save left in place fill the rest.
+   *
+   * Undoing and redoing are the same walk in opposite directions — what one makes vanish the other
+   * makes appear — so they share it, and `direction` carries everything that actually differs.
+   */
+  private static rebuildAcrossGroup(
+    blocks: TeBlock[],
+    group: TeRichTextBlockModification[],
+    direction: TeRebuildDirection
+  ): TeBlock[] {
+    const vanishing = group.filter((mod) => mod.type === direction.vanishing);
+    const appearing = group.filter((mod) => mod.type === direction.appearing);
+    const moved = group.filter((mod) => mod.type === TeRichTextModificationType.MOVED);
+    const updated = group.filter((mod) => mod.type === TeRichTextModificationType.UPDATED);
+
+    // drop the blocks that do not exist on this side, and give the others the content they have there
+    const survivors = blocks
+      .filter((block) => !vanishing.some((mod) => mod.blockId === block.id))
+      .map((block) => {
+        const modification = updated.find((mod) => mod.blockId === block.id);
+        if (!modification) return block;
+        const data = direction.applyDifferences(modification, block.data);
+        return data ? { ...block, data } : block;
+      });
+
+    const positioned: TePositionedBlock[] = appearing.map((mod) => ({
+      index: direction.indexOf(mod),
+      block: TeRichTextAggregate.blockFromModification(mod),
+    }));
+    for (const modification of moved) {
+      positioned.push({
+        index: direction.indexOf(modification),
+        // the survivor carries the content as it stands now, the modification only knows the index
+        block:
+          survivors.find((block) => block.id === modification.blockId) ??
+          TeRichTextAggregate.blockFromModification(modification),
+      });
+    }
+
+    const movedIds = new Set<string | undefined>(moved.map((mod) => mod.blockId));
+    return TeRichTextAggregate.placeBlocks(
+      survivors.length + appearing.length,
+      positioned,
+      survivors.filter((block) => !movedIds.has(block.id))
+    );
   }
 
   /**
@@ -221,102 +454,35 @@ export class TeRichTextAggregate {
 
   // Undo the modifications in the modificationsList
   public undoModifications(modificationId: string): void {
-    const modificationsList = this.modifications.getModificationsFromModificationId(modificationId);
+    // a save is atomic, so an id naming its second row still undoes that save whole
+    const firstOfGroup = this.modifications.getFirstModificationOfGroup(modificationId);
 
-    const newBlocks = this.richText.getBlocks();
-    // Reverse to undo in the right order
-    const reversedModifications = modificationsList.slice().reverse();
-
-    for (const modification of reversedModifications) {
-      switch (modification.type) {
-        case TeRichTextModificationType.MOVED:
-          const movedBlock: TeBlock = {
-            id: modification.blockId,
-            data: modification.blockValue,
-            type: modification.blockType,
-          };
-          // remove the block from the old index and add it to the new index
-          if (modification.oldIndex == null) {
-            throw new Error('Cannot undo a moved modification without an old index');
-          }
-          newBlocks.splice(modification.index, 1);
-          newBlocks.splice(modification.oldIndex, 0, movedBlock);
-          break;
-        case TeRichTextModificationType.CREATED:
-          // remove the block from the index
-          newBlocks.splice(modification.index, 1);
-          break;
-        case TeRichTextModificationType.UPDATED:
-          // undo the differences in the block data and add anti-slashes to the double quotes
-          const b = newBlocks.find((b) => b.id === modification.blockId);
-          if (!b) {
-            break;
-          }
-          const diff = modification.undoDifferences(b.data);
-          if (diff) {
-            newBlocks[newBlocks.indexOf(b)].data = diff;
-          }
-          break;
-        case TeRichTextModificationType.DELETED:
-          const block: TeBlock = {
-            id: modification.blockId,
-            data: modification.blockValue,
-            type: modification.blockType,
-          };
-          // add the block to the index
-          newBlocks.splice(modification.index, 0, block);
-          break;
-      }
+    // one save at a time, most recent first: each save's indexes are written against the document
+    // that save produced, so they only mean anything once the saves after it have been undone
+    let blocks = [...this.richText.getBlocks()];
+    for (const group of this.modifications.getGroupsFromModificationId(firstOfGroup.id).reverse()) {
+      blocks = TeRichTextAggregate.rebuildAcrossGroup(blocks, group, TE_UNDO_DIRECTION);
     }
+
     this.richText = new TeRichText({
       version: this.richText.version,
       editorVersion: this.richText.editorVersion,
-      blocks: newBlocks,
+      blocks: blocks,
     });
 
-    this.modifications.removeModificationsAfterUndo(modificationId);
+    this.modifications.removeModificationsAfterUndo(firstOfGroup.id);
   }
 
   // Redo the last modification group
   public redoLastModification(): TeRichTextBlockModification[] {
-    const redoGroup = this.modifications.getLastRedoGroup();
-    if (redoGroup.length === 0) return [];
+    const group = this.modifications.getLastRedoGroup();
+    if (group.length === 0) return [];
 
-    const blocks = this.richText.getBlocks();
-
-    for (const modification of redoGroup) {
-      switch (modification.type) {
-        case TeRichTextModificationType.MOVED:
-          const movedBlock: TeBlock = {
-            id: modification.blockId,
-            data: modification.blockValue,
-            type: modification.blockType,
-          };
-          if (modification.oldIndex == null) {
-            throw new Error('Cannot redo a moved modification without an old index');
-          }
-          blocks.splice(modification.oldIndex, 1);
-          blocks.splice(modification.index, 0, movedBlock);
-          break;
-        case TeRichTextModificationType.CREATED:
-          const block: TeBlock = {
-            id: modification.blockId,
-            data: modification.blockValue,
-            type: modification.blockType,
-          };
-          blocks.splice(modification.index, 0, block);
-          break;
-        case TeRichTextModificationType.UPDATED:
-          const diff = modification.redoDifferences(blocks[modification.index].data);
-          if (diff) {
-            blocks[modification.index].data = diff;
-          }
-          break;
-        case TeRichTextModificationType.DELETED:
-          blocks.splice(modification.index, 1);
-          break;
-      }
-    }
+    const blocks = TeRichTextAggregate.rebuildAcrossGroup(
+      [...this.richText.getBlocks()],
+      group,
+      TE_REDO_DIRECTION
+    );
 
     this.richText = new TeRichText({
       version: this.richText.version,
@@ -326,11 +492,11 @@ export class TeRichTextAggregate {
 
     this.modifications.removeLastRedoGroup();
     // re-add the modifications to the list
-    for (const modification of redoGroup) {
+    for (const modification of group) {
       this.modifications.addModification(modification);
     }
 
-    return redoGroup;
+    return group;
   }
 
   public async getModificationsDTO(

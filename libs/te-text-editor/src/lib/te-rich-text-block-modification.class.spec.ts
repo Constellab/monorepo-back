@@ -183,12 +183,35 @@ describe('TeRichTextBlockModification', () => {
         index: 2,
         userId: mockUserId,
         blockValue: mockBlockData,
-        oldIndex: 1, // Use 1 instead of 0 since the code uses if (json.oldIndex) which is falsy for 0
+        oldIndex: 1,
       };
 
       const modification = TeRichTextBlockModification.fromJsonObject(dto);
 
       expect(modification.oldIndex).toBe(1);
+    });
+
+    /**
+     * A block dragged away from the very top of the document has an oldIndex of 0, and undo splices
+     * on it. A falsy test used to drop it here, so the history came back from the database saying
+     * the block had moved from nowhere and the undo threw.
+     */
+    it('should keep an oldIndex of 0', () => {
+      const dto: TeRichTextBlockModificationDTO = {
+        id: 'json-id',
+        time: mockTime,
+        blockId: mockBlockId,
+        blockType: TeBlockType.PARAGRAPH,
+        type: TeRichTextModificationType.MOVED,
+        index: 3,
+        userId: mockUserId,
+        blockValue: mockBlockData,
+        oldIndex: 0,
+      };
+
+      const modification = TeRichTextBlockModification.fromJsonObject(dto);
+
+      expect(modification.oldIndex).toBe(0);
     });
 
     it('should set groupId when provided', () => {
@@ -225,8 +248,8 @@ describe('TeRichTextBlockModification', () => {
       modification.setDifferences(oldValue);
 
       expect(modification.differences).toBeDefined();
-      expect(modification.differences!.length).toBeGreaterThan(0);
-      expect(modification.differences!.some((diff) => diff.added || diff.removed)).toBe(true);
+      expect(modification.differences?.length).toBeGreaterThan(0);
+      expect(modification.differences?.some((diff) => diff.added || diff.removed)).toBe(true);
     });
 
     it('should handle empty differences when values are identical', () => {
@@ -243,7 +266,7 @@ describe('TeRichTextBlockModification', () => {
       modification.setDifferences(oldValue);
 
       expect(modification.differences).toBeDefined();
-      expect(modification.differences!.length).toBe(0);
+      expect(modification.differences?.length).toBe(0);
     });
   });
 

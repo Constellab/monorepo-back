@@ -1,6 +1,7 @@
 import {
   BlFile,
   BlFileResponse,
+  BlOptionalAuth,
   BlParsePipe,
   BlPublic,
   BlResponseHelper,
@@ -79,13 +80,13 @@ export class HnStoryController extends HnAbstractFileController<HnStory> {
     BlResponseHelper.setFileResponse(res, zip);
   }
 
-  @BlPublic()
+  @BlOptionalAuth()
   @Get('all-map')
   async getAllStoriesMap(): Promise<HnSitemapItemBase[]> {
     return this.storyService.getAllStoriesMap();
   }
 
-  @BlPublic()
+  @BlOptionalAuth()
   @Post('filter')
   async getStoriesByFilter(
     @Body('filters') filters: HnStoryFilter,
@@ -96,7 +97,7 @@ export class HnStoryController extends HnAbstractFileController<HnStory> {
     return this.storyService.getStoriesByFilter(filters, sortsCriteria, page, size);
   }
 
-  @BlPublic()
+  @BlOptionalAuth()
   @Get('topic/:topicId')
   async getStoriesByTopicId(
     @Param('topicId', new ParseUUIDPipe()) topicId: string,
@@ -133,7 +134,7 @@ export class HnStoryController extends HnAbstractFileController<HnStory> {
   /***
    * Get user stories paginated
    */
-  @BlPublic()
+  @BlOptionalAuth()
   @Get('user/:userId')
   async getUserStories(
     @Param('userId', new ParseUUIDPipe()) userId: string,
@@ -143,13 +144,13 @@ export class HnStoryController extends HnAbstractFileController<HnStory> {
     return this.storyService.getUserStories(userId, page, size);
   }
 
-  @BlPublic()
+  @BlOptionalAuth()
   @Get('title/:id')
   async getStoryTitle(@Param('id', new ParseUUIDPipe()) id: string): Promise<string> {
     return this.storyService.getStoryTitle(id);
   }
 
-  @BlPublic()
+  @BlOptionalAuth()
   @Get(':id')
   async getStory(@Param('id', new ParseUUIDPipe()) id: string): Promise<HnStoryDto> {
     return new HnStoryDto(await this.storyService.getStory(id));
@@ -260,7 +261,7 @@ export class HnStoryController extends HnAbstractFileController<HnStory> {
     return this.storyService.inviteStoryCoAuthor(id, emailOrId);
   }
 
-  @BlPublic()
+  @BlOptionalAuth()
   @Get(':id/co-authors')
   async getStoryCoAuthors(@Param('id', new ParseUUIDPipe()) id: string): Promise<HnUserDto[]> {
     return (await this.storyService.getStoryCoAuthors(id)).map(
@@ -331,7 +332,7 @@ export class HnStoryController extends HnAbstractFileController<HnStory> {
     return this.storyService.rollbackContent(storyId, modificationId);
   }
 
-  @BlPublic()
+  @BlOptionalAuth()
   @Get('story-files/:storyId')
   async getStoryFiles(
     @Param('storyId', new ParseUUIDPipe()) storyId: string

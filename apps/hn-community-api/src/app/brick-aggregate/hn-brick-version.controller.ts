@@ -1,4 +1,4 @@
-import { BlPublic } from '@monorepo/back-core-lib';
+import { BlOptionalAuth } from '@monorepo/back-core-lib';
 import { ClPage } from '@monorepo/core-lib';
 import { Controller, Get, Param, ParseIntPipe, Put, Query, UseGuards } from '@nestjs/common';
 
@@ -22,7 +22,7 @@ export class HnBrickVersionController {
     return this.brickAggregateService.sendAllBrickVersionToQueue();
   }
 
-  @BlPublic()
+  @BlOptionalAuth()
   @Get('current/:brickId')
   public getCurrentBrickVersion(
     @Param('brickId') brickId: string,
@@ -32,13 +32,13 @@ export class HnBrickVersionController {
     return this.brickAggregateService.getCurrentBrickVersion(page, size, brickId);
   }
 
-  @BlPublic()
+  @BlOptionalAuth()
   @Get('references/:id')
   public getAllReferences(@Param('id') id: string): Promise<HnReferenceDTO[]> {
     return this.brickAggregateService.getAllBrickVersionReferences(id);
   }
 
-  @BlPublic()
+  @BlOptionalAuth()
   @Get('direct-references/:id')
   public getDirectReferences(@Param('id') id: string): Promise<HnReferenceDTO[]> {
     return this.brickAggregateService.getBrickVersionDirectReferences(id);

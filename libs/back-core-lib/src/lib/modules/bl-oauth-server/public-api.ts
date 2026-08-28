@@ -1,0 +1,17 @@
+/**
+ * What mounting the Authorization Server requires, and nothing else.
+ *
+ * The endpoints, the stores, the DTO and the request validation are deliberately absent:
+ * "the Community retains no OAuth endpoint logic of its own" is the point of the extraction,
+ * and exporting a code store would hand back the affordance to write some. Nothing outside
+ * this module resolves them either — the module declares its own controller.
+ *
+ * The Grant entity and service are exported because an application has to subclass them to
+ * bind its own user record — the same arrangement `bl-refresh-token` has, and the same
+ * reason: the row points at a user table the library cannot know.
+ */
+export * from './bl-oauth-grant.entity';
+export * from './bl-oauth-grant.service';
+export * from './bl-oauth-server.class';
+export * from './bl-oauth-server.exception';
+export * from './bl-oauth-server.module';

@@ -8,9 +8,10 @@ import { HnUserService } from '../users/hn-user.service';
 import { HnAuthController } from './hn-auth.controller';
 import { HnAuthService } from './hn-auth.service';
 import { HnSpaceAuthService } from './hn-space-auth.service';
+import { HnRefreshTokenModule } from './refresh-token/hn-refresh-token.module';
 
 @Module({
-  imports: [HnUserModule, HnCoreModule, HttpModule, BlExternalApiModule],
+  imports: [HnUserModule, HnCoreModule, HttpModule, BlExternalApiModule, HnRefreshTokenModule],
   providers: [HnAuthService, HnUserService, BlExternalApiService, HnSpaceAuthService],
   exports: [HnAuthService],
   controllers: [HnAuthController],

@@ -19,7 +19,7 @@ import { DateTime } from 'luxon';
 import { BeforeInsert, Column, Entity, ManyToMany, ManyToOne, OneToOne } from 'typeorm';
 
 import type { CnGroupSingleUser, CnGroupTeam } from '../cn-groups/cn-group.entity';
-import { CnSpace, CnSpaceEntity } from '../cn-spaces/cn-space.entity';
+import type { CnSpace } from '../cn-spaces/cn-space.entity';
 
 export enum CnUserLicense {
   FREE = 'FREE',
@@ -100,7 +100,7 @@ export class CnUserEntity extends BlEntityWithId implements BlUser {
 
   // last space the user was connected to
   @Exclude()
-  @ManyToOne(() => CnSpaceEntity, { onDelete: 'SET NULL', nullable: true })
+  @ManyToOne('CnSpaceEntity', { onDelete: 'SET NULL', nullable: true })
   lastConnectedSpace?: CnSpace;
 
   @Column({ nullable: true, length: 36 })

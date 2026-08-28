@@ -4,6 +4,6 @@
     "outDir": "../../dist/apps/hn-community-api",
     "types": ["node"]
   },
-  "exclude": ["**/*.spec.ts", "jest.config.ts"],
+  "exclude": ["**/*.spec.ts", "**/*.mock.ts", "jest.config.ts"],
   "include": ["**/*.ts"]
 }

@@ -2,6 +2,7 @@ import { BlMailConfig, BlObjectStorageCredentials, BlTransportModuleConfig } fro
 import { Injectable, Logger, LogLevel } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
+import { HN_JWT_CONFIG } from '../../../auth/hn-jwt.config';
 import {
   HN_BUCKET_AGENTS_BACKUP_KEY,
   HN_BUCKET_AGENTS_KEY,
@@ -49,6 +50,27 @@ export class HnCoreConfigService {
     return this.getConfigString('JWT_SECRET');
   }
 
+  /**
+   * Lifetimes of the session token pair, in seconds.
+   *
+   * Optional in the environment: the defaults in `HN_JWT_CONFIG` apply when unset. There
+   * is no MCP access token lifetime here — this application no longer mints one, so how
+   * long one lives is the Space API's to state.
+   */
+  public getAccessTokenDurationInSeconds(): number {
+    return this.getConfigNumberOrDefault(
+      'ACCESS_TOKEN_DURATION_SECONDS',
+      HN_JWT_CONFIG.defaultAccessTokenDurationInSeconds
+    );
+  }
+
+  public getRefreshTokenDurationInSeconds(): number {
+    return this.getConfigNumberOrDefault(
+      'REFRESH_TOKEN_DURATION_SECONDS',
+      HN_JWT_CONFIG.defaultRefreshTokenDurationInSeconds
+    );
+  }
+
   public isLocal(): boolean {
     const env: HnEnvironmentProfile = this.getEnvironmentProfile();
     return env === 'dev' || env === 'docker' || env === 'test';
@@ -58,6 +80,15 @@ export class HnCoreConfigService {
     return this.getEnvironmentProfile() === 'dev';
   }
 
+  /**
+   * The Space API, which this application depends on for two separate things: verifying a
+   * password at login, and — since the cutover — being the single Authorization Server
+   * (ADR-0001). It is the host named in every discovery document served here and the host
+   * whose published key set MCP access tokens are verified against.
+   *
+   * Read while Nest builds the injector now, not lazily, so a deployment that omits it
+   * fails to start rather than serving discovery documents pointing nowhere.
+   */
   public getSpaceApiUrl(): string {
     return this.isLocal() ? 'http://localhost:3001' : this.getConfigString('SPACE_API_URL');
   }
@@ -169,7 +200,15 @@ export class HnCoreConfigService {
       case 'preprod':
         res = 'https://community-pre-prod.gencovery.com';
         break;
+      // Every local profile, exactly as `isLocal()` groups them — they all run against the
+      // same local front. `test` and `docker` fell through to the throw before, which was
+      // survivable only while this was read lazily: the OAuth server module now reads it
+      // while the injector is built, so an unhandled profile stops the process instead of
+      // failing the first logged-out `/authorize`. That is the behaviour we want for a value
+      // a deployment must state, but it means the list has to be complete.
       case 'dev':
+      case 'docker':
+      case 'test':
         res = 'http://localhost:4200';
         break;
       default:
@@ -191,7 +230,9 @@ export class HnCoreConfigService {
         res = 'http://localhost:4200/';
         break;
       default:
-        throw Error(`No constellab front base url configured for environment '${this.getEnvironmentProfile()}'`);
+        throw Error(
+          `No constellab front base url configured for environment '${this.getEnvironmentProfile()}'`
+        );
     }
     return res;
   }
@@ -221,6 +262,23 @@ export class HnCoreConfigService {
       throw Error(`Missing config value for '${configName}'`);
     }
     return value;
+  }
+
+  /**
+   * Read an optional numeric config value, falling back to `defaultValue` when it is
+   * absent, empty or not a number.
+   */
+  protected getConfigNumberOrDefault(configName: string, defaultValue: number): number {
+    const raw: string | undefined = this.configService.get(configName);
+    if (raw == null || raw.trim().length === 0) {
+      return defaultValue;
+    }
+    const parsed: number = parseInt(raw, 10);
+    if (Number.isNaN(parsed)) {
+      this.logger.warn(`Config '${configName}' is not a number ('${raw}'), using ${defaultValue}`);
+      return defaultValue;
+    }
+    return parsed;
   }
 
   protected getConfigNumber(configName: string): number {

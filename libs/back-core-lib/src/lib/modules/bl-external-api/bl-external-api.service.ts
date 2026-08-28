@@ -5,6 +5,7 @@ import { AxiosError, AxiosResponse } from 'axios';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
+import { BlApiError } from '../../models/bl-nest-api-error.class';
 import {
   BlExternalApiError,
   BlExternalApiHttpOption,
@@ -174,33 +175,40 @@ export class BlExternalApiService {
       error: error,
     };
 
-    const errorData: any = error.response?.data ?? {};
-    // If the error is formatted like : CmNestApiError
-    if (
-      errorData &&
-      errorData.status != null &&
-      errorData.code != null &&
-      errorData.detail != null &&
-      (errorData.instanceId != null || errorData.instance_id != null)
-    ) {
-      apiError.knownError = {
-        status: errorData.status,
-        code: errorData.code,
-        detail: errorData.detail,
-        instanceId: errorData.instanceId ?? errorData.instance_id,
-      };
-      apiError.message = errorData.detail;
+    const knownError = this.readKnownError(error.response?.data);
+    if (knownError) {
+      apiError.knownError = knownError;
+      apiError.message = knownError.detail;
     }
 
     // log if log error is not set to false (default is true)
     if (logError !== false) {
-      if (apiError.message) {
-        this.logger.error(`[BLApiService] Error during call to route '${route}' : ${apiError.message}`);
-      } else {
-        this.logger.error(`[BLApiService] Error during call to route '${route}'`);
-      }
+      const suffix = apiError.message ? ` : ${apiError.message}` : '';
+      this.logger.error(`[BLApiService] Error during call to route '${route}'${suffix}`);
     }
     return throwError(() => apiError);
+  }
+
+  /**
+   * The error body of the response, if it is formatted like a CmNestApiError. Null otherwise.
+   */
+  private readKnownError(errorData: any): (BlApiError & { detail: string }) | null {
+    if (
+      !errorData ||
+      errorData.status == null ||
+      errorData.code == null ||
+      errorData.detail == null ||
+      (errorData.instanceId == null && errorData.instance_id == null)
+    ) {
+      return null;
+    }
+
+    return {
+      status: errorData.status,
+      code: errorData.code,
+      detail: errorData.detail,
+      instanceId: errorData.instanceId ?? errorData.instance_id,
+    };
   }
 
   /**

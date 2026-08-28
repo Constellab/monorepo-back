@@ -1,4 +1,11 @@
-import { BlFile, BlParsePipe, BlPublic, BlResponseHelper, BlUploadedFile } from '@monorepo/back-core-lib';
+import {
+  BlFile,
+  BlOptionalAuth,
+  BlParsePipe,
+  BlPublic,
+  BlResponseHelper,
+  BlUploadedFile,
+} from '@monorepo/back-core-lib';
 import {
   TeBlockFigureUploadedResponse,
   TeRichText,
@@ -29,7 +36,7 @@ import {
   HnUploadFileResponseDto,
 } from '../file-aggregate/file-core/hn-abstract-file.dto';
 import { HnFileDocumentationService } from '../file-aggregate/file-documentation/hn-file-documentation.service';
-import { HnDocumentationDto } from './documentation/hn-documentation.dto';
+import { HnDocumentationContentUpdateDto, HnDocumentationDto } from './documentation/hn-documentation.dto';
 import { HnDocumentation, HnDocumentationDTO } from './documentation/hn-documentation.entity';
 import { HnNodeDTO } from './folder/hn-folder.dto';
 import { HnBrickAggregateService } from './hn-brick-aggregate.service';
@@ -44,27 +51,37 @@ export class HnDocumentationController extends HnAbstractFileController<HnDocume
     super(fileDocumentationService);
   }
 
-  @BlPublic()
+  @BlOptionalAuth()
   @Get()
   findAll(): Promise<HnDocumentationDTO[]> {
     return this.brickAggregateService.findAllDocs();
   }
 
+  /**
+   * The response wraps the documentation so the sanitization warnings and the new revision can ride
+   * with it. A caller that does not care about them reads `documentation` and ignores the rest.
+   *
+   * `revision` in the body is optional and is the revision the caller read the content at: the
+   * write is refused if the content has changed since. Sending none keeps the old behaviour, last
+   * write wins — which is why nothing breaks for a caller that has never heard of it. The rich text
+   * pipe ignores the extra field, so the revision never ends up inside the stored content.
+   */
   @Put('content/:id')
   updateContent(
     @Param('id') id: string,
-    @Body(TeRichTextPipe) updateContentDoc: TeRichText
-  ): Promise<HnDocumentation> {
-    return this.brickAggregateService.updateDocContent(id, updateContentDoc);
+    @Body(TeRichTextPipe) updateContentDoc: TeRichText,
+    @Body('revision') revision?: string
+  ): Promise<HnDocumentationContentUpdateDto> {
+    return this.brickAggregateService.updateDocContent(id, updateContentDoc, revision);
   }
 
-  @BlPublic()
+  @BlOptionalAuth()
   @Post('complete-path')
   findByCompletePath(@Body() body: any): Promise<HnDocumentationDto> {
     return this.brickAggregateService.findCurrentDoc(body.brickName, body.version, body.completePath);
   }
 
-  @BlPublic()
+  @BlOptionalAuth()
   @Get(':id')
   findById(@Param('id') id: string): Promise<HnDocumentationDto> {
     return this.brickAggregateService.findDocById(id);
@@ -129,7 +146,7 @@ export class HnDocumentationController extends HnAbstractFileController<HnDocume
 
   /////////////////////////////////// DOC FILE //////////////////////////////////////////
 
-  @BlPublic()
+  @BlOptionalAuth()
   @Get('doc-files/:docId')
   async getDocFiles(@Param('docId', new ParseUUIDPipe()) docId: string): Promise<HnAbstractFileEntityDTO[]> {
     return this.brickAggregateService.getDocFiles(docId);

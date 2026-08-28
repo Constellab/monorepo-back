@@ -22,8 +22,12 @@ export class HnFolderService {
   /**
    * Canonical url segment of a title. This is what actually ends up in the complete path:
    * accents and special characters are stripped, so 'Test' and 'Testé' both give 'test'.
+   *
+   * Public because a caller that cannot show a title back to a human — the MCP — has to refuse a
+   * title that slugifies to nothing before creating a node no url can reach, and the only honest
+   * way to know is to ask the function that computes the segment.
    */
-  private static slugify(title: string | null): string {
+  static slugify(title: string | null): string {
     return ClStringHelper.generateUrlPathFromString(title ?? '').replace(/[^a-zA-Z0-9-_]/g, '');
   }
 

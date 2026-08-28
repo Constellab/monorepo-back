@@ -12,8 +12,16 @@ export class BlRequestContext {
     return this.cls.getStore();
   }
 
-  static setContext(requestContext: BlRequestContext): void {
-    this.cls.enterWith(requestContext);
+  /**
+   * Run `callback` (and everything it awaits downstream) with `requestContext` as the
+   * current context.
+   *
+   * `run` rather than `enterWith`: the store set by `enterWith` can be lost when the
+   * chain resumes inside an async continuation (Bun's async_hooks propagation is weaker
+   * there), which leaves `currentContext` undefined for the rest of the request.
+   */
+  static runWithContext(requestContext: BlRequestContext, callback: () => void): void {
+    this.cls.run(requestContext, callback);
   }
 
   constructor(

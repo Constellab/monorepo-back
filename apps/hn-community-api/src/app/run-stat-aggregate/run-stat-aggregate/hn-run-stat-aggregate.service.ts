@@ -24,10 +24,7 @@ export class HnRunStatAggregateService {
     return repo.findOneBy({ objectId: objectId, objectType: objectType });
   }
 
-  async findByObjectId(
-    objectId: string,
-    entityManager?: EntityManager
-  ): Promise<HnRunStatAggregate | null> {
+  async findByObjectId(objectId: string, entityManager?: EntityManager): Promise<HnRunStatAggregate | null> {
     const repo = entityManager
       ? entityManager.getRepository(HnRunStatAggregate)
       : this.runStatAggregateRepository;

@@ -8,6 +8,14 @@ import { CnUser, CnUserEntity } from '../cn-user.entity';
 import { CnUserAccountsService } from './cn-user-accounts.service';
 
 /**
+ * Rate limit for the two routes that stand next to a credential without being one: the first
+ * mails a reset link to an address, the second spends it. Per IP, per minute (`ttl` is in ms),
+ * the same limit `/auth/login` carries — the global `@BlPublicSecure()` ceiling is 60/min,
+ * which is a great many attempts at guessing a reset token.
+ */
+const CREDENTIAL_ADJACENT_THROTTLE = { limit: 10, ttl: 60_000 };
+
+/**
  * Open routes to manage users' accounts
  */
 @Controller('accounts')
@@ -70,7 +78,7 @@ export class CnUserAccountsController {
   /**
    * Open route to send an email with link to reset password
    */
-  @BlPublicSecure()
+  @BlPublicSecure(CREDENTIAL_ADJACENT_THROTTLE)
   @Post('password-forgotten')
   async passwordForgotten(@Body() body: { email: string }): Promise<void> {
     await this.userAccountsService.passwordForgotten(body.email);
@@ -79,7 +87,7 @@ export class CnUserAccountsController {
   /**
    * Open route to reset password with link
    */
-  @BlPublicSecure()
+  @BlPublicSecure(CREDENTIAL_ADJACENT_THROTTLE)
   @Post('reset-password/:token')
   async resetPassword(@Param('token') token: string, @Body() body: { password: string }): Promise<void> {
     await this.userAccountsService.resetPassword(token, body.password);

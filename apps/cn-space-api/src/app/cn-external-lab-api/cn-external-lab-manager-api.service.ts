@@ -30,9 +30,11 @@ import {
   CnLabManagerDockerComposeUniqueId,
   CnLabManagerDockerInspect,
   CnLabManagerDockerLogs,
+  CnLabManagerDockerLogSearch,
   CnLabManagerDockerPsFull,
   CnLabManagerErrorLogs,
   CnLabManagerInitConfig,
+  CnLabManagerLogSearchQuery,
   CnLabManagerRestoreBackupDTO,
   CnLabManagerStatus,
   CnManagerLabComposeRestartOptions,
@@ -241,6 +243,97 @@ export class CnExternalLabManagerApiService {
     containerName: string
   ): Promise<CnLabManagerDockerLogs> {
     return lastValueFrom(this.get(apiInfo, `${this.baseContainersRoute}/${containerName}/logs/error`));
+  }
+
+  /**
+   * Read a container's logs with the filtering done on the lab manager.
+   *
+   * Calls `logs/search` optimistically and branches on 404 rather than comparing
+   * `CnLabManagerStatus.version`: a version string is only a proxy for the capability, and a
+   * patched lab manager or a custom deployment makes the comparison lie. On 404 this
+   * degrades to `tail` alone — the last N lines of the `logs` blob, no regex, none of the
+   * subtle parts reimplemented — and says so through `filteredLocally`, so a caller can tell
+   * "nothing matched" from "the filter never ran".
+   *
+   * @see docs/specs/lab-manager-log-filtering.md
+   */
+  public async searchLogs(
+    apiInfo: CnExternalApiInfo,
+    containerName: string,
+    query: CnLabManagerLogSearchQuery
+  ): Promise<CnLabManagerDockerLogSearch> {
+    // logError: false — a 404 here is the expected answer from a lab manager that predates
+    // the route, not an incident worth a stack trace in the logs.
+    return lastValueFrom(
+      this.get(apiInfo, `${this.baseContainersRoute}/${containerName}/logs/search`, undefined, {
+        params: this.toLogSearchParams(query),
+        logError: false,
+        timeout: 20000,
+      })
+    )
+      .then((result: CnLabManagerDockerLogSearch) => ({ ...result, filteredLocally: false }))
+      .catch(async (error: unknown) => {
+        if (!CnExternalLabManagerApiService.isNotFound(error)) {
+          throw error;
+        }
+        this.logger.log(
+          `Lab manager ${apiInfo.apiUrl} has no logs/search route, falling back to a local tail`
+        );
+        return this.tailLogsLocally(apiInfo, containerName, query.tail);
+      });
+  }
+
+  /** Drop the filters the lab manager cannot be asked about, so undefined is not sent as "". */
+  private toLogSearchParams(query: CnLabManagerLogSearchQuery): Record<string, string | number | boolean> {
+    const params: Record<string, string | number | boolean> = {};
+    for (const [key, value] of Object.entries(query)) {
+      if (value != null) {
+        params[key] = value as string | number | boolean;
+      }
+    }
+    return params;
+  }
+
+  /**
+   * The degraded read: the whole `logs` blob, kept to its last `tail` lines.
+   *
+   * `matchedLines` equals `totalLines` because nothing was matched — no pattern was applied,
+   * so every line is still a candidate. `truncated` says whether lines were dropped.
+   */
+  private async tailLogsLocally(
+    apiInfo: CnExternalApiInfo,
+    containerName: string,
+    tail: number | undefined
+  ): Promise<CnLabManagerDockerLogSearch> {
+    const blob = await this.getLogs(apiInfo, containerName);
+    const lines = (blob.logs ?? '').split('\n');
+    const kept = tail != null && tail > 0 && lines.length > tail ? lines.slice(-tail) : lines;
+
+    return {
+      logs: kept.join('\n'),
+      totalLines: lines.length,
+      matchedLines: lines.length,
+      returnedLines: kept.length,
+      truncated: kept.length < lines.length,
+      truncatedBy: kept.length < lines.length ? 'tail' : null,
+      window: null,
+      filteredLocally: true,
+    };
+  }
+
+  /**
+   * Whether an error is the lab manager answering 404.
+   *
+   * Both shapes are checked because {@link catchError} converts a lab manager error that
+   * carries a known error body into a {@link BlHttpException}, and leaves anything else — an
+   * unknown route, which is exactly this case — as a {@link BlExternalApiError}.
+   */
+  private static isNotFound(error: unknown): boolean {
+    const candidate = error as { status?: number | null; getStatus?: () => number };
+    if (candidate?.status === 404) {
+      return true;
+    }
+    return typeof candidate?.getStatus === 'function' && candidate.getStatus() === 404;
   }
 
   public async exportLogs(apiInfo: CnExternalApiInfo, containerName: string): Promise<string> {

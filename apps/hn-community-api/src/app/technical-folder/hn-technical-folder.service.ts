@@ -53,25 +53,29 @@ export class HnTechnicalFolderService {
     let protocolsOk: boolean = false;
     let otherClassesOk: boolean = false;
 
-    if (importFile.resources && importFile.resources.length > 0)
+    if (this.hasItems(importFile.resources))
       resourcesOk = await this.resourceService.createTechnicalDocResources(
         technicalFolder,
         importFile.resources
       );
-    if (importFile.tasks && importFile.tasks.length > 0)
+    if (this.hasItems(importFile.tasks))
       tasksOk = await this.taskService.createTechnicalDocTasks(technicalFolder, importFile.tasks);
-    if (importFile.protocols && importFile.protocols.length > 0)
+    if (this.hasItems(importFile.protocols))
       protocolsOk = await this.protocolService.createTechnicalDocProtocols(
         technicalFolder,
         importFile.protocols
       );
-    if (importFile.other_classes && importFile.other_classes.length > 0)
+    if (this.hasItems(importFile.other_classes))
       otherClassesOk = await this.techDocOtherClassService.createTechnicalDocOtherClasses(
         technicalFolder,
         importFile.other_classes
       );
 
     return resourcesOk && tasksOk && protocolsOk && otherClassesOk;
+  }
+
+  private hasItems(items: unknown[] | null | undefined): boolean {
+    return !!items && items.length > 0;
   }
 
   async findTechnicalDoc(brickMajorVersionId: string): Promise<HnNode | null> {

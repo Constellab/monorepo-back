@@ -30,56 +30,96 @@ export class CnCaptchaService {
     return this.recaptchaClient;
   }
 
+  /**
+   * An unconfigured site key is a **local-only** shortcut.
+   *
+   * Answering `true` to a missing key anywhere else silently removes the only
+   * brute-force protection that login, signup and the labs' credential check have, and
+   * nothing about the response says so — a blank `CAPTCHA_SITE_KEY` in an environment's
+   * configuration is enough, which is exactly what an emptied CapRover field looks like.
+   * The August 2026 black box audit read the login of a lab as having no captcha at all;
+   * this branch is how that state can happen without anyone changing code.
+   */
   public async validateCaptcha(token: string | undefined, action: string): Promise<boolean> {
-    if (!this.configService.getCaptchaSiteKey()) {
-      this.logger.warn('Captcha site key not configured, skipping captcha validation.');
-      return true;
+    const siteKey: string | undefined = this.configService.getCaptchaSiteKey();
+
+    if (!siteKey) {
+      return this.answerWithoutSiteKey();
     }
     if (!token) {
       return false;
     }
+
     try {
-      const projectId = this.configService.getGcpProjectId();
-      const projectPath = this.getClient().projectPath(projectId);
-
-      const request = {
-        parent: projectPath,
-        assessment: {
-          event: {
-            token: token,
-            siteKey: this.configService.getCaptchaSiteKey(),
-          },
-        },
-      };
-
-      const [response] = await this.getClient().createAssessment(request);
-
-      // Check if the token is valid
-      if (!response.tokenProperties?.valid) {
-        this.logger.warn(`Invalid reCAPTCHA token: ${response.tokenProperties?.invalidReason}`);
-        return false;
-      }
-
-      // Check the risk score (0.0 to 1.0, where 1.0 is very likely a good interaction)
-      const score = response.riskAnalysis?.score || 0;
-      const threshold = 0.5;
-
-      if (score < threshold) {
-        this.logger.warn(`Low reCAPTCHA score: ${score}`);
-        return false;
-      }
-
-      // For now only verify action to log a message, return error once all lab are on v0.20.0 or more
-      if (action && response.tokenProperties?.action !== action) {
-        this.logger.warn(`Action mismatch. Expected: ${action}, Got: ${response.tokenProperties?.action}`);
-      }
-
-      return true;
+      return await this.assessToken(token, action, siteKey);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       const errorStack = error instanceof Error ? error.stack : undefined;
       this.logger.error(`Error validating reCAPTCHA: ${errorMessage}`, errorStack);
       return false;
+    }
+  }
+
+  /**
+   * The verdict when no site key is configured: refused everywhere but locally, where there is
+   * nothing to call. The reasoning is on {@link validateCaptcha}.
+   */
+  private answerWithoutSiteKey(): boolean {
+    if (!this.configService.isLocal()) {
+      this.logger.error(
+        'Captcha site key is not configured outside a local environment: refusing the captcha. ' +
+          'Set CAPTCHA_SITE_KEY — every credential entry point is unprotected until it is.'
+      );
+      return false;
+    }
+    this.logger.warn('Captcha site key not configured, skipping captcha validation.');
+    return true;
+  }
+
+  /** Ask reCAPTCHA Enterprise what it makes of this token. */
+  private async assessToken(token: string, action: string, siteKey: string): Promise<boolean> {
+    const projectId = this.configService.getGcpProjectId();
+    const projectPath = this.getClient().projectPath(projectId);
+
+    const request = {
+      parent: projectPath,
+      assessment: {
+        event: {
+          token: token,
+          siteKey,
+        },
+      },
+    };
+
+    const [response] = await this.getClient().createAssessment(request);
+    const tokenProperties = response.tokenProperties;
+
+    // Check if the token is valid
+    if (!tokenProperties?.valid) {
+      this.logger.warn(`Invalid reCAPTCHA token: ${tokenProperties?.invalidReason}`);
+      return false;
+    }
+
+    // Check the risk score (0.0 to 1.0, where 1.0 is very likely a good interaction)
+    const score = response.riskAnalysis?.score || 0;
+    const threshold = 0.5;
+
+    if (score < threshold) {
+      this.logger.warn(`Low reCAPTCHA score: ${score}`);
+      return false;
+    }
+
+    this.warnOnActionMismatch(action, tokenProperties.action);
+
+    return true;
+  }
+
+  /**
+   * For now only verify action to log a message, return error once all lab are on v0.20.0 or more
+   */
+  private warnOnActionMismatch(action: string, tokenAction: string | null | undefined): void {
+    if (action && tokenAction !== action) {
+      this.logger.warn(`Action mismatch. Expected: ${action}, Got: ${tokenAction}`);
     }
   }
 

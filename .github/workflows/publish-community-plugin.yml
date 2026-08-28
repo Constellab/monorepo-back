@@ -1,0 +1,55 @@
+name: Publish the community plugin
+
+# Publishes apps/hn-community-api/claude-plugin/community into Constellab/agent-plugins.
+#
+# `hn_*` is the Community API's release tag — the same one build-community-api.yml builds the
+# image from. Separate from the space plugin's workflow on purpose: the two applications are
+# released independently, and an `hn_` tag must not republish a space plugin built from
+# whatever master happened to hold.
+
+on:
+  push:
+    tags:
+      - 'hn_*'
+  pull_request:
+    paths:
+      - 'apps/hn-community-api/claude-plugin/**'
+      - '.claude-plugin/**'
+      # The API serves the commands that install this plugin, from constants that repeat what
+      # the manifest declares. `check_constants` below is what keeps the two equal, so an edit
+      # to this file has to reach it — without this path it only runs when the plugin moves,
+      # which is the half of the drift it cannot see.
+      - 'apps/hn-community-api/src/app/mcp-doc/hn-mcp-doc.constants.ts'
+      - '.github/scripts/check_plugin_constants.sh'
+      - '.github/workflows/publish-community-plugin.yml'
+      - '.github/workflows/publish_agent_plugin.yml'
+  workflow_dispatch:
+
+jobs:
+  # Its own job rather than a step of `publish`: a job that calls a reusable workflow with
+  # `uses` cannot carry steps of its own.
+  check_constants:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6.0.2
+
+      - name: Check the API constants match the plugin manifest
+        run: |
+          bash .github/scripts/check_plugin_constants.sh \
+            apps/hn-community-api/claude-plugin/community/.claude-plugin/plugin.json \
+            apps/hn-community-api/src/app/mcp-doc/hn-mcp-doc.constants.ts \
+            HN_MCP_PLUGIN_NAME \
+            HN_MCP_PLUGIN_API_URL_CONFIG_KEY \
+            HN_MCP_COMMUNITY_DOC_RESOURCE_PATH
+
+  # Gated on the constants check: a release must not publish a plugin whose manifest disagrees
+  # with the API serving its install commands, since the two only meet in a user's terminal.
+  publish:
+    needs: check_constants
+    uses: ./.github/workflows/publish_agent_plugin.yml
+    with:
+      plugin_dir: apps/hn-community-api/claude-plugin/community
+      plugin_name: community
+      tag_prefix: hn_
+    secrets:
+      agent_plugins_token: ${{ secrets.AGENT_PLUGINS_TOKEN }}

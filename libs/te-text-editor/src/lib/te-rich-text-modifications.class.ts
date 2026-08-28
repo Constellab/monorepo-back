@@ -1,9 +1,6 @@
 import { Duration } from 'luxon';
 
-import {
-  TeRichTextBlockModification,
-  TeRichTextModificationType,
-} from './te-rich-text-block-modification.class';
+import { TeRichTextBlockModification } from './te-rich-text-block-modification.class';
 import {
   TeRichTextBlockModificationsDTO,
   TeRichTextBlockModificationWithUser,
@@ -90,7 +87,7 @@ export class TeRichTextModifications {
   public fusion(modifications: TeRichTextModifications): void {
     // clear the redo array because this is a modification
     this.resetRedoModifications();
-    const modificationsList = this.reduceModifications(modifications.modifications);
+    const modificationsList = modifications.modifications;
     if (this.isEmpty()) {
       this.modifications = modificationsList;
       return;
@@ -101,45 +98,6 @@ export class TeRichTextModifications {
     }
 
     this.modifications.push(...modificationsList);
-  }
-
-  // Reduce the new modifications array to keep only the important ones
-  private reduceModifications(modifications: TeRichTextBlockModification[]): TeRichTextBlockModification[] {
-    const areAllMoved = modifications.every(
-      (modification) => modification.type === TeRichTextModificationType.MOVED
-    );
-    const numMoved = modifications.filter(
-      (modification) => modification.type === TeRichTextModificationType.MOVED
-    ).length;
-    if (numMoved == 1) {
-      modifications = modifications.filter(
-        (modification) => modification.type !== TeRichTextModificationType.MOVED
-      );
-    }
-    if (areAllMoved) {
-      let moveModification: TeRichTextBlockModification | null = null;
-      modifications.forEach((modification) => {
-        const movement = Math.abs(modification.index - (modification.oldIndex ?? 0));
-        const currentMovement = moveModification
-          ? Math.abs(moveModification.index - (moveModification.oldIndex ?? 0))
-          : 0;
-        if (
-          moveModification == null ||
-          movement > currentMovement ||
-          moveModification.getBlockDataAsString().length < modification.getBlockDataAsString().length
-        ) {
-          moveModification = modification;
-        }
-      });
-      if (moveModification) {
-        return [moveModification];
-      } else {
-        return [];
-      }
-    }
-    modifications = modifications.filter((m) => m.type !== TeRichTextModificationType.MOVED);
-
-    return modifications;
   }
 
   public toJsonObject(): TeRichTextBlockModificationsDTO {
@@ -187,6 +145,38 @@ export class TeRichTextModifications {
   }
 
   /**
+   * The first modification of the save the given one belongs to. A save is undone as a whole: the
+   * indexes its modifications carry only make sense together, so undoing from the middle of one
+   * would rebuild a document that never existed. « Restaurer cette version » passes an id picked
+   * from the history list, and that id names any row of a save, not necessarily the first.
+   */
+  public getFirstModificationOfGroup(modificationId: string): TeRichTextBlockModification {
+    const modification = this.modifications.find((modification) => modification.id === modificationId);
+    if (!modification) {
+      throw new Error('Modification not found');
+    }
+    if (!modification.groupId) return modification;
+    return this.modifications.find((candidate) => candidate.groupId === modification.groupId) ?? modification;
+  }
+
+  /**
+   * The saves that produced the modifications from `modificationId` onwards, oldest first. A save is
+   * a run of modifications sharing a groupId, and a modification without one is a save on its own.
+   */
+  public getGroupsFromModificationId(modificationId: string): TeRichTextBlockModification[][] {
+    const groups: TeRichTextBlockModification[][] = [];
+    for (const modification of this.getModificationsFromModificationId(modificationId)) {
+      const currentGroup = groups[groups.length - 1];
+      if (modification.groupId && currentGroup && currentGroup[0].groupId === modification.groupId) {
+        currentGroup.push(modification);
+      } else {
+        groups.push([modification]);
+      }
+    }
+    return groups;
+  }
+
+  /**
    * Get the first modification of the last group.
    * If the last modification has a groupId, returns the first modification with the same groupId.
    * Otherwise, returns the last modification (single modification without group).
@@ -194,14 +184,7 @@ export class TeRichTextModifications {
   public getFirstModificationOfLastGroup(): TeRichTextBlockModification | null {
     const last = this.getLastModification();
     if (!last) return null;
-    if (!last.groupId) return last;
-
-    for (let i = 0; i < this.modifications.length; i++) {
-      if (this.modifications[i].groupId === last.groupId) {
-        return this.modifications[i];
-      }
-    }
-    return last;
+    return this.getFirstModificationOfGroup(last.id);
   }
 
   public addModification(modification: TeRichTextBlockModification): void {

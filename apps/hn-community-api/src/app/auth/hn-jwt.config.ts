@@ -1,8 +1,72 @@
-const tokenDurationInSeconds: number = 60 * 60 * 24 * 7; // duration of the token in seconds, 7 days
+import { BlCookieHelper } from '@monorepo/back-core-lib';
+import { Request } from 'express';
+
+/**
+ * Lifetime kept as the module-wide default for `BlJwtModule`, i.e. the duration a
+ * token gets when no explicit override is passed to `BlJwtService.generateToken()`.
+ *
+ * Only `cli-auth` still relies on it. Login and 2FA pass their own (much shorter)
+ * duration, so these 7 days are the last remaining long-lived token in the app —
+ * tracked in TECHNICAL_DEBT.md.
+ *
+ * TODO: remove this once `cli-auth` uses the new refresh token flow.
+ */
+const legacyTokenDurationInSeconds = 60 * 60 * 24 * 7; // 7 days
+
+/**
+ * Defaults for the session token pair.
+ */
+const defaultAccessTokenDurationInSeconds = 60 * 15; // 15 minutes
+const defaultRefreshTokenDurationInSeconds = 60 * 60 * 24 * 30; // 30 days
+
+/*
+ * There is no MCP access token lifetime here. This application verifies those tokens but
+ * does not mint them — how long one lives is stated by the Space API, which does.
+ */
 
 export const HN_JWT_CONFIG = {
-  tokenDurationInSeconds: tokenDurationInSeconds, // duration of the token in seconds
-  tokenDurationInMilliseconds: tokenDurationInSeconds * 1000, // duration of the token in milliseconds seconds
-  authorizationCookie: 'Authorization', // name of the authorization cookie
-  authExpiration: 'Auth_Expiration', // name of the auth expiration cookie
+  legacyTokenDurationInSeconds,
+  defaultAccessTokenDurationInSeconds,
+  defaultRefreshTokenDurationInSeconds,
+  authorizationCookie: 'Authorization',
+  refreshCookie: 'Refresh_Token',
+  refreshCookiePath: '/auth',
+
+  /**
+   * Marks "a session probably exists", for the server-side renderer only.
+   *
+   * The renderer receives the browser's cookies but cannot use either token: the
+   * `Authorization` one it sees is expired past 15 minutes and it cannot validate it
+   * without calling the API, and `Refresh_Token` never reaches it at all
+   * (`Path=/auth`). Nor can it refresh on its own — the renewed `Set-Cookie` would
+   * never reach the browser. Without this marker every server-rendered page comes out
+   * logged out past 15 minutes, for a session that is valid for 30 days.
+   *
+   * Deliberately `httpOnly` like the other two: no browser JS reads it, only the
+   * renderer, and `httpOnly` cookies do reach the renderer.
+   *
+   * Its lifetime matches the refresh token's and it is re-set on every rotation, so
+   * "marker absent" reliably means "no session left to resume". Only its EXISTENCE is
+   * ever meaningful — the value is a constant `1`. Never put a timestamp, an id or
+   * anything actionable in it: it is unauthenticated, forgeable input, and a value that
+   * looks useful invites treating it as an authorization decision.
+   */
+  sessionMarkerCookie: 'Session_Active',
+  sessionMarkerValue: '1',
 };
+
+/**
+ * Where an access token can come from, in order of precedence.
+ *
+ * Shared by `BlJwtStrategy` — which uses it to validate — and `HnJwtAuthGuard`, which
+ * uses it to answer a different question: "was a token presented at all?". The guard
+ * cannot infer that from a validation failure, since a missing and a rejected token
+ * both surface as the same error. Keep the two in step by keeping them on this
+ * function: a source added here but not there makes the guard blind to it.
+ */
+export function hnExtractJwtFromRequest(request: Request): string | undefined {
+  return (
+    request.headers.authorization ??
+    BlCookieHelper.getCookieFromHeader(request.headers.cookie ?? '', HN_JWT_CONFIG.authorizationCookie)
+  );
+}

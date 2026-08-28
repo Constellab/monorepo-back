@@ -29,7 +29,7 @@ describe('TeRichTextAggregate', () => {
   let mockGetUser: TeRichTextGetUserFunction;
 
   beforeEach(() => {
-    mockGetUser = jest.fn().mockResolvedValue(mockUser);
+    mockGetUser = testMock.fn().mockResolvedValue(mockUser);
   });
 
   describe('constructor', () => {
@@ -269,7 +269,7 @@ describe('TeRichTextAggregate', () => {
         .getModifications()
         .find((mod) => mod.type === TeRichTextModificationType.CREATED && mod.blockId === 'block-3');
       expect(createdModification).toBeDefined();
-      expect(createdModification!.type).toBe(TeRichTextModificationType.CREATED);
+      expect(createdModification?.type).toBe(TeRichTextModificationType.CREATED);
     });
 
     it('should detect deleted blocks', () => {
@@ -286,7 +286,7 @@ describe('TeRichTextAggregate', () => {
         .getModifications()
         .find((mod) => mod.type === TeRichTextModificationType.DELETED && mod.blockId === 'block-2');
       expect(deletedModification).toBeDefined();
-      expect(deletedModification!.type).toBe(TeRichTextModificationType.DELETED);
+      expect(deletedModification?.type).toBe(TeRichTextModificationType.DELETED);
     });
 
     it('should detect updated blocks', () => {
@@ -306,8 +306,8 @@ describe('TeRichTextAggregate', () => {
         .getModifications()
         .find((mod) => mod.type === TeRichTextModificationType.UPDATED && mod.blockId === 'block-1');
       expect(updatedModification).toBeDefined();
-      expect(updatedModification!.type).toBe(TeRichTextModificationType.UPDATED);
-      expect(updatedModification!.differences).toBeDefined();
+      expect(updatedModification?.type).toBe(TeRichTextModificationType.UPDATED);
+      expect(updatedModification?.differences).toBeDefined();
     });
 
     it('should detect moved blocks', () => {
@@ -345,6 +345,66 @@ describe('TeRichTextAggregate', () => {
       // Verify that at least one move has different old and new positions
       const hasMoveWithDifferentPosition = moveModifications.some((mod) => mod.index !== mod.oldIndex);
       expect(hasMoveWithDifferentPosition).toBe(true);
+    });
+
+    /**
+     * The index a moved block came from, exactly. The scan for deleted blocks walks the old
+     * document backwards, and doing that in place used to leave the old document reversed for the
+     * scan that follows — so every `oldIndex` came out mirrored: a two-block reorder was reported as
+     * no change at all, and a longer one named the wrong block. An `oldIndex` that lies is not a
+     * cosmetic fault: undo splices on it.
+     */
+    it('reports the position a moved block actually came from, and leaves the old document alone', () => {
+      const before = new TeRichText({
+        version: 2,
+        editorVersion: '2.30.2',
+        blocks: [
+          { id: 'block-1', type: TeBlockType.PARAGRAPH, data: { text: 'Block 1' } },
+          { id: 'block-2', type: TeBlockType.PARAGRAPH, data: { text: 'Block 2' } },
+          { id: 'block-3', type: TeBlockType.PARAGRAPH, data: { text: 'Block 3' } },
+        ],
+      });
+      const threeBlockAggregate = new TeRichTextAggregate(before);
+
+      const result = threeBlockAggregate.compareWithCurrent(
+        new TeRichText({
+          version: 2,
+          editorVersion: '2.30.2',
+          blocks: [
+            { id: 'block-2', type: TeBlockType.PARAGRAPH, data: { text: 'Block 2' } },
+            { id: 'block-3', type: TeBlockType.PARAGRAPH, data: { text: 'Block 3' } },
+            { id: 'block-1', type: TeBlockType.PARAGRAPH, data: { text: 'Block 1' } },
+          ],
+        }),
+        mockUserId
+      );
+
+      // dragging block-1 down names block-1, not the two blocks it stepped over
+      expect(
+        result
+          .getModifications()
+          .filter((mod) => mod.type === TeRichTextModificationType.MOVED)
+          .map((mod) => [mod.blockId, mod.oldIndex, mod.index])
+      ).toEqual([['block-1', 0, 2]]);
+      expect(before.getBlocks().map((block) => block.id)).toEqual(['block-1', 'block-2', 'block-3']);
+    });
+
+    it('detects a two-block reorder rather than reporting no change', () => {
+      const result = aggregate.compareWithCurrent(
+        new TeRichText({
+          version: 2,
+          editorVersion: '2.30.2',
+          blocks: [
+            { id: 'block-2', type: TeBlockType.PARAGRAPH, data: { text: 'Block 2' } },
+            { id: 'block-1', type: TeBlockType.PARAGRAPH, data: { text: 'Block 1' } },
+          ],
+        }),
+        mockUserId
+      );
+
+      expect(
+        result.getModifications().map((mod) => [mod.blockId, mod.type, mod.oldIndex, mod.index])
+      ).toEqual([['block-2', TeRichTextModificationType.MOVED, 1, 0]]);
     });
 
     it('should handle LIST blocks with meta removal', () => {
@@ -421,7 +481,7 @@ describe('TeRichTextAggregate', () => {
         expect(lastModifications).toBeDefined();
         expect(lastModifications.length).toBe(1);
         expect(lastModifications[0].type).toBe(TeRichTextModificationType.UPDATED);
-        expect(aggregate.richText.getBlock('block-1')!.data.text).toBe('Original');
+        expect(aggregate.richText.getBlock('block-1')?.data.text).toBe('Original');
       });
 
       it('should return empty array when no modifications exist', () => {
@@ -439,7 +499,7 @@ describe('TeRichTextAggregate', () => {
 
         aggregate.undoModifications(modificationId);
 
-        expect(aggregate.richText.getBlock('block-1')!.data.text).toBe('Original');
+        expect(aggregate.richText.getBlock('block-1')?.data.text).toBe('Original');
       });
 
       it('should handle CREATED modification undo', () => {
@@ -537,7 +597,7 @@ describe('TeRichTextAggregate', () => {
         expect(redoneModifications).toBeDefined();
         expect(redoneModifications.length).toBe(1);
         expect(redoneModifications[0].type).toBe(TeRichTextModificationType.UPDATED);
-        expect(aggregate.richText.getBlock('block-1')!.data.text).toBe('Updated');
+        expect(aggregate.richText.getBlock('block-1')?.data.text).toBe('Updated');
       });
 
       it('should return empty array when no redo modifications exist', () => {
@@ -712,8 +772,8 @@ describe('TeRichTextAggregate', () => {
       expect(undone.length).toBe(modsBefore);
       expect(aggregate.modifications.getModifications().length).toBe(0);
       expect(aggregate.richText.getBlocks().length).toBe(2);
-      expect(aggregate.richText.getBlock('block-1')!.data.text).toBe('Block 1');
-      expect(aggregate.richText.getBlock('block-2')!.data.text).toBe('Block 2');
+      expect(aggregate.richText.getBlock('block-1')?.data.text).toBe('Block 1');
+      expect(aggregate.richText.getBlock('block-2')?.data.text).toBe('Block 2');
     });
 
     it('should redo entire group in one redoLastModification call', () => {
@@ -743,7 +803,7 @@ describe('TeRichTextAggregate', () => {
 
       expect(redone.length).toBeGreaterThan(1);
       expect(aggregate.richText.getBlocks().length).toBe(1);
-      expect(aggregate.richText.getBlock('block-1')!.data.text).toBe('Updated Block 1');
+      expect(aggregate.richText.getBlock('block-1')?.data.text).toBe('Updated Block 1');
     });
 
     it('should handle undo/redo with mixed grouped and ungrouped modifications', () => {
@@ -782,11 +842,11 @@ describe('TeRichTextAggregate', () => {
       // Undo should revert the group (second change)
       aggregate.undoLastModification();
       expect(aggregate.richText.getBlocks().length).toBe(2);
-      expect(aggregate.richText.getBlock('block-1')!.data.text).toBe('Updated 1');
+      expect(aggregate.richText.getBlock('block-1')?.data.text).toBe('Updated 1');
 
       // Undo should revert the single modification (first change)
       aggregate.undoLastModification();
-      expect(aggregate.richText.getBlock('block-1')!.data.text).toBe('Block 1');
+      expect(aggregate.richText.getBlock('block-1')?.data.text).toBe('Block 1');
     });
   });
 
@@ -811,7 +871,7 @@ describe('TeRichTextAggregate', () => {
       // Undo → header should come back
       aggregate.undoLastModification();
       expect(aggregate.richText.getBlocks()).toHaveLength(1);
-      expect(aggregate.richText.getBlock('h1')!.data).toEqual({ text: 'Title', level: 2 });
+      expect(aggregate.richText.getBlock('h1')?.data).toEqual({ text: 'Title', level: 2 });
 
       // Redo → header deleted again
       aggregate.redoLastModification();
@@ -837,8 +897,8 @@ describe('TeRichTextAggregate', () => {
       );
 
       aggregate.undoLastModification();
-      expect(aggregate.richText.getBlock('h1')!.data.text).toBe('Original Title');
-      expect(aggregate.richText.getBlock('h1')!.data.level).toBe(3);
+      expect(aggregate.richText.getBlock('h1')?.data.text).toBe('Original Title');
+      expect(aggregate.richText.getBlock('h1')?.data.level).toBe(3);
     });
 
     it('should undo/redo nested list block changes', () => {
@@ -882,7 +942,7 @@ describe('TeRichTextAggregate', () => {
       );
 
       aggregate.undoLastModification();
-      const restoredItems = aggregate.richText.getBlock('list-1')!.data.items;
+      const restoredItems = aggregate.richText.getBlock('list-1')?.data.items;
       expect(restoredItems[0].content).toBe('Item 1');
       expect(restoredItems[1].items).toHaveLength(1);
     });
@@ -919,10 +979,10 @@ describe('TeRichTextAggregate', () => {
       );
 
       aggregate.undoLastModification();
-      const restored = aggregate.richText.getBlock('fig1')!;
+      const restored = aggregate.richText.getBlock('fig1');
       expect(restored).toBeDefined();
-      expect(restored.data.filename).toBe('img_001.png');
-      expect(restored.data.naturalWidth).toBe(2000);
+      expect(restored?.data.filename).toBe('img_001.png');
+      expect(restored?.data.naturalWidth).toBe(2000);
     });
 
     it('should undo/redo mixed block types in a single action', () => {
@@ -957,8 +1017,8 @@ describe('TeRichTextAggregate', () => {
       // Undo should restore all 3 blocks
       aggregate.undoLastModification();
       expect(aggregate.richText.getBlocks()).toHaveLength(3);
-      expect(aggregate.richText.getBlock('h1')!.type).toBe(TeBlockType.HEADER);
-      expect(aggregate.richText.getBlock('list1')!.type).toBe(TeBlockType.LIST);
+      expect(aggregate.richText.getBlock('h1')?.type).toBe(TeBlockType.HEADER);
+      expect(aggregate.richText.getBlock('list1')?.type).toBe(TeBlockType.LIST);
     });
   });
 
@@ -987,7 +1047,7 @@ describe('TeRichTextAggregate', () => {
 
       aggregate.undoLastModification();
       // Note: stringifyBlockData normalizes &nbsp; to space, so after undo via diff the &nbsp; is lost
-      expect(aggregate.richText.getBlock('p1')!.data.text).toBe('Hello World');
+      expect(aggregate.richText.getBlock('p1')?.data.text).toBe('Hello World');
     });
 
     it('should handle text with inline HTML formatting', () => {
@@ -1015,7 +1075,7 @@ describe('TeRichTextAggregate', () => {
       );
 
       aggregate.undoLastModification();
-      expect(aggregate.richText.getBlock('p1')!.data.text).toBe('Hello <b>bold</b> text');
+      expect(aggregate.richText.getBlock('p1')?.data.text).toBe('Hello <b>bold</b> text');
     });
 
     it('should handle text with special characters and unicode', () => {
@@ -1037,7 +1097,7 @@ describe('TeRichTextAggregate', () => {
       );
 
       aggregate.undoLastModification();
-      expect(aggregate.richText.getBlock('p1')!.data.text).toBe('Prix: 10€ — résumé «test»');
+      expect(aggregate.richText.getBlock('p1')?.data.text).toBe('Prix: 10€ — résumé «test»');
     });
 
     it('should handle undo to empty state then redo', () => {
@@ -1059,7 +1119,7 @@ describe('TeRichTextAggregate', () => {
 
       aggregate.redoLastModification();
       expect(aggregate.richText.getBlocks()).toHaveLength(1);
-      expect(aggregate.richText.getBlock('p1')!.data.text).toBe('New');
+      expect(aggregate.richText.getBlock('p1')?.data.text).toBe('New');
     });
 
     it('should clear redo stack when new modification is made after undo', () => {
@@ -1081,7 +1141,7 @@ describe('TeRichTextAggregate', () => {
       );
 
       aggregate.undoLastModification();
-      expect(aggregate.richText.getBlock('p1')!.data.text).toBe('V1');
+      expect(aggregate.richText.getBlock('p1')?.data.text).toBe('V1');
 
       // Make a new change instead of redo
       aggregate.updateContent(
@@ -1096,7 +1156,7 @@ describe('TeRichTextAggregate', () => {
       // Redo should do nothing (stack was cleared)
       const redoResult = aggregate.redoLastModification();
       expect(redoResult).toEqual([]);
-      expect(aggregate.richText.getBlock('p1')!.data.text).toBe('V3');
+      expect(aggregate.richText.getBlock('p1')?.data.text).toBe('V3');
     });
 
     it('should handle multiple sequential undo then redo', () => {
@@ -1136,29 +1196,29 @@ describe('TeRichTextAggregate', () => {
 
       // Undo 3 times
       aggregate.undoLastModification();
-      expect(aggregate.richText.getBlock('p1')!.data.text).toBe('V3');
+      expect(aggregate.richText.getBlock('p1')?.data.text).toBe('V3');
       aggregate.undoLastModification();
-      expect(aggregate.richText.getBlock('p1')!.data.text).toBe('V2');
+      expect(aggregate.richText.getBlock('p1')?.data.text).toBe('V2');
       aggregate.undoLastModification();
-      expect(aggregate.richText.getBlock('p1')!.data.text).toBe('V1');
+      expect(aggregate.richText.getBlock('p1')?.data.text).toBe('V1');
 
       // Undo beyond start → no effect
       const emptyUndo = aggregate.undoLastModification();
       expect(emptyUndo).toEqual([]);
-      expect(aggregate.richText.getBlock('p1')!.data.text).toBe('V1');
+      expect(aggregate.richText.getBlock('p1')?.data.text).toBe('V1');
 
       // Redo 3 times
       aggregate.redoLastModification();
-      expect(aggregate.richText.getBlock('p1')!.data.text).toBe('V2');
+      expect(aggregate.richText.getBlock('p1')?.data.text).toBe('V2');
       aggregate.redoLastModification();
-      expect(aggregate.richText.getBlock('p1')!.data.text).toBe('V3');
+      expect(aggregate.richText.getBlock('p1')?.data.text).toBe('V3');
       aggregate.redoLastModification();
-      expect(aggregate.richText.getBlock('p1')!.data.text).toBe('V4');
+      expect(aggregate.richText.getBlock('p1')?.data.text).toBe('V4');
 
       // Redo beyond end → no effect
       const emptyRedo = aggregate.redoLastModification();
       expect(emptyRedo).toEqual([]);
-      expect(aggregate.richText.getBlock('p1')!.data.text).toBe('V4');
+      expect(aggregate.richText.getBlock('p1')?.data.text).toBe('V4');
     });
 
     it('should handle undo/redo with block containing empty data', () => {
@@ -1180,7 +1240,7 @@ describe('TeRichTextAggregate', () => {
       );
 
       aggregate.undoLastModification();
-      expect(aggregate.richText.getBlock('p1')!.data.text).toBe('');
+      expect(aggregate.richText.getBlock('p1')?.data.text).toBe('');
     });
 
     it('should handle rapid successive updates on the same block', () => {
@@ -1208,10 +1268,10 @@ describe('TeRichTextAggregate', () => {
       // Undo all 5 steps
       for (let i = steps.length - 2; i >= 0; i--) {
         aggregate.undoLastModification();
-        expect(aggregate.richText.getBlock('p1')!.data.text).toBe(i >= 0 ? steps[i] : '');
+        expect(aggregate.richText.getBlock('p1')?.data.text).toBe(i >= 0 ? steps[i] : '');
       }
       aggregate.undoLastModification();
-      expect(aggregate.richText.getBlock('p1')!.data.text).toBe('');
+      expect(aggregate.richText.getBlock('p1')?.data.text).toBe('');
     });
 
     it('should handle undo/redo with blocks containing JSON-special characters', () => {
@@ -1237,7 +1297,7 @@ describe('TeRichTextAggregate', () => {
       );
 
       aggregate.undoLastModification();
-      expect(aggregate.richText.getBlock('p1')!.data.text).toBe('Line with "quotes" and \\backslashes');
+      expect(aggregate.richText.getBlock('p1')?.data.text).toBe('Line with "quotes" and \\backslashes');
     });
 
     it('should handle undo when block order changes with content changes simultaneously', () => {
@@ -1271,7 +1331,7 @@ describe('TeRichTextAggregate', () => {
       aggregate.undoLastModification();
       expect(aggregate.richText.getBlocks()).toHaveLength(3);
       expect(aggregate.richText.getBlock('p2')).toBeDefined();
-      expect(aggregate.richText.getBlock('p3')!.data.text).toBe('Third');
+      expect(aggregate.richText.getBlock('p3')?.data.text).toBe('Third');
     });
 
     it('should handle resource view blocks with complex nested data', () => {
@@ -1307,10 +1367,10 @@ describe('TeRichTextAggregate', () => {
       );
 
       aggregate.undoLastModification();
-      const restored = aggregate.richText.getBlock('rv1')!;
+      const restored = aggregate.richText.getBlock('rv1');
       expect(restored).toBeDefined();
-      expect(restored.data.view_config.type).toBe('scatter');
-      expect(restored.data.view_config.x).toEqual([1, 2, 3]);
+      expect(restored?.data.view_config.type).toBe('scatter');
+      expect(restored?.data.view_config.x).toEqual([1, 2, 3]);
     });
 
     it('should handle multiple groups undo/redo in correct order', () => {
@@ -1355,22 +1415,265 @@ describe('TeRichTextAggregate', () => {
 
       // Undo action 2 (single)
       aggregate.undoLastModification();
-      expect(aggregate.richText.getBlock('p2')!.data.text).toBe('B');
-      expect(aggregate.richText.getBlock('p1')!.data.text).toBe('A modified');
+      expect(aggregate.richText.getBlock('p2')?.data.text).toBe('B');
+      expect(aggregate.richText.getBlock('p1')?.data.text).toBe('A modified');
 
       // Undo action 1 (group)
       aggregate.undoLastModification();
-      expect(aggregate.richText.getBlock('p1')!.data.text).toBe('A');
+      expect(aggregate.richText.getBlock('p1')?.data.text).toBe('A');
       expect(aggregate.richText.getBlocks()).toHaveLength(2);
 
       // Redo action 1 (group)
       aggregate.redoLastModification();
-      expect(aggregate.richText.getBlock('p1')!.data.text).toBe('A modified');
+      expect(aggregate.richText.getBlock('p1')?.data.text).toBe('A modified');
       expect(aggregate.richText.getBlocks()).toHaveLength(3);
 
       // Redo action 2 (single)
       aggregate.redoLastModification();
-      expect(aggregate.richText.getBlock('p2')!.data.text).toBe('B modified');
+      expect(aggregate.richText.getBlock('p2')?.data.text).toBe('B modified');
+    });
+  });
+
+  /**
+   * A save is a batch: the user drags a block and types in another one, and the whole thing lands
+   * in a single `updateContent`. The history must name the block that really moved — not the ones
+   * whose index merely shifted because something above them was deleted or inserted — and the undo
+   * of that batch must land exactly on the state the document had before the save.
+   */
+  describe('a move batched with another change', () => {
+    const paragraphs = (...entries: [string, string][]): TeRichText =>
+      new TeRichText({
+        version: 2,
+        editorVersion: '2.30.2',
+        blocks: entries.map(([id, text]) => ({ id, type: TeBlockType.PARAGRAPH, data: { text } })),
+      });
+
+    const contentOf = (target: TeRichTextAggregate): [string, string][] =>
+      target.richText.getBlocks().map((block) => [block.id as string, block.data.text as string]);
+
+    const historyOf = (target: TeRichTextAggregate): [string, TeRichTextModificationType][] =>
+      target.modifications.getModifications().map((mod) => [mod.blockId, mod.type]);
+
+    let before: TeRichTextAggregate;
+
+    beforeEach(() => {
+      before = new TeRichTextAggregate(
+        paragraphs(['p1', 'One'], ['p2', 'Two'], ['p3', 'Three'], ['p4', 'Four'])
+      );
+    });
+
+    it('records the move when a block is moved and another block is inserted', () => {
+      before.updateContent(
+        paragraphs(['p2', 'Two'], ['p3', 'Three'], ['p5', 'Five'], ['p4', 'Four'], ['p1', 'One']),
+        mockUserId
+      );
+
+      const history = historyOf(before);
+      expect(history).toHaveLength(2);
+      expect(history).toEqual(
+        expect.arrayContaining([
+          ['p5', TeRichTextModificationType.CREATED],
+          ['p1', TeRichTextModificationType.MOVED],
+        ])
+      );
+
+      before.undoLastModification();
+
+      expect(contentOf(before)).toEqual([
+        ['p1', 'One'],
+        ['p2', 'Two'],
+        ['p3', 'Three'],
+        ['p4', 'Four'],
+      ]);
+    });
+
+    it('records the move when a block is moved and another block is edited', () => {
+      before.updateContent(
+        paragraphs(['p2', 'Two'], ['p3', 'Three edited'], ['p4', 'Four'], ['p1', 'One']),
+        mockUserId
+      );
+
+      const history = historyOf(before);
+      expect(history).toHaveLength(2);
+      expect(history).toEqual(
+        expect.arrayContaining([
+          ['p3', TeRichTextModificationType.UPDATED],
+          ['p1', TeRichTextModificationType.MOVED],
+        ])
+      );
+
+      before.undoLastModification();
+
+      expect(contentOf(before)).toEqual([
+        ['p1', 'One'],
+        ['p2', 'Two'],
+        ['p3', 'Three'],
+        ['p4', 'Four'],
+      ]);
+    });
+
+    it('records the move when a block is moved and another block is deleted', () => {
+      before.updateContent(paragraphs(['p3', 'Three'], ['p2', 'Two'], ['p4', 'Four']), mockUserId);
+
+      const history = historyOf(before);
+      expect(history).toHaveLength(2);
+      expect(history).toEqual(
+        expect.arrayContaining([
+          ['p1', TeRichTextModificationType.DELETED],
+          ['p3', TeRichTextModificationType.MOVED],
+        ])
+      );
+
+      before.undoLastModification();
+
+      expect(contentOf(before)).toEqual([
+        ['p1', 'One'],
+        ['p2', 'Two'],
+        ['p3', 'Three'],
+        ['p4', 'Four'],
+      ]);
+    });
+
+    it('never records a move for an index shifted by a deletion above it', () => {
+      before.updateContent(paragraphs(['p2', 'Two'], ['p3', 'Three'], ['p4', 'Four']), mockUserId);
+
+      expect(historyOf(before)).toEqual([['p1', TeRichTextModificationType.DELETED]]);
+
+      before.undoLastModification();
+
+      expect(contentOf(before)).toEqual([
+        ['p1', 'One'],
+        ['p2', 'Two'],
+        ['p3', 'Three'],
+        ['p4', 'Four'],
+      ]);
+    });
+
+    it('never records a move for an index shifted by an insertion above it', () => {
+      before.updateContent(
+        paragraphs(['p0', 'Zero'], ['p1', 'One'], ['p2', 'Two'], ['p3', 'Three'], ['p4', 'Four']),
+        mockUserId
+      );
+
+      expect(historyOf(before)).toEqual([['p0', TeRichTextModificationType.CREATED]]);
+    });
+
+    it('still records a move alone as a single move', () => {
+      before.updateContent(
+        paragraphs(['p2', 'Two'], ['p3', 'Three'], ['p4', 'Four'], ['p1', 'One']),
+        mockUserId
+      );
+
+      expect(historyOf(before)).toEqual([['p1', TeRichTextModificationType.MOVED]]);
+
+      before.undoLastModification();
+
+      expect(contentOf(before)).toEqual([
+        ['p1', 'One'],
+        ['p2', 'Two'],
+        ['p3', 'Three'],
+        ['p4', 'Four'],
+      ]);
+    });
+
+    it('records both the move and the edit when the same block is moved and edited', () => {
+      before.updateContent(
+        paragraphs(['p2', 'Two'], ['p3', 'Three'], ['p4', 'Four'], ['p1', 'One edited']),
+        mockUserId
+      );
+
+      const history = historyOf(before);
+      expect(history).toHaveLength(2);
+      expect(history).toEqual(
+        expect.arrayContaining([
+          ['p1', TeRichTextModificationType.UPDATED],
+          ['p1', TeRichTextModificationType.MOVED],
+        ])
+      );
+
+      before.undoLastModification();
+
+      expect(contentOf(before)).toEqual([
+        ['p1', 'One'],
+        ['p2', 'Two'],
+        ['p3', 'Three'],
+        ['p4', 'Four'],
+      ]);
+    });
+
+    /**
+     * A save is atomic, so the only states worth rolling back to are the one before it and the one
+     * after it. « Restaurer cette version » passes a modification id chosen from the history list,
+     * and that id can name any row of a save — the second one as easily as the first. Undoing from
+     * the middle of a save rebuilds half of it, which is a document that never existed.
+     */
+    it('rolls the whole save back when asked from the middle of one', () => {
+      before.updateContent(paragraphs(['p3', 'Three'], ['p2', 'Two'], ['p4', 'Four']), mockUserId);
+      const secondRowOfTheSave = before.modifications.getModifications()[1];
+
+      before.undoModifications(secondRowOfTheSave.id);
+
+      expect(contentOf(before)).toEqual([
+        ['p1', 'One'],
+        ['p2', 'Two'],
+        ['p3', 'Three'],
+        ['p4', 'Four'],
+      ]);
+      expect(before.modifications.getModifications()).toHaveLength(0);
+    });
+
+    it('replays a mixed save when it is redone', () => {
+      const saved = paragraphs(['p2', 'Two'], ['p3', 'Three edited'], ['p4', 'Four'], ['p1', 'One']);
+      before.updateContent(saved, mockUserId);
+      before.undoLastModification();
+
+      before.redoLastModification();
+
+      expect(contentOf(before)).toEqual([
+        ['p2', 'Two'],
+        ['p3', 'Three edited'],
+        ['p4', 'Four'],
+        ['p1', 'One'],
+      ]);
+    });
+
+    it('replays a save that moved a block and deleted another one', () => {
+      before.updateContent(paragraphs(['p3', 'Three'], ['p2', 'Two'], ['p4', 'Four']), mockUserId);
+      before.undoLastModification();
+
+      before.redoLastModification();
+
+      expect(contentOf(before)).toEqual([
+        ['p3', 'Three'],
+        ['p2', 'Two'],
+        ['p4', 'Four'],
+      ]);
+    });
+
+    /**
+     * `rollbackContent` (« restaurer cette version ») is `undoModifications` from an older
+     * modification id, so it carries the same hole: it has to restore the order of the blocks, not
+     * only their text.
+     */
+    it('restores the block order when rolling back to a version before a mixed save', () => {
+      before.updateContent(
+        paragraphs(['p2', 'Two'], ['p3', 'Three edited'], ['p4', 'Four'], ['p1', 'One']),
+        mockUserId
+      );
+      const firstSave = before.modifications.getModifications()[0];
+      before.updateContent(
+        paragraphs(['p2', 'Two edited'], ['p3', 'Three edited'], ['p4', 'Four'], ['p1', 'One']),
+        mockUserId
+      );
+
+      before.undoModifications(firstSave.id);
+
+      expect(contentOf(before)).toEqual([
+        ['p1', 'One'],
+        ['p2', 'Two'],
+        ['p3', 'Three'],
+        ['p4', 'Four'],
+      ]);
     });
   });
 

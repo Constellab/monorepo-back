@@ -17,6 +17,21 @@ import { HnUser } from '../../users/hn-user.entity';
 import { HnCreateTagKeyDto } from './hn-tag-key.dto';
 import { HnTagKey, HnTagKeyAdditionalInfosSpecs } from './hn-tag-key.entity';
 
+/**
+ * Filters used to restrict a tag key search
+ */
+export interface HnFindTagKeysFilters {
+  spacesFilter: string[];
+  technicalNameFilter: string;
+  labelFilter: string;
+  publicSelected: boolean;
+  myTagKeysSelected: boolean;
+  personalOnly: boolean;
+  user?: HnUser | null;
+  userSpacesIds?: string[] | null;
+  coAuthorTagKeysIds?: string[] | null;
+}
+
 @Injectable()
 export class HnTagKeyService {
   constructor(
@@ -114,44 +129,18 @@ export class HnTagKeyService {
 
   /**
    * Get paginated tag keys with filters
-   * @param spacesFilter
-   * @param technicalNameFilter
-   * @param labelFilter
-   * @param publicSelected
-   * @param myTagKeysSelected
-   * @param personalOnly
+   * @param filters
    * @param sortsCriteria
    * @param page
    * @param size
-   * @param user
-   * @param userSpacesIds
-   * @param coAuthorTagKeysIds
    */
   public async findAllTagKeysWithFiltersPaginated(
-    spacesFilter: string[],
-    technicalNameFilter: string,
-    labelFilter: string,
-    publicSelected: boolean,
-    myTagKeysSelected: boolean,
-    personalOnly: boolean,
+    filters: HnFindTagKeysFilters,
     sortsCriteria: BlSearchSortCriteria[],
     page: number,
-    size: number,
-    user: HnUser | null = null,
-    userSpacesIds: string[] | null = null,
-    coAuthorTagKeysIds: string[] | null = null
+    size: number
   ): Promise<ClPage<HnTagKey>> {
-    const where = this.buildFindWhereWithFilters(
-      spacesFilter,
-      technicalNameFilter,
-      labelFilter,
-      publicSelected,
-      myTagKeysSelected,
-      personalOnly,
-      user,
-      userSpacesIds,
-      coAuthorTagKeysIds
-    );
+    const where = this.buildFindWhereWithFilters(filters);
 
     const order: any =
       sortsCriteria?.length > 0 ? { deprecated: 'ASC' } : { deprecated: 'ASC', createdAt: 'DESC' };
@@ -303,73 +292,44 @@ export class HnTagKeyService {
 
   /**
    * Build the where clause with filters to get tag keys
-   * @param spacesFilter
-   * @param technicalNameFilter
-   * @param labelFilter
-   * @param publicSelected
-   * @param myTagKeysSelected
-   * @param personalOnly
-   * @param user
-   * @param userSpacesIds
-   * @param coAuthorTagKeysIds
+   * @param filters
    * @private
    */
-  private buildFindWhereWithFilters(
-    spacesFilter: string[],
-    technicalNameFilter: string,
-    labelFilter: string,
-    publicSelected: boolean,
-    myTagKeysSelected: boolean,
-    personalOnly: boolean,
-    user: HnUser | null,
-    userSpacesIds: string[] | null,
-    coAuthorTagKeysIds: string[] | null
-  ): FindOptionsWhere<HnTagKey>[] {
-    let where: FindOptionsWhere<HnTagKey>[];
-    const currentUser = user ? user : HnCurrentUserHelper.getCurrentUser();
+  private buildFindWhereWithFilters(filters: HnFindTagKeysFilters): FindOptionsWhere<HnTagKey>[] {
+    const currentUser = filters.user ? filters.user : HnCurrentUserHelper.getCurrentUser();
 
-    if (currentUser == null) {
-      where = [
-        {
-          space: {
-            id: IsNull(),
-          },
-          publishedAt: Not(IsNull()),
+    let where = currentUser == null ? this.buildAnonymousWhere() : this.buildUserWhere(filters, currentUser);
+    where = this.applyNameFilters(where, filters);
+    return this.applyPersonalOnlyFilter(where, filters.personalOnly, currentUser);
+  }
+
+  /**
+   * Where clause for a visitor that is not logged in: only published public tag keys
+   * @private
+   */
+  private buildAnonymousWhere(): FindOptionsWhere<HnTagKey>[] {
+    return [
+      {
+        space: {
+          id: IsNull(),
         },
-      ];
-    } else if (publicSelected && myTagKeysSelected) {
-      where = [
-        {
-          space: {
-            id: In(spacesFilter),
-          },
-          createdBy: {
-            id: currentUser.id,
-          },
-        },
-        {
-          space: {
-            id: IsNull(),
-          },
-          createdBy: {
-            id: currentUser.id,
-          },
-        },
-        {
-          space: {
-            id: In(spacesFilter),
-          },
-          id: In(coAuthorTagKeysIds ?? []),
-        },
-        {
-          space: {
-            id: IsNull(),
-          },
-          id: In(coAuthorTagKeysIds ?? []),
-        },
-      ];
-    } else if (publicSelected && !myTagKeysSelected) {
-      where = [
+        publishedAt: Not(IsNull()),
+      },
+    ];
+  }
+
+  /**
+   * Where clause selecting the tag keys the given user asked for, depending on the selected scopes
+   * @private
+   */
+  private buildUserWhere(filters: HnFindTagKeysFilters, currentUser: HnUser): FindOptionsWhere<HnTagKey>[] {
+    const { spacesFilter, publicSelected, myTagKeysSelected } = filters;
+
+    if (publicSelected && myTagKeysSelected) {
+      return this.buildMyTagKeysWithPublicWhere(filters, currentUser);
+    }
+    if (publicSelected && !myTagKeysSelected) {
+      return [
         {
           space: {
             id: In(spacesFilter),
@@ -381,92 +341,177 @@ export class HnTagKeyService {
             id: IsNull(),
           },
           publishedAt: Not(IsNull()),
-        },
-      ];
-    } else if (!publicSelected && myTagKeysSelected) {
-      if (spacesFilter && spacesFilter.length > 0) {
-        where = [
-          {
-            space: {
-              id: In(spacesFilter),
-            },
-            createdBy: {
-              id: currentUser.id,
-            },
-          },
-          {
-            space: {
-              id: In(spacesFilter),
-            },
-            id: In(coAuthorTagKeysIds ?? []),
-          },
-        ];
-      } else {
-        where = [
-          {
-            createdBy: {
-              id: currentUser.id,
-            },
-          },
-          {
-            id: In(coAuthorTagKeysIds ?? []),
-          },
-        ];
-      }
-    } else if (spacesFilter && spacesFilter.length > 0) {
-      where = [
-        {
-          space: {
-            id: In(spacesFilter),
-          },
-          publishedAt: Not(IsNull()),
-        },
-      ];
-    } else {
-      if (!userSpacesIds) {
-        throw new BlUnauthorizedException('User has no space');
-      }
-      where = [
-        {
-          publishedAt: Not(IsNull()),
-          space: {
-            id: IsNull(),
-          },
-        },
-        {
-          publishedAt: Not(IsNull()),
-          space: {
-            id: In(userSpacesIds),
-          },
         },
       ];
     }
+    if (!publicSelected && myTagKeysSelected) {
+      return this.buildMyTagKeysWhere(filters, currentUser);
+    }
+    if (spacesFilter && spacesFilter.length > 0) {
+      return [
+        {
+          space: {
+            id: In(spacesFilter),
+          },
+          publishedAt: Not(IsNull()),
+        },
+      ];
+    }
+    return this.buildUserSpacesWhere(filters.userSpacesIds);
+  }
+
+  /**
+   * Where clause for the tag keys owned or co-authored by the user, public space included
+   * @private
+   */
+  private buildMyTagKeysWithPublicWhere(
+    filters: HnFindTagKeysFilters,
+    currentUser: HnUser
+  ): FindOptionsWhere<HnTagKey>[] {
+    const { spacesFilter, coAuthorTagKeysIds } = filters;
+    return [
+      {
+        space: {
+          id: In(spacesFilter),
+        },
+        createdBy: {
+          id: currentUser.id,
+        },
+      },
+      {
+        space: {
+          id: IsNull(),
+        },
+        createdBy: {
+          id: currentUser.id,
+        },
+      },
+      {
+        space: {
+          id: In(spacesFilter),
+        },
+        id: In(coAuthorTagKeysIds ?? []),
+      },
+      {
+        space: {
+          id: IsNull(),
+        },
+        id: In(coAuthorTagKeysIds ?? []),
+      },
+    ];
+  }
+
+  /**
+   * Where clause for the tag keys owned or co-authored by the user, restricted to the filtered spaces
+   * @private
+   */
+  private buildMyTagKeysWhere(
+    filters: HnFindTagKeysFilters,
+    currentUser: HnUser
+  ): FindOptionsWhere<HnTagKey>[] {
+    const { spacesFilter, coAuthorTagKeysIds } = filters;
+
+    if (spacesFilter && spacesFilter.length > 0) {
+      return [
+        {
+          space: {
+            id: In(spacesFilter),
+          },
+          createdBy: {
+            id: currentUser.id,
+          },
+        },
+        {
+          space: {
+            id: In(spacesFilter),
+          },
+          id: In(coAuthorTagKeysIds ?? []),
+        },
+      ];
+    }
+    return [
+      {
+        createdBy: {
+          id: currentUser.id,
+        },
+      },
+      {
+        id: In(coAuthorTagKeysIds ?? []),
+      },
+    ];
+  }
+
+  /**
+   * Where clause for the published tag keys visible in the user spaces
+   * @private
+   */
+  private buildUserSpacesWhere(userSpacesIds: string[] | null | undefined): FindOptionsWhere<HnTagKey>[] {
+    if (!userSpacesIds) {
+      throw new BlUnauthorizedException('User has no space');
+    }
+    return [
+      {
+        publishedAt: Not(IsNull()),
+        space: {
+          id: IsNull(),
+        },
+      },
+      {
+        publishedAt: Not(IsNull()),
+        space: {
+          id: In(userSpacesIds),
+        },
+      },
+    ];
+  }
+
+  /**
+   * Restrict the where clause to the technical name and label filters
+   * @private
+   */
+  private applyNameFilters(
+    where: FindOptionsWhere<HnTagKey>[],
+    filters: HnFindTagKeysFilters
+  ): FindOptionsWhere<HnTagKey>[] {
+    const { technicalNameFilter, labelFilter } = filters;
+    let result = where;
 
     if (technicalNameFilter && technicalNameFilter.length > 0) {
-      where = where.map((w) => {
+      result = result.map((w) => {
         w.technicalName = Like(`%${ClStringHelper.escapeSqlLike(technicalNameFilter)}%`);
         return w;
       });
     }
 
     if (labelFilter && labelFilter.length > 0) {
-      where = where.map((w) => {
+      result = result.map((w) => {
         w.label = Like(`%${ClStringHelper.escapeSqlLike(labelFilter)}%`);
         return w;
       });
     }
+    return result;
+  }
 
-    if (personalOnly) {
-      if (currentUser == null) {
-        throw new BlUnauthorizedException('User has no space');
-      }
-      where = where.map((w) => {
-        w.createdBy = {
-          id: currentUser.id,
-        };
-        return w;
-      });
+  /**
+   * Restrict the where clause to the tag keys created by the current user
+   * @private
+   */
+  private applyPersonalOnlyFilter(
+    where: FindOptionsWhere<HnTagKey>[],
+    personalOnly: boolean,
+    currentUser: HnUser | null
+  ): FindOptionsWhere<HnTagKey>[] {
+    if (!personalOnly) {
+      return where;
     }
-    return where;
+    if (currentUser == null) {
+      throw new BlUnauthorizedException('User has no space');
+    }
+    return where.map((w) => {
+      w.createdBy = {
+        id: currentUser.id,
+      };
+      return w;
+    });
   }
 }

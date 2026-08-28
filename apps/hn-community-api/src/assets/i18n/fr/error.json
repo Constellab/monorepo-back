@@ -13,5 +13,6 @@
   "cli_auth_invalid_code": "Le code d'authentification est invalide ou n'existe pas.",
   "cli_auth_code_expired": "Le code d'authentification a expiré. Veuillez en générer un nouveau.",
   "cli_auth_code_already_used": "Le code d'authentification a déjà été utilisé.",
-  "private_brick_access_denied": "Le lab n'a pas accès à la brique privée '{brickName}'. Si cette brique est une sous-dépendance, veuillez l'ajouter directement à votre lab."
+  "private_brick_access_denied": "Le lab n'a pas accès à la brique privée '{brickName}'. Si cette brique est une sous-dépendance, veuillez l'ajouter directement à votre lab.",
+  "mcp_no_community_account": "Ce compte Constellab n'a pas de compte Constellab Community, il ne peut donc pas utiliser les outils de documentation Community. Connectez-vous une fois au site Community pour le créer, puis réessayez."
 }

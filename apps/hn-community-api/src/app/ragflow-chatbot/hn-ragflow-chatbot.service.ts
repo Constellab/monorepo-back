@@ -11,6 +11,19 @@ import {
   HnRagflowStreamChunk,
 } from './hn-ragflow-chatbot.interface';
 
+/**
+ * State kept while consuming a Ragflow completion stream
+ */
+interface RagflowStreamState {
+  /** Incomplete part of the last chunk, waiting for the rest of its JSON */
+  buffer: string;
+  /** Last cumulative answer received, used to compute the next delta */
+  previousAnswer: string;
+  lastReferences: HnRagflowReference[];
+  /** True once Ragflow has sent its end signal */
+  completed: boolean;
+}
+
 @Injectable()
 export class HnRagflowChatbotService {
   private readonly logger = new Logger(HnRagflowChatbotService.name);
@@ -48,40 +61,13 @@ export class HnRagflowChatbotService {
     try {
       const response = await this.httpService.axiosRef.get(url, { headers: this.getRagflowHeaders() });
 
-      const sessions = response.data?.data;
-      if (!sessions || !Array.isArray(sessions) || sessions.length === 0) {
-        return [];
-      }
-
-      const session = sessions.find((s: any) => s.id === sessionId);
+      const session = this.findSessionById(response.data?.data, sessionId);
       if (!session) {
         return [];
       }
 
       // Parse messages from session
-      const messages: HnRagflowMessage[] = [];
-      if (session.messages && Array.isArray(session.messages)) {
-        for (const msg of session.messages) {
-          // Ragflow stores messages as {role, content} pairs
-          if (msg.role && msg.content) {
-            // Clean content from [ID:x] markers for assistant messages
-            let content = msg.content;
-            if (msg.role === 'assistant') {
-              content = content.replace(/\[ID:\d+\]/g, '');
-            }
-
-            messages.push({
-              id: msg.id || this.generateId(),
-              role: msg.role,
-              content,
-              timestamp: msg.created_at ? new Date(msg.created_at) : new Date(),
-              references: this.parseReferences(msg.reference),
-            });
-          }
-        }
-      }
-
-      return messages;
+      return this.parseSessionMessages(session);
     } catch (error: any) {
       this.logger.error(
         `[getSessionHistory] Failed to fetch session history`,
@@ -89,6 +75,47 @@ export class HnRagflowChatbotService {
       );
       return [];
     }
+  }
+
+  /**
+   * Find a session in the sessions returned by Ragflow
+   */
+  private findSessionById(sessions: any, sessionId: string): any {
+    if (!sessions || !Array.isArray(sessions) || sessions.length === 0) {
+      return undefined;
+    }
+
+    return sessions.find((s: any) => s.id === sessionId);
+  }
+
+  private parseSessionMessages(session: any): HnRagflowMessage[] {
+    const messages: HnRagflowMessage[] = [];
+    if (session.messages && Array.isArray(session.messages)) {
+      for (const msg of session.messages) {
+        // Ragflow stores messages as {role, content} pairs
+        if (msg.role && msg.content) {
+          messages.push(this.parseSessionMessage(msg));
+        }
+      }
+    }
+
+    return messages;
+  }
+
+  private parseSessionMessage(msg: any): HnRagflowMessage {
+    // Clean content from [ID:x] markers for assistant messages
+    let content = msg.content;
+    if (msg.role === 'assistant') {
+      content = content.replace(/\[ID:\d+\]/g, '');
+    }
+
+    return {
+      id: msg.id || this.generateId(),
+      role: msg.role,
+      content,
+      timestamp: msg.created_at ? new Date(msg.created_at) : new Date(),
+      references: this.parseReferences(msg.reference),
+    };
   }
 
   /**
@@ -186,77 +213,23 @@ export class HnRagflowChatbotService {
       });
 
       const stream = response.data;
-      let buffer = '';
-      let previousAnswer = '';
-      let lastReferences: HnRagflowReference[] = [];
+      const state: RagflowStreamState = {
+        buffer: '',
+        previousAnswer: '',
+        lastReferences: [],
+        completed: false,
+      };
 
       for await (const chunk of stream) {
-        const chunkStr = chunk.toString();
-        buffer += chunkStr;
+        yield* this.streamChunkEvents(chunk, state);
 
-        // Ragflow format: data:{...} (no space after data:)
-        // Split by 'data:' to handle multiple events in one chunk
-        const parts = buffer.split('data:');
-
-        // Keep the last incomplete part in buffer
-        buffer = '';
-
-        for (let i = 1; i < parts.length; i++) {
-          const part = parts[i].trim();
-
-          if (!part) continue;
-
-          // Check if this part looks complete (ends with })
-          if (!part.endsWith('}')) {
-            // Incomplete JSON, put back in buffer
-            buffer = 'data:' + part;
-            continue;
-          }
-
-          // Check for end signal
-          if (part === '{"code": 0, "data": true}') {
-            yield { type: 'done', references: lastReferences };
-            return;
-          }
-
-          try {
-            const parsed = JSON.parse(part);
-
-            if (parsed.code === 0 && parsed.data?.answer) {
-              const fullAnswer = parsed.data.answer;
-              // Ragflow sends cumulative answer, calculate delta
-              let delta = fullAnswer.substring(previousAnswer.length);
-
-              // Remove RAG reference markers like [ID:0], [ID:1], etc.
-              delta = delta.replace(/\[ID:\d+\]/g, '');
-
-              // Extract references from the response
-              if (parsed.data.reference?.chunks && Array.isArray(parsed.data.reference.chunks)) {
-                lastReferences = parsed.data.reference.chunks.map((ref: any, index: number) => ({
-                  id: index,
-                  content: ref.content || ref.content_with_weight || '',
-                  documentName: ref.document_name || ref.doc_name || '',
-                  chunkId: ref.chunk_id || ref.id || '',
-                  score: ref.score || ref.similarity || 0,
-                }));
-              }
-
-              if (delta) {
-                previousAnswer = fullAnswer;
-                yield {
-                  type: 'chunk',
-                  content: delta,
-                };
-              }
-            }
-          } catch {
-            // Put back in buffer if parse failed (might be incomplete)
-            buffer = 'data:' + part;
-          }
+        // Ragflow sent its end signal, the done event has already been yielded
+        if (state.completed) {
+          return;
         }
       }
 
-      yield { type: 'done', references: lastReferences };
+      yield { type: 'done', references: state.lastReferences };
     } catch (error: any) {
       this.logger.error(
         `[streamMessage] Error streaming message from Ragflow`,
@@ -267,6 +240,91 @@ export class HnRagflowChatbotService {
         error: this.handleRagflowError(error).message,
       };
     }
+  }
+
+  /**
+   * Yield the events carried by a single raw stream chunk, and flag the state as completed
+   * when the chunk holds the Ragflow end signal
+   */
+  private *streamChunkEvents(chunk: any, state: RagflowStreamState): Generator<HnRagflowStreamChunk> {
+    const chunkStr = chunk.toString();
+    state.buffer += chunkStr;
+
+    // Ragflow format: data:{...} (no space after data:)
+    // Split by 'data:' to handle multiple events in one chunk
+    const parts = state.buffer.split('data:');
+
+    // Keep the last incomplete part in buffer
+    state.buffer = '';
+
+    for (let i = 1; i < parts.length; i++) {
+      const part = parts[i].trim();
+
+      if (!part) continue;
+
+      // Check if this part looks complete (ends with })
+      if (!part.endsWith('}')) {
+        // Incomplete JSON, put back in buffer
+        state.buffer = 'data:' + part;
+        continue;
+      }
+
+      // Check for end signal
+      if (part === '{"code": 0, "data": true}') {
+        state.completed = true;
+        yield { type: 'done', references: state.lastReferences };
+        return;
+      }
+
+      try {
+        const parsed = JSON.parse(part);
+
+        const delta = this.readAnswerDelta(parsed, state);
+        if (delta) {
+          yield {
+            type: 'chunk',
+            content: delta,
+          };
+        }
+      } catch {
+        // Put back in buffer if parse failed (might be incomplete)
+        state.buffer = 'data:' + part;
+      }
+    }
+  }
+
+  /**
+   * Read the new part of the answer carried by a parsed Ragflow event and collect its references.
+   * Returns null when the event carries no new content.
+   */
+  private readAnswerDelta(parsed: any, state: RagflowStreamState): string | null {
+    if (parsed.code !== 0 || !parsed.data?.answer) {
+      return null;
+    }
+
+    const fullAnswer = parsed.data.answer;
+    // Ragflow sends cumulative answer, calculate delta
+    let delta = fullAnswer.substring(state.previousAnswer.length);
+
+    // Remove RAG reference markers like [ID:0], [ID:1], etc.
+    delta = delta.replace(/\[ID:\d+\]/g, '');
+
+    // Extract references from the response
+    if (parsed.data.reference?.chunks && Array.isArray(parsed.data.reference.chunks)) {
+      state.lastReferences = parsed.data.reference.chunks.map((ref: any, index: number) => ({
+        id: index,
+        content: ref.content || ref.content_with_weight || '',
+        documentName: ref.document_name || ref.doc_name || '',
+        chunkId: ref.chunk_id || ref.id || '',
+        score: ref.score || ref.similarity || 0,
+      }));
+    }
+
+    if (!delta) {
+      return null;
+    }
+    state.previousAnswer = fullAnswer;
+    return delta;
   }
 
   createMessage(role: 'user' | 'assistant' | 'system', content: string): HnRagflowMessage {

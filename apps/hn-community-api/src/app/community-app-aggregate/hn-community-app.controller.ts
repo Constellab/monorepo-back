@@ -1,5 +1,6 @@
 import {
   BlFile,
+  BlOptionalAuth,
   BlParsePipe,
   BlPublic,
   BlResponseHelper,
@@ -47,13 +48,13 @@ export class HnCommunityAppController extends HnAbstractFileController<HnCommuni
     super(fileAppService);
   }
 
-  @BlPublic()
+  @BlOptionalAuth()
   @Get('all-map')
   async getAllAppsMap(): Promise<HnSitemapItemBase[]> {
     return this.communityAppAggregateService.getAllAppsMap();
   }
 
-  @BlPublic()
+  @BlOptionalAuth()
   @Get(':id')
   async getById(@Param('id', new ParseUUIDPipe()) id: string): Promise<HnCommunityAppDto> {
     return new HnCommunityAppDto(await this.communityAppAggregateService.getAndCheckCommunityApp(id));
@@ -73,7 +74,7 @@ export class HnCommunityAppController extends HnAbstractFileController<HnCommuni
    * @param size
    * @returns apps
    */
-  @BlPublic()
+  @BlOptionalAuth()
   @Get('user/:userId')
   async getUserCommunityApps(
     @Param('userId', new ParseUUIDPipe()) userId: string,
@@ -102,7 +103,7 @@ export class HnCommunityAppController extends HnAbstractFileController<HnCommuni
    * @param page
    * @param size
    */
-  @BlPublic()
+  @BlOptionalAuth()
   @Post('filters')
   async getAll(
     @Body('spacesFilter') spacesFilter: string[],
@@ -210,7 +211,7 @@ export class HnCommunityAppController extends HnAbstractFileController<HnCommuni
     return this.communityAppAggregateService.inviteCommunityAppCoAuthor(id, emailOrId);
   }
 
-  @BlPublic()
+  @BlOptionalAuth()
   @Get('co-authors/:id')
   async getCommunityAppCoAuthors(@Param('id', new ParseUUIDPipe()) id: string): Promise<HnUserDto[]> {
     return (await this.communityAppAggregateService.getCommunityAppCoAuthors(id)).map(

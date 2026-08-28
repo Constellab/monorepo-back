@@ -6,6 +6,19 @@ export type HnEnvironmentProfile = 'dev' | 'docker' | 'preprod' | 'prod' | 'test
 export const HN_ENVIRONMENT_PROFILE_KEY = 'ENVIRONMENT_PROFILE';
 export const HN_ENVIRONMENT_PROFILE_PROD_VALUE = 'prod';
 
+/**
+ * Whether the process runs on a developer's machine, read straight from the environment.
+ *
+ * `HnCoreConfigService.isLocal()` answers the same question and is what application code
+ * should use; this exists for the bootstrap, which decides CORS and the security headers
+ * before there is an injector to ask. The two groupings must stay identical, which is the
+ * reason this is one function and not a condition repeated in `main.ts`.
+ */
+export function hnIsLocalEnvironment(): boolean {
+  const env: HnEnvironmentProfile = process.env[HN_ENVIRONMENT_PROFILE_KEY] as HnEnvironmentProfile;
+  return env === 'dev' || env === 'docker' || env === 'test';
+}
+
 export const HN_API_URL = 'API_URL';
 
 export const HN_BUCKET_ICON_KEY = 'BUCKET_ICON';

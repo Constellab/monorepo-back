@@ -66,13 +66,24 @@ bun run hn-community-api:serve
 
 ### Tests
 
-```bash
-# Unit tests (Jest)
-bunx jest
+The E2E suites boot the whole Nest app in-process against a real MariaDB and Redis, which
+`compose.test.yml` provides (throwaway, tmpfs, ports 3311/3312/6380). CI runs the same
+file, and a `cn_*`/`hn_*` tag does not build an image until the suites pass.
 
-# E2E tests for the space api
-bun run cn-space-api:test-e2e
+```bash
+# Unit tests only — no database needed
+bun run cn-space-api:test
+bun run hn-community-api:test
+bun run libs:test
+
+# E2E and the full release gate (unit + E2E + shared libs)
+bun run test-db:up
+bun run cn-space-api:test-ci
+bun run hn-community-api:test-ci
+bun run test-db:down
 ```
+
+Per-app details (what to test, what not to, the harness): `apps/*/TESTING.md`.
 
 ## Architecture Guidelines
 

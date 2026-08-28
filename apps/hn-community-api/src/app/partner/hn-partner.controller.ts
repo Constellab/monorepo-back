@@ -1,7 +1,7 @@
 import {
   BlFile,
+  BlOptionalAuth,
   BlParsePipe,
-  BlPublic,
   BlSearchParams,
   BlSearchSortCriteria,
   BlUploadedFile,
@@ -45,19 +45,19 @@ export class HnPartnerController extends HnAbstractFileController<HnPartner> {
     super(filePartnerService);
   }
 
-  @BlPublic()
+  @BlOptionalAuth()
   @Get('all-map')
   findAllMap(): Promise<HnSitemapItemBase[]> {
     return this.partnerService.findAllMap();
   }
 
-  @BlPublic()
+  @BlOptionalAuth()
   @Get('current')
   async getCurrentUserPartner(): Promise<HnPartnerDetailDto | null> {
     return HnPartnerDetailDto.fromEntity(await this.partnerService.getCurrentUserPartner());
   }
 
-  @BlPublic()
+  @BlOptionalAuth()
   @Get('user/:userId')
   async getPartnerByUserId(
     @Param('userId', new ParseUUIDPipe()) userId: string
@@ -65,13 +65,13 @@ export class HnPartnerController extends HnAbstractFileController<HnPartner> {
     return HnPartnerDetailDto.fromEntity(await this.partnerService.findByUserId(userId));
   }
 
-  @BlPublic()
+  @BlOptionalAuth()
   @Get(':id')
   async getPartnerById(@Param('id', new ParseUUIDPipe()) id: string): Promise<HnPartnerDetailDto | null> {
     return HnPartnerDetailDto.fromEntity(await this.partnerService.findById(id));
   }
 
-  @BlPublic()
+  @BlOptionalAuth()
   @Post('search')
   async search(
     @Body('nameFilter') nameFilter: string,

@@ -127,7 +127,12 @@ export class CnLabStorageStatsPeriodBackupDTO extends CnLabStorageStatsPeriod {
   // in GB/hour
   backupPricePerGBPerHour: number;
 
-  constructor(fromDate: DateTime, toDate: DateTime | null, backupSize: number, backupPricePerGBPerHour: number) {
+  constructor(
+    fromDate: DateTime,
+    toDate: DateTime | null,
+    backupSize: number,
+    backupPricePerGBPerHour: number
+  ) {
     super(fromDate, toDate);
     this.backupSize = backupSize;
     this.backupPricePerGBPerHour = backupPricePerGBPerHour;

@@ -67,23 +67,27 @@ export class BlSearchBuilder<T> {
 
     for (const key in source) {
       if (Object.prototype.hasOwnProperty.call(source, key)) {
-        if (source[key] instanceof Array) {
-          if (!target[key]) {
-            target[key] = [];
-          }
-          target[key] = target[key].concat(source[key]);
-        } else if (source[key] instanceof Object) {
-          if (!target[key]) {
-            target[key] = {};
-          }
-          target[key] = this.deepMergeWhereOptions(target[key], source[key]);
-        } else {
-          target[key] = source[key];
-        }
+        target[key] = this.mergeWhereValue(target[key], source[key]);
       }
     }
 
     return target;
+  }
+
+  /**
+   * Merge one property of a where option into the value already there: arrays are concatenated,
+   * objects merged recursively, anything else overwritten.
+   */
+  private mergeWhereValue(targetValue: any, sourceValue: any): any {
+    if (sourceValue instanceof Array) {
+      return (targetValue || []).concat(sourceValue);
+    }
+
+    if (sourceValue instanceof Object) {
+      return this.deepMergeWhereOptions(targetValue || {}, sourceValue);
+    }
+
+    return sourceValue;
   }
 
   public hasWhereOptions(key: keyof T): boolean {

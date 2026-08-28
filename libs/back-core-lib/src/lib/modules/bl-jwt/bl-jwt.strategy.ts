@@ -4,7 +4,12 @@ import { Strategy } from 'passport-jwt';
 
 import { BlUnauthorizedException } from '../../exceptions/bl-unauthorized.exception';
 import { BlUser } from '../../models/bl-user/bl-user.class';
-import { BL_JWT_CONFIG_PROVIDER, BlJwtConfig, BlTokenUser } from './bl-jwt.class';
+import {
+  BL_JWT_CONFIG_PROVIDER,
+  BL_JWT_SESSION_ALGORITHM,
+  BlDecodedToken,
+  BlJwtConfig,
+} from './bl-jwt.class';
 
 @Injectable()
 export class BlJwtStrategy extends PassportStrategy(Strategy) {
@@ -15,6 +20,12 @@ export class BlJwtStrategy extends PassportStrategy(Strategy) {
       jwtFromRequest: (request) => jwtConfig.jwtFromRequest(request) ?? null,
       ignoreExpiration: false,
       secretOrKey: jwtConfig.jwtSecret,
+      // Exactly one algorithm, stated rather than inferred from the key.
+      // `passport-jwt` otherwise accepts every algorithm its key type could plausibly
+      // carry, and a session verifier that accepts an asymmetric one is the
+      // algorithm-confusion hazard from the other direction — see
+      // `BL_JWT_SESSION_ALGORITHM`.
+      algorithms: [BL_JWT_SESSION_ALGORITHM],
     });
   }
 
@@ -22,7 +33,12 @@ export class BlJwtStrategy extends PassportStrategy(Strategy) {
    * The return object will be set user attribute of req
    * So we will be able to retrieve the user with req.user
    */
-  async validate(payload: BlTokenUser): Promise<BlUser> {
+  async validate(payload: BlDecodedToken): Promise<BlUser> {
+    // A token bound to a specific resource (aud) is not a session credential.
+    if (payload.aud != null) {
+      throw new BlUnauthorizedException();
+    }
+
     const currentUser: BlUser | null = await this.jwtConfig.usersService.findOne(payload.sub);
     if (currentUser == null) {
       throw new BlUnauthorizedException();

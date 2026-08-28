@@ -33,51 +33,59 @@ export class HnTaskService {
     const deduped = [...new Map(tasks.map((t) => [t.unique_name, t])).values()];
 
     for (const t of deduped) {
-      const task = new HnTask();
-      task.shortDescription = t.short_description ? t.short_description : null;
-      task.doc = t.doc;
-      task.brickName = technicalFolder.brickMajorVersion.brick.name;
-      task.technicalFolder = technicalFolder;
-      task.hide = t.hide;
-      task.brickMajor = technicalFolder.brickMajorVersion.major;
-      task.uniqueName = t.unique_name;
-      task.typingName = t.typing_name;
-      task.style = t.style;
-      task.humanName = t.human_name;
-
-      //TODO A MODIFIER pour le deprecatedSince
-
-      if (t.parent) {
-        task.parentTypingName = t.parent.typing_name;
-        task.parentHumanName = t.parent.human_name;
-        task.parentMajorVersion = +t.parent.brick_version.split('.')[0];
-        task.parentVersion = t.parent.brick_version;
-      }
-      task.deprecatedSince = t.deprecated_since;
-      task.deprecatedMessage = t.deprecated_message;
-      task.shortDescription = t.short_description;
-      task.objectSubType = t.object_sub_type;
-
-      if (t.input_specs && Object.keys(t.input_specs).length > 0) {
-        task.inputSpecs = t.input_specs;
-      }
-
-      if (t.output_specs && Object.keys(t.output_specs).length > 0) {
-        task.outputSpecs = t.output_specs;
-      }
-
-      if (t.config_specs && Object.keys(t.config_specs).length > 0) {
-        task.configSpecs = t.config_specs;
-      }
-
-      if (t.additional_info && Object.keys(t.additional_info).length > 0) {
-        task.additionalInfo = t.additional_info;
-      }
-
-      await this.tasksRepository.save(task);
+      await this.tasksRepository.save(this.buildTask(technicalFolder, t));
     }
 
     return true;
+  }
+
+  private buildTask(technicalFolder: HnTechnicalFolder, t: HnImportTaskDTO): HnTask {
+    const task = new HnTask();
+    task.shortDescription = t.short_description ? t.short_description : null;
+    task.doc = t.doc;
+    task.brickName = technicalFolder.brickMajorVersion.brick.name;
+    task.technicalFolder = technicalFolder;
+    task.hide = t.hide;
+    task.brickMajor = technicalFolder.brickMajorVersion.major;
+    task.uniqueName = t.unique_name;
+    task.typingName = t.typing_name;
+    task.style = t.style;
+    task.humanName = t.human_name;
+
+    //TODO A MODIFIER pour le deprecatedSince
+
+    if (t.parent) {
+      task.parentTypingName = t.parent.typing_name;
+      task.parentHumanName = t.parent.human_name;
+      task.parentMajorVersion = +t.parent.brick_version.split('.')[0];
+      task.parentVersion = t.parent.brick_version;
+    }
+    task.deprecatedSince = t.deprecated_since;
+    task.deprecatedMessage = t.deprecated_message;
+    task.shortDescription = t.short_description;
+    task.objectSubType = t.object_sub_type;
+
+    this.assignSpecs(task, t);
+
+    return task;
+  }
+
+  private assignSpecs(task: HnTask, t: HnImportTaskDTO): void {
+    if (t.input_specs && Object.keys(t.input_specs).length > 0) {
+      task.inputSpecs = t.input_specs;
+    }
+
+    if (t.output_specs && Object.keys(t.output_specs).length > 0) {
+      task.outputSpecs = t.output_specs;
+    }
+
+    if (t.config_specs && Object.keys(t.config_specs).length > 0) {
+      task.configSpecs = t.config_specs;
+    }
+
+    if (t.additional_info && Object.keys(t.additional_info).length > 0) {
+      task.additionalInfo = t.additional_info;
+    }
   }
 
   async findTasks(technicalFolderId: string): Promise<HnTask[]> {

@@ -156,9 +156,11 @@ export class CnHierarchyObjectAggregateService {
     );
 
     return this.hierarchyObjectService.searchInRootFoldersAndChildrenByType(
-      rootFolders.map((folder) => folder.id),
-      spaceId,
-      CnHierarchyObjectVisibility.VISIBLE,
+      {
+        rootFoldersIds: rootFolders.map((folder) => folder.id),
+        spaceId,
+        visibility: CnHierarchyObjectVisibility.VISIBLE,
+      },
       CnHierarchyObjectType.APPLICATION,
       searchParam,
       page,

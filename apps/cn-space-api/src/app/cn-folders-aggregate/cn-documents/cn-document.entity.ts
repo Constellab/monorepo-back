@@ -34,6 +34,19 @@ export enum CnDocumentType {
 /**
  * This table stores every document uploaded to the S3 server for a folder
  */
+/** Everything {@link CnDocumentEntity.newDocument} needs to build a document. */
+export interface CnNewDocumentOptions {
+  name: string;
+  filename: string;
+  size: number;
+  mimeType: string;
+  type: CnDocumentType;
+  entityId: string;
+  bucketType: BlBucketType;
+  parentFolder: CnHierarchyObject;
+  parentDocument?: CnDocument;
+}
+
 @Entity('document')
 export class CnDocumentEntity extends CnHierarchyRepresentation {
   // name of the document show in the interface
@@ -165,29 +178,19 @@ export class CnDocumentEntity extends CnHierarchyRepresentation {
     return this.mimeType.startsWith('audio/');
   }
 
-  public static newDocument(
-    name: string,
-    filename: string,
-    size: number,
-    mimeType: string,
-    type: CnDocumentType,
-    entityId: string,
-    bucketType: BlBucketType,
-    parentFolder: CnHierarchyObject,
-    parentDocument?: CnDocument
-  ): CnDocumentEntity {
+  public static newDocument(options: CnNewDocumentOptions): CnDocumentEntity {
     const document = new CnDocumentEntity();
-    document.name = ClStringHelper.removeNonVisibleCharacters(name);
-    document.filename = filename;
-    document.size = size;
-    document.mimeType = mimeType;
-    document.type = type;
-    document.entityId = entityId;
-    document.bucketType = bucketType;
+    document.name = ClStringHelper.removeNonVisibleCharacters(options.name);
+    document.filename = options.filename;
+    document.size = options.size;
+    document.mimeType = options.mimeType;
+    document.type = options.type;
+    document.entityId = options.entityId;
+    document.bucketType = options.bucketType;
     document.style = document.buildStyle();
-    document.parentDocument = parentDocument ?? null;
+    document.parentDocument = options.parentDocument ?? null;
     document.hierarchyRepresentation = CnHierarchyObjectEntity.newSubHierarchyObject(
-      parentFolder,
+      options.parentFolder,
       document.getHierarchyObjectInfo()
     );
     return document;

@@ -26,37 +26,41 @@ export class HnResourceService {
     const deduped = [...new Map(resources.map((r) => [r.unique_name, r])).values()];
 
     for (const r of deduped) {
-      const resource = new HnResource();
-      resource.shortDescription = r.short_description ? r.short_description : null;
-      resource.doc = r.doc;
-      resource.brickName = technicalFolder.brickMajorVersion.brick.name;
-      resource.technicalFolder = technicalFolder;
-      resource.hide = r.hide;
-      resource.brickMajor = technicalFolder.brickMajorVersion.major;
-      resource.uniqueName = r.unique_name;
-      resource.typingName = r.typing_name;
-      resource.humanName = r.human_name;
-      resource.style = r.style;
-      resource.methods = r.methods;
-      resource.variables = r.variables ?? null;
-
-      //TODO A MODIFIER pour le parent et deprecatedSince
-
-      if (r.parent) {
-        resource.parentTypingName = r.parent.typing_name;
-        resource.parentHumanName = r.parent.human_name;
-        resource.parentMajorVersion = +r.parent.brick_version.split('.')[0];
-        resource.parentVersion = r.parent.brick_version;
-      }
-      resource.deprecatedSince = r.deprecated_since;
-      resource.deprecatedMessage = r.deprecated_message;
-      resource.shortDescription = r.short_description;
-      resource.objectSubType = r.object_sub_type;
-
-      await this.resourceRepository.save(resource);
+      await this.resourceRepository.save(this.buildResource(technicalFolder, r));
     }
 
     return true;
+  }
+
+  private buildResource(technicalFolder: HnTechnicalFolder, r: HnImportResourceDTO): HnResource {
+    const resource = new HnResource();
+    resource.shortDescription = r.short_description ? r.short_description : null;
+    resource.doc = r.doc;
+    resource.brickName = technicalFolder.brickMajorVersion.brick.name;
+    resource.technicalFolder = technicalFolder;
+    resource.hide = r.hide;
+    resource.brickMajor = technicalFolder.brickMajorVersion.major;
+    resource.uniqueName = r.unique_name;
+    resource.typingName = r.typing_name;
+    resource.humanName = r.human_name;
+    resource.style = r.style;
+    resource.methods = r.methods;
+    resource.variables = r.variables ?? null;
+
+    //TODO A MODIFIER pour le parent et deprecatedSince
+
+    if (r.parent) {
+      resource.parentTypingName = r.parent.typing_name;
+      resource.parentHumanName = r.parent.human_name;
+      resource.parentMajorVersion = +r.parent.brick_version.split('.')[0];
+      resource.parentVersion = r.parent.brick_version;
+    }
+    resource.deprecatedSince = r.deprecated_since;
+    resource.deprecatedMessage = r.deprecated_message;
+    resource.shortDescription = r.short_description;
+    resource.objectSubType = r.object_sub_type;
+
+    return resource;
   }
 
   async findResources(technicalFolderId: string): Promise<HnResource[]> {

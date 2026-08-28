@@ -20,6 +20,17 @@ import { HnAgentVersion } from '../agent-version/hn-agent-version.entity';
 import { HnAgentDto, HnCreateAgentDto } from './hn-agent.dto';
 import { HnAgent } from './hn-agent.entity';
 
+export interface HnAgentWhereFilters {
+  spacesFilter: string[];
+  titleFilter: string;
+  publicSelected: boolean;
+  myAgentsSelected: boolean;
+  personalOnly: boolean;
+  user?: HnUser | null;
+  userSpacesIds?: string[] | null;
+  coAuthorAgentsIds?: string[] | null;
+}
+
 @Injectable()
 export class HnAgentService {
   constructor(
@@ -108,141 +119,19 @@ export class HnAgentService {
     });
   }
 
-  public buildFindWhereWithFilters(
-    spacesFilter: string[],
-    titleFilter: string,
-    publicSelected: boolean,
-    myAgentsSelected: boolean,
-    personalOnly: boolean,
-    user: HnUser | null,
-    userSpacesIds: string[] | null,
-    coAuthorAgentsIds: string[] | null
-  ): FindOptionsWhere<HnAgent>[] {
-    let where: FindOptionsWhere<HnAgent>[];
-    const currentUser = user ? user : HnCurrentUserHelper.getCurrentUser();
+  public buildFindWhereWithFilters(filters: HnAgentWhereFilters): FindOptionsWhere<HnAgent>[] {
+    const currentUser = filters.user ? filters.user : HnCurrentUserHelper.getCurrentUser();
 
-    if (currentUser == null) {
-      where = [
-        {
-          space: {
-            id: IsNull(),
-          },
-          latestPublishVersion: Not(IsNull()),
-        },
-      ];
-    } else if (publicSelected && myAgentsSelected) {
-      where = [
-        {
-          space: {
-            id: In(spacesFilter),
-          },
-          createdBy: {
-            id: currentUser.id,
-          },
-        },
-        {
-          space: {
-            id: IsNull(),
-          },
-          createdBy: {
-            id: currentUser.id,
-          },
-        },
-        {
-          space: {
-            id: In(spacesFilter),
-          },
-          id: In(coAuthorAgentsIds ?? []),
-        },
-        {
-          space: {
-            id: IsNull(),
-          },
-          id: In(coAuthorAgentsIds ?? []),
-        },
-      ];
-    } else if (publicSelected && !myAgentsSelected) {
-      where = [
-        {
-          space: {
-            id: In(spacesFilter),
-          },
-          latestPublishVersion: Not(IsNull()),
-        },
-        {
-          space: {
-            id: IsNull(),
-          },
-          latestPublishVersion: Not(IsNull()),
-        },
-      ];
-    } else if (!publicSelected && myAgentsSelected) {
-      if (spacesFilter && spacesFilter.length > 0) {
-        where = [
-          {
-            space: {
-              id: In(spacesFilter),
-            },
-            createdBy: {
-              id: currentUser.id,
-            },
-          },
-          {
-            space: {
-              id: In(spacesFilter),
-            },
-            id: In(coAuthorAgentsIds ?? []),
-          },
-        ];
-      } else {
-        where = [
-          {
-            createdBy: {
-              id: currentUser.id,
-            },
-          },
-          {
-            id: In(coAuthorAgentsIds ?? []),
-          },
-        ];
-      }
-    } else if (spacesFilter && spacesFilter.length > 0) {
-      where = [
-        {
-          space: {
-            id: In(spacesFilter),
-          },
-          latestPublishVersion: Not(IsNull()),
-        },
-      ];
-    } else {
-      if (!userSpacesIds) {
-        throw new BlUnauthorizedException('User has no space');
-      }
-      where = [
-        {
-          latestPublishVersion: Not(IsNull()),
-          space: {
-            id: IsNull(),
-          },
-        },
-        {
-          latestPublishVersion: Not(IsNull()),
-          space: {
-            id: In(userSpacesIds),
-          },
-        },
-      ];
-    }
+    let where: FindOptionsWhere<HnAgent>[] = this.buildWhereForSelection(filters, currentUser);
 
-    if (titleFilter && titleFilter.length > 0) {
+    if (filters.titleFilter && filters.titleFilter.length > 0) {
       where = where.map((w) => {
-        w.title = Like(`%${ClStringHelper.escapeSqlLike(titleFilter)}%`);
+        w.title = Like(`%${ClStringHelper.escapeSqlLike(filters.titleFilter)}%`);
         return w;
       });
     }
 
-    if (personalOnly) {
+    if (filters.personalOnly) {
       if (currentUser == null) {
         throw new BlUnauthorizedException('User has no space');
       }
@@ -256,26 +145,153 @@ export class HnAgentService {
     return where;
   }
 
-  public async findAllWithFilters(
-    spacesFilter: string[],
-    titleFilter: string,
-    publicSelected: boolean,
-    myAgentsSelected: boolean,
-    personalOnly: boolean,
-    user: HnUser | null = null,
-    userSpacesIds: string[] | null = null,
-    coAuthorAgentsIds: string[] | null = null
-  ): Promise<HnAgent[]> {
-    const where = this.buildFindWhereWithFilters(
-      spacesFilter,
-      titleFilter,
-      publicSelected,
-      myAgentsSelected,
-      personalOnly,
-      user,
-      userSpacesIds,
-      coAuthorAgentsIds
-    );
+  /**
+   * Build the where clause matching the selected spaces, before the title and personal filters
+   */
+  private buildWhereForSelection(
+    filters: HnAgentWhereFilters,
+    currentUser: HnUser | null
+  ): FindOptionsWhere<HnAgent>[] {
+    if (currentUser == null) {
+      return [
+        {
+          space: {
+            id: IsNull(),
+          },
+          latestPublishVersion: Not(IsNull()),
+        },
+      ];
+    }
+
+    if (filters.publicSelected && filters.myAgentsSelected) {
+      return this.buildPublicAndMyAgentsWhere(filters, currentUser);
+    }
+
+    if (filters.publicSelected) {
+      return [
+        {
+          space: {
+            id: In(filters.spacesFilter),
+          },
+          latestPublishVersion: Not(IsNull()),
+        },
+        {
+          space: {
+            id: IsNull(),
+          },
+          latestPublishVersion: Not(IsNull()),
+        },
+      ];
+    }
+
+    if (filters.myAgentsSelected) {
+      return this.buildMyAgentsWhere(filters, currentUser);
+    }
+
+    if (filters.spacesFilter && filters.spacesFilter.length > 0) {
+      return [
+        {
+          space: {
+            id: In(filters.spacesFilter),
+          },
+          latestPublishVersion: Not(IsNull()),
+        },
+      ];
+    }
+
+    return this.buildUserSpacesWhere(filters.userSpacesIds);
+  }
+
+  private buildPublicAndMyAgentsWhere(
+    filters: HnAgentWhereFilters,
+    currentUser: HnUser
+  ): FindOptionsWhere<HnAgent>[] {
+    return [
+      {
+        space: {
+          id: In(filters.spacesFilter),
+        },
+        createdBy: {
+          id: currentUser.id,
+        },
+      },
+      {
+        space: {
+          id: IsNull(),
+        },
+        createdBy: {
+          id: currentUser.id,
+        },
+      },
+      {
+        space: {
+          id: In(filters.spacesFilter),
+        },
+        id: In(filters.coAuthorAgentsIds ?? []),
+      },
+      {
+        space: {
+          id: IsNull(),
+        },
+        id: In(filters.coAuthorAgentsIds ?? []),
+      },
+    ];
+  }
+
+  private buildMyAgentsWhere(filters: HnAgentWhereFilters, currentUser: HnUser): FindOptionsWhere<HnAgent>[] {
+    if (filters.spacesFilter && filters.spacesFilter.length > 0) {
+      return [
+        {
+          space: {
+            id: In(filters.spacesFilter),
+          },
+          createdBy: {
+            id: currentUser.id,
+          },
+        },
+        {
+          space: {
+            id: In(filters.spacesFilter),
+          },
+          id: In(filters.coAuthorAgentsIds ?? []),
+        },
+      ];
+    }
+
+    return [
+      {
+        createdBy: {
+          id: currentUser.id,
+        },
+      },
+      {
+        id: In(filters.coAuthorAgentsIds ?? []),
+      },
+    ];
+  }
+
+  private buildUserSpacesWhere(userSpacesIds: string[] | null | undefined): FindOptionsWhere<HnAgent>[] {
+    if (!userSpacesIds) {
+      throw new BlUnauthorizedException('User has no space');
+    }
+    return [
+      {
+        latestPublishVersion: Not(IsNull()),
+        space: {
+          id: IsNull(),
+        },
+      },
+      {
+        latestPublishVersion: Not(IsNull()),
+        space: {
+          id: In(userSpacesIds),
+        },
+      },
+    ];
+  }
+
+  public async findAllWithFilters(filters: HnAgentWhereFilters): Promise<HnAgent[]> {
+    const where = this.buildFindWhereWithFilters(filters);
 
     return this.agentRepository.find({
       where: where,
@@ -284,28 +300,12 @@ export class HnAgentService {
   }
 
   public async findAllWithFiltersPaginated(
-    spacesFilter: string[],
-    titleFilter: string,
-    publicSelected: boolean,
-    myAgentsSelected: boolean,
-    personalOnly: boolean,
+    filters: HnAgentWhereFilters,
     page: number,
     size: number,
-    sortsCriteria: BlSearchSortCriteria[] = [{ key: 'createdAt', direction: 'DESC' }],
-    user: HnUser | null = null,
-    userSpacesIds: string[] | null = null,
-    coAuthorAgentsIds: string[] | null = null
+    sortsCriteria: BlSearchSortCriteria[] = [{ key: 'createdAt', direction: 'DESC' }]
   ): Promise<ClPage<HnAgentDto>> {
-    const where = this.buildFindWhereWithFilters(
-      spacesFilter,
-      titleFilter,
-      publicSelected,
-      myAgentsSelected,
-      personalOnly,
-      user,
-      userSpacesIds,
-      coAuthorAgentsIds
-    );
+    const where = this.buildFindWhereWithFilters(filters);
 
     const order: any = sortsCriteria?.length > 0 ? {} : { createdAt: 'DESC' };
     for (const sortCriteria of sortsCriteria) {
