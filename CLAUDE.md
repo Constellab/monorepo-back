@@ -2,6 +2,8 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+**Cross-repo work**: read [`docs/architecture/platform-map.md`](docs/architecture/platform-map.md) when a change spans repositories, when cutting a release, or when a cross-repo inconsistency looks like a bug — it holds the version chain, the release ordering, and the deliberate oddities.
+
 ## Project Overview
 
 This is a monorepo containing NestJS backend applications for Gencovery's platform. The repository follows domain-driven design principles with modular architecture and consistent naming conventions.
