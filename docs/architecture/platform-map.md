@@ -1,6 +1,6 @@
 # Constellab platform map
 
-_Last verified: 2026-09-07._
+_Last verified: 2026-09-17._
 
 How the Constellab repositories fit together. This file holds only what a single repository
 cannot tell you — the chains, constraints and deliberate oddities that span several. Anything one
@@ -22,14 +22,14 @@ has no identity of its own — its users are the Space's users, and every login 
 
 ## The repositories
 
-| Repository       | Plane | Publishes                                                                                                                                                                | Tag                                      |
-| ---------------- | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------- |
-| `monorepo-back`  | cloud | `ghcr.io/constellab/space-api`, `ghcr.io/constellab/community-api` (CapRover deploy is a separate manual step)                                                           | `cn_*`, `hn_*`                           |
-| `monorepo-front` | both  | `ghcr.io/constellab/space-front`, `ghcr.io/constellab/community-front`, `constellab/lab-front`, `constellab/lab-manager-standalone`, and dashboard-components _releases_ | `ca_*`, `ha_*`, `lab_*`, `lms_*`, `dc_*` |
-| `lab-manager`    | lab   | `constellab/lab-manager`                                                                                                                                                 | any tag                                  |
-| `gpm`            | lab   | `constellab/glab` (+ `gpu-` variants), `constellab/codelab`, `constellab/lab-dev-env`                                                                                    | any tag                                  |
-| `lab-configurer` | lab   | `constellab/lab-manager-dev-env` (local dev stack only)                                                                                                                  | `lm-*`                                   |
-| `gws_core`       | lab   | the brick itself, published to the Community                                                                                                                             | `gws brick version push`                 |
+| Repository       | Plane | Publishes                                                                                                                                                                   | Tag                                      |
+| ---------------- | ----- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
+| `monorepo-back`  | cloud | `ghcr.io/constellab/space-api`, `ghcr.io/constellab/community-api` (deployed to CapRover as a separate manual step — see [Cloud hosting](#cloud-hosting-pre-prod-and-prod)) | `cn_*`, `hn_*`                           |
+| `monorepo-front` | both  | `ghcr.io/constellab/space-front`, `ghcr.io/constellab/community-front`, `constellab/lab-front`, `constellab/lab-manager-standalone`, and dashboard-components _releases_    | `ca_*`, `ha_*`, `lab_*`, `lms_*`, `dc_*` |
+| `lab-manager`    | lab   | `constellab/lab-manager`                                                                                                                                                    | any tag                                  |
+| `gpm`            | lab   | `constellab/glab` (+ `gpu-` variants), `constellab/codelab`, `constellab/lab-dev-env`                                                                                       | any tag                                  |
+| `lab-configurer` | lab   | `constellab/lab-manager-dev-env` (local dev stack only)                                                                                                                     | `lm-*`                                   |
+| `gws_core`       | lab   | the brick itself, published to the Community                                                                                                                                | `gws brick version push`                 |
 
 Two registries: the cloud APIs and the two cloud fronts go to GHCR, the images a lab pulls go to
 Docker Hub.
@@ -137,28 +137,87 @@ Publishing gws_core first makes the Space generate a `config.json` naming image 
 exist. The pull fails and the lab breaks. gws_core is always tagged last, and never introduces a
 version number.
 
-## Lab runtime topology
+## Cloud hosting: pre-prod and prod
 
-traefik terminates TLS on `*.${VIRTUAL_HOST}` and fronts:
+The cloud plane runs on **two CapRover instances hosted at OVH, one per environment, on two
+separate machines**. They share nothing — not the host, not the database, not the certificates.
 
-| Host           | Container     | Purpose                         |
-| -------------- | ------------- | ------------------------------- |
-| `lab-manager.` | lab-manager   | Control API, `api-key` auth     |
-| `lab.`         | front         | `constellab/lab-front`          |
-| `glab.`        | glab :3000    | gws_core prod server            |
-| `app-*.`       | glab :8510    | Streamlit / Reflex applications |
-| `codelab.`     | codelab :8080 | openvscode-server, basic auth   |
-| `glab-dev.`    | codelab :3000 | gws_core dev server             |
-| `appdev-*.`    | codelab :8510 | dev applications                |
+| Environment | CapRover dashboard                                  | CapRover root domain                |
+| ----------- | --------------------------------------------------- | ----------------------------------- |
+| pre-prod    | `https://captain.constellab-pre-prod.gencovery.com` | `constellab-pre-prod.gencovery.com` |
+| prod        | `https://captain.constellab.gencovery.com`          | `constellab.gencovery.com`          |
 
-Each lab environment has its own database and its own network: `gencovery-network-prod` and
-`-dev` stay separate. See [Data stores](#data-stores).
+Four apps run on each instance — the two APIs and the two cloud fronts. The app names are what the
+deploy scripts pass to CapRover:
 
-glab exposes four API surfaces on one port: `/core-api` (lab-front, lab users, the app gateway),
-`/space-api` (inbound from the Space and lab-manager), `/external-lab-api` (inbound from a peer lab)
-and `/s3-server/v1` (S3-compatible).
+| App             | Repository       | Tag    | pre-prod app               | prod app          |
+| --------------- | ---------------- | ------ | -------------------------- | ----------------- |
+| Space API       | `monorepo-back`  | `cn_*` | `space-api-pre-prod`       | `space-api`       |
+| Community API   | `monorepo-back`  | `hn_*` | `community-api-pre-prod`   | `community-api`   |
+| Space front     | `monorepo-front` | `ca_*` | `space-front-pre-prod`     | `space-front`     |
+| Community front | `monorepo-front` | `ha_*` | `community-front-pre-prod` | `community-front` |
 
-Source: `lab-manager/src/assets/docker-compose.yml`, `gws_core/src/gws_core/core/utils/settings.py`
+### Certificates
+
+Two layers, and only one of them is CapRover's.
+
+- **The root domain** — `constellab-pre-prod.gencovery.com` and `constellab.gencovery.com`. Every
+  app gets `<app>.<root>` with a CapRover-issued certificate (HTTP-01, "Enable HTTPS"), renewed by
+  CapRover on its own. Nothing to do.
+- **The nice public domains** — `preconstellab.com` in pre-prod, `constellab.space` in prod. These
+  are extra domains attached by hand to individual apps, each with its own certificate. They are
+  what users actually type.
+
+The front is the exception that shapes the whole setup: **a workspace can live on any subdomain of
+`*.constellab.space`**, so its certificate has to be a wildcard, and CapRover's HTTP-01 challenge
+cannot validate a wildcard. So for the front the nginx config was modified by hand and the
+certificates are issued outside CapRover, with the DNS-01 challenge against the OVH API
+(`certbot/dns-ovh`). This used to be a manual run every three months; **it is now renewed
+automatically** by a script under root's cron, twice a day.
+
+Everything about the manual certificates — issuing, the OVH token rights, the renewal script, the
+cron entry, and the debugging path — is in **`lab-configurer/caprover`**
+(`CAPROVER_CERTIFICATES.md`, `renew-certs.sh`). Read it before touching a certificate.
+
+There is also a written incident note on the platform itself:
+<https://ec7de50a-19f0-4188-9fb6-615ae8e6f083.constellab.space/app/folder/document/beb9d357-10fe-4a1e-9325-41100df00874>
+
+### Deploying
+
+Two steps, and they are deliberately separate — tagging publishes an image, it does not ship it.
+**The two fronts deploy exactly the same way**, with their own copy of the same `deploy.mjs` in
+`monorepo-front`; only the tag prefix and the app name change.
+
+1. **Push a tag** on the app's prefix. GitHub Actions runs the test suites against the tagged
+   commit first, and only a green run builds and pushes the image to GHCR. A red suite means no
+   image, which is the point: an image in the registry is one somebody can deploy.
+2. **Run the deploy script**, from the repository that owns the app, once per environment:
+
+   ```bash
+   # monorepo-back
+   bun run cn-space-api:caprover-deploy-preprod        # Space API       → pre-prod
+   bun run cn-space-api:caprover-deploy-prod           # Space API       → prod
+   bun run hn-community-api:caprover-deploy-pre-prod   # Community API   → pre-prod
+   bun run hn-community-api:caprover-deploy-prod       # Community API   → prod
+
+   # monorepo-front
+   bun run ca-space-front:caprover-deploy-preprod      # Space front     → pre-prod
+   bun run ca-space-front:caprover-deploy-prod         # Space front     → prod
+   bun run ha-community-front:caprover-deploy-pre-prod # Community front → pre-prod
+   bun run ha-community-front:caprover-deploy-prod     # Community front → prod
+   ```
+
+   (The two Space scripts spell it `preprod`, the two Community ones `pre-prod` — in both
+   repositories. Inconsistent, and all four are the real names.)
+
+**Nothing is uploaded from your machine.** The command only tells CapRover which image tag to run;
+CapRover pulls it from GHCR itself, with credentials it already holds. So the image must exist in
+the registry before you deploy, and your local git tags only matter for guessing the version
+number — check what the script prints before you confirm a prod deploy.
+
+Source: `monorepo-back/package.json`, `monorepo-back/deploy.mjs`,
+`monorepo-back/.github/workflows/build-space-api.yml`, `monorepo-front/package.json`,
+`lab-configurer/caprover/CAPROVER_CERTIFICATES.md`
 
 ## Data stores
 
@@ -177,6 +236,28 @@ is why the Space and the Community are not independently deployable.
 
 Source: `lab-manager/src/assets/docker-compose.yml`,
 `monorepo-back/libs/back-core-lib/src/lib/modules/bl-transport/bl-transport-config.class.ts`
+
+### Backups
+
+Each plane backs itself up to S3, and the two mechanisms have nothing in common.
+
+**The cloud APIs back up their own database.** A cron in each app, daily at 00:00, reads every
+table and writes the whole database as one JSON file to an OVH S3 bucket
+(`OBJECT_STORAGE_DB_BACKUP_*`, set per environment in CapRover): `cn-space.json` for the Space,
+`hn-community.json` for the Community. Two things follow from that shape — the filename is fixed,
+so each run replaces the previous object and any history comes from bucket versioning, not from
+the app; and the dump is rows, not a `mysqldump`, so it carries no schema and restoring means
+replaying it into a database the migrations already built.
+
+**A lab is backed up by lab-manager, and the Space decides when and where.** The Space hands over
+the target buckets, the frequency and the S3 prefix; lab-manager runs the backup and reports the
+history back. It uploads two streams under that prefix — a MariaDB dump of the **prod** database
+(`db/dump.sql`) and an rclone sync of the lab's data (`data/`, plus a file-ownership manifest used
+on restore). The dev and test databases are never backed up.
+
+Source: `monorepo-back/libs/back-core-lib/src/lib/modules/bl-db-backup/bl-db-backup.service.ts`,
+`monorepo-back/apps/cn-space-api/src/app/cn-core/cron/cn-db-backup.cron.ts`,
+`lab-manager/src/app/backup/backup.service.ts`
 
 ## Cross-plane calls
 
@@ -218,22 +299,22 @@ flowchart LR
 ```
 
 Solid edges are HTTP, the dashed edge is SSH, and the thick edges are Redis/BullMQ queues — the
-Space and the Community synchronise through a shared Redis, not through their APIs. The edges say
-what each call is _for_; the routes and the auth scheme are in the table.
+Space and the Community synchronise through a shared Redis, not through their APIs. The table below
+says the same thing per surface, with the auth scheme.
 
-| From              | To          | Surface                                                                | Auth                            |
-| ----------------- | ----------- | ---------------------------------------------------------------------- | ------------------------------- |
-| Space             | lab-manager | `/lab`, `/docker-compose`, `/docker-containers`, `/backup`, `/adminer` | `api-key`                       |
-| Space             | glab        | `/space-api`                                                           | `api-key`                       |
-| glab              | Space       | `/external-labs`                                                       | `api-key`                       |
-| lab-manager       | Space       | `/external-labs-manager`                                               | `api-key`                       |
-| glab, lab-manager | Community   | `/lab/brick`                                                           | `api-key`, private bricks only  |
-| Community         | Space       | `/external-community`, `/external-community-labs`                      | service                         |
-| Community         | Space       | `/auth/external/check-credentials`, `/auth/external/check-2fa`         | public, throttled               |
-| Space             | Community   | `/space/brick`                                                         | service                         |
-| Space             | Community   | queues `user_queue`, `space_user_queue`                                | shared Redis                    |
-| Community         | Space       | queue `brick_queue`                                                    | shared Redis                    |
-| lab               | lab         | `/external-lab-api` on the peer                                        | its own `api-key` + `X-User-Id` |
+| From              | To          | Surface                                                                | What for                                                                                                        | Auth                            |
+| ----------------- | ----------- | ---------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- | ------------------------------- |
+| Space             | lab-manager | `/lab`, `/docker-compose`, `/docker-containers`, `/backup`, `/adminer` | write the lab's config, start/stop its containers, trigger and restore backups                                  | `api-key`                       |
+| Space             | glab        | `/space-api`                                                           | push users, folders and settings; sync notes and scenarios                                                      | `api-key`                       |
+| glab              | Space       | `/external-labs`                                                       | register on boot and pull the user list, verify a password, publish scenarios, notes and resources into folders | `api-key`                       |
+| lab-manager       | Space       | `/external-labs-manager`                                               | get its backup targets and report backup history, ask its recommended version, resolve ACME DNS-01 challenges   | `api-key`                       |
+| glab, lab-manager | Community   | `/lab/brick`                                                           | resolve a brick version and get the URL to clone it                                                             | `api-key`, private bricks only  |
+| Community         | Space       | `/external-community`, `/external-community-labs`                      | check a user still exists, verify a lab's api-key and rights, check a lab's access to a private brick           | service                         |
+| Community         | Space       | `/auth/external/check-credentials`, `/auth/external/check-2fa`         | verify a password and its 2FA at login — the Community checks neither itself                                    | public, throttled               |
+| Space             | Community   | `/space/brick`                                                         | look up a brick and the version info a lab config needs                                                         | service                         |
+| Space             | Community   | queues `user_queue`, `space_user_queue`                                | mirror users, spaces and space membership into the Community                                                    | shared Redis                    |
+| Community         | Space       | queue `brick_queue`                                                    | keep the Space's brick mirror current                                                                           | shared Redis                    |
+| lab               | lab         | `/external-lab-api` on the peer                                        | share resources and scenarios with a peer lab                                                                   | its own `api-key` + `X-User-Id` |
 
 Every HTTP edge uses the `api-key` scheme except the two Space ↔ Community ones, which use service
 auth. The lab-to-lab key is not the platform's key — see below.
@@ -330,30 +411,44 @@ So the same brick at two versions in `.sys/` and `user/` is the normal working s
 Source: `gpm/init/script/gencovery_package_manager.py`, `gpm/init/script/brick_installer.py`,
 `gws_core/src/gws_core/settings_loader.py`
 
-## Deployment shapes
+### A private brick clones with a credential stored in the Community
 
-Two axes, one per plane, and they do not line up.
+A public brick is cloned from its git URL as is. A **private** one cannot be, so the Community
+holds a git username and a Personal Access Token per brick (`credentialUsername`,
+`credentialPassword`) and never hands out the plain URL: `repositoryAccessUrl` injects them into
+the URL (`https://<user>:<token>@…`), and that is the string gpm passes to `git clone`. The lab
+never knows a credential exists; it receives a URL that happens to work.
 
-**The Space types a lab** — `CnLabType`: `CLOUD`, `ON_PREMISE` (hosted and managed by the client),
-`DESKTOP`.
+Two consequences:
 
-**lab-manager runs a profile** — `EnvironmentProfile`, which decides the compose file, whether the
-API key is enforced, and whether the standalone configuration front starts:
+- **The token travels to every lab that installs the brick**, inside the clone URL. It is only as
+  confidential as the labs allowed to install that brick. The Community does gate the call — a
+  private brick's clone info requires the Space to confirm the lab has access — but once the URL is
+  out, the token is out.
+- **When a private brick stops installing, suspect the token before the code.** An expired or
+  revoked token fails at `git clone`, which reads as "brick not found" far more often than as an
+  authentication problem.
 
-| Profile         | Compose                              | API key  | Standalone front                     |
-| --------------- | ------------------------------------ | -------- | ------------------------------------ |
-| `prod`          | `docker-compose.yml`, behind traefik | required | no                                   |
-| `pre-prod`      | as `prod`                            | required | no                                   |
-| `private-cloud` | as `prod`                            | bypassed | yes, on `lab-config.${VIRTUAL_HOST}` |
-| `desktop`       | desktop compose, single-user         | bypassed | yes, on host port 82                 |
-| `dev`, `test`   | `docker-compose-local.yml`           | skipped  | no                                   |
+**Today every one of these tokens belongs to a single personal GitHub account (`bmaisonneuve`).**
+They still work. But they are personal, not organisational: if that account is deleted, every
+private brick may stop installing at once, in every lab, with no warning and nothing in this
+repository to change. Treat that as a known single point of failure, not as a surprise.
 
-**There is no `on-premise` profile, and no `private-cloud` lab type.** An `ON_PREMISE` lab runs
-`prod` when the cloud can reach its lab-manager, and `private-cloud` when it cannot — the profile
-answers "can the cloud configure this lab", the type answers "who owns the machine".
+Reissuing one, on GitHub: _profile_ → _Settings_ → _Developer Settings_ → _Personal Access Tokens_
+→ _Fine-grained tokens_. Scope it to the resource owner that owns the brick repositories and to
+those repositories only, and grant read access to code and metadata — in the permission list that
+is **Contents: Read-only**, which pulls in **Metadata: Read-only** automatically. That is the whole
+requirement: `git clone` over HTTPS reads contents, nothing else. Do not grant write, and do not
+fall back to a classic token, whose `repo` scope is read _and_ write on every repository the
+account can see.
 
-Source: `lab-manager/src/app/core/models/config.class.ts`,
-`monorepo-back/apps/cn-space-api/src/app/cn-labs/cn-lab.entity.ts`
+Then put the pair back in the Community, on the brick itself (`credentialUsername` and the token as
+`credentialPassword`). The Community stores the token and returns only `hasCredentialPassword` when
+reading a brick, so the value cannot be read back afterwards — keep it where you can find it again.
+
+Source: `monorepo-back/apps/hn-community-api/src/app/brick-aggregate/brick/hn-brick.entity.ts`
+(`repositoryAccessUrl`), `monorepo-back/apps/hn-community-api/src/app/brick-aggregate/hn-brick-aggregate.service.ts`,
+`gpm/init/script/brick_installer.py`
 
 ## Deliberate oddities
 
