@@ -1,5 +1,5 @@
 import { BlMailConfig, BlObjectStorageCredentials, BlTransportModuleConfig } from '@monorepo/back-core-lib';
-import { Inject, Injectable, Logger, LogLevel } from '@nestjs/common';
+import { Inject, Injectable, Logger, LogLevel, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { join } from 'path';
 
@@ -13,7 +13,7 @@ import {
 import { CN_CORE_MODULE_CONFIG, CnCoreConfigModuleConfig } from './cn-core-module-config.class';
 
 @Injectable()
-export class CnCoreConfigService {
+export class CnCoreConfigService implements OnModuleInit {
   private readonly assets = 'assets';
 
   private logger = new Logger(CnCoreConfigService.name);
@@ -22,6 +22,17 @@ export class CnCoreConfigService {
     protected configService: ConfigService,
     @Inject(CN_CORE_MODULE_CONFIG) private config: CnCoreConfigModuleConfig
   ) {}
+
+  /**
+   * Values that are read on demand but whose absence breaks the instance rather than one
+   * feature, checked once at startup so the process stops here instead of turning into a
+   * route failing much later with no obvious cause.
+   */
+  public onModuleInit(): void {
+    // no lab can be created and no settings row can be written without it, so an instance
+    // missing it is not usable at all
+    this.getLabAllowedDomains();
+  }
 
   public getEnvironmentProfile(): CnEnvironmentProfile {
     const profile: CnEnvironmentProfile | undefined = this.configService.get(CN_ENVIRONMENT_PROFILE_KEY);
@@ -441,6 +452,48 @@ export class CnCoreConfigService {
   }
 
   /////////////////////////////// LAB CONFIG ///////////////////////////////
+
+  /**
+   * The domains this instance creates and accepts labs on, comma-separated in
+   * `LAB_ALLOWED_DOMAINS` — e.g. `constellab.app,gencovery.io`.
+   *
+   * Supplied at run time rather than compiled in: a dedicated instance serves its labs
+   * from its own domain, and there is nothing in the code that could know it. This used
+   * to be the `CnLabDomain` enum and `CnLabEntity.SUPPORTED_MAIN_DOMAINS`.
+   *
+   * Required everywhere, local profiles included: an empty list means no lab can be
+   * created at all, and every entry has to exist in the DNS zone the lab creation drives
+   * anyway, so there is no value a deployment could be left to guess.
+   */
+  public getLabAllowedDomains(): string[] {
+    return this.getNonEmptyConfigString('LAB_ALLOWED_DOMAINS')
+      .split(',')
+      .map((domain) => domain.trim())
+      .filter((domain) => domain.length > 0);
+  }
+
+  /**
+   * The domain given to a lab created without one being chosen: the first of
+   * {@link getLabAllowedDomains}. Deliberately not its own variable — two values could
+   * disagree, and a default outside the allowed list would produce labs the validation
+   * then refuses to save.
+   */
+  public getDefaultLabDomain(): string {
+    const domains: string[] = this.getLabAllowedDomains();
+    if (domains.length === 0) {
+      throw Error("Empty config value for 'LAB_ALLOWED_DOMAINS'");
+    }
+    return domains[0];
+  }
+
+  /**
+   * Whether `mainDomain` (as `CnLabEntity.getMainDomain()` returns it) is one this
+   * instance manages — the DNS zone, the wildcard certificate and the reCAPTCHA key are
+   * all registered for those domains only.
+   */
+  public isAllowedLabDomain(mainDomain: string): boolean {
+    return this.getLabAllowedDomains().includes(mainDomain);
+  }
 
   public getLabConfigurerRepoUrl(): string {
     return this.getConfigString('LAB_CONFIGURER_REPO_URL');

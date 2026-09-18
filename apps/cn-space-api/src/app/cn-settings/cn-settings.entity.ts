@@ -4,7 +4,7 @@ import { Column, Entity } from 'typeorm';
 import { CnBrickGWS } from '../cn-bricks/cn-brick.dto';
 import { CnCloudProviderName } from '../cn-cloud-providers/cn-cloud-provider.entity';
 import { CnBaseEntity } from '../cn-core/model/entities/cn-base.entity';
-import { CnLabBillingMode, CnLabDomain } from '../cn-labs/cn-lab.entity';
+import { CnLabBillingMode } from '../cn-labs/cn-lab.entity';
 import { CnLabGreenOptionType } from '../cn-labs/green-option/cn-lab-green-option.entity';
 import { CnLabVolumeType } from '../cn-labs/volume/cn-lab-volume-entity';
 
@@ -64,8 +64,15 @@ export class CnFreeLabConfigDTO {
   @IsEnum(CnLabBillingMode)
   billingMode!: CnLabBillingMode;
 
-  @IsEnum(CnLabDomain)
-  domain!: CnLabDomain;
+  /**
+   * Domain the free labs are created on. A plain string, not an enum: the domains an
+   * instance may use come from its environment (`LAB_ALLOWED_DOMAINS`), so nothing here
+   * can enumerate them. `CnSettingsService.updateFreeLabConfig` checks the value against
+   * that list.
+   */
+  @IsString()
+  @IsNotEmpty()
+  domain!: string;
 
   @IsEnum(CnLabGreenOptionType)
   greenOption!: CnLabGreenOptionType;
@@ -99,15 +106,19 @@ export class CnSettings extends CnBaseEntity {
   @Column({ type: 'simple-json', nullable: true })
   freeLabConfig!: CnFreeLabConfigDTO | null;
 
-  public static createDefault(): CnSettings {
+  public static createDefault(defaultLabDomain: string): CnSettings {
     const settings = new CnSettings();
     settings.serverDecisionTree = { tree: [] };
     settings.constellabSuite = { apps: [] };
-    settings.freeLabConfig = CnSettings.getDefaultFreeLabConfig();
+    settings.freeLabConfig = CnSettings.getDefaultFreeLabConfig(defaultLabDomain);
     return settings;
   }
 
-  public static getDefaultFreeLabConfig(): CnFreeLabConfigDTO {
+  /**
+   * `defaultLabDomain` is passed in because it is an environment value
+   * (`CnCoreConfigService.getDefaultLabDomain()`) and this is a static on an entity.
+   */
+  public static getDefaultFreeLabConfig(defaultLabDomain: string): CnFreeLabConfigDTO {
     return {
       cloudProvider: 'GCP',
       cloudProviderRegion: 'europe-west1-b',
@@ -117,7 +128,7 @@ export class CnSettings extends CnBaseEntity {
       volumeSize: 100,
       volumeType: CnLabVolumeType.HIGH_SPEED,
       billingMode: CnLabBillingMode.HOURLY,
-      domain: CnLabDomain.CONSTELLAB_APP,
+      domain: defaultLabDomain,
       greenOption: CnLabGreenOptionType.STOP_AFTER_INACTIVITY_TIME,
       greenOptionInactivityDuration: 60,
       bricks: [CnBrickGWS.GWS_CORE, CnBrickGWS.GWS_ACADEMY],

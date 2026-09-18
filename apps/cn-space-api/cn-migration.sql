@@ -523,3 +523,39 @@ CREATE TABLE `oauth_grant`
 -- from the API being down. A local profile (dev, docker, test) ignores the value and
 -- accepts every origin, so it may stay empty there.
 -- ############################################################################
+
+-- ############################################################################
+-- MUST BE SET BEFORE THE APP STARTS. No schema change, an environment variable.
+--
+-- LAB_ALLOWED_DOMAINS — the domains this instance creates and accepts labs on, replacing
+--   the CnLabDomain enum and CnLabEntity.SUPPORTED_MAIN_DOMAINS, which no dedicated
+--   instance could ever match. Comma-separated; the FIRST entry is the one given to a lab
+--   created without a domain being chosen (there is no separate "default" variable, so
+--   the default can never fall outside the allowed list). Gencovery's own value, i.e.
+--   exactly what the enum used to hold:
+--     LAB_ALLOWED_DOMAINS=constellab.app,gencovery.io
+--
+--   Every entry must be a domain whose DNS zone this instance drives (lab creation writes
+--   the sub-domain record) and which the wildcard certificate and the reCAPTCHA key cover
+--   — a lab on a domain outside the list gets no captcha site key, by design.
+--
+--   Unsetting it, or leaving it blank, stops the application at startup, local profiles
+--   included: an empty list means no lab can be created and no free lab config can be
+--   saved, and there is no value the code could sensibly guess.
+--
+-- Existing labs keep their stored virtual_host whatever this is set to — nothing is
+-- rewritten. On an instance whose list no longer contains a domain some lab sits on, that
+-- lab keeps running, but updating its virtual host is refused and its lab manager stops
+-- receiving a captcha site key.
+--
+-- Free lab config (settings.free_lab_config, JSON): its "domain" key was a CnLabDomain
+-- value and is now free text validated against LAB_ALLOWED_DOMAINS when saved. A row
+-- carrying a domain outside the list is NOT migrated automatically and only fails when a
+-- free lab is created, so fix it on a dedicated instance:
+--   update settings
+--   set free_lab_config = JSON_SET(free_lab_config, '$.domain', '<your domain>')
+--   where JSON_EXTRACT(free_lab_config, '$.domain') = 'constellab.app';
+--
+-- Front: the domain list is now served by GET /core-config/lab-domains. A front still
+-- shipping its own copy of the enum shows domains this instance will refuse.
+-- ############################################################################

@@ -17,6 +17,7 @@ import {
 } from 'typeorm';
 
 import { CnAbstractWithStatusService } from '../cn-core/class/cn-abstract-with-status.service';
+import { CnCoreConfigService } from '../cn-core/modules/cn-core-config/cn-core-config.service';
 import { CnNotesService } from '../cn-folders-aggregate/cn-notes/cn-notes.service';
 import { CnScenario } from '../cn-folders-aggregate/cn-scenarios/cn-scenario.entity';
 import { CnScenariosService } from '../cn-folders-aggregate/cn-scenarios/cn-scenarios.service';
@@ -45,6 +46,7 @@ export class CnLabsService extends CnAbstractWithStatusService<CnLabEntity, CnLa
     private scenarioService: CnScenariosService,
     private noteService: CnNotesService,
     private eventEmitter: EventEmitter2,
+    private configService: CnCoreConfigService,
     datasource: DataSource
   ) {
     super(repository, CnLabEntity, statusRepo, CnLabStatusHistory, datasource);
@@ -144,10 +146,10 @@ export class CnLabsService extends CnAbstractWithStatusService<CnLabEntity, CnLa
       throw new BlBadRequestException(`Virtual host already used by another lab : ${virtualHost}`);
     }
 
-    // check domain name
-    if (checkSupportedDomains && !CnLabEntity.SUPPORTED_MAIN_DOMAINS.includes(entity.getMainDomain())) {
+    // check domain name against the domains this instance manages (LAB_ALLOWED_DOMAINS)
+    if (checkSupportedDomains && !this.configService.isAllowedLabDomain(entity.getMainDomain())) {
       throw new BlBadRequestException(
-        `Virtual host must be a valid domain name : ${CnLabEntity.SUPPORTED_MAIN_DOMAINS.join(', ')}`
+        `Virtual host must be a valid domain name : ${this.configService.getLabAllowedDomains().join(', ')}`
       );
     }
 

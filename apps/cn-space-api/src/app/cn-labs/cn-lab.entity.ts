@@ -42,20 +42,11 @@ export enum CnLabDesktopPlatform {
   MAC = 'MAC',
 }
 
-export enum CnLabDomain {
-  CONSTELLAB_APP = 'constellab.app',
-  GENCOVERY_IO = 'gencovery.io',
-}
-
 /**
  * A lab is a running lab
  */
 @Entity('lab')
 export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
-  public static readonly SUPPORTED_MAIN_DOMAINS: string[] = [
-    CnLabDomain.CONSTELLAB_APP,
-    CnLabDomain.GENCOVERY_IO,
-  ];
   public static readonly SPACE_API_ROUTE = 'space-api';
   public static readonly S3_API_ROUTE = 's3-server/v1';
   public static readonly CORE_API_ROUTE = 'core-api';
@@ -376,11 +367,17 @@ export class CnLabEntity extends CnEntityWithStatus<CnLabStatusHistory> {
   }
 
   /**
-   * return true if the lab is on a constellab standard domain
+   * Whether the lab sits on one of the domains this instance manages — the DNS zone, the
+   * wildcard certificate and the reCAPTCHA key are registered for those only.
+   *
+   * The list is passed in rather than read here: it comes from the environment
+   * (`LAB_ALLOWED_DOMAINS`, via `CnCoreConfigService.getLabAllowedDomains()`), and an
+   * entity is built by the repository with no injector to ask. A desktop lab is never on
+   * one — it runs on the user's machine and has no virtual host to speak of.
    */
-  public isConstellabDomain(): boolean {
+  public isOnManagedDomain(allowedDomains: string[]): boolean {
     if (this.isDesktop()) return false;
-    return CnLabEntity.SUPPORTED_MAIN_DOMAINS.includes(this.getMainDomain());
+    return allowedDomains.includes(this.getMainDomain());
   }
 
   public serverIsBusy(): boolean {

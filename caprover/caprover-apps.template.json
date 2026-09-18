@@ -90,6 +90,7 @@
     "GENCOVERY_SPACE_ID": "FILL_ME: uuid of the publisher space, must exist in the Community",
 
     "_8_lab_provisioning": "--- versions and cloud providers ---",
+    "LAB_ALLOWED_DOMAINS": "FILL_ME: domains the labs are created on, comma separated, first one is the default, e.g. constellab.app,gencovery.io",
     "LAB_MANAGER_VERSION": "FILL_ME: latest lab-manager release, e.g. 2.16.0",
     "LAB_MANAGER_STANDALONE_FRONT_VERSION": "latest",
     "LAB_CONFIGURER_REPO_URL": "https://github.com/Constellab/lab-configurer.git",
@@ -305,6 +306,7 @@
         "OBJECT_STORAGE_DB_BACKUP_ENDPOINT": "${S3_ENDPOINT}",
         "OBJECT_STORAGE_DB_BACKUP_REGION": "${S3_REGION}",
 
+        "LAB_ALLOWED_DOMAINS": "${LAB_ALLOWED_DOMAINS}",
         "LAB_CONFIGURER_REPO_URL": "${LAB_CONFIGURER_REPO_URL}",
         "LAB_CONFIGURER_REPO_BRANCH": "${LAB_CONFIGURER_REPO_BRANCH}",
         "LAB_MANAGER_VERSION": "${LAB_MANAGER_VERSION}",

@@ -15,4 +15,14 @@ export class CnCoreConfigController {
   getEnvironmentProfile(): CnEnvironmentProfile {
     return this.coreConfigService.getEnvironmentProfile();
   }
+
+  /**
+   * The domains this instance creates labs on. Exposed because they used to be the
+   * `CnLabDomain` enum, which the front had its own copy of; they now come from this
+   * instance's environment, so the front has no way to know them.
+   */
+  @Get('lab-domains')
+  getLabDomains(): string[] {
+    return this.coreConfigService.getLabAllowedDomains();
+  }
 }

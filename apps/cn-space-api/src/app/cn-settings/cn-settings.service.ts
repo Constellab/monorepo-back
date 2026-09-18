@@ -117,13 +117,33 @@ export class CnSettingsService extends BlAbstractService<CnSettings> {
   public async getFreeLabConfig(): Promise<CnFreeLabConfigDTO> {
     const settings = await this.getSettingsAndCheck();
 
-    return settings.freeLabConfig ?? CnSettings.getDefaultFreeLabConfig();
+    return (
+      settings.freeLabConfig ?? CnSettings.getDefaultFreeLabConfig(this.configService.getDefaultLabDomain())
+    );
   }
 
   public async updateFreeLabConfig(freeLabConfig: CnFreeLabConfigDTO): Promise<CnFreeLabConfigDTO> {
+    this.checkFreeLabDomain(freeLabConfig.domain);
+
     await this.updateSettings({ freeLabConfig });
 
     return freeLabConfig;
+  }
+
+  /**
+   * The domain is free text in the DTO — the values an instance accepts come from its
+   * environment, so `@IsEnum` has nothing to check against. Refusing it here rather than
+   * at lab creation keeps the misconfiguration where it was entered: a free lab config
+   * pointing at an unmanaged domain only fails much later, when the first free lab
+   * creation is refused by `CnLabsService.checkLabBeforeSave`.
+   */
+  private checkFreeLabDomain(domain: string): void {
+    const allowedDomains: string[] = this.configService.getLabAllowedDomains();
+    if (!allowedDomains.includes(domain)) {
+      throw new BlBadRequestException(
+        `Invalid free lab domain '${domain}', expected one of : ${allowedDomains.join(', ')}`
+      );
+    }
   }
 
   ///////////////////////////////// REQUEST APP /////////////////////////////////
@@ -168,7 +188,7 @@ export class CnSettingsService extends BlAbstractService<CnSettings> {
     const settings = await this.repository.find({});
 
     if (settings.length === 0) {
-      const settings = CnSettings.createDefault();
+      const settings = CnSettings.createDefault(this.configService.getDefaultLabDomain());
       return await this.repository.save(settings);
     }
 

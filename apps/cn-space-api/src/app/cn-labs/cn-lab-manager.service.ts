@@ -118,7 +118,9 @@ export class CnLabManagerService {
     // `?? null` because the key is optional in the configuration and this contract is not:
     // a lab told `undefined` would drop the field from the JSON body instead of receiving it
     // as explicitly absent.
-    const captchaSiteKey = lab.isConstellabDomain() ? (this.configService.getCaptchaSiteKey() ?? null) : null;
+    const captchaSiteKey = lab.isOnManagedDomain(this.configService.getLabAllowedDomains())
+      ? (this.configService.getCaptchaSiteKey() ?? null)
+      : null;
     const enableBackup = lab.isCloud();
     const openaiApiKey = lab.isDesktop() ? null : this.configService.getOpenaiAPIKey();
 

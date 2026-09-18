@@ -15,6 +15,7 @@ import { CnAuthService, CnExternalCheckCredentialResponse } from '../cn-auth/cn-
 import { CnBrickGWS } from '../cn-bricks/cn-brick.dto';
 import { CnCloudProviderRegion } from '../cn-cloud-providers/cn-cloud-provider-regions/cn-cloud-provider-region.entity';
 import { CnErrorText } from '../cn-core/model/config/cn-error-text.class';
+import { CnCoreConfigService } from '../cn-core/modules/cn-core-config/cn-core-config.service';
 import { CnCurrentUserHelper } from '../cn-core/utils/cn-current-user.helper';
 import { CnExternalLabApiService } from '../cn-external-lab-api/cn-external-lab-api.service';
 import { CnExternalLabUserService } from '../cn-external-lab-api/cn-external-lab-user.service';
@@ -74,15 +75,7 @@ import {
   CnRequestLab,
   CnStopLabRequestDTO,
 } from './cn-lab.dto';
-import {
-  CnLab,
-  CnLabBillingMode,
-  CnLabDomain,
-  CnLabEntity,
-  CnLabFull,
-  CnLabType,
-  CnLabWithSpace,
-} from './cn-lab.entity';
+import { CnLab, CnLabBillingMode, CnLabEntity, CnLabFull, CnLabType, CnLabWithSpace } from './cn-lab.entity';
 import { CnLabManagerService } from './cn-lab-manager.service';
 import { CnLabsSecurity } from './cn-labs.security';
 import { CnLabsService } from './cn-labs.service';
@@ -142,7 +135,8 @@ export class CnLabAggregateService {
     private labStatsAggregateService: CnLabStatsAggregateService,
     private labDesktopService: CnLabDesktopService,
     private labStartDiagnosisService: CnLabStartDiagnosisService,
-    private translateService: BlTranslateService
+    private translateService: BlTranslateService,
+    private configService: CnCoreConfigService
   ) {}
 
   /**
@@ -190,7 +184,7 @@ export class CnLabAggregateService {
     lab.billingMode = CnLabBillingMode.HOURLY;
     lab.isFreeLab = false;
     lab.space = CnCurrentUserHelper.getAndCheckCurrentSpace();
-    lab.virtualHost = ClStringHelper.generateUUID() + '.' + CnLabDomain.CONSTELLAB_APP;
+    lab.virtualHost = ClStringHelper.generateUUID() + '.' + this.configService.getDefaultLabDomain();
 
     // handle lab config
     const configDto: CnLabConfigDto = {
@@ -1505,11 +1499,11 @@ export class CnLabAggregateService {
     const lab = await this.getAndCheckAuthorizationToFindById(CnCurrentUserHelper.getAndCheckCurrentLab().id);
 
     // check the credentials, if the lab is cloud, it needs a valid captcha
-    // only check the captcha for constellab standard domain
-    // (because this is the only domain defined in google)
+    // only check the captcha for a domain this instance manages (LAB_ALLOWED_DOMAINS),
+    // because those are the only ones the reCAPTCHA key is registered for in google
     return this.authService.externalCheckCredentials(
       credentials,
-      lab.isConstellabDomain() && !ignoreCaptcha,
+      lab.isOnManagedDomain(this.configService.getLabAllowedDomains()) && !ignoreCaptcha,
       ignore2Fa
     );
   }

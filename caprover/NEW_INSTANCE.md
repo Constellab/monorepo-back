@@ -190,6 +190,48 @@ dig +short anything.<DOMAIN> @8.8.8.8
 dig CAA <DOMAIN> @8.8.8.8 +short          # and the parent zone, see below
 ```
 
+#### The labs live on their own domain, not on `<DOMAIN>`
+
+Nothing above covers the data labs. Their hostnames come from a separate variable on
+`space-api`, `LAB_ALLOWED_DOMAINS` — a comma-separated list, whose **first entry** is the
+domain given to a lab created without one being chosen. Gencovery's own value is
+`constellab.app,gencovery.io`; until this release that list was an enum compiled into the
+image, which is why it is worth a decision here rather than a value to copy.
+
+A lab gets a generated UUID as its sub-domain, and the Space writes two records into the
+**zone of that domain** as it provisions one:
+
+```text
+*.<uuid>                    A     <lab server IP>     # glab., lab., lab-manager., codelab.
+_acme-challenge.<uuid>      TXT   <token>             # only while a certificate is issued
+```
+
+Both go through the **OVH API** (`cn-cloud-provider-ovh.service.ts:302` and `:354`),
+whatever cloud provider the lab itself runs on — an Azure or GCP lab still has its DNS at
+OVH. So every entry in `LAB_ALLOWED_DOMAINS` must be a zone hosted at OVH that this
+instance's token (`OVH_APP_KEY` / `OVH_APP_SECRET` / `OVH_CONSUMER_KEY`) has the same four
+rights on as the certificate token (`CAPROVER_CERTIFICATES.md`). A domain the token cannot
+write to fails at lab creation, not at startup, and the lab is left with a server and no
+name.
+
+Three ways to set it, in decreasing order of what they ask of the customer:
+
+- **A domain of the customer's, delegated to OVH.** The instance drives its own zone and
+  nothing of Gencovery's is involved. This is the one to aim for on a dedicated instance.
+- **`<DOMAIN>` itself**, giving labs at `<uuid>.<DOMAIN>`. Works, and keeps everything in
+  one zone — but that zone is then written to automatically by the Space, alongside the
+  records of step 1.3 that you maintain by hand. Note that a lab's `*.<uuid>` record makes
+  `<uuid>.<DOMAIN>` an empty node: that one name stops falling back to `*.<DOMAIN>` and
+  returns no answer instead of the Space front. Harmless — no workspace carries a lab's
+  UUID — but it looks like a DNS failure when you happen to query it.
+- **Gencovery's `constellab.app`**, which means Gencovery's OVH token and Gencovery's zone.
+  Acceptable for a trial instance operated by Gencovery, and only then: the customer's labs
+  then depend on a zone they do not own.
+
+The API reads the list at startup and **refuses to boot when it is unset or blank**, so
+there is no half-configured state where labs quietly land on the wrong domain. Changing it
+later does not rewrite the labs already created: they keep the hostname stored on them.
+
 #### `<DOMAIN>` may itself be a subdomain
 
 Nothing above requires `<DOMAIN>` to be a registered domain. `test.constellab.com` works,
@@ -255,17 +297,18 @@ Three things in the code make this the right shape rather than merely a possible
 Collect these **before** filling the configuration file. The ones marked required stop the
 application from starting or working when missing.
 
-| Item                                                               | Required                     | Notes                                                                          |
-| ------------------------------------------------------------------ | ---------------------------- | ------------------------------------------------------------------------------ |
-| A dedicated S3 tenant (OVH or compatible) + access key/secret      | yes                          | **must belong to the customer** — see pitfall #2                               |
-| The Community's S3 buckets (12 names, listed in the template)      | yes                          | create them in that tenant                                                     |
-| SMTP account and sender address                                    | yes                          | Gencovery uses `ssl0.ovh.net:465` over TLS                                     |
-| OVH API token for DNS (4 rights on `/domain/zone/<zone>/*`)        | yes, if the domain is at OVH | issues the wildcard certificates, see `CAPROVER_CERTIFICATES.md`               |
-| SSH private key for lab provisioning                               | if labs run in the cloud     | dropped into `$HOST_HOME/space-api-volume/`                                    |
-| Cloud provider credentials for labs (OVH / Azure / Outscale / GCP) | if labs run in the cloud     | the variables are required by the code even when unused — set them to `unused` |
-| reCAPTCHA key                                                      | no                           | leaving it empty disables the captcha                                          |
-| OpenAI, Algolia, RAGFlow, YouTube keys                             | no                           | set them to `unused`; the code reads them with `getConfigString`               |
-| A GitHub classic PAT with `read:packages`                          | yes                          | CapRover pulls the four private images with it — see step 7                    |
+| Item                                                               | Required                     | Notes                                                                                                                          |
+| ------------------------------------------------------------------ | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| A dedicated S3 tenant (OVH or compatible) + access key/secret      | yes                          | **must belong to the customer** — see pitfall #2                                                                               |
+| The Community's S3 buckets (12 names, listed in the template)      | yes                          | create them in that tenant                                                                                                     |
+| SMTP account and sender address                                    | yes                          | Gencovery uses `ssl0.ovh.net:465` over TLS                                                                                     |
+| OVH API token for DNS (4 rights on `/domain/zone/<zone>/*`)        | yes, if the domain is at OVH | issues the wildcard certificates, see `CAPROVER_CERTIFICATES.md`                                                               |
+| A domain for the labs, hosted at OVH                               | yes                          | `LAB_ALLOWED_DOMAINS`, written to by the Space itself — see [the lab domain](#the-labs-live-on-their-own-domain-not-on-domain) |
+| SSH private key for lab provisioning                               | if labs run in the cloud     | dropped into `$HOST_HOME/space-api-volume/`                                                                                    |
+| Cloud provider credentials for labs (OVH / Azure / Outscale / GCP) | if labs run in the cloud     | the variables are required by the code even when unused — set them to `unused`                                                 |
+| reCAPTCHA key                                                      | no                           | leaving it empty disables the captcha                                                                                          |
+| OpenAI, Algolia, RAGFlow, YouTube keys                             | no                           | set them to `unused`; the code reads them with `getConfigString`                                                               |
+| A GitHub classic PAT with `read:packages`                          | yes                          | CapRover pulls the four private images with it — see step 7                                                                    |
 
 Generate these on the machine. Do not reuse them from another environment:
 
