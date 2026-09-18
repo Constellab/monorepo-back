@@ -892,7 +892,8 @@ separate for the names to be safe.
 `'dev' | 'docker' | 'preprod' | 'prod' | 'test'`. Gencovery's pre-prod is set to `pre-prod`
 (with a hyphen), which is not in that list; the code then falls into "neither local nor
 prod", which happens to be the intended behaviour. On a customer instance, use `prod` —
-that is what turns on `secure` cookies, the captcha and the production buckets.
+that is what turns on `secure` cookies and the production buckets. The captcha does not
+depend on the profile: it is on when `CAPTCHA_SITE_KEY` holds a value, off when it is blank.
 
 **#4 — The Space's `API_URL` and the Community's `SPACE_API_URL` must name the same host,
 scheme included.** No test compares them. A mismatch makes every MCP call return 401 while

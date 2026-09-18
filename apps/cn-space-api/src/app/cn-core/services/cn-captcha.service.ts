@@ -31,14 +31,15 @@ export class CnCaptchaService {
   }
 
   /**
-   * An unconfigured site key is a **local-only** shortcut.
+   * An unconfigured site key is the off switch for the captcha, in every environment.
    *
-   * Answering `true` to a missing key anywhere else silently removes the only
-   * brute-force protection that login, signup and the labs' credential check have, and
-   * nothing about the response says so — a blank `CAPTCHA_SITE_KEY` in an environment's
-   * configuration is enough, which is exactly what an emptied CapRover field looks like.
-   * The August 2026 black box audit read the login of a lab as having no captcha at all;
-   * this branch is how that state can happen without anyone changing code.
+   * A blank `CAPTCHA_SITE_KEY` — which is what an emptied or commented-out CapRover field
+   * produces — means login, signup and the labs' credential check accept any token, including
+   * none. Deliberate: an instance deployed without a reCAPTCHA key must still be usable, and
+   * refusing instead would lock every credential route of that instance. The cost is that the
+   * only brute-force protection those routes have is gone and no response says so, which is
+   * how the August 2026 black box audit came to read a lab login as having no captcha at all.
+   * The log line below is the only trace. Keep the key set wherever the captcha is expected.
    */
   public async validateCaptcha(token: string | undefined, action: string): Promise<boolean> {
     const siteKey: string | undefined = this.configService.getCaptchaSiteKey();
@@ -61,18 +62,19 @@ export class CnCaptchaService {
   }
 
   /**
-   * The verdict when no site key is configured: refused everywhere but locally, where there is
-   * nothing to call. The reasoning is on {@link validateCaptcha}.
+   * The verdict when no site key is configured: accepted, everywhere. Expected locally, where
+   * there is nothing to call; outside it, logged as an error because the environment is running
+   * without captcha. The reasoning is on {@link validateCaptcha}.
    */
   private answerWithoutSiteKey(): boolean {
     if (!this.configService.isLocal()) {
       this.logger.error(
-        'Captcha site key is not configured outside a local environment: refusing the captcha. ' +
+        'Captcha site key is not configured outside a local environment: accepting the captcha. ' +
           'Set CAPTCHA_SITE_KEY — every credential entry point is unprotected until it is.'
       );
-      return false;
+    } else {
+      this.logger.warn('Captcha site key not configured, skipping captcha validation.');
     }
-    this.logger.warn('Captcha site key not configured, skipping captcha validation.');
     return true;
   }
 

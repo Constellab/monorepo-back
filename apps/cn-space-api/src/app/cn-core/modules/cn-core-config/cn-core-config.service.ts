@@ -473,8 +473,8 @@ export class CnCoreConfigService {
    * first, and it is the blank one a commented-out or emptied CapRover field produces — the
    * case that must not read as "captcha configured".
    *
-   * Who decides what an absent key means is {@link CnCaptchaService.validateCaptcha}, and
-   * outside a local environment the answer is to refuse.
+   * Who decides what an absent key means is {@link CnCaptchaService.validateCaptcha}, and the
+   * answer is to accept — the captcha is off in that environment, whichever one it is.
    */
   public getCaptchaSiteKey(): string | undefined {
     return this.getOptionalConfigString('CAPTCHA_SITE_KEY');
