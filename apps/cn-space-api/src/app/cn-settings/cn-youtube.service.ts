@@ -21,6 +21,10 @@ export class CnYoutubeService {
     const videos: CnYoutubeVideo[] = [];
 
     const playlistId = this.coreConfigService.getYoutubeTutorialPlaylistId();
+    if (!playlistId) {
+      return videos;
+    }
+
     const apiUrl =
       `${this.API_URL}/${this.PLAYLIST_ROUTE}?part=snippet&` +
       `playlistId=${playlistId}&` +

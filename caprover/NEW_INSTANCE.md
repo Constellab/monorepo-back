@@ -789,46 +789,97 @@ sudo docker run --rm \
 `--cert-name` fixes the directory name under `live/`, which the nginx config of step 4
 references — don't let certbot pick it.
 
-**Do not run this a second time for `api.<DOMAIN>` or any other public subdomain.** They
-already got their certificate from CapRover in step 5, and asking certbot for one puts a
-`_acme-challenge.api.<DOMAIN>` TXT record in the zone. A leftover there stops
-`api.<DOMAIN>` from resolving at all. At the zone root the same leftover is harmless,
-because `<DOMAIN>` has its own A record either way — which is the whole reason for keeping
-to this one certificate.
+**3. Set up renewal.** Copy `renew-certs.sh` next to `ovh.ini` and change the two values
+at the top that still carry pre-prod's:
 
-**3. Set up renewal.** Copy `renew-certs.sh` next to `ovh.ini`, put `<DOMAIN>` in its
-`CERT_NAMES`, and add the entry to **root's** crontab (`sudo crontab -e`) — the script
-needs `/captain/data`, the Docker socket and `/var/log`:
+```bash
+OVH_CREDENTIALS="<HOST_HOME>/ovh.ini"   # line 25, hardcoded — must match your HOST_HOME
+CERT_NAMES=(                            # lines 33-36, the lineages to renew here
+    "<DOMAIN>"
+)
+```
+
+`CERT_NAMES` holds the `--cert-name` of step 2, and only that one. Adding
+`api.<DOMAIN>` there makes the run fail: CapRover issues that certificate over HTTP-01 and
+the script does not mount `/captain-webroot`.
+
+**`crontab: command not found`** means cron is not installed — minimal cloud images, GCP's
+among them, ship without it, and `prepare-machine.sh` does not add it. Install it and make
+sure the daemon is actually running, not just present:
+
+```bash
+sudo apt-get update && sudo apt-get install -y cron
+sudo systemctl enable --now cron
+sudo systemctl status cron       # "active (running)"
+```
+
+Then make the script executable and add the entry to **root's** crontab — the script needs
+`/captain/data`, the Docker socket, `/var/log`, and `ovh.ini`, which is `root:root 600`:
+
+```bash
+chmod +x <HOST_HOME>/renew-certs.sh
+sudo chown root:root <HOST_HOME>/ovh.ini && sudo chmod 600 <HOST_HOME>/ovh.ini
+sudo crontab -e          # opens an editor; the line below goes in the file
+```
 
 ```
 17 3,15 * * * <HOST_HOME>/renew-certs.sh >> /var/log/renew-certs.log 2>&1
 ```
 
-**4. Point `space-front` at the certificate.** _Apps_ → `space-front` → _Nginx
-Configuration_, replace the template. Rather than writing it from scratch, take pre-prod's
-and change the domain in the three places it appears:
+That line is the **content of the crontab file**, not a shell command. Typed at a prompt it
+makes bash try to run a program called `17`, and appending `sudo` in front of it — or
+anywhere in it — only moves the failure: `>> sudo` creates a file named `sudo` in the
+current directory and `2>&1` sends the error message into it, so the terminal stays silent
+and it looks like it worked.
+
+No `sudo` inside the line either. The job already runs as root, because the crontab is
+root's. In a user crontab it would not: cron has no tty, so `sudo` fails with
+`sudo: a terminal is required to authenticate`.
+
+**The path must be absolute.** Cron sets `HOME` from the `/etc/passwd` entry of the
+crontab's owner, so in root's crontab `~` and `$HOME` both expand to `/root` — the job then
+fails twice a day with `No such file or directory` until the certificate expires.
+
+Check it landed in the right crontab, then run it once by hand against Let's Encrypt's
+staging server:
 
 ```bash
-./export-apps.sh https://captain.constellab-pre-prod.gencovery.com \
-  | jq -r '.[] | select(.appName=="space-front-pre-prod") | .customNginxConfig'
+sudo crontab -l                       # must show the line
+crontab -l                            # must say "no crontab for <user>"
+
+sudo <HOST_HOME>/renew-certs.sh --dry-run
+
+# the lineage names, as certbot knows them: CERT_NAMES must match these exactly
+sudo docker run --rm -v /captain/data/letencrypt/etc:/etc/letsencrypt \
+  certbot/dns-ovh certificates
 ```
 
-The three lines that matter:
+The dry run exercises the OVH token, the credentials path and the certbot image without
+touching the real certificate or Let's Encrypt's rate limits. It is the only check that
+tells you the renewal works before it has to.
+
+After the first real renewal, the log says which lineages were processed:
+
+```bash
+sudo tail -30 /var/log/renew-certs.log
+```
+
+**4. Point `space-front` at the certificate.** _Apps_ → `space-front` → _Nginx
+Configuration_.
+
+Use `space-front-nginx-example.conf`, in this folder, as the reference. It is CapRover's
+own template with three edits, each one wrapped in a pair of comments:
 
 ```nginx
-server_name  <DOMAIN> *.<DOMAIN>;
-
-ssl_certificate     /letencrypt/etc/live/<DOMAIN>/fullchain.pem;
-ssl_certificate_key /letencrypt/etc/live/<DOMAIN>/privkey.pem;
+###################### START MODIFICATIONS ######################
+...
+####################### END MODIFICATIONS ######################
 ```
 
-`letencrypt` really is spelled **without the `s`** — a typo in CapRover's own source, and
-the real path on disk.
-
-This wildcard does not steal `api.<DOMAIN>` from `space-api`: nginx matches an exact
-`server_name` before a wildcard one, whatever order the files are in, and SNI follows the
-same rule. The three public subdomains keep reaching their own apps; everything else under
-`<DOMAIN>` falls through to `space-front`, which is what makes a workspace subdomain work.
+Apply those three blocks to the template CapRover shows you, and replace
+`test.preconstellab.com` with your `<DOMAIN>` everywhere it appears. Do not paste the
+example file wholesale: the rest of it is CapRover's template as it stood when the example
+was taken, and yours may differ by version.
 
 **5. Check the zone for a leftover challenge record** — see 8.2 just below.
 
