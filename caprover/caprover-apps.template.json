@@ -31,19 +31,44 @@
   },
 
   "vars": {
-    "_1_domains": "--- one registered domain; everything below is derived from it ---",
+    "_1_domains": [
+      "--- one registered domain; every name below is derived from it ---",
+      "Nothing is served on ${DOMAIN} itself. Each product sits under its own label:",
+      "the Space front on space.${DOMAIN} (and *.space.${DOMAIN}, one workspace per",
+      "subdomain), the Community front on community.${DOMAIN}. See NEW_INSTANCE.md 1.3."
+    ],
     "DOMAIN": "FILL_ME: the single registered domain, e.g. acme-constellab.com",
 
     "ROOT_DOMAIN": "infra.${DOMAIN}",
+    "SPACE_DOMAIN": "space.${DOMAIN}",
     "COMMUNITY_DOMAIN": "community.${DOMAIN}",
     "COMMUNITY_API_DOMAIN": "community-api.${DOMAIN}",
 
-    "SPACE_FRONT_URL": "https://${DOMAIN}",
+    "SPACE_FRONT_URL": "https://${SPACE_DOMAIN}",
     "SPACE_API_URL": "https://api.${DOMAIN}",
     "COMMUNITY_FRONT_URL": "https://${COMMUNITY_DOMAIN}",
     "COMMUNITY_API_URL": "https://${COMMUNITY_API_DOMAIN}",
 
-    "_1b_machine": "--- the server: where the bind-mounted directories live ---",
+    "_1b_csp": [
+      "--- Content-Security-Policy of the two fronts: the domains a page may talk to ---",
+      "Space separated CSP host sources, NOT a comma separated list. A wildcard source matches",
+      "any depth of subdomain, so *.${DOMAIN} covers space., api., community., community-api.",
+      "and every workspace at <uuid>.space.${DOMAIN} — one entry for the whole instance.",
+      "",
+      "These MUST be set. Left unset, each image keeps the Gencovery domains it was built with",
+      "(*.constellab.space, *.gencovery.com, ...), so every call the front makes to this",
+      "instance is blocked by the browser: the app loads and then does nothing, with",
+      "'violates the following Content Security Policy directive' in the console.",
+      "",
+      "Third party sources (fonts, recaptcha, algolia, analytics, emoji-mart) are hardcoded in",
+      "the images and need nothing here.",
+      "Read by apps/ca-space-front/entrypoint.sh and apps/ha-community-front/server.ts."
+    ],
+    "CSP_LAB_DOMAINS": "FILL_ME: the LAB_ALLOWED_DOMAINS entries as CSP sources, space separated, e.g. *.constellab.app *.gencovery.io",
+    "CSP_ALLOWED_DOMAINS": "*.${DOMAIN} ${CSP_LAB_DOMAINS}",
+    "COMMUNITY_CSP_ALLOWED_DOMAIN": "*.${DOMAIN}",
+
+    "_1c_machine": "--- the server: where the bind-mounted directories live ---",
     "HOST_HOME": "/home/ubuntu",
 
     "_2_internal_secrets": "------------------------------------------------------------",
@@ -275,7 +300,7 @@
         "FAILED_LOGIN_LOCK": "10",
 
         "API_URL": "${SPACE_API_URL}",
-        "FRONT_DOMAIN": "${DOMAIN}",
+        "FRONT_DOMAIN": "${SPACE_DOMAIN}",
         "CORS_ALLOWED_DOMAINS": "${DOMAIN}",
         "COMMUNITY_FRONT_URL": "${COMMUNITY_FRONT_URL}",
         "COMMUNITY_API_URL": "${COMMUNITY_API_URL}",
@@ -408,7 +433,7 @@
     {
       "appName": "space-front",
       "_role": "ca-space-front. Image published by the ca_* tag of monorepo-front.",
-      "_nginx": "The only app with a hand-written nginx config: it serves ${DOMAIN} and *.${DOMAIN} from the wildcard certificate issued outside CapRover. See step 8.",
+      "_nginx": "The only app with a hand-written nginx config: it serves ${SPACE_DOMAIN} and *.${SPACE_DOMAIN} from the wildcard certificate issued outside CapRover. See step 8.",
       "image": "${SPACE_FRONT_IMAGE}",
       "hasPersistentData": false,
       "notExposeAsWebApp": false,
@@ -421,9 +446,12 @@
         "API_URL": "${SPACE_API_URL}",
         "COMMUNITY_API_URL": "${COMMUNITY_API_URL}",
         "COMMUNITY_FRONT_URL": "${COMMUNITY_FRONT_URL}",
-        "FRONT_DOMAIN": "${DOMAIN}",
+        "FRONT_DOMAIN": "${SPACE_DOMAIN}",
         "CAPTCHA_SITE_KEY": "${CAPTCHA_SITE_KEY}",
-        "DIFY_CHATBOT_TOKEN": "${DIFY_CHATBOT_TOKEN}"
+        "DIFY_CHATBOT_TOKEN": "${DIFY_CHATBOT_TOKEN}",
+
+        "CSP_ALLOWED_DOMAINS": "${CSP_ALLOWED_DOMAINS}",
+        "COMMUNITY_CSP_ALLOWED_DOMAIN": "${COMMUNITY_CSP_ALLOWED_DOMAIN}"
       }
     },
 
@@ -450,7 +478,9 @@
         "ALGOLIA_SEARCH_KEY": "${ALGOLIA_SEARCH_KEY}",
         "ALGOLIA_SITE_VERIFICATION_KEY": "${ALGOLIA_SITE_VERIFICATION_KEY}",
         "ALGOLIA_INDEX_NAME": "${ALGOLIA_INDEX_NAME}",
-        "HOME_VIDEO_LINK": "${HOME_VIDEO_LINK}"
+        "HOME_VIDEO_LINK": "${HOME_VIDEO_LINK}",
+
+        "CSP_ALLOWED_DOMAINS": "${CSP_ALLOWED_DOMAINS}"
       }
     }
   ]

@@ -16,25 +16,26 @@ Wildcard certificates: `CAPROVER_CERTIFICATES.md`, in this folder.
 
 Eight CapRover apps. The first four are infrastructure, the last four are the product.
 
-| App               | Image                                | Port | Served at                   | Volume                             |
-| ----------------- | ------------------------------------ | ---- | --------------------------- | ---------------------------------- |
-| `redis-queue`     | `redis:7.2.4`                        | —    | internal only               | `redis-queue-redis-data:/data`     |
-| `space-db`        | `mariadb:10`                         | —    | internal only               | `space-db-data:/var/lib/mysql`     |
-| `community-db`    | `mariadb:10`                         | —    | internal only               | `community-db-data:/var/lib/mysql` |
-| `adminer`         | `adminer:5.2.1`                      | 8080 | `adminer.infra.<DOMAIN>`    | —                                  |
-| `space-api`       | `ghcr.io/constellab/space-api`       | 3001 | `api.<DOMAIN>`              | binds `/space-api-volume`, `/logs` |
-| `community-api`   | `ghcr.io/constellab/community-api`   | 3333 | `community-api.<DOMAIN>`    | bind `/logs`                       |
-| `space-front`     | `ghcr.io/constellab/space-front`     | 80   | `<DOMAIN>` and `*.<DOMAIN>` | —                                  |
-| `community-front` | `ghcr.io/constellab/community-front` | 4000 | `community.<DOMAIN>`        | —                                  |
+| App               | Image                                | Port | Served at                               | Volume                             |
+| ----------------- | ------------------------------------ | ---- | --------------------------------------- | ---------------------------------- |
+| `redis-queue`     | `redis:7.2.4`                        | —    | internal only                           | `redis-queue-redis-data:/data`     |
+| `space-db`        | `mariadb:10`                         | —    | internal only                           | `space-db-data:/var/lib/mysql`     |
+| `community-db`    | `mariadb:10`                         | —    | internal only                           | `community-db-data:/var/lib/mysql` |
+| `adminer`         | `adminer:5.2.1`                      | 8080 | `adminer.infra.<DOMAIN>`                | —                                  |
+| `space-api`       | `ghcr.io/constellab/space-api`       | 3001 | `api.<DOMAIN>`                          | binds `/space-api-volume`, `/logs` |
+| `community-api`   | `ghcr.io/constellab/community-api`   | 3333 | `community-api.<DOMAIN>`                | bind `/logs`                       |
+| `space-front`     | `ghcr.io/constellab/space-front`     | 80   | `space.<DOMAIN>` and `*.space.<DOMAIN>` | —                                  |
+| `community-front` | `ghcr.io/constellab/community-front` | 4000 | `community.<DOMAIN>`                    | —                                  |
 
 One Redis for both APIs. It is how the Space and the Community keep their users, spaces
 and brick versions in sync, so the two apps cannot be deployed independently.
 
 Two separate databases. They share no data except through the Redis queues.
 
-Everything lives under **one registered domain**, `<DOMAIN>`. CapRover itself is kept on
-its own `infra.<DOMAIN>` label — see [1.3](#13-domains-and-dns) for why that separation
-matters.
+Everything lives under **one registered domain**, `<DOMAIN>`, and every part of the
+instance gets its own label under it: the Space on `space.<DOMAIN>`, the Community on
+`community.<DOMAIN>`, CapRover on `infra.<DOMAIN>`. **Nothing is served on `<DOMAIN>`
+itself** — the names are listed in [1.3](#13-domains-and-dns).
 
 ---
 
@@ -134,181 +135,70 @@ Source: <https://caprover.com/docs/firewall.html>
 
 ### 1.3 Domains and DNS
 
-**One registered domain.** Everything is a subdomain of it, and the configuration file
-derives every other name from a single `DOMAIN` value.
-
-| Name                     | Example                             | Serves                                      |
-| ------------------------ | ----------------------------------- | ------------------------------------------- |
-| `<DOMAIN>`               | `acme-constellab.com`               | `space-front` — the landing and login page  |
-| `*.<DOMAIN>`             | `<uuid>.acme-constellab.com`        | `space-front` — one workspace per subdomain |
-| `api.<DOMAIN>`           | `api.acme-constellab.com`           | `space-api`                                 |
-| `community.<DOMAIN>`     | `community.acme-constellab.com`     | `community-front`                           |
-| `community-api.<DOMAIN>` | `community-api.acme-constellab.com` | `community-api`                             |
-| `captain.infra.<DOMAIN>` | `captain.infra.acme-constellab.com` | the CapRover dashboard                      |
-| `<app>.infra.<DOMAIN>`   | `adminer.infra.acme-constellab.com` | anything else CapRover serves               |
-
-CapRover gets its own label, `infra.<DOMAIN>`, rather than the domain itself. That is
-what keeps the two certificate schemes from overlapping: a wildcard covers exactly one
-label, so `*.<DOMAIN>` does not cover `space-api.infra.<DOMAIN>`. The public names live
-under the hand-issued wildcard, CapRover's own names stay on certificates CapRover issues
-and renews by itself, and `space-front` ends up being the only app with a hand-written
-nginx config.
-
-A workspace subdomain cannot collide with a CapRover app name: a new space gets a
-generated UUID v4 as its subdomain (`cn-space.entity.ts:67`), and the front URL is
-literally `https://<space.domain>.<DOMAIN>` (`cn-front.service.ts:104`).
-
 Records to create, all A records pointing at the fixed IP:
 
 ```text
-<DOMAIN>                    A   <IP>
-*.<DOMAIN>                  A   <IP>     # one workspace per subdomain
-api.<DOMAIN>                A   <IP>     # explicit, not only through the wildcard
+<DOMAIN>                    A   <IP>     # nothing serves it; see below
+space.<DOMAIN>              A   <IP>     # the Space front
+*.space.<DOMAIN>            A   <IP>     # one workspace per subdomain
+api.<DOMAIN>                A   <IP>
 community.<DOMAIN>          A   <IP>
 community-api.<DOMAIN>      A   <IP>
 infra.<DOMAIN>              A   <IP>
 *.infra.<DOMAIN>            A   <IP>     # required by CapRover
 ```
 
-The explicit records for `api.`, `community.` and `community-api.` are not redundant with
-the wildcard. They protect against the failure described in `CAPROVER_CERTIFICATES.md`,
-section _Stale ACME challenge records_: a DNS wildcard only covers names that **do not
-exist** in the zone, so one leftover `_acme-challenge.api.<DOMAIN>` TXT record would be
-enough to make `api.<DOMAIN>` stop resolving.
+#### The fronts' Content-Security-Policy names the same domains
 
-One consequence worth knowing: because `*.<DOMAIN>` resolves, a mistyped subdomain reaches
-the Space front instead of failing to resolve. This is already how `constellab.space`
-behaves.
+The two fronts send a `Content-Security-Policy` header listing the domains a page may talk
+to. Those domains used to be built into the images — Gencovery's own — so a front deployed
+anywhere else loaded and then did nothing. They are read from the environment since
+`ca_3.0.5` and `ha_1.11.4`, which makes them part of the domain layout. Deploy at least
+those versions in step 7:
 
-Check propagation before step 3, and that `<DOMAIN>` itself answers — on a base subdomain
-that answer is what keeps a parent wildcard out of the way:
+| Variable                       | Set on                           | Value here                     |
+| ------------------------------ | -------------------------------- | ------------------------------ |
+| `CSP_ALLOWED_DOMAINS`          | `space-front`, `community-front` | `*.<DOMAIN>` + the lab domains |
+| `COMMUNITY_CSP_ALLOWED_DOMAIN` | `space-front`, a single domain   | `*.<DOMAIN>`                   |
 
-```bash
-dig +short <DOMAIN> @8.8.8.8
-dig +short infra.<DOMAIN> @8.8.8.8
-dig +short anything.<DOMAIN> @8.8.8.8
-dig CAA <DOMAIN> @8.8.8.8 +short          # and the parent zone, see below
-```
+- **Space separated**, unlike `LAB_ALLOWED_DOMAINS` and `CORS_ALLOWED_DOMAINS`, which take
+  commas. A comma inside one of them makes a source nothing matches.
+- **A wildcard source matches any depth of subdomain**, so `*.<DOMAIN>` covers `space.`,
+  `api.`, `community.`, `community-api.` and every workspace at `<uuid>.space.<DOMAIN>` in
+  one entry.
+- **The lab domains are a separate registrable domain**, so the template asks for them once
+  as `CSP_LAB_DOMAINS`, written as CSP sources — `*.constellab.app *.gencovery.io` — and
+  not in the comma-separated form `LAB_ALLOWED_DOMAINS` takes.
+- **`COMMUNITY_CSP_ALLOWED_DOMAIN` is one domain, not a list**: the Space front's nginx
+  template expands it twice, plainly and as `wss://`, for the socket of the Community AI
+  assistant. The Community front derives its `wss://` sources from its own list and has no
+  second variable.
 
-#### The labs live on their own domain, not on `<DOMAIN>`
+Third-party sources — fonts, reCAPTCHA, Algolia, Google Analytics, emoji-mart — stay
+hardcoded in the images. Read by `apps/ca-space-front/entrypoint.sh` and
+`apps/ha-community-front/server.ts` in `monorepo-front`.
 
-Nothing above covers the data labs. Their hostnames come from a separate variable on
-`space-api`, `LAB_ALLOWED_DOMAINS` — a comma-separated list, whose **first entry** is the
-domain given to a lab created without one being chosen. Gencovery's own value is
-`constellab.app,gencovery.io`; until this release that list was an enum compiled into the
-image, which is why it is worth a decision here rather than a value to copy.
-
-A lab gets a generated UUID as its sub-domain, and the Space writes two records into the
-**zone of that domain** as it provisions one:
-
-```text
-*.<uuid>                    A     <lab server IP>     # glab., lab., lab-manager., codelab.
-_acme-challenge.<uuid>      TXT   <token>             # only while a certificate is issued
-```
-
-Both go through the **OVH API** (`cn-cloud-provider-ovh.service.ts:302` and `:354`),
-whatever cloud provider the lab itself runs on — an Azure or GCP lab still has its DNS at
-OVH. So every entry in `LAB_ALLOWED_DOMAINS` must be a zone hosted at OVH that this
-instance's token (`OVH_APP_KEY` / `OVH_APP_SECRET` / `OVH_CONSUMER_KEY`) has the same four
-rights on as the certificate token (`CAPROVER_CERTIFICATES.md`). A domain the token cannot
-write to fails at lab creation, not at startup, and the lab is left with a server and no
-name.
-
-Three ways to set it, in decreasing order of what they ask of the customer:
-
-- **A domain of the customer's, delegated to OVH.** The instance drives its own zone and
-  nothing of Gencovery's is involved. This is the one to aim for on a dedicated instance.
-- **`<DOMAIN>` itself**, giving labs at `<uuid>.<DOMAIN>`. Works, and keeps everything in
-  one zone — but that zone is then written to automatically by the Space, alongside the
-  records of step 1.3 that you maintain by hand. Note that a lab's `*.<uuid>` record makes
-  `<uuid>.<DOMAIN>` an empty node: that one name stops falling back to `*.<DOMAIN>` and
-  returns no answer instead of the Space front. Harmless — no workspace carries a lab's
-  UUID — but it looks like a DNS failure when you happen to query it.
-- **Gencovery's `constellab.app`**, which means Gencovery's OVH token and Gencovery's zone.
-  Acceptable for a trial instance operated by Gencovery, and only then: the customer's labs
-  then depend on a zone they do not own.
-
-The API reads the list at startup and **refuses to boot when it is unset or blank**, so
-there is no half-configured state where labs quietly land on the wrong domain. Changing it
-later does not rewrite the labs already created: they keep the hostname stored on them.
-
-#### `<DOMAIN>` may itself be a subdomain
-
-Nothing above requires `<DOMAIN>` to be a registered domain. `test.constellab.com` works,
-giving `*.test.constellab.com`, `api.test.constellab.com` and
-`captain.infra.test.constellab.com`. Set `DOMAIN` to it in the configuration file and
-every other name derives from there, unchanged.
-
-Four things to settle, and only the first two need a decision:
-
-- **The DNS-01 token covers the whole parent zone.** OVH scopes API tokens per zone, not
-  per subtree, so issuing the wildcard for `*.test.constellab.com` needs rights on
-  `/domain/zone/constellab.com/*` — write access to every record in `constellab.com`,
-  Gencovery's own included. Delegate `test.constellab.com` to its own zone with NS records
-  and the token scopes to that zone alone. Do this when the instance is operated by anyone
-  who should not hold the parent zone.
-- **The Community's `DOMAIN` variable must stay exactly `test.constellab.com`.** It is a
-  cookie domain (`hn-auth.controller.ts:170`). Setting it to the parent `constellab.com`
-  would send the Community session cookie to every host under that domain. The template
-  derives it from `DOMAIN`, so it is right by default — the risk is in "fixing" it by hand.
-- **`*.test.constellab.com` has to exist as its own record.** A parent `*.constellab.com`,
-  if there is one, does not cover it. The DNS list above already spells it out.
-- **Check the parent zone for a CAA record.** CAA is inherited up the tree (RFC 8659), so a
-  CAA on `constellab.com` restricting issuance to one CA or one account applies to
-  `test.constellab.com` until a CAA is set on `test.constellab.com` itself. Let's Encrypt
-  will simply refuse to issue, with no hint about where the restriction came from.
-
-A parent wildcard pointing somewhere else is not a problem, and it is worth knowing why:
-resolution picks the longest **existing** ancestor of the queried name — the closest
-encloser (RFC 4592) — and only the wildcard directly under it is consulted. Because
-`test.constellab.com` has its own A record, it is that ancestor, and `*.constellab.com` is
-never reached for anything below it.
-
-The two ways that can break are not symmetric, and only one of them is loud:
-
-- Drop `*.test.constellab.com` and the workspace subdomains return NXDOMAIN. They do
-  **not** fall back to `*.constellab.com`. Obvious, and quick to diagnose.
-- Drop the A record on `test.constellab.com` and the name stops existing as a node, the
-  closest encloser moves up to `constellab.com`, and every name of the instance silently
-  resolves to whatever `*.constellab.com` points at. DNS looks healthy throughout. This is
-  the same mechanism as the stale ACME challenge failure in `CAPROVER_CERTIFICATES.md`,
-  seen from the other end.
-
-What does _not_ change is the certificate safety: a leftover `_acme-challenge` TXT is
-harmless as long as the name above it has its own A record, which `test.constellab.com`
-does. That is the same property the zone apex gives on a registered domain.
-
-#### Why one domain, and not two
-
-Three things in the code make this the right shape rather than merely a possible one:
-
-- The Space's session cookies are `sameSite: 'strict'` with **no** `domain`
-  (`cn-auth.controller.ts`). The front and the API must therefore sit under the same
-  registrable domain — `api.<DOMAIN>` and `<uuid>.<DOMAIN>` do.
-- The Community's cookies are `sameSite: 'lax'` with an explicit `domain`, read from its
-  `DOMAIN` environment variable (`hn-auth.controller.ts:170`). That variable must name a
-  parent of both the Community front and the Community API, which is why the template
-  sets it to `<DOMAIN>` and not to `community.<DOMAIN>`.
-- Browser traffic between the Space and the Community becomes same-site, which it is not
-  in Gencovery's own environments.
+The labs are not covered: `lab-manager-standalone` reads `CSP_ALLOWED_DOMAINS` as well, but
+it is deployed inside the lab by `lab-configurer`, which does not set it yet. A lab of a
+dedicated instance therefore still carries Gencovery's domains in its own CSP.
 
 ### 1.4 Accounts and secrets to gather first
 
 Collect these **before** filling the configuration file. The ones marked required stop the
 application from starting or working when missing.
 
-| Item                                                               | Required                     | Notes                                                                                                                          |
-| ------------------------------------------------------------------ | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| A dedicated S3 tenant (OVH or compatible) + access key/secret      | yes                          | **must belong to the customer** — see pitfall #2                                                                               |
-| The Community's S3 buckets (12 names, listed in the template)      | yes                          | create them in that tenant                                                                                                     |
-| SMTP account and sender address                                    | yes                          | Gencovery uses `ssl0.ovh.net:465` over TLS                                                                                     |
-| OVH API token for DNS (4 rights on `/domain/zone/<zone>/*`)        | yes, if the domain is at OVH | issues the wildcard certificates, see `CAPROVER_CERTIFICATES.md`                                                               |
-| A domain for the labs, hosted at OVH                               | yes                          | `LAB_ALLOWED_DOMAINS`, written to by the Space itself — see [the lab domain](#the-labs-live-on-their-own-domain-not-on-domain) |
-| SSH private key for lab provisioning                               | if labs run in the cloud     | dropped into `$HOST_HOME/space-api-volume/`                                                                                    |
-| Cloud provider credentials for labs (OVH / Azure / Outscale / GCP) | if labs run in the cloud     | the variables are required by the code even when unused — set them to `unused`                                                 |
-| reCAPTCHA key                                                      | no                           | leaving it empty disables the captcha                                                                                          |
-| OpenAI, Algolia, RAGFlow, YouTube keys                             | no                           | set them to `unused`; the code reads them with `getConfigString`                                                               |
-| A GitHub classic PAT with `read:packages`                          | yes                          | CapRover pulls the four private images with it — see step 7                                                                    |
+| Item                                                               | Required                     | Notes                                                                                                         |
+| ------------------------------------------------------------------ | ---------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| A dedicated S3 tenant (OVH or compatible) + access key/secret      | yes                          | **must belong to the customer** — see pitfall #2                                                              |
+| The Community's S3 buckets (12 names, listed in the template)      | yes                          | create them in that tenant                                                                                    |
+| SMTP account and sender address                                    | yes                          | Gencovery uses `ssl0.ovh.net:465` over TLS                                                                    |
+| OVH API token for DNS (4 rights on `/domain/zone/<zone>/*`)        | yes, if the domain is at OVH | issues the wildcard certificates, see `CAPROVER_CERTIFICATES.md`                                              |
+| A domain for the labs, hosted at OVH                               | yes                          | `LAB_ALLOWED_DOMAINS`, written to by the Space itself, and `CSP_LAB_DOMAINS` — see [1.3](#13-domains-and-dns) |
+| SSH private key for lab provisioning                               | if labs run in the cloud     | dropped into `$HOST_HOME/space-api-volume/`                                                                   |
+| Cloud provider credentials for labs (OVH / Azure / Outscale / GCP) | if labs run in the cloud     | the variables are required by the code even when unused — set them to `unused`                                |
+| reCAPTCHA key                                                      | no                           | leaving it empty disables the captcha                                                                         |
+| OpenAI, Algolia, RAGFlow, YouTube keys                             | no                           | set them to `unused`; the code reads them with `getConfigString`                                              |
+| A GitHub classic PAT with `read:packages`                          | yes                          | CapRover pulls the four private images with it — see step 7                                                   |
 
 Generate these on the machine. Do not reuse them from another environment:
 
@@ -738,24 +628,27 @@ own. If DNS had not propagated when the script ran, one of them may have failed 
 in the UI: _Apps_ → the app → _HTTP Settings_ → _Enable HTTPS_ on the domain.
 
 **Only `space-front` needs a wildcard, and it is issued by hand.** That is the whole
-reason CapRover lives on its own `infra.` label: a wildcard covers exactly one label, so
-`*.<DOMAIN>` and CapRover's own names never describe the same host, and exactly one app
-ends up with a hand-written nginx config.
+reason the Space lives on its own `space.` label and CapRover on `infra.`: a wildcard
+covers exactly one label, so `*.space.<DOMAIN>`, `api.<DOMAIN>` and CapRover's own names
+never describe the same host, and exactly one app ends up with a hand-written nginx
+config.
 
 ### 8.1 space-front: a wildcard, issued by hand
 
-A workspace lives on its own subdomain, any subdomain, so `space-front` needs a
-certificate for `*.<DOMAIN>`. CapRover cannot issue that one: its HTTP-01 challenge does
-not validate wildcards. So this single certificate is issued outside CapRover, with
-certbot against the OVH DNS API.
+A workspace lives on its own subdomain of the Space front, any subdomain, so `space-front`
+needs a certificate for `space.<DOMAIN>` and `*.space.<DOMAIN>`. CapRover cannot issue
+that one: its HTTP-01 challenge does not validate wildcards. So this single certificate is
+issued outside CapRover, with certbot against the OVH DNS API.
 
 Five steps. `CAPROVER_CERTIFICATES.md`, in this folder, has the long version of each one
 plus a debugging chapter — read it when a step misbehaves, not before.
 
-> **Do this after step 5, never before.** Until `apply-apps.sh` has attached `api.`,
-> `community.` and `community-api.` to their apps, those names fall through to
-> `space-front`, and CapRover's HTTP-01 challenge is answered by the Angular application
-> instead of the token. The three certificates would never be issued.
+> **The order against step 5 no longer matters**, and that is worth knowing if you have
+> deployed the older layout. When `space-front` served `*.<DOMAIN>`, it answered for
+> `api.`, `community.` and `community-api.` until `apply-apps.sh` had attached them to
+> their apps, so CapRover's HTTP-01 challenge reached the Angular application instead of
+> the token and those three certificates were never issued. Under `space.<DOMAIN>` the
+> wildcard cannot describe them at all.
 
 **1. Create an OVH API token** at https://api.ovh.com/createToken/, endpoint `ovh-eu`,
 unlimited validity, with `GET`/`POST`/`PUT`/`DELETE` on `/domain/zone/<zone>/*` and `GET`
@@ -771,7 +664,8 @@ dns_ovh_consumer_key = ZZZZ
 ```
 
 **2. Issue the certificate.** One command, run once. It creates **one** certificate
-covering both `<DOMAIN>` and everything one level under it:
+covering both `space.<DOMAIN>` and everything one level under it — the login page and
+every workspace. Nothing else of the instance is in it:
 
 ```bash
 sudo docker run --rm \
@@ -782,8 +676,8 @@ sudo docker run --rm \
     --dns-ovh \
     --dns-ovh-credentials /ovh.ini \
     --dns-ovh-propagation-seconds 120 \
-    --cert-name <DOMAIN> \
-    -d <DOMAIN> -d '*.<DOMAIN>'
+    --cert-name space.<DOMAIN> \
+    -d space.<DOMAIN> -d '*.space.<DOMAIN>'
 ```
 
 `--cert-name` fixes the directory name under `live/`, which the nginx config of step 4
@@ -794,8 +688,8 @@ at the top that still carry pre-prod's:
 
 ```bash
 OVH_CREDENTIALS="<HOST_HOME>/ovh.ini"   # line 25, hardcoded — must match your HOST_HOME
-CERT_NAMES=(                            # lines 33-36, the lineages to renew here
-    "<DOMAIN>"
+CERT_NAMES=(                            # lines 31-34, the lineages to renew here
+    "space.<DOMAIN>"
 )
 ```
 
@@ -877,9 +771,16 @@ own template with three edits, each one wrapped in a pair of comments:
 ```
 
 Apply those three blocks to the template CapRover shows you, and replace
-`test.preconstellab.com` with your `<DOMAIN>` everywhere it appears. Do not paste the
-example file wholesale: the rest of it is CapRover's template as it stood when the example
-was taken, and yours may differ by version.
+`test.preconstellab.com` with **`space.<DOMAIN>`** everywhere it appears — in the two
+`server_name` lines, which then read `space.<DOMAIN> *.space.<DOMAIN>`, and in the two
+`ssl_certificate` paths, which then point at `live/space.<DOMAIN>/`. That last name is the
+`--cert-name` of step 2; the example file carries pre-prod's, where the Space front is
+still at the apex. Do not paste the example file wholesale: the rest of it is CapRover's
+template as it stood when the example was taken, and yours may differ by version.
+
+`space-front` keeps no `customDomain` in the configuration file: CapRover attaches nothing
+to it and issues nothing for it, and this nginx block is what puts it on
+`space.<DOMAIN>`.
 
 **5. Check the zone for a leftover challenge record** — see 8.2 just below.
 
@@ -890,13 +791,17 @@ certificate, only the timeouts and the body size change.
 ### 8.2 After any manual issuance
 
 ```bash
-dig TXT _acme-challenge.<DOMAIN> @8.8.8.8
+dig TXT _acme-challenge.space.<DOMAIN> @8.8.8.8
 dig TXT _acme-challenge.api.<DOMAIN> @8.8.8.8
 ```
 
-A TXT answer on the second query means a challenge record was left under a subdomain.
-Delete it in the DNS zone, or `api.<DOMAIN>` will stop resolving. A leftover on the first
-query is harmless — that is the point of keeping to one lineage at the zone root.
+Both challenges of step 2 are written to the **same** name,
+`_acme-challenge.space.<DOMAIN>`, since a wildcard is validated on the name above it. A
+leftover there is harmless: it is a child of `space.<DOMAIN>`, which has its own A record,
+and no workspace is called `_acme-challenge`.
+
+A TXT answer on the second query would mean certbot was pointed at a name it should not
+have been — delete it, and check `--cert-name` and the `-d` arguments.
 
 ---
 
@@ -929,7 +834,7 @@ curl -sf https://api.$D/health && echo OK
 curl -sf https://community-api.$D/health && echo OK
 
 # 2. the fronts serve the config you expect
-curl -s https://$D/assets/environment.json | jq
+curl -s https://space.$D/assets/environment.json | jq
 curl -s https://community.$D/assets/environment.json | jq
 
 # 3. the Space is the OAuth/MCP authorization server
@@ -937,20 +842,32 @@ curl -s https://api.$D/.well-known/jwks.json | jq '.keys | length'
 
 # 4. which certificate is actually served, on each of the two schemes
 #    a workspace subdomain must show the hand-issued wildcard...
-echo | openssl s_client -connect $D:443 -servername test.$D 2>/dev/null \
+echo | openssl s_client -connect space.$D:443 -servername test.space.$D 2>/dev/null \
   | openssl x509 -noout -subject -dates
 #    ...and api. must show its own CapRover certificate, not the wildcard
 echo | openssl s_client -connect api.$D:443 -servername api.$D 2>/dev/null \
   | openssl x509 -noout -subject -dates
+
+# 5. the fronts' CSP names this instance, not Gencovery's domains
+curl -sI https://space.$D | grep -i content-security-policy
+curl -sI https://community.$D | grep -i content-security-policy
+
+# 6. nothing of the instance answers on the domain itself
+dig +short unattached.$D @8.8.8.8     # nothing: there is no *.$D any more
+curl -sIk https://$D | head -1        # CapRover's default page, or the customer's own
+                                      # site — never the Space front. -k because no
+                                      # certificate of this instance covers $D
 ```
 
 Then, in the interface:
 
-1. Log into the Space front with the admin account. This exercises front → space-api →
-   database.
-2. Log into the Community front with the **same** account. This exercises Community →
-   `/auth/external/check-credentials` on the Space, so `SPACE_API_KEY`, `SPACE_API_URL`
-   and the network between the two apps.
+1. Log into the Space front, `https://space.<DOMAIN>`, with the admin account. This
+   exercises front → space-api → database, and lands you on a workspace at
+   `https://<uuid>.space.<DOMAIN>` — which is the check that the wildcard certificate and
+   the nginx block of step 8 are right.
+2. Log into the Community front, `https://community.<DOMAIN>`, with the **same** account.
+   This exercises Community → `/auth/external/check-credentials` on the Space, so
+   `SPACE_API_KEY`, `SPACE_API_URL` and the network between the two apps.
 3. Create a user in the Space and check it appears in the Community. This is the only
    test that exercises the shared Redis (`user_queue`).
 4. Read the logs: `docker service logs srv-captain--space-api --tail 100`.
@@ -1007,3 +924,12 @@ map, section _Brick resolution_.
 **#7 — The two APIs cannot be deployed independently.** They share the Redis and sync
 through it. Restarting Redis, or changing its password without redeploying both, leaves the
 queues failing silently.
+
+**#8 — A missing `CSP_ALLOWED_DOMAINS` breaks the fronts silently.** Each front image
+falls back to the Gencovery domains it was built with, so every call the page makes to
+this instance is blocked by the browser: the application loads, then does nothing, and the
+only trace is `violates the following Content Security Policy directive` in the console.
+Nothing fails on the server side, so the logs are clean. The template sets both variables
+from `DOMAIN` — the risk is dropping them, or leaving `CSP_LAB_DOMAINS` at a value that
+does not match `LAB_ALLOWED_DOMAINS`. Check the header itself, not the configuration:
+`curl -sI https://space.<DOMAIN> | grep -i content-security-policy`.
