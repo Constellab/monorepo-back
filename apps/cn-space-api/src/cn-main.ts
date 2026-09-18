@@ -1,4 +1,4 @@
-import { blApplySecurityHeaders, blGetCorsConfig } from '@monorepo/back-core-lib';
+import { blApplySecurityHeaders, blGetCorsAllowedDomains, blGetCorsConfig } from '@monorepo/back-core-lib';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { json, urlencoded } from 'body-parser';
@@ -29,7 +29,10 @@ async function bootstrap(): Promise<void> {
   if (isLocal) {
     additionalHeader.push(CN_LOCAL_SPACE_COOKIE);
   }
-  app.enableCors(blGetCorsConfig(['constellab.space', 'preconstellab.com'], isLocal, additionalHeader));
+
+  // the domains allowed to call this API come from the environment (CORS_ALLOWED_DOMAINS):
+  // each instance is served from its own domain, which nothing in the code could know
+  app.enableCors(blGetCorsConfig(blGetCorsAllowedDomains(isLocal), isLocal, additionalHeader));
 
   blApplySecurityHeaders(app, { isLocal });
 

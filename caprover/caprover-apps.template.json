@@ -1,0 +1,455 @@
+{
+  "_README": [
+    "CapRover app definitions for one dedicated Constellab instance.",
+    "",
+    "1. Copy this file:  cp caprover-apps.template.json caprover-apps.<customer>.json",
+    "2. Fill in every value under 'vars'. None may stay at FILL_ME.",
+    "3. ./apply-apps.sh caprover-apps.<customer>.json            -> shows what would be sent",
+    "4. ./apply-apps.sh caprover-apps.<customer>.json --apply    -> creates / updates the apps",
+    "",
+    "The filled file holds plaintext secrets. Do not commit it.",
+    "Every .json here is git-ignored except this template.",
+    "",
+    "Any ${NAME} is replaced by vars.NAME, including inside appName, domains and volumes.",
+    "Keys in 'vars' may reference each other.",
+    "",
+    "The environment variables below are the ones the code really reads:",
+    "  space-api      getConfigString/Number/Boolean in cn-core-config.service.ts",
+    "  community-api  the same, in hn-core-config.service.ts",
+    "  both fronts    apps/<front>/entrypoint.sh in monorepo-front",
+    "A missing required variable fails the app the first time it is read (at boot for",
+    "MCP_JWT_PRIVATE_KEY_BASE64 and OAUTH_ALLOWED_REDIRECT_URIS).",
+    "",
+    "A feature we do not use has NO variable here rather than a placeholder one: absent is",
+    "what makes the API say \"Missing config value for 'X'\" at the point of use, which is",
+    "the failure we want. Do not add a variable back with 'unused' or an empty value — for",
+    "the cloud providers and the paid third parties an empty value is refused as well."
+  ],
+
+  "instance": {
+    "caproverUrl": "https://captain.${ROOT_DOMAIN}"
+  },
+
+  "vars": {
+    "_1_domains": "--- one registered domain; everything below is derived from it ---",
+    "DOMAIN": "FILL_ME: the single registered domain, e.g. acme-constellab.com",
+
+    "ROOT_DOMAIN": "infra.${DOMAIN}",
+    "COMMUNITY_DOMAIN": "community.${DOMAIN}",
+    "COMMUNITY_API_DOMAIN": "community-api.${DOMAIN}",
+
+    "SPACE_FRONT_URL": "https://${DOMAIN}",
+    "SPACE_API_URL": "https://api.${DOMAIN}",
+    "COMMUNITY_FRONT_URL": "https://${COMMUNITY_DOMAIN}",
+    "COMMUNITY_API_URL": "https://${COMMUNITY_API_DOMAIN}",
+
+    "_1b_machine": "--- the server: where the bind-mounted directories live ---",
+    "HOST_HOME": "/home/ubuntu",
+
+    "_2_internal_secrets": "------------------------------------------------------------",
+    "SPACE_DB_ROOT_PASSWORD": "FILL_ME: openssl rand -base64 24",
+    "SPACE_DB_PASSWORD": "FILL_ME: openssl rand -base64 24",
+    "COMMUNITY_DB_ROOT_PASSWORD": "FILL_ME: openssl rand -base64 24",
+    "COMMUNITY_DB_PASSWORD": "FILL_ME: openssl rand -base64 24",
+    "REDIS_PASSWORD": "FILL_ME: openssl rand -base64 24",
+
+    "SPACE_JWT_SECRET": "FILL_ME: openssl rand -base64 48 (signs Space sessions)",
+    "SPACE_OTHER_JWT_SECRET": "FILL_ME: openssl rand -base64 48 (password reset / email validation)",
+    "COMMUNITY_JWT_SECRET": "FILL_ME: openssl rand -base64 48 (Community sessions)",
+
+    "_3_shared_key": "--- ONE value, read on both sides AND pushed into every lab config ---",
+    "SHARED_SPACE_COMMUNITY_API_KEY": "FILL_ME: openssl rand -hex 32",
+
+    "_4_mcp_oauth": "------------------------------------------------------------",
+    "MCP_JWT_PRIVATE_KEY_BASE64": "FILL_ME: openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:2048 | base64 -w0",
+    "OAUTH_ALLOWED_REDIRECT_URIS": "https://claude.ai/api/mcp/auth_callback,https://claude.com/api/mcp/auth_callback",
+
+    "_5_object_storage": "--- an S3 tenant OF THE CUSTOMER, see NEW_INSTANCE.md pitfall #2 ---",
+    "S3_ACCESS_KEY_ID": "FILL_ME",
+    "S3_SECRET_KEY": "FILL_ME",
+    "S3_ENDPOINT": "FILL_ME, e.g. https://s3.sbg.io.cloud.ovh.net/",
+    "S3_REGION": "FILL_ME, e.g. sbg",
+    "S3_BACKUP_ENDPOINT": "FILL_ME, e.g. https://s3.gra.io.cloud.ovh.net/",
+    "S3_BACKUP_REGION": "FILL_ME, e.g. gra",
+
+    "_6_mail": "------------------------------------------------------------",
+    "MAIL_HOST": "FILL_ME, e.g. ssl0.ovh.net",
+    "MAIL_PORT": "465",
+    "MAIL_SECURE": "true",
+    "MAIL_USER": "FILL_ME",
+    "MAIL_PASSWORD": "FILL_ME",
+    "MAIL_SENDER": "FILL_ME, e.g. noreply@customer.com",
+    "ROBOT_USER_MAIL": "robot@gencovery.com",
+    "CUSTOMER_SUCCESS_MAIL": "FILL_ME",
+    "SUPPORT_MAIL": "FILL_ME",
+    "SALES_MAIL": "FILL_ME",
+    "NEW_USER_NOTIF_RECEIVERS": "FILL_ME: who is notified when an account is created, comma separated",
+
+    "_7_database_ids": "--- must exist in the database after step 6 of NEW_INSTANCE.md ---",
+    "FOLDER_ID_TO_COPY_ON_SIGNUP": "FILL_ME: uuid of a Space folder, or an empty string",
+    "GENCOVERY_SPACE_ID": "FILL_ME: uuid of the publisher space, must exist in the Community",
+
+    "_8_lab_provisioning": "--- versions and cloud providers ---",
+    "LAB_MANAGER_VERSION": "FILL_ME: latest lab-manager release, e.g. 2.16.0",
+    "LAB_MANAGER_STANDALONE_FRONT_VERSION": "latest",
+    "LAB_CONFIGURER_REPO_URL": "https://github.com/Constellab/lab-configurer.git",
+    "LAB_CONFIGURER_REPO_BRANCH": "master",
+    "STARTED_SERVER_TEMP_STATUS_MAX_DURATION_MINUTES": "60",
+
+    "_8a_ovh": "default provider for lab provisioning, and the DNS-01 challenge",
+    "OVH_SERVICE_NAME": "FILL_ME",
+    "OVH_APP_KEY": "FILL_ME",
+    "OVH_APP_SECRET": "FILL_ME",
+    "OVH_CONSUMER_KEY": "FILL_ME",
+    "OVH_SSH_KEY_NAME": "FILL_ME",
+    "MAIN_SSH_PRIVATE_KEY_FILE_PATH": "/space-api-volume/ovh-id.rsa",
+
+    "_8b_azure_outscale_gcp": [
+      "Azure, Outscale and GCP are NOT configured on this instance: their variables are",
+      "deliberately absent, not empty. An absent variable makes the API fail with",
+      "\"Missing config value for 'X'\" the moment a lab is provisioned on that provider,",
+      "which is the intended, readable failure. To enable one, add back its variables here",
+      "AND in the space-api envVars block below:",
+      "  Azure     AZURE_SUBSCRIPTION_ID, AZURE_TENANT_ID, AZURE_CLIENT_ID, AZURE_CLIENT_SECRET,",
+      "            AZURE_RESOURCE_GROUP, AZURE_SSH_KEY_NAME, AZURE_NETWORK, AZURE_NETWORK_SUBNET",
+      "  Outscale  OUTSCALE_ACCESS_KEY_ID, OUTSCALE_SECRET_KEY, OUTSCALE_SECURITY_GROUP,",
+      "            OUTSCALE_SSH_KEY_NAME, OUTSCALE_SSH_PRIVATE_KEY_FILE_PATH",
+      "  GCP       GCP_PROJECT_ID, GCP_FIREWALL_TAG, GCP_SSH_PRIVATE_KEY_FILE_PATH",
+      "GCP_PROJECT_ID is also read by the captcha (reCAPTCHA Enterprise), independently of",
+      "lab provisioning: setting CAPTCHA_SITE_KEY below requires it and",
+      "GOOGLE_APPLICATION_CREDENTIALS too."
+    ],
+    "GOOGLE_APPLICATION_CREDENTIALS": "/space-api-volume/gcp_auth.json",
+
+    "_9_optional_third_parties": [
+      "Same rule: a third party we are not subscribed to has no variable at all, so the",
+      "failure names it. OPENAI_API_KEY, YOUTUBE_API_KEY, YOUTUBE_TUTORIAL_PLAYLIST_ID and",
+      "REFLEX_ACCESS_TOKEN are read by getNonEmptyConfigString and belong here when used.",
+      "The values left empty below are front-end variables, where empty means 'feature off'."
+    ],
+    "CAPTCHA_SITE_KEY": "",
+    "DIFY_CHATBOT_TOKEN": "",
+    "GOOGLE_ANALYTICS_ID": "",
+    "DISCORD_LINK": "",
+    "ALGOLIA_APP_ID": "",
+    "ALGOLIA_SEARCH_KEY": "",
+    "ALGOLIA_SITE_VERIFICATION_KEY": "",
+    "ALGOLIA_INDEX_NAME": "",
+    "HOME_VIDEO_LINK": "",
+    "RAGFLOW_API_KEY": "",
+    "RAGFLOW_BASE_URL": "",
+    "RAGFLOW_CHAT_ID": "",
+
+    "_10_community_buckets": "--- S3 bucket names, to create in the customer's tenant ---",
+    "BUCKET_ICON": "FILL_ME, e.g. acme-community-icon",
+    "BUCKET_ICON_BACKUP": "FILL_ME, e.g. acme-community-icon-backup",
+    "BUCKET_DOCUMENTATION": "FILL_ME",
+    "BUCKET_DOCUMENTATION_BACKUP": "FILL_ME",
+    "BUCKET_STORIES": "FILL_ME",
+    "BUCKET_STORIES_BACKUP": "FILL_ME",
+    "BUCKET_AGENTS": "FILL_ME",
+    "BUCKET_AGENTS_BACKUP": "FILL_ME",
+    "BUCKET_APPS": "FILL_ME",
+    "BUCKET_APPS_BACKUP": "FILL_ME",
+    "BUCKET_PARTNERS": "FILL_ME",
+    "BUCKET_PARTNERS_BACKUP": "FILL_ME",
+    "BUCKET_DB_BACKUP": "FILL_ME: where the nightly database dump is written, e.g. acme-db-backup",
+
+    "_11_images": "--- the four product images. 'skip' means apply-apps.sh leaves them alone; step 7 deploys them. The infra images above are pinned and deployed by apply-apps.sh. ---",
+    "SPACE_API_IMAGE": "skip",
+    "COMMUNITY_API_IMAGE": "skip",
+    "SPACE_FRONT_IMAGE": "skip",
+    "COMMUNITY_FRONT_IMAGE": "skip"
+  },
+
+  "apps": [
+    {
+      "appName": "redis-queue",
+      "_role": "Redis shared by space-api and community-api (BullMQ). Internal, never exposed.",
+      "_command": "redis:7 ignores REDIS_PASSWORD. Without --requirepass the server takes no password at all, so the Args below are what actually set it; the env var is kept only for anything reading the app definition.",
+      "image": "redis:7.2.4",
+      "hasPersistentData": true,
+      "notExposeAsWebApp": true,
+      "containerHttpPort": 80,
+      "forceSsl": false,
+      "websocketSupport": false,
+      "volumes": [{ "containerPath": "/data", "volumeName": "redis-queue-redis-data" }],
+      "customDomain": [],
+      "serviceUpdateOverride": "TaskTemplate:\n  ContainerSpec:\n    Args:\n      - \"--requirepass\"\n      - \"${REDIS_PASSWORD}\"",
+      "envVars": {
+        "REDIS_PASSWORD": "${REDIS_PASSWORD}"
+      }
+    },
+
+    {
+      "appName": "space-db",
+      "_role": "MariaDB 10 for the Space. Internal, never exposed.",
+      "_charset": "The server default has to be utf8mb4: MYSQL_DATABASE below creates the schema with it, and MariaDB 10 would otherwise default to latin1.",
+      "_init": "MYSQL_DATABASE / MYSQL_USER only act on an empty data directory, at the very first boot. On an existing volume they are ignored and the schema has to be created by hand.",
+      "image": "mariadb:10",
+      "hasPersistentData": true,
+      "notExposeAsWebApp": true,
+      "containerHttpPort": 80,
+      "forceSsl": false,
+      "websocketSupport": false,
+      "volumes": [{ "containerPath": "/var/lib/mysql", "volumeName": "space-db-data" }],
+      "customDomain": [],
+      "serviceUpdateOverride": "TaskTemplate:\n  ContainerSpec:\n    Args:\n      - \"--character-set-server=utf8mb4\"\n      - \"--collation-server=utf8mb4_general_ci\"",
+      "envVars": {
+        "MYSQL_ROOT_PASSWORD": "${SPACE_DB_ROOT_PASSWORD}",
+        "MYSQL_DATABASE": "spaceDb",
+        "MYSQL_USER": "spaceUser",
+        "MYSQL_PASSWORD": "${SPACE_DB_PASSWORD}"
+      }
+    },
+
+    {
+      "appName": "community-db",
+      "_role": "MariaDB 10 for the Community. Internal, never exposed.",
+      "_charset": "The server default has to be utf8mb4: MYSQL_DATABASE below creates the schema with it, and MariaDB 10 would otherwise default to latin1.",
+      "_init": "MYSQL_DATABASE / MYSQL_USER only act on an empty data directory, at the very first boot. On an existing volume they are ignored and the schema has to be created by hand.",
+      "image": "mariadb:10",
+      "hasPersistentData": true,
+      "notExposeAsWebApp": true,
+      "containerHttpPort": 80,
+      "forceSsl": false,
+      "websocketSupport": false,
+      "volumes": [{ "containerPath": "/var/lib/mysql", "volumeName": "community-db-data" }],
+      "customDomain": [],
+      "serviceUpdateOverride": "TaskTemplate:\n  ContainerSpec:\n    Args:\n      - \"--character-set-server=utf8mb4\"\n      - \"--collation-server=utf8mb4_general_ci\"",
+      "envVars": {
+        "MYSQL_ROOT_PASSWORD": "${COMMUNITY_DB_ROOT_PASSWORD}",
+        "MYSQL_DATABASE": "communityDb",
+        "MYSQL_USER": "communityUser",
+        "MYSQL_PASSWORD": "${COMMUNITY_DB_PASSWORD}"
+      }
+    },
+
+    {
+      "appName": "adminer",
+      "_role": "SQL access to both databases. Used in step 6 (schema and seed).",
+      "_note": "Reachable at adminer.infra.<DOMAIN>; the server name to type is srv-captain--space-db.",
+      "image": "adminer:5.2.1",
+      "hasPersistentData": false,
+      "notExposeAsWebApp": false,
+      "containerHttpPort": 8080,
+      "forceSsl": true,
+      "websocketSupport": false,
+      "volumes": [],
+      "customDomain": [],
+      "envVars": {
+        "ADMINER_PLUGINS": "",
+        "ADMINER_DESIGN": ""
+      }
+    },
+
+    {
+      "appName": "space-api",
+      "_role": "cn-space-api. Image published by the cn_* tag of monorepo-back.",
+      "image": "${SPACE_API_IMAGE}",
+      "hasPersistentData": true,
+      "notExposeAsWebApp": false,
+      "containerHttpPort": 3001,
+      "forceSsl": true,
+      "websocketSupport": false,
+      "volumes": [
+        { "containerPath": "/space-api-volume", "hostPath": "${HOST_HOME}/space-api-volume" },
+        { "containerPath": "/logs", "hostPath": "${HOST_HOME}/logs/space-api" }
+      ],
+      "customDomain": [{ "publicDomain": "api.${DOMAIN}", "hasSsl": true }],
+      "serviceUpdateOverride": "# Reduce downtime between deploiements\nTaskTemplate:\n  ContainerSpec:\n    StopGracePeriod: 15000000000\nUpdateConfig:\n  Order: start-first\n  Parallelism: 1\n  FailureAction: rollback\n  Delay: 5000000000",
+      "envVars": {
+        "ENVIRONMENT_PROFILE": "prod",
+        "LOG_LEVEL": "info",
+        "LOG_PATH": "/logs",
+
+        "DATABASE_HOST": "srv-captain--space-db",
+        "DATABASE_PORT": "3306",
+        "DATABASE": "spaceDb",
+        "DATABASE_USER": "spaceUser",
+        "DATABASE_PASSWORD": "${SPACE_DB_PASSWORD}",
+
+        "JWT_SECRET": "${SPACE_JWT_SECRET}",
+        "OTHER_JWT_SECRET": "${SPACE_OTHER_JWT_SECRET}",
+        "FAILED_LOGIN_LOCK": "10",
+
+        "API_URL": "${SPACE_API_URL}",
+        "FRONT_DOMAIN": "${DOMAIN}",
+        "CORS_ALLOWED_DOMAINS": "${DOMAIN}",
+        "COMMUNITY_FRONT_URL": "${COMMUNITY_FRONT_URL}",
+        "COMMUNITY_API_URL": "${COMMUNITY_API_URL}",
+        "COMMUNITY_API_KEY": "${SHARED_SPACE_COMMUNITY_API_KEY}",
+
+        "MCP_JWT_PRIVATE_KEY_BASE64": "${MCP_JWT_PRIVATE_KEY_BASE64}",
+        "OAUTH_ALLOWED_REDIRECT_URIS": "${OAUTH_ALLOWED_REDIRECT_URIS}",
+
+        "QUEUE_SERVICE_HOST": "srv-captain--redis-queue",
+        "QUEUE_SERVICE_PORT": "6379",
+        "QUEUE_SERVICE_PASSWORD": "${REDIS_PASSWORD}",
+
+        "MAIL_HOST": "${MAIL_HOST}",
+        "MAIL_PORT": "${MAIL_PORT}",
+        "MAIL_SECURE": "${MAIL_SECURE}",
+        "MAIL_USER": "${MAIL_USER}",
+        "MAIL_PASSWORD": "${MAIL_PASSWORD}",
+        "MAIL_SENDER": "${MAIL_SENDER}",
+        "ROBOT_USER_MAIL": "${ROBOT_USER_MAIL}",
+        "CUSTOMER_SUCCESS_MAIL": "${CUSTOMER_SUCCESS_MAIL}",
+        "SUPPORT_MAIL": "${SUPPORT_MAIL}",
+        "NEW_USER_NOTIF_RECEIVERS": "${NEW_USER_NOTIF_RECEIVERS}",
+
+        "OBJECT_STORAGE_DEFAULT_ACCESS_KEY_ID": "${S3_ACCESS_KEY_ID}",
+        "OBJECT_STORAGE_DEFAULT_SECRET_KEY": "${S3_SECRET_KEY}",
+        "OBJECT_STORAGE_DEFAULT_ENDPOINT": "${S3_ENDPOINT}",
+        "OBJECT_STORAGE_DEFAULT_REGION": "${S3_REGION}",
+        "OBJECT_STORAGE_DB_BACKUP_ENDPOINT": "${S3_ENDPOINT}",
+        "OBJECT_STORAGE_DB_BACKUP_REGION": "${S3_REGION}",
+
+        "LAB_CONFIGURER_REPO_URL": "${LAB_CONFIGURER_REPO_URL}",
+        "LAB_CONFIGURER_REPO_BRANCH": "${LAB_CONFIGURER_REPO_BRANCH}",
+        "LAB_MANAGER_VERSION": "${LAB_MANAGER_VERSION}",
+        "LAB_MANAGER_STANDALONE_FRONT_VERSION": "${LAB_MANAGER_STANDALONE_FRONT_VERSION}",
+        "STARTED_SERVER_TEMP_STATUS_MAX_DURATION_MINUTES": "${STARTED_SERVER_TEMP_STATUS_MAX_DURATION_MINUTES}",
+
+        "MAIN_SSH_PRIVATE_KEY_FILE_PATH": "${MAIN_SSH_PRIVATE_KEY_FILE_PATH}",
+        "OVH_SERVICE_NAME": "${OVH_SERVICE_NAME}",
+        "OVH_APP_KEY": "${OVH_APP_KEY}",
+        "OVH_APP_SECRET": "${OVH_APP_SECRET}",
+        "OVH_CONSUMER_KEY": "${OVH_CONSUMER_KEY}",
+        "OVH_SSH_KEY_NAME": "${OVH_SSH_KEY_NAME}",
+
+        "GOOGLE_APPLICATION_CREDENTIALS": "${GOOGLE_APPLICATION_CREDENTIALS}",
+
+        "FOLDER_ID_TO_COPY_ON_SIGNUP": "${FOLDER_ID_TO_COPY_ON_SIGNUP}",
+        "CAPTCHA_SITE_KEY": "${CAPTCHA_SITE_KEY}"
+      }
+    },
+
+    {
+      "appName": "community-api",
+      "_role": "hn-community-api. Image published by the hn_* tag of monorepo-back.",
+      "image": "${COMMUNITY_API_IMAGE}",
+      "hasPersistentData": true,
+      "notExposeAsWebApp": false,
+      "containerHttpPort": 3333,
+      "forceSsl": true,
+      "websocketSupport": true,
+      "volumes": [{ "containerPath": "/logs", "hostPath": "${HOST_HOME}/logs/community-api" }],
+      "customDomain": [{ "publicDomain": "${COMMUNITY_API_DOMAIN}", "hasSsl": true }],
+      "serviceUpdateOverride": "# Reduce downtime between deploiements\nTaskTemplate:\n  ContainerSpec:\n    StopGracePeriod: 15000000000\nUpdateConfig:\n  Order: start-first\n  Parallelism: 1\n  FailureAction: rollback\n  Delay: 5000000000",
+      "envVars": {
+        "ENVIRONMENT_PROFILE": "prod",
+        "LOG_LEVEL": "info",
+        "LOG_PATH": "/logs",
+        "DOMAIN": "${DOMAIN}",
+
+        "DATABASE_HOST": "srv-captain--community-db",
+        "DATABASE_PORT": "3306",
+        "DATABASE": "communityDb",
+        "DATABASE_USER": "communityUser",
+        "DATABASE_PASSWORD": "${COMMUNITY_DB_PASSWORD}",
+
+        "JWT_SECRET": "${COMMUNITY_JWT_SECRET}",
+        "API_URL": "${COMMUNITY_API_URL}",
+        "CORS_ALLOWED_DOMAINS": "${DOMAIN}",
+
+        "FRONT_URL": "${COMMUNITY_FRONT_URL}",
+        "SPACE_FRONT_URL": "${SPACE_FRONT_URL}",
+
+        "SPACE_API_URL": "${SPACE_API_URL}",
+        "SPACE_API_KEY": "${SHARED_SPACE_COMMUNITY_API_KEY}",
+        "GENCOVERY_SPACE_ID": "${GENCOVERY_SPACE_ID}",
+
+        "QUEUE_SERVICE_HOST": "srv-captain--redis-queue",
+        "QUEUE_SERVICE_PORT": "6379",
+        "QUEUE_SERVICE_PASSWORD": "${REDIS_PASSWORD}",
+
+        "MAIL_HOST": "${MAIL_HOST}",
+        "MAIL_PORT": "${MAIL_PORT}",
+        "MAIL_SECURE": "${MAIL_SECURE}",
+        "MAIL_USER": "${MAIL_USER}",
+        "MAIL_PASSWORD": "${MAIL_PASSWORD}",
+        "MAIL_SENDER": "${MAIL_SENDER}",
+        "ROBOT_USER_MAIL": "${ROBOT_USER_MAIL}",
+        "CUSTOMER_SUCCESS_MAIL": "${CUSTOMER_SUCCESS_MAIL}",
+        "SALES_MAIL": "${SALES_MAIL}",
+
+        "OBJECT_STORAGE_DEFAULT_ACCESS_KEY_ID": "${S3_ACCESS_KEY_ID}",
+        "OBJECT_STORAGE_DEFAULT_SECRET_KEY": "${S3_SECRET_KEY}",
+        "OBJECT_STORAGE_DEFAULT_ENDPOINT": "${S3_ENDPOINT}",
+        "OBJECT_STORAGE_DEFAULT_REGION": "${S3_REGION}",
+        "OBJECT_STORAGE_BACKUP_ENDPOINT": "${S3_BACKUP_ENDPOINT}",
+        "OBJECT_STORAGE_BACKUP_REGION": "${S3_BACKUP_REGION}",
+        "OBJECT_STORAGE_DB_BACKUP_ENDPOINT": "${S3_ENDPOINT}",
+        "OBJECT_STORAGE_DB_BACKUP_REGION": "${S3_REGION}",
+
+        "BUCKET_ICON": "${BUCKET_ICON}",
+        "BUCKET_ICON_BACKUP": "${BUCKET_ICON_BACKUP}",
+        "BUCKET_DOCUMENTATION": "${BUCKET_DOCUMENTATION}",
+        "BUCKET_DOCUMENTATION_BACKUP": "${BUCKET_DOCUMENTATION_BACKUP}",
+        "BUCKET_STORIES": "${BUCKET_STORIES}",
+        "BUCKET_STORIES_BACKUP": "${BUCKET_STORIES_BACKUP}",
+        "BUCKET_AGENTS": "${BUCKET_AGENTS}",
+        "BUCKET_AGENTS_BACKUP": "${BUCKET_AGENTS_BACKUP}",
+        "BUCKET_APPS": "${BUCKET_APPS}",
+        "BUCKET_APPS_BACKUP": "${BUCKET_APPS_BACKUP}",
+        "BUCKET_PARTNERS": "${BUCKET_PARTNERS}",
+        "BUCKET_PARTNERS_BACKUP": "${BUCKET_PARTNERS_BACKUP}",
+        "BUCKET_DB_BACKUP": "${BUCKET_DB_BACKUP}",
+
+        "RAGFLOW_API_KEY": "${RAGFLOW_API_KEY}",
+        "RAGFLOW_BASE_URL": "${RAGFLOW_BASE_URL}",
+        "RAGFLOW_CHAT_ID": "${RAGFLOW_CHAT_ID}"
+      }
+    },
+
+    {
+      "appName": "space-front",
+      "_role": "ca-space-front. Image published by the ca_* tag of monorepo-front.",
+      "_nginx": "The only app with a hand-written nginx config: it serves ${DOMAIN} and *.${DOMAIN} from the wildcard certificate issued outside CapRover. See step 8.",
+      "image": "${SPACE_FRONT_IMAGE}",
+      "hasPersistentData": false,
+      "notExposeAsWebApp": false,
+      "containerHttpPort": 80,
+      "forceSsl": false,
+      "websocketSupport": false,
+      "volumes": [],
+      "customDomain": [],
+      "envVars": {
+        "API_URL": "${SPACE_API_URL}",
+        "COMMUNITY_API_URL": "${COMMUNITY_API_URL}",
+        "COMMUNITY_FRONT_URL": "${COMMUNITY_FRONT_URL}",
+        "FRONT_DOMAIN": "${DOMAIN}",
+        "CAPTCHA_SITE_KEY": "${CAPTCHA_SITE_KEY}",
+        "DIFY_CHATBOT_TOKEN": "${DIFY_CHATBOT_TOKEN}"
+      }
+    },
+
+    {
+      "appName": "community-front",
+      "_role": "ha-community-front (Node SSR). Image published by the ha_* tag of monorepo-front.",
+      "image": "${COMMUNITY_FRONT_IMAGE}",
+      "hasPersistentData": false,
+      "notExposeAsWebApp": false,
+      "containerHttpPort": 4000,
+      "forceSsl": true,
+      "websocketSupport": false,
+      "volumes": [],
+      "customDomain": [{ "publicDomain": "${COMMUNITY_DOMAIN}", "hasSsl": true }],
+      "envVars": {
+        "API_URL": "${COMMUNITY_API_URL}",
+        "CONSTELLAB_API_URL": "${SPACE_API_URL}",
+        "CONSTELLAB_FRONT_URL": "${SPACE_FRONT_URL}",
+        "COMMUNITY_FRONT_URL": "${COMMUNITY_FRONT_URL}",
+        "CAPTCHA_SITE_KEY": "${CAPTCHA_SITE_KEY}",
+        "GOOGLE_ANALYTICS_ID": "${GOOGLE_ANALYTICS_ID}",
+        "DISCORD_LINK": "${DISCORD_LINK}",
+        "ALGOLIA_APP_ID": "${ALGOLIA_APP_ID}",
+        "ALGOLIA_SEARCH_KEY": "${ALGOLIA_SEARCH_KEY}",
+        "ALGOLIA_SITE_VERIFICATION_KEY": "${ALGOLIA_SITE_VERIFICATION_KEY}",
+        "ALGOLIA_INDEX_NAME": "${ALGOLIA_INDEX_NAME}",
+        "HOME_VIDEO_LINK": "${HOME_VIDEO_LINK}"
+      }
+    }
+  ]
+}

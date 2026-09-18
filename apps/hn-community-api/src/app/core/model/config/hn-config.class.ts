@@ -39,6 +39,9 @@ export const HN_BUCKET_APPS_BACKUP_KEY = 'BUCKET_APPS_BACKUP';
 export const HN_BUCKET_PARTNERS_KEY = 'BUCKET_PARTNERS';
 export const HN_BUCKET_PARTNERS_BACKUP_KEY = 'BUCKET_PARTNERS_BACKUP';
 
+/** Where the nightly database dump is written. Named like the others, but not a pair. */
+export const HN_BUCKET_DB_BACKUP_KEY = 'BUCKET_DB_BACKUP';
+
 export const HN_RAGFLOW_API_KEY = 'RAGFLOW_API_KEY';
 export const HN_RAGFLOW_BASE_URL = 'RAGFLOW_BASE_URL';
 export const HN_RAGFLOW_CHAT_ID = 'RAGFLOW_CHAT_ID';

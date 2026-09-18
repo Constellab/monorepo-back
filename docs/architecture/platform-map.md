@@ -176,11 +176,31 @@ certificates are issued outside CapRover, with the DNS-01 challenge against the 
 automatically** by a script under root's cron, twice a day.
 
 Everything about the manual certificates — issuing, the OVH token rights, the renewal script, the
-cron entry, and the debugging path — is in **`lab-configurer/caprover`**
+cron entry, and the debugging path — is in **`caprover/`**, at the root of this repository
 (`CAPROVER_CERTIFICATES.md`, `renew-certs.sh`). Read it before touching a certificate.
 
 There is also a written incident note on the platform itself:
 <https://ec7de50a-19f0-4188-9fb6-615ae8e6f083.constellab.space/app/folder/document/beb9d357-10fe-4a1e-9325-41100df00874>
+
+### Standing up a third instance
+
+Both environments above were built by hand, before any of this was written down, so neither can
+be rebuilt from a script. Standing up a new one — a dedicated customer instance, an on-premise
+cloud deployment — is a step by step procedure in the same folder: **`caprover/NEW_INSTANCE.md`**,
+with `prepare-machine.sh` (the bare Ubuntu host), `caprover-apps.template.json` (every environment
+variable the two APIs and the two fronts actually read, in one fillable file) and `apply-apps.sh`,
+which writes that file to a CapRover instance through its API.
+
+One thing it documents that is invisible from any single repository: the Space's
+`COMMUNITY_API_KEY` and the Community's `SPACE_API_KEY` are one shared secret, also pushed into
+every lab config.
+
+The Space API still names two buckets in code rather than in configuration —
+`getSpaceImageBucket()` and `getDbBackupBucket()` in `cn-core-config.service.ts` both branch on
+`isProduction()` and return a Gencovery bucket. A second `prod` instance handed Gencovery's S3
+credentials therefore writes over Gencovery's own images and backups. The Community API had the
+same defect and no longer does: its dump bucket is `BUCKET_DB_BACKUP`. Give a dedicated instance
+its own S3 tenant, which is what `NEW_INSTANCE.md` says to do, until the Space side follows.
 
 ### Deploying
 
@@ -217,7 +237,7 @@ number — check what the script prints before you confirm a prod deploy.
 
 Source: `monorepo-back/package.json`, `monorepo-back/deploy.mjs`,
 `monorepo-back/.github/workflows/build-space-api.yml`, `monorepo-front/package.json`,
-`lab-configurer/caprover/CAPROVER_CERTIFICATES.md`
+`caprover/CAPROVER_CERTIFICATES.md`
 
 ## Data stores
 

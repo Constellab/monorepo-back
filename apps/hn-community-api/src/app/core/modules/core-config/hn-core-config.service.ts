@@ -8,6 +8,7 @@ import {
   HN_BUCKET_AGENTS_KEY,
   HN_BUCKET_APPS_BACKUP_KEY,
   HN_BUCKET_APPS_KEY,
+  HN_BUCKET_DB_BACKUP_KEY,
   HN_BUCKET_DOCUMENTATION_BACKUP_KEY,
   HN_BUCKET_DOCUMENTATION_KEY,
   HN_BUCKET_ICON_BACKUP_KEY,
@@ -90,7 +91,7 @@ export class HnCoreConfigService {
    * fails to start rather than serving discovery documents pointing nowhere.
    */
   public getSpaceApiUrl(): string {
-    return this.isLocal() ? 'http://localhost:3001' : this.getConfigString('SPACE_API_URL');
+    return this.getConfigString('SPACE_API_URL');
   }
 
   // api key to communicate with space api
@@ -191,50 +192,23 @@ export class HnCoreConfigService {
     return this.getConfigString('GENCOVERY_SPACE_ID');
   }
 
+  /**
+   * This application's own front, the Community website.
+   *
+   * Read while Nest builds the injector, not lazily: the OAuth server module needs it to
+   * know where to send a logged-out `/authorize`, so an unset value stops the process at
+   * startup instead of failing the first logged-out authorization request.
+   */
   public getFrontBaseUrl(): string {
-    let res: string;
-    switch (this.getEnvironmentProfile()) {
-      case 'prod':
-        res = 'https://constellab.community';
-        break;
-      case 'preprod':
-        res = 'https://community-pre-prod.gencovery.com';
-        break;
-      // Every local profile, exactly as `isLocal()` groups them — they all run against the
-      // same local front. `test` and `docker` fell through to the throw before, which was
-      // survivable only while this was read lazily: the OAuth server module now reads it
-      // while the injector is built, so an unhandled profile stops the process instead of
-      // failing the first logged-out `/authorize`. That is the behaviour we want for a value
-      // a deployment must state, but it means the list has to be complete.
-      case 'dev':
-      case 'docker':
-      case 'test':
-        res = 'http://localhost:4200';
-        break;
-      default:
-        throw Error(`No front base url configured for environment '${this.getEnvironmentProfile()}'`);
-    }
-    return res;
+    return this.getConfigUrl('FRONT_URL');
   }
 
+  /**
+   * The Space front, a different application on a different domain — where a Community
+   * visitor is sent to log in or to subscribe.
+   */
   public getConstellabFrontBaseUrl(): string {
-    let res: string;
-    switch (this.getEnvironmentProfile()) {
-      case 'prod':
-        res = 'https://constellab.space/';
-        break;
-      case 'preprod':
-        res = 'https://preconstellab.com/';
-        break;
-      case 'dev':
-        res = 'http://localhost:4200/';
-        break;
-      default:
-        throw Error(
-          `No constellab front base url configured for environment '${this.getEnvironmentProfile()}'`
-        );
-    }
-    return res;
+    return this.getConfigUrl('SPACE_FRONT_URL');
   }
 
   public getLogLevel(): LogLevel {
@@ -262,6 +236,18 @@ export class HnCoreConfigService {
       throw Error(`Missing config value for '${configName}'`);
     }
     return value;
+  }
+
+  /**
+   * Read a required config value naming a base URL, without its trailing slash.
+   *
+   * Normalizing here rather than at each call site: every caller appends a path, and the
+   * two front URLs used to disagree on the convention — `getConstellabLoginUrl()` built
+   * `https://constellab.space//login` out of a value that ended in a slash while the
+   * Community one did not. Which of the two a deployment writes now makes no difference.
+   */
+  protected getConfigUrl(configName: string): string {
+    return this.getConfigString(configName).replace(/\/+$/, '');
   }
 
   /**
@@ -320,7 +306,7 @@ export class HnCoreConfigService {
   // }
 
   public getDbBackupBucket(): string {
-    return this.isProduction() ? 'constellab-db-backup-prod' : 'constellab-db-backup-pre-prod';
+    return this.getConfigString(HN_BUCKET_DB_BACKUP_KEY);
   }
 
   public getDbBackupEndpoint(): string {

@@ -507,3 +507,19 @@ CREATE TABLE `oauth_grant`
 -- API_URL (the OAuth issuer) and the Community's SPACE_API_URL must name the same host,
 -- scheme included; a trailing slash on either is stripped. No test compares them, and a
 -- mismatch means every MCP call takes a 401 with both applications looking healthy.
+
+-- ############################################################################
+-- MUST BE SET BEFORE THE APP STARTS. No schema change, an environment variable.
+--
+-- CORS_ALLOWED_DOMAINS — the domains allowed to call this API cross-origin, replacing
+--   the list that used to be hard-coded in cn-main.ts ('constellab.space' and
+--   'preconstellab.com'), which no dedicated instance could ever match. Comma-separated;
+--   each entry allows the domain itself and any of its sub-domains over https, so one
+--   registered domain is normally the whole value:
+--     CORS_ALLOWED_DOMAINS=constellab.space,preconstellab.com
+--
+-- Unsetting it stops the application at startup rather than letting it serve a CORS
+-- policy that accepts nothing but localhost — which, from the browser, is indistinguishable
+-- from the API being down. A local profile (dev, docker, test) ignores the value and
+-- accepts every origin, so it may stay empty there.
+-- ############################################################################

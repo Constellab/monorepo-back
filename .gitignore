@@ -43,3 +43,9 @@ logs
 .eslintcache
 .prettiercache
 
+
+# CapRover: filled instance configurations (plaintext secrets) and raw exports.
+# The template itself is versioned.
+caprover/caprover-apps.*.json
+!caprover/caprover-apps.template.json
+caprover/apps-raw.json

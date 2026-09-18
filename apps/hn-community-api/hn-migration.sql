@@ -881,3 +881,49 @@ DROP TABLE IF EXISTS `oauth_grant`;
 --
 -- Optional, defaulting to hn-jwt.config.ts: ACCESS_TOKEN_DURATION_SECONDS (900) and
 -- REFRESH_TOKEN_DURATION_SECONDS (2592000).
+
+-- ############################################################################
+-- MUST BE SET BEFORE THE APP STARTS. No schema change, an environment variable.
+--
+-- CORS_ALLOWED_DOMAINS — the domains allowed to call this API cross-origin, replacing
+--   the list that used to be hard-coded in hn-cors.config.ts ('constellab.community',
+--   'constellab.space', 'preconstellab.com', 'gencovery.com', 'gencovery.io' and
+--   'constellab.app'), which no dedicated instance could ever match. Comma-separated;
+--   each entry allows the domain itself and any of its sub-domains over https, so one
+--   registered domain is normally the whole value:
+--     CORS_ALLOWED_DOMAINS=constellab.community,constellab.space,preconstellab.com,gencovery.com,gencovery.io,constellab.app
+--
+-- Unsetting it stops the application at startup rather than letting it serve a CORS
+-- policy that accepts nothing but localhost — which, from the browser, is indistinguishable
+-- from the API being down. It also governs the Ragflow chatbot websocket gateway, which
+-- reuses the same origins. A local profile (dev, docker, test) ignores the value and
+-- accepts every origin, so it may stay empty there.
+-- ############################################################################
+
+-- ############################################################################
+-- MUST BE SET BEFORE THE APP STARTS. No schema change, environment variables.
+--
+-- The hard-coded per-environment values in hn-core-config.service.ts are gone: the
+-- service used to switch over ENVIRONMENT_PROFILE and return Gencovery's own hosts and
+-- buckets, which no dedicated instance could ever be. Each is now a variable, and an
+-- unset one fails the same way any other missing config does.
+--
+-- FRONT_URL — this application's own front, the Community website. Read while the
+--   injector is built (the OAuth module needs it to redirect a logged-out /authorize),
+--   so an unset value stops the app at startup. Was 'https://constellab.community' in
+--   prod, 'https://community-pre-prod.gencovery.com' in preprod:
+--     FRONT_URL=https://community.acme-constellab.com
+-- SPACE_FRONT_URL — the Space front, where a visitor is sent to log in or subscribe.
+--   Was 'https://constellab.space/' in prod, 'https://preconstellab.com/' in preprod:
+--     SPACE_FRONT_URL=https://acme-constellab.com
+-- BUCKET_DB_BACKUP — where the nightly database dump is written. Was
+--   'constellab-db-backup-prod' or '-pre-prod', i.e. a Gencovery bucket a dedicated
+--   instance had no business writing to. Read by the midnight cron, not at boot, so
+--   leaving it unset shows up as a failed backup rather than a failed start.
+--
+-- Both URLs are base URLs; a trailing slash is stripped, so either spelling works.
+--
+-- SPACE_API_URL is now read in every environment. It was already required outside a
+-- local profile, where the service used to ignore it and force http://localhost:3001 —
+-- dev and test env files now state that host instead of inheriting it from the code.
+-- ############################################################################

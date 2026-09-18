@@ -158,7 +158,7 @@ export class CnCoreConfigService {
   }
 
   public getOpenaiAPIKey(): string {
-    return this.getConfigString('OPENAI_API_KEY');
+    return this.getNonEmptyConfigString('OPENAI_API_KEY');
   }
 
   public getDatabaseConfig(): CnDatabaseConfig {
@@ -242,6 +242,28 @@ export class CnCoreConfigService {
     const value: string | undefined = this.configService.get(configName);
     if (value == null) {
       throw Error(`Missing config value for '${configName}'`);
+    }
+    return value;
+  }
+
+  /**
+   * Read a config value that is only ever set when the feature behind it is enabled —
+   * a cloud provider we provision labs on, a third party we subscribe to.
+   *
+   * Refuses the empty string where {@link getConfigString} accepts it, because these have
+   * no "configured but blank" state: an empty Azure subscription id or Outscale secret is
+   * always a deployment that declared the variable and never filled it. Failing here names
+   * the variable, instead of letting `''` reach the provider SDK and come back as an
+   * opaque authentication error.
+   *
+   * {@link getConfigString} stays permissive on purpose: an empty MAIL_USER or
+   * QUEUE_SERVICE_PASSWORD is a real configuration — a local SMTP or Redis without auth —
+   * and both are read at boot.
+   */
+  protected getNonEmptyConfigString(configName: string): string {
+    const value: string = this.getConfigString(configName);
+    if (value.trim().length === 0) {
+      throw Error(`Empty config value for '${configName}'`);
     }
     return value;
   }
@@ -360,58 +382,58 @@ export class CnCoreConfigService {
   /////////////////////////////// AZURE ///////////////////////////////
 
   public getAzureSubscriptionId(): string {
-    return this.getConfigString('AZURE_SUBSCRIPTION_ID');
+    return this.getNonEmptyConfigString('AZURE_SUBSCRIPTION_ID');
   }
 
   public getAzureResourceGroup(): string {
-    return this.getConfigString('AZURE_RESOURCE_GROUP');
+    return this.getNonEmptyConfigString('AZURE_RESOURCE_GROUP');
   }
 
   public getAzureSshKey(): string {
-    return this.getConfigString('AZURE_SSH_KEY_NAME');
+    return this.getNonEmptyConfigString('AZURE_SSH_KEY_NAME');
   }
 
   public getAzureNetwork(): string {
-    return this.getConfigString('AZURE_NETWORK');
+    return this.getNonEmptyConfigString('AZURE_NETWORK');
   }
 
   public getAzureNetworkSubnet(): string {
-    return this.getConfigString('AZURE_NETWORK_SUBNET');
+    return this.getNonEmptyConfigString('AZURE_NETWORK_SUBNET');
   }
 
   ////////////////////////////// OUTSCALE //////////////////////////////
 
   public getOutscaleAccessKey(): string {
-    return this.getConfigString('OUTSCALE_ACCESS_KEY_ID');
+    return this.getNonEmptyConfigString('OUTSCALE_ACCESS_KEY_ID');
   }
 
   public getOutscaleSecretKey(): string {
-    return this.getConfigString('OUTSCALE_SECRET_KEY');
+    return this.getNonEmptyConfigString('OUTSCALE_SECRET_KEY');
   }
 
   public getOutscaleSshKeyName(): string {
-    return this.getConfigString('OUTSCALE_SSH_KEY_NAME');
+    return this.getNonEmptyConfigString('OUTSCALE_SSH_KEY_NAME');
   }
 
   public getOutscaleSecurityGroup(): string {
-    return this.getConfigString('OUTSCALE_SECURITY_GROUP');
+    return this.getNonEmptyConfigString('OUTSCALE_SECURITY_GROUP');
   }
 
   public getOutscaleSshPrivateKeyFilePath(): string {
-    return this.getConfigString('OUTSCALE_SSH_PRIVATE_KEY_FILE_PATH');
+    return this.getNonEmptyConfigString('OUTSCALE_SSH_PRIVATE_KEY_FILE_PATH');
   }
 
   ////////////////////////////////// GCP //////////////////////////////////
   public getGcpProjectId(): string {
-    return this.getConfigString('GCP_PROJECT_ID');
+    return this.getNonEmptyConfigString('GCP_PROJECT_ID');
   }
 
   public getGcpFirewallTag(): string {
-    return this.getConfigString('GCP_FIREWALL_TAG');
+    return this.getNonEmptyConfigString('GCP_FIREWALL_TAG');
   }
 
   public getGcpSshPrivateKeyFilePath(): string {
-    return this.getConfigString('GCP_SSH_PRIVATE_KEY_FILE_PATH');
+    return this.getNonEmptyConfigString('GCP_SSH_PRIVATE_KEY_FILE_PATH');
   }
 
   public getGcpCredentialsFilePath(): string {
@@ -460,11 +482,11 @@ export class CnCoreConfigService {
 
   /////////////////////////// YOUTUBE ///////////////////////////
   public getYoutubeApiKey(): string {
-    return this.getConfigString('YOUTUBE_API_KEY');
+    return this.getNonEmptyConfigString('YOUTUBE_API_KEY');
   }
 
   public getYoutubeTutorialPlaylistId(): string {
-    return this.getConfigString('YOUTUBE_TUTORIAL_PLAYLIST_ID');
+    return this.getNonEmptyConfigString('YOUTUBE_TUTORIAL_PLAYLIST_ID');
   }
 
   /////////////////////////// OTHER ///////////////////////////
@@ -480,7 +502,7 @@ export class CnCoreConfigService {
   }
 
   public getReflexAccessToken(): string {
-    return this.getConfigString('REFLEX_ACCESS_TOKEN');
+    return this.getNonEmptyConfigString('REFLEX_ACCESS_TOKEN');
   }
 
   // Max duration to keep a running server in temporary status (not fully started)
