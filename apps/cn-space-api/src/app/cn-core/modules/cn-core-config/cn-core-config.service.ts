@@ -343,15 +343,15 @@ export class CnCoreConfigService implements OnModuleInit {
   }
 
   public getUserProfilePictureObjectStorageBucket(): string {
-    return this.isProduction() ? 'constellab-user-profile-picture' : 'constellab-user-profile-picture';
+    return this.getNonEmptyConfigString('BUCKET_USER_PROFILE_PICTURE');
   }
 
   public getSpaceImageBucket(): string {
-    return this.isProduction() ? 'constellab-space-image-prod' : 'constellab-space-image-pre-prod';
+    return this.getNonEmptyConfigString('BUCKET_SPACE_IMAGE');
   }
 
   public getDbBackupBucket(): string {
-    return this.isProduction() ? 'constellab-db-backup-prod' : 'constellab-db-backup-pre-prod';
+    return this.getNonEmptyConfigString('BUCKET_DB_BACKUP');
   }
 
   public getDbBackupEndpoint(): string {

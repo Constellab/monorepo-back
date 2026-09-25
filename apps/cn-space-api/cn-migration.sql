@@ -559,3 +559,30 @@ CREATE TABLE `oauth_grant`
 -- Front: the domain list is now served by GET /core-config/lab-domains. A front still
 -- shipping its own copy of the enum shows domains this instance will refuse.
 -- ############################################################################
+
+-- ############################################################################
+-- MUST BE SET BEFORE THE FIRST UPLOAD OR BACKUP. No schema change, environment variables.
+--
+-- The three S3 bucket names used to be chosen in cn-core-config.service.ts from
+-- ENVIRONMENT_PROFILE, so any instance running as prod wrote to Gencovery's own buckets.
+-- They are now read as they are, with no per-profile logic:
+--
+-- BUCKET_USER_PROFILE_PICTURE — users' profile pictures. Was
+--   'constellab-user-profile-picture' in every environment:
+--     BUCKET_USER_PROFILE_PICTURE=constellab-user-profile-picture
+-- BUCKET_SPACE_IMAGE — the spaces' images. Was 'constellab-space-image-prod' in prod,
+--   'constellab-space-image-pre-prod' anywhere else:
+--     BUCKET_SPACE_IMAGE=constellab-space-image-prod        (prod)
+--     BUCKET_SPACE_IMAGE=constellab-space-image-pre-prod    (pre-prod)
+-- BUCKET_DB_BACKUP — where the nightly database dump (cn-space.json) is written. Was
+--   'constellab-db-backup-prod' in prod, 'constellab-db-backup-pre-prod' anywhere else:
+--     BUCKET_DB_BACKUP=constellab-db-backup-prod            (prod)
+--     BUCKET_DB_BACKUP=constellab-db-backup-pre-prod        (pre-prod)
+--
+-- Set these values on Gencovery's prod and pre-prod and nothing changes. They are read
+-- lazily, not at boot: an unset or blank one does not stop the application, it fails
+-- the upload, or the midnight backup cron, with "Missing config value for '<name>'"
+-- (or "Empty config value"). BUCKET_DB_BACKUP has the same name and meaning as the
+-- Community API's; the two may point to the same bucket, since the dump objects differ
+-- (cn-space.json, hn-community.json).
+-- ############################################################################

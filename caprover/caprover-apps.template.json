@@ -166,6 +166,11 @@
     "RAGFLOW_BASE_URL": "",
     "RAGFLOW_CHAT_ID": "",
 
+    "_10_space_buckets": "--- S3 bucket names of the Space API, to create in the customer's tenant ---",
+    "SPACE_BUCKET_USER_PROFILE_PICTURE": "FILL_ME, e.g. acme-user-profile-picture",
+    "SPACE_BUCKET_SPACE_IMAGE": "FILL_ME, e.g. acme-space-image",
+    "SPACE_BUCKET_DB_BACKUP": "FILL_ME: where the Space's nightly database dump is written, e.g. acme-db-backup",
+
     "_10_community_buckets": "--- S3 bucket names, to create in the customer's tenant ---",
     "BUCKET_ICON": "FILL_ME, e.g. acme-community-icon",
     "BUCKET_ICON_BACKUP": "FILL_ME, e.g. acme-community-icon-backup",
@@ -330,6 +335,9 @@
         "OBJECT_STORAGE_DEFAULT_REGION": "${S3_REGION}",
         "OBJECT_STORAGE_DB_BACKUP_ENDPOINT": "${S3_ENDPOINT}",
         "OBJECT_STORAGE_DB_BACKUP_REGION": "${S3_REGION}",
+        "BUCKET_USER_PROFILE_PICTURE": "${SPACE_BUCKET_USER_PROFILE_PICTURE}",
+        "BUCKET_SPACE_IMAGE": "${SPACE_BUCKET_SPACE_IMAGE}",
+        "BUCKET_DB_BACKUP": "${SPACE_BUCKET_DB_BACKUP}",
 
         "LAB_ALLOWED_DOMAINS": "${LAB_ALLOWED_DOMAINS}",
         "LAB_CONFIGURER_REPO_URL": "${LAB_CONFIGURER_REPO_URL}",
