@@ -118,6 +118,44 @@ export interface CnOvhDomainRecord {
   ttl: number;
 }
 
+/**
+ * The OVH zone holding the records of a domain, and where that domain sits in it.
+ * For the domain 'lab.constellab.acme.com' in the zone 'acme.com', the record '*.abc'
+ * is written as '*.abc.lab.constellab'.
+ */
+export class CnOvhDomainZone {
+  constructor(
+    readonly zone: string,
+    // part of the domain under the zone, '' when the domain is the zone itself
+    readonly domainPrefix: string
+  ) {}
+
+  getRecordName(name: string): string {
+    return this.domainPrefix ? `${name}.${this.domainPrefix}` : name;
+  }
+
+  /** The most specific zone the domain belongs to, null if none */
+  static find(zones: string[], domain: string): CnOvhDomainZone | null {
+    const normalizedDomain = domain.toLowerCase().replace(/\.$/, '');
+
+    let best: string | null = null;
+    for (const zone of zones) {
+      const normalizedZone = zone.toLowerCase();
+      const matches = normalizedDomain === normalizedZone || normalizedDomain.endsWith(`.${normalizedZone}`);
+      if (matches && (best == null || normalizedZone.length > best.length)) {
+        best = normalizedZone;
+      }
+    }
+
+    if (best == null) {
+      return null;
+    }
+
+    const prefix = normalizedDomain.slice(0, normalizedDomain.length - best.length).replace(/\.$/, '');
+    return new CnOvhDomainZone(best, prefix);
+  }
+}
+
 export interface CnOvhFlavor {
   id: string;
   name: string;

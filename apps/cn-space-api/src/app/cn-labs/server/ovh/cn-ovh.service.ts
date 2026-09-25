@@ -144,6 +144,11 @@ export class CnOvhService {
 
   /////////////////////////////// DNS ///////////////////////////////
 
+  /** Names of the DNS zones of the account, e.g. ['constellab.app', 'gencovery.io'] */
+  public getDomainZones(): Promise<string[]> {
+    return this.requestPromised('GET', '/domain/zone');
+  }
+
   public async createDomainRecord(
     domain: string,
     request: CnOvhCreateDomainRecordRequest

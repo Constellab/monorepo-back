@@ -24,6 +24,7 @@ import {
   CnOvhCreateInstanceRequest,
   CnOvhCreateVolumeRequest,
   CnOvhDomainRecord,
+  CnOvhDomainZone,
   CnOvhInstance,
   CnOvhInstanceStatus,
   CnOvhVolume,
@@ -42,6 +43,9 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
   private static DNS_CHALLENGE_RECORD: CnDomainFieldType = 'TXT';
   private static DNS_CHALLENGE_PREFIX = '_acme-challenge';
   private static DNS_CHALLENGE_TTL = 60; // 1 minute
+
+  // lab domain -> OVH zone holding its records
+  private readonly domainZones = new Map<string, CnOvhDomainZone>();
 
   constructor(
     private ovhService: CnOvhService,
@@ -299,24 +303,30 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
   }
 
   /////////////////////////////// LAB DNS ///////////////////////////////
+  // The lab domain is not necessarily the apex of an OVH zone: a lab domain
+  // 'lab.constellab.acme.com' lives in the zone 'acme.com', so its records are written
+  // there under '<record>.lab.constellab'. Every method below resolves the zone first.
+
   public async createLabDomainHostRecord(
     ipv4: string,
     mainDomain: string,
     subDomainName: string
   ): Promise<any> {
+    const zone = await this.resolveDomainZone(mainDomain);
     const request: CnOvhCreateDomainRecordRequest = {
       fieldType: CnCloudProviderOvhService.DNS_HOST_RECORD,
-      subDomain: this.getSubDomainRecordName(subDomainName),
+      subDomain: zone.getRecordName(this.getSubDomainRecordName(subDomainName)),
       target: ipv4,
     };
 
-    return await this.ovhService.createDomainRecord(mainDomain, request);
+    return await this.ovhService.createDomainRecord(zone.zone, request);
   }
 
   public async labDomainRecordExists(mainDomain: string, subDomainName: string): Promise<boolean> {
+    const zone = await this.resolveDomainZone(mainDomain);
     return this.ovhService.domainRecordExist(
-      mainDomain,
-      this.getSubDomainRecordName(subDomainName),
+      zone.zone,
+      zone.getRecordName(this.getSubDomainRecordName(subDomainName)),
       CnCloudProviderOvhService.DNS_HOST_RECORD
     );
   }
@@ -325,9 +335,10 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
     mainDomain: string,
     subDomainName: string
   ): Promise<CnOvhDomainRecord | null> {
+    const zone = await this.resolveDomainZone(mainDomain);
     const recordIds: number[] = await this.ovhService.getDomainRecordIdBySubDomain(
-      mainDomain,
-      this.getSubDomainRecordName(subDomainName),
+      zone.zone,
+      zone.getRecordName(this.getSubDomainRecordName(subDomainName)),
       CnCloudProviderOvhService.DNS_HOST_RECORD
     );
 
@@ -335,7 +346,7 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
       return null;
     }
 
-    return this.ovhService.getDomainRecord(mainDomain, recordIds[0]);
+    return this.ovhService.getDomainRecord(zone.zone, recordIds[0]);
   }
 
   public async deleteLabDomainHostRecord(mainDomain: string, subDomainName: string): Promise<void> {
@@ -356,9 +367,10 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
     subDomainName: string,
     challengeTxt: string
   ): Promise<void> {
+    const zone = await this.resolveDomainZone(mainDomain);
     const challengeSubdomain = `${CnCloudProviderOvhService.DNS_CHALLENGE_PREFIX}.${subDomainName}`;
-    await this.ovhService.createDomainRecord(mainDomain, {
-      subDomain: challengeSubdomain,
+    await this.ovhService.createDomainRecord(zone.zone, {
+      subDomain: zone.getRecordName(challengeSubdomain),
       fieldType: CnCloudProviderOvhService.DNS_CHALLENGE_RECORD,
       ttl: CnCloudProviderOvhService.DNS_CHALLENGE_TTL,
       target: challengeTxt,
@@ -381,14 +393,38 @@ export class CnCloudProviderOvhService extends CnCloudProviderService {
     subDomainName: string,
     fieldType: CnDomainFieldType
   ): Promise<void> {
+    const zone = await this.resolveDomainZone(mainDomain);
     const recordIds: number[] = await this.ovhService.getDomainRecordIdBySubDomain(
-      mainDomain,
-      subDomainName,
+      zone.zone,
+      zone.getRecordName(subDomainName),
       fieldType
     );
 
     for (const recordId of recordIds) {
-      await this.ovhService.deleteDomainRecord(mainDomain, recordId);
+      await this.ovhService.deleteDomainRecord(zone.zone, recordId);
     }
+  }
+
+  /**
+   * Find the OVH zone that holds the records of a domain. Only a success is cached:
+   * a zone added to the account later is found without a restart.
+   */
+  private async resolveDomainZone(domain: string): Promise<CnOvhDomainZone> {
+    const cached = this.domainZones.get(domain);
+    if (cached) {
+      return cached;
+    }
+
+    const zones = await this.ovhService.getDomainZones();
+    const zone = CnOvhDomainZone.find(zones, domain);
+    if (!zone) {
+      throw new BlBadRequestException(
+        `No DNS zone of the OVH account contains the domain '${domain}'. ` +
+          `Zones of the account: ${zones.join(', ') || 'none'}`
+      );
+    }
+
+    this.domainZones.set(domain, zone);
+    return zone;
   }
 }
