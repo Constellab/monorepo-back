@@ -34,7 +34,7 @@ import { CnOvhService } from './cn-ovh.service';
 export class CnCloudProviderOvhService extends CnCloudProviderService {
   private readonly logger = new Logger(CnCloudProviderOvhService.name);
 
-  private static IMAGE_NAME = 'Ubuntu 20.04';
+  private static IMAGE_NAME = 'Ubuntu 22.04';
 
   private static MOUNT_FILE = 'mount_ovh.sh';
   private static MOUNT_DISK_NAME = 'sdb';
