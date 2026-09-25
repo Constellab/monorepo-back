@@ -505,6 +505,15 @@ Read them in adminer, put them back into `caprover-apps.acme.json`, then re-run:
 ./apply-apps.sh caprover-apps.acme.json --apply space-api community-api
 ```
 
+### 6.4 Bringing an existing space over
+
+An instance built this way starts with the seed's spaces and nothing else. To move a
+customer's space off another instance — its users, folders, documents and the files behind
+them — see [`space-migration/`](space-migration/README.md) in this folder. Do it right
+after step 6.1, **instead of** 6.2: the target loads the schema only, and receives the
+source's configuration (regions, servers, prices, `settings`, buckets and their
+credentials) along with the space. Do it before anybody starts working on the new instance.
+
 ---
 
 ## 7. Deploy the four images
