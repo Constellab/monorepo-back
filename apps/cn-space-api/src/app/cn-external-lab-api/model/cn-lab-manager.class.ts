@@ -87,12 +87,18 @@ export interface CnLabManagerInitConfig {
     devApiKey: string;
     frontUrl: string;
     apiUrl: string;
+    // Space domains the lab front allows in its Content-Security-Policy (connect-src and
+    // media-src), as CSP host sources separated by spaces. Becomes CSP_ALLOWED_DOMAINS.
+    cspAllowedDomains: string;
   };
   community: {
     frontUrl: string;
     apiUrl: string;
     // TODO : to remove once all lab manager are on version 2.11.0 or higher
     apiKey: string | null;
+    // Community domain the lab front allows in connect-src, plainly and as wss://. A single
+    // CSP host source, not a list. Becomes COMMUNITY_CSP_ALLOWED_DOMAIN.
+    cspAllowedDomain: string;
   };
   lab: {
     id: string;

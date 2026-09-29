@@ -178,9 +178,16 @@ Third-party sources — fonts, reCAPTCHA, Algolia, Google Analytics, emoji-mart 
 hardcoded in the images. Read by `apps/ca-space-front/entrypoint.sh` and
 `apps/ha-community-front/server.ts` in `monorepo-front`.
 
-The labs are not covered: `lab-manager-standalone` reads `CSP_ALLOWED_DOMAINS` as well, but
-it is deployed inside the lab by `lab-configurer`, which does not set it yet. A lab of a
-dedicated instance therefore still carries Gencovery's domains in its own CSP.
+The lab front (`lab-front`) needs nothing here: it allows its own domain from `VIRTUAL_HOST`,
+and the Space derives the rest from its own configuration — `*.<FRONT_DOMAIN>` and the host of
+`API_URL`, plus the host of `COMMUNITY_API_URL` as the community domain — and hands them to
+lab-manager with the lab config, which passes them to the front as `CSP_ALLOWED_DOMAINS` and
+`COMMUNITY_CSP_ALLOWED_DOMAIN`. Only a lab-manager older than that change leaves them unset,
+and the lab front then falls back to Gencovery's domains.
+
+`lab-manager-standalone` needs nothing either: lab-manager sets its `CSP_ALLOWED_DOMAINS` to
+the host of its own `DESKTOP_COMMUNITY_API_URL`, the only domain that front calls besides the
+lab manager.
 
 ### 1.4 Accounts and secrets to gather first
 

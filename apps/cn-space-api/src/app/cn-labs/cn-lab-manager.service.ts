@@ -130,12 +130,14 @@ export class CnLabManagerService {
         devApiKey: lab.glabDevApiKey,
         apiUrl: this.configService.getApiUrl(),
         frontUrl: `https://${spaceDomain}.${this.configService.getFrontDomain()}`,
+        cspAllowedDomains: this.getLabCspAllowedDomains(),
       },
       community: {
         frontUrl: this.configService.getCommunityFrontUrl(),
         apiUrl: this.configService.getCommunityApiUrl(),
         // don't provide the community api key on desktop
         apiKey: lab.isDesktop() ? null : this.configService.getCommunityApiKey(),
+        cspAllowedDomain: this.getUrlHost(this.configService.getCommunityApiUrl()),
       },
       lab: {
         id: lab.id,
@@ -161,6 +163,22 @@ export class CnLabManagerService {
         enableBackup,
       },
     };
+  }
+
+  /**
+   * Space domains the lab front must allow in its CSP, derived from the Space configuration so
+   * that an instance on another domain needs nothing more: every workspace front (a wildcard
+   * source matches any depth of subdomain) and the Space API, which may sit on another domain.
+   */
+  private getLabCspAllowedDomains(): string {
+    return `*.${this.configService.getFrontDomain()} ${this.getUrlHost(this.configService.getApiUrl())}`;
+  }
+
+  /**
+   * Host of the url (with its port, if any), which is a valid CSP host source.
+   */
+  private getUrlHost(url: string): string {
+    return new URL(url).host;
   }
 
   ////////////////////////////////////////// CONFIGURATION //////////////////////////////////////////
